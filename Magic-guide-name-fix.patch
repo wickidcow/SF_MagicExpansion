@@ -1,0 +1,9 @@
+diff --git a/src/main/java/io/Yomicer/magicExpansion/MagicExpansionItemSetup.java b/src/main/java/io/Yomicer/magicExpansion/MagicExpansionItemSetup.java
+--- a/src/main/java/io/Yomicer/magicExpansion/MagicExpansionItemSetup.java
++++ b/src/main/java/io/Yomicer/magicExpansion/MagicExpansionItemSetup.java
+@@
+     public static final NestedItemGroup magicexpansion = new NestedItemGroup(
+             new NamespacedKey(MagicExpansion.getInstance(), "magicexpansion"),
+-            new CustomItemStack(doGlow(Material.LIGHT),"§x§F§D§B§7§D§4§kll§x§F§D§B§7§D§4§x§F§A§7§E§B§3§x§F§F§6§9§B§42.§x§F§F§6§9§B§40§x§F§D§B§7§D§4§kll"),0
++            new CustomItemStack(doGlow(Material.LIGHT), "Magic"), 0
+     );
