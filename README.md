@@ -28,6 +28,10 @@ Player-facing item names, lore, menus, messages, command descriptions, configura
 
 This fork uses the modern `SlimefunBlockData` ticker overload already provided by Slimefun Legacy while retaining established Slimefun addon entry points. It builds with a Java 25 toolchain against the Paper 26.2 API while emitting Java 21 bytecode, matching Slimefun Legacy's current build strategy.
 
+## Build compatibility
+
+This addon compiles against the published Gugu `2025.1.2` API artifact and is intended to run with Slimefun Legacy. Slimefun Legacy preserves the established addon API, while its repository snapshot is not used as a Maven dependency.
+
 ## Building
 
 ```bash

@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.0.1 - Build dependency hotfix
+
+- Replaced the nonexistent `com.github.SlimefunGuguProject:Slimefun4:2026.1` dependency with the published `2025.1.2` API baseline.
+- Kept Slimefun Legacy as the intended runtime core; the fork preserves the established Gugu/Slimefun addon API.
+- No item IDs, persistent-data keys, recipes, or player-facing behavior changed in this hotfix.
+
 ## 1.0.0 — Legacy English maintenance release
 
 ### English conversion
