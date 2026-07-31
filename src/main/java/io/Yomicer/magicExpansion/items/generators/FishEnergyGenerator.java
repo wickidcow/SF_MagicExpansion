@@ -45,11 +45,11 @@ public class FishEnergyGenerator extends MenuBlock implements EnergyNetProvider,
     private final int power2 = 200;
     private final String fishTypeTarget2 = "XueFish";
 
-    // 1. 定义可扩展的鱼能量产出表（集中管理，易扩展）
+    // 1. 定义可扩展的鱼能量产出表(集中管理,易扩展)
     private final Map<String, Integer> FISH_POWER_MAP = new LinkedHashMap<>() {{
-        put("MYSTIC_EEL",     50000);  // 神秘鳗鱼：高能量
-        put("XueFish",        200);    // 雪鱼：低能量
-        put("GlowStoneDustFish",      3000);    // 雪鱼：低能量
+        put("MYSTIC_EEL",     50000);  // 神秘鳗鱼:高能量
+        put("XueFish",        200);    // 雪鱼:低能量
+        put("GlowStoneDustFish",      3000);    // 雪鱼:低能量
 
     }};
     // ✅ 鱼类型 -> 显示用的桶材质
@@ -57,7 +57,7 @@ public class FishEnergyGenerator extends MenuBlock implements EnergyNetProvider,
         put("MYSTIC_EEL",   Material.TROPICAL_FISH_BUCKET);
         put("XueFish",      Material.COD_BUCKET);
         put("GlowStoneDustFish",      Material.PUFFERFISH_BUCKET);
-        // 👉 新增鱼？直接加：put("GlowStoneFish", Material.SALMON_BUCKET);
+        // 👉 新增鱼？直接加:put("GlowStoneFish", Material.SALMON_BUCKET);
     }};
 
 
@@ -77,23 +77,23 @@ public class FishEnergyGenerator extends MenuBlock implements EnergyNetProvider,
                 36,37,38,39,  41,42,43,44,
                 45,46,47,48,49,50,51,52,53
         });
-        blockMenuPreset.drawBackground(new CustomItemStack(CustomHead.getHead("7aa17a1abe18d3830391e970a582553ffe0b8afe36ea3c74b5eb521f9c5a54c0") ,getGradientName("⇧这里放电鳗⇧")),
+        blockMenuPreset.drawBackground(new CustomItemStack(CustomHead.getHead("7aa17a1abe18d3830391e970a582553ffe0b8afe36ea3c74b5eb521f9c5a54c0") ,getGradientName("Fish Bucket Map")),
                 new int[] {
                 22,   31
         });
-        blockMenuPreset.drawBackground(new CustomItemStack(CustomHead.getHead("26314d31b095e4d421760497be6a156f459d8c9957b7e6b1c12deb4e47860d71") ,getGradientName("⇨这里放电鳗⇨")),
+        blockMenuPreset.drawBackground(new CustomItemStack(CustomHead.getHead("26314d31b095e4d421760497be6a156f459d8c9957b7e6b1c12deb4e47860d71") ,getGradientName("Fish Bucket Map")),
                 new int[] {
                         12
                 });
-        blockMenuPreset.drawBackground(new CustomItemStack(CustomHead.getHead("5fa22cc6ddd569a6ce894aab906b73db8ba89f6a2bb071bab22e57a4f0885abf") ,getGradientName("⇦这里放电鳗⇦")),
+        blockMenuPreset.drawBackground(new CustomItemStack(CustomHead.getHead("5fa22cc6ddd569a6ce894aab906b73db8ba89f6a2bb071bab22e57a4f0885abf") ,getGradientName("Fish Bucket Map")),
                 new int[] {
                         14
                 });
-        blockMenuPreset.drawBackground(new CustomItemStack(CustomHead.getHead("ab93edba42c7bbfa94b12f89bd55d95862259cdb6293c83b90b931ae4d139088") ,getGradientName("⇩这里放电鳗⇩")),
+        blockMenuPreset.drawBackground(new CustomItemStack(CustomHead.getHead("ab93edba42c7bbfa94b12f89bd55d95862259cdb6293c83b90b931ae4d139088") ,getGradientName("Fish Bucket Map")),
                 new int[] {
                         4
                 });
-        blockMenuPreset.drawBackground(new CustomItemStack(new ItemStack(Material.RED_STAINED_GLASS_PANE),"§c未发电"),
+        blockMenuPreset.drawBackground(new CustomItemStack(new ItemStack(Material.RED_STAINED_GLASS_PANE),"Fish Bucket Map"),
                 new int[] {
                         40
                 });
@@ -153,7 +153,7 @@ public class FishEnergyGenerator extends MenuBlock implements EnergyNetProvider,
                 weightRarityName = pdc.get(FishKeys.FISH_WEIGHT_RARITY, PersistentDataType.STRING);
             }
 
-            // ✅ 核心逻辑：从映射表中查找该鱼的能量基础值
+            // ✅ 核心逻辑:从映射表中查找该鱼的能量基础值
             if (fishType != null && weight != 0.0 && weightRarityName != null) {
                 Integer basePower = FISH_POWER_MAP.get(fishType);
                 if (basePower != null) {
@@ -166,16 +166,16 @@ public class FishEnergyGenerator extends MenuBlock implements EnergyNetProvider,
             if (gen == 0) {
                 inv.replaceExistingItem(40, new CustomItemStack(
                         Material.LANTERN,
-                        getGradientName("未发电"),
-                        getGradientName("已储存: " + ChargeLore.format(getCharge(l)) + " J")
+                        getGradientName("Fish Bucket Map"),
+                        getGradientName("Stored: " + ChargeLore.format(getCharge(l)) + " J")
                 ));
             } else if (gen > 0) {
                 inv.replaceExistingItem(40, new CustomItemStack(
                         Material.SOUL_LANTERN,
-                        getGradientName("发电中"),
-                        getGradientName("类型: " + getPowerType()),
-                        getGradientName("发电速度: " + ChargeLore.formatEnergy(gen) + " J/s "),
-                        getGradientName("已储存: " + ChargeLore.format(getCharge(l)) + " J")
+                        getGradientName("Generating"),
+                        getGradientName("Type: " + getPowerType()),
+                        getGradientName("Generation Rate: " + ChargeLore.formatEnergy(gen) + " J/s "),
+                        getGradientName("Stored: " + ChargeLore.format(getCharge(l)) + " J")
                 ));
             }
         }
@@ -197,22 +197,22 @@ public class FishEnergyGenerator extends MenuBlock implements EnergyNetProvider,
     public @NotNull List<ItemStack> getDisplayRecipes() {
 
         List<ItemStack> display = new ArrayList<>();
-        display.add(new CustomItemStack(Material.KNOWLEDGE_BOOK, getGradientName("使用说明⇩"),getGradientName("请务必仔细阅读")));
-        display.add(new CustomItemStack(Material.BOOK, getGradientName("使用方法："),getGradientName("将电鳗放入到机器槽位中可进行发电")
-                ,getGradientName("电鳗的大小会影响发电量")
-                ,getGradientName("电鳗的稀有度也会影响发电量")));
-        display.add(new CustomItemStack(Material.KNOWLEDGE_BOOK, getGradientName("使用说明⇩"),getGradientName("请务必仔细阅读")));
-        display.add(new CustomItemStack(Material.BOOK, getGradientName("发电量算法："),getGradientName("每个机器只能放置一条电鳗")
-                ,getGradientName("发电量 = 电鳗重量 * "+"电鳗单位重量发电量"+" * 电鳗稀有程度")
-                ,getGradientName("普通/稀有/超级稀有 : 1/4/11")));
-        display.add(new CustomItemStack(Material.KNOWLEDGE_BOOK, getGradientName("使用说明⇩"),getGradientName("请务必仔细阅读")));
-        display.add(new CustomItemStack(Material.BOOK, getGradientName("发电机更新说明："),getGradientName("任何特殊魔法鱼都有可能能够发电")
-                ,getGradientName("发电量 = 鱼类重量*"+ " 鱼单位重量发电量 " +"*重量稀有等级")
-                ,getGradientName("普通/稀有/超级稀有 : 1/4/11")));
-        display.add(new CustomItemStack(CustomHead.getHead("26314d31b095e4d421760497be6a156f459d8c9957b7e6b1c12deb4e47860d71"),getGradientName("支持的鱼类 ⇨")));
-        display.add(new CustomItemStack(CustomHead.getHead("26314d31b095e4d421760497be6a156f459d8c9957b7e6b1c12deb4e47860d71"),getGradientName("支持的鱼类 ⇨")));
-//        display.add(new CustomItemStack(Material.TROPICAL_FISH_BUCKET,MYSTIC_EEL.getDisplayName(),getGradientName("每kg每秒发电量："+ChargeLore.formatEnergy(power)+" J")));
-//        display.add(new CustomItemStack(Material.COD_BUCKET,XueFish.getDisplayName(),getGradientName("每kg每秒发电量："+ChargeLore.formatEnergy(power2)+" J")));
+        display.add(new CustomItemStack(Material.KNOWLEDGE_BOOK, getGradientName("Instructions ⇩"),getGradientName("Please read carefully.")));
+        display.add(new CustomItemStack(Material.BOOK, getGradientName("Usage:"),getGradientName("to the machine slot")
+                ,getGradientName("The electric eel's size affects power generation.")
+                ,getGradientName("The electric eel's rarity also affects power generation.")));
+        display.add(new CustomItemStack(Material.KNOWLEDGE_BOOK, getGradientName("Instructions ⇩"),getGradientName("Please read carefully.")));
+        display.add(new CustomItemStack(Material.BOOK, getGradientName("Generation formula:"),getGradientName("Each machine can hold only one electric eel.")
+                ,getGradientName("Power = eel weight × power per weight unit × eel rarity")
+                ,getGradientName("Common / Rare / Super Rare: 1 / 4 / 11")));
+        display.add(new CustomItemStack(Material.KNOWLEDGE_BOOK, getGradientName("Instructions ⇩"),getGradientName("Please read carefully.")));
+        display.add(new CustomItemStack(Material.BOOK, getGradientName("Generator update notes:"),getGradientName("Any special Magic Fish may be able to generate power.")
+                ,getGradientName("Power = fish weight × "+ " power per unit weight " +"× weight rarity")
+                ,getGradientName("Common / Rare / Super Rare: 1 / 4 / 11")));
+        display.add(new CustomItemStack(CustomHead.getHead("26314d31b095e4d421760497be6a156f459d8c9957b7e6b1c12deb4e47860d71"),getGradientName("Used by the MagicExpansion fishing system.")));
+        display.add(new CustomItemStack(CustomHead.getHead("26314d31b095e4d421760497be6a156f459d8c9957b7e6b1c12deb4e47860d71"),getGradientName("Used by the MagicExpansion fishing system.")));
+//        display.add(new CustomItemStack(Material.TROPICAL_FISH_BUCKET,MYSTIC_EEL.getDisplayName(),getGradientName("每kg每秒发电量:"+ChargeLore.formatEnergy(power)+" J")));
+//        display.add(new CustomItemStack(Material.COD_BUCKET,XueFish.getDisplayName(),getGradientName("每kg每秒发电量:"+ChargeLore.formatEnergy(power2)+" J")));
         // ✅ 自动为所有在 FISH_POWER_MAP 中注册的鱼生成展示项
         for (Map.Entry<String, Integer> entry : FISH_POWER_MAP.entrySet()) {
 
@@ -227,7 +227,7 @@ public class FishEnergyGenerator extends MenuBlock implements EnergyNetProvider,
                 case RARE -> Material.PUFFERFISH_BUCKET;  // 稀有 - 河豚
                 case EPIC -> Material.TROPICAL_FISH_BUCKET;     // 史诗 - 热带鱼
                 case LEGENDARY -> Material.AXOLOTL_BUCKET;   // 传说 - 用美西螈
-                case MYTHICAL -> Material.NETHER_STAR;       // 神话 - 下界之星（最稀有）
+                case MYTHICAL -> Material.NETHER_STAR;       // 神话 - 下界之星(最稀有)
                 default -> Material.COD_BUCKET;
             };
 
@@ -236,7 +236,7 @@ public class FishEnergyGenerator extends MenuBlock implements EnergyNetProvider,
             display.add(new CustomItemStack(
                     displayMaterial,
                     displayName,
-                    getGradientName("每kg每秒发电量：" + ChargeLore.formatEnergy(power) + " J")
+                    getGradientName("Energy per kg per second:" + ChargeLore.formatEnergy(power) + " J")
             ));
         }
 

@@ -11,9 +11,9 @@ import org.bukkit.block.Block;
 import org.bukkit.inventory.ItemStack;
 
 public abstract class AbstractTickingContainer extends AbstractContainer {
-    
+
     protected AbstractTickingContainer(ItemGroup itemGroup, SlimefunItemStack item , RecipeType recipeType, ItemStack[] recipe) {
-        super(itemGroup, item, recipeType, recipe); 
+        super(itemGroup, item, recipeType, recipe);
     }
 
     @Override
@@ -34,10 +34,10 @@ public abstract class AbstractTickingContainer extends AbstractContainer {
                 }
             }
 
-        }); 
+        });
     }
-    
-    protected abstract void tick(BlockMenu menu, Block b); 
+
+    protected abstract void tick(BlockMenu menu, Block b);
 
     protected boolean isSynchronized() {
         return false;

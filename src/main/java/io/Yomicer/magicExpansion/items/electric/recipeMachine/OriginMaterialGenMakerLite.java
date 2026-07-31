@@ -15,7 +15,7 @@ import me.mrCookieSlime.CSCoreLibPlugin.general.Inventory.ClickAction;
 import me.mrCookieSlime.Slimefun.Objects.SlimefunItem.abstractItems.MachineRecipe;
 import me.mrCookieSlime.Slimefun.api.inventory.BlockMenu;
 import me.mrCookieSlime.Slimefun.api.inventory.BlockMenuPreset;
-import net.guizhanss.guizhanlib.minecraft.helper.inventory.ItemStackHelper;
+import io.Yomicer.magicExpansion.utils.compat.ItemStackHelper;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.block.Block;
@@ -50,7 +50,7 @@ public class OriginMaterialGenMakerLite extends AbstractElectricRecipeMachine {
     private static final int[] BACKGROUND_SLOTS = new int[] { 49 };
 
     private static final ItemStack PROGRESS_ITEM = new ItemStack(Material.SOUL_LANTERN);
-    private static final ItemStack PROGRESS_STACK = new CustomItemStack(Material.SOUL_CAMPFIRE, getGradientName("信息"), getGradientName("类型：资源生成器"), getGradientName("所属附属：魔法"));
+    private static final ItemStack PROGRESS_STACK = new CustomItemStack(Material.SOUL_CAMPFIRE, getGradientName("Information"), getGradientName("type:"), getGradientName("Addon: MagicExpansion"));
 
     public OriginMaterialGenMakerLite(ItemGroup itemGroup, SlimefunItemStack item, RecipeType recipeType, ItemStack[] recipe) {
         super(itemGroup, item, recipeType, recipe);
@@ -60,8 +60,8 @@ public class OriginMaterialGenMakerLite extends AbstractElectricRecipeMachine {
     @Override
     public List<ItemStack> getDisplayRecipes() {
         List<ItemStack> display = new ArrayList<>();
-        display.add(new CustomItemStack(Material.KNOWLEDGE_BOOK, getGradientName("材料⇨"),getGradientName("中间分割线用于分割各个配方")));
-        display.add(new CustomItemStack(Material.KNOWLEDGE_BOOK, getGradientName("产物⇨"),getGradientName("中间分割线用于分割各个配方")));
+        display.add(new CustomItemStack(Material.KNOWLEDGE_BOOK, getGradientName("Input Materials ⇩"),getGradientName("recipe")));
+        display.add(new CustomItemStack(Material.KNOWLEDGE_BOOK, getGradientName("Output Items ⇩"),getGradientName("recipe")));
         // 遍历所有配方并动态生成展示内容
         for (MachineRecipe recipe : recipes) {
             ItemStack[] inputs = recipe.getInput();
@@ -71,19 +71,19 @@ public class OriginMaterialGenMakerLite extends AbstractElectricRecipeMachine {
             int maxItems = Math.max(inputs.length, outputs.length);
             for (int i = 0; i < maxItems; i++) {
                 if (i < inputs.length) {
-                    display.add(addLore(inputs[i], "§7生产时间: §e" + productionTime + " 秒"));
+                    display.add(addLore(inputs[i], "§7Processing Time: §e" + productionTime + " seconds"));
                 } else {
                     display.add(new ItemStack(Material.AIR));
                 }
 
                 if (i < outputs.length) {
-                    display.add(addLore(outputs[i], "§7生产时间: §e" + productionTime + " 秒"));
+                    display.add(addLore(outputs[i], "§7Processing Time: §e" + productionTime + " seconds"));
                 } else {
                     display.add(new ItemStack(Material.AIR));
                 }
             }
-            display.add(new CustomItemStack(Material.PINK_STAINED_GLASS_PANE, getGradientName("<== 配方分割线 =>>"),getGradientName("<== 输入材料 =>>")));
-            display.add(new CustomItemStack(Material.PINK_STAINED_GLASS_PANE, getGradientName("<== 配方分割线 =>>"),getGradientName("<== 输出材料 =>>")));
+            display.add(new CustomItemStack(Material.PINK_STAINED_GLASS_PANE, getGradientName("Recipe"),getGradientName("Input Materials")));
+            display.add(new CustomItemStack(Material.PINK_STAINED_GLASS_PANE, getGradientName("Recipe"),getGradientName("Output Items")));
         }
         return display;
     }
@@ -128,7 +128,7 @@ public class OriginMaterialGenMakerLite extends AbstractElectricRecipeMachine {
                 return null;
             }
 
-            // 【核心修改】调用生成 Lite 版本的方法
+            // [核心修改]调用生成 Lite 版本的方法
             ItemStack[] outputs = new ItemStack[]{OriginMaterialGenLite(item)};
 
             if (found.size() == recipe.getInput().length) {
@@ -157,12 +157,12 @@ public class OriginMaterialGenMakerLite extends AbstractElectricRecipeMachine {
     }
 
     /**
-     * 【核心修改】生成 OriginMaterialGenLite 物品并写入 NBT
+     * [核心修改]生成 OriginMaterialGenLite 物品并写入 NBT
      */
     private ItemStack OriginMaterialGenLite(ItemStack item) {
 
         String n = ItemStackHelper.getName(item);
-        // 注意：这里建议使用 ORIGIN_MATERIAL_GEN_LITE，如果你没有定义这个常量，可以先用 ORIGIN_MATERIAL_GEN 代替，或者在显示名称里修改
+        // 注意:这里建议使用 ORIGIN_MATERIAL_GEN_LITE,如果你没有定义这个常量,可以先用 ORIGIN_MATERIAL_GEN 代替,或者在显示名称里修改
         ItemStack itemOutput = ORIGIN_MATERIAL_GEN_LITE.clone();
         ItemMeta meta = itemOutput.getItemMeta();
         if (meta != null) {
@@ -172,11 +172,11 @@ public class OriginMaterialGenMakerLite extends AbstractElectricRecipeMachine {
             if (lore == null) {
                 lore = new ArrayList<>();
             }
-            lore.add(getGradientNameVer2( "当前推演物品：" + n));
+            lore.add(getGradientNameVer2("Current Item: " + n));
             meta.setLore(lore);
 
             NamespacedKey key = new NamespacedKey(MagicExpansion.getInstance(), "origin_material");
-            // 写入 NBT，机器识别这个 key 来决定产出
+            // 写入 NBT,机器识别这个 key 来决定产出
             meta.getPersistentDataContainer().set(key, PersistentDataType.STRING, item.getType().name());
             itemOutput.setItemMeta(meta);
         }
@@ -184,7 +184,7 @@ public class OriginMaterialGenMakerLite extends AbstractElectricRecipeMachine {
     }
 
     /**
-     * 为物品添加描述（lore）
+     * 为物品添加描述(lore)
      */
     private ItemStack addLore(ItemStack item, String loreText) {
         ItemStack newItem = item.clone();
@@ -204,10 +204,10 @@ public class OriginMaterialGenMakerLite extends AbstractElectricRecipeMachine {
     protected void setupMenu(BlockMenuPreset preset) {
 
         preset.drawBackground(new CustomItemStack(Material.PINK_STAINED_GLASS_PANE," "), BACKGROUND_SLOTS);
-        preset.drawBackground(new CustomItemStack(Material.LIGHT_BLUE_STAINED_GLASS_PANE,getGradientName("←输入槽")), INPUT_BORDER_SLOTS);
-        preset.drawBackground(new CustomItemStack(Material.LIME_STAINED_GLASS_PANE,getGradientName("输出槽→")), OUTPUT_BORDER_SLOTS);
+        preset.drawBackground(new CustomItemStack(Material.LIGHT_BLUE_STAINED_GLASS_PANE,getGradientName("←Input Slots")), INPUT_BORDER_SLOTS);
+        preset.drawBackground(new CustomItemStack(Material.LIME_STAINED_GLASS_PANE,getGradientName("Output Slots →")), OUTPUT_BORDER_SLOTS);
 
-        preset.drawBackground(new CustomItemStack(Material.YELLOW_STAINED_GLASS_PANE,getGradientName("原始物品注入槽")), ORIGIN_MATERIAL_BORDER_SLOTS);
+        preset.drawBackground(new CustomItemStack(Material.YELLOW_STAINED_GLASS_PANE,getGradientName("item")), ORIGIN_MATERIAL_BORDER_SLOTS);
 
         preset.addItem(getProgressSlot(), new CustomItemStack(Material.PINK_STAINED_GLASS_PANE, " "), ChestMenuUtils.getEmptyClickHandler());
 

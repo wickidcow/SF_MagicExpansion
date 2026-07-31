@@ -23,7 +23,7 @@ import me.mrCookieSlime.Slimefun.api.BlockStorage;
 import me.mrCookieSlime.Slimefun.api.inventory.BlockMenu;
 import me.mrCookieSlime.Slimefun.api.inventory.BlockMenuPreset;
 import me.mrCookieSlime.Slimefun.api.item_transport.ItemTransportFlow;
-import net.guizhanss.guizhanlib.minecraft.helper.inventory.ItemStackHelper;
+import io.Yomicer.magicExpansion.utils.compat.ItemStackHelper;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.ArmorStand;
@@ -74,7 +74,7 @@ public class DrawMachine extends SlimefunItem implements EnergyNetComponent {
     public DrawMachine(ItemGroup category, SlimefunItemStack item, RecipeType recipeType, ItemStack[] recipe) {
         super(category, item, recipeType, recipe);
 
-        constructMenu("抽奖机");
+        constructMenu("Lottery Machine");
         addItemHandler(onBlockPlace(), onBlockBreak());
     }
 
@@ -88,7 +88,7 @@ public class DrawMachine extends SlimefunItem implements EnergyNetComponent {
 
             @Override
             public boolean isSynchronized() {
-                return true; // 改为同步，避免异步问题
+                return true; // 改为同步,避免异步问题
             }
         });
     }
@@ -121,7 +121,7 @@ public class DrawMachine extends SlimefunItem implements EnergyNetComponent {
                         }
                     }
 
-                    // 掉落模板物品，数量为存储的数量 - 修改为分批掉落
+                    // 掉落模板物品,数量为存储的数量 - 修改为分批掉落
                     int storedAmount = getStoredTemplateAmount(b.getLocation());
                     if (storedAmount > 0) {
                         ItemStack originalItem = getStoredTemplateItemData(b);
@@ -152,7 +152,7 @@ public class DrawMachine extends SlimefunItem implements EnergyNetComponent {
         int maxDropSize = 64; // 单次最大掉落数量
 
         while (totalAmount > 0) {
-            // 创建一个新的物品副本，设置当前批次的数量
+            // 创建一个新的物品副本,设置当前批次的数量
             ItemStack dropItem = templateItem.clone();
             int currentBatchSize = Math.min(totalAmount, maxDropSize);
             dropItem.setAmount(currentBatchSize);
@@ -183,7 +183,7 @@ public class DrawMachine extends SlimefunItem implements EnergyNetComponent {
         updateHologram(block);
     }
 
-    public static final String HOLOGRAM_PREFIX = "§d抽奖机 §3显示 - §e";
+    public static final String HOLOGRAM_PREFIX = "§dLottery Machine §3Display - §e";
     // 创建悬浮物 - 修改为创建物品实体和文字显示
     private void createHologram(Block block) {
 
@@ -227,9 +227,9 @@ public class DrawMachine extends SlimefunItem implements EnergyNetComponent {
 //        displayItem.setMetadata("draw-machine-hologram", new org.bukkit.metadata.FixedMetadataValue(MagicExpansion.getInstance(), true));
 
         // 创建三行文字显示的盔甲架
-        ArmorStand line1 = createTextArmorStand(line1Loc, "§c未设置模板");
-        ArmorStand line2 = createTextArmorStand(line2Loc, "§7请先设置抽奖货币");
-        ArmorStand line3 = createTextArmorStand(line3Loc, "§7奖池剩余: 0个");
+        ArmorStand line1 = createTextArmorStand(line1Loc, "§cNo template set");
+        ArmorStand line2 = createTextArmorStand(line2Loc, "§7Set the lottery currency first.");
+        ArmorStand line3 = createTextArmorStand(line3Loc, "§7Rewards remaining: 0");
 
 //        itemDisplayMap.put(block.getLocation(), displayItem);
         textDisplayMap.put(block.getLocation(), line1); // 主文本存储
@@ -317,9 +317,9 @@ public class DrawMachine extends SlimefunItem implements EnergyNetComponent {
 
             // 更新三行文字显示
 //            textEntity.setCustomName("§a每次抽奖所需: "+ itemName + "§r§b x " + requiredAmount);
-            if (line1 != null) line1.setCustomName("§a每次抽奖所需: " + itemName + " §b x " + requiredAmount);
-            if (line2 != null) line2.setCustomName("§b抽奖机内已收集货币: " + storedAmount + "个");
-            if (line3 != null) line3.setCustomName("§d奖池奖品剩余: " + totalRewards + "个");
+            if (line1 != null) line1.setCustomName("§aCost per draw: " + itemName + " §b x " + requiredAmount);
+            if (line2 != null) line2.setCustomName("§bCurrency stored in machine: " + storedAmount + "");
+            if (line3 != null) line3.setCustomName("§dRewards remaining: " + totalRewards + "");
         } else {
             // 更新物品显示为屏障
             if (itemEntity instanceof Item) {
@@ -329,9 +329,9 @@ public class DrawMachine extends SlimefunItem implements EnergyNetComponent {
 
             // 更新三行文字显示
 //            textEntity.setCustomName("§c未设置模板");
-            if (line1 != null) line1.setCustomName("§c未设置模板");
-            if (line2 != null) line2.setCustomName("§7请先设置抽奖货币");
-            if (line3 != null) line3.setCustomName("§7奖池剩余: " + totalRewards + "个");
+            if (line1 != null) line1.setCustomName("§cNo template set");
+            if (line2 != null) line2.setCustomName("§7Set the lottery currency first.");
+            if (line3 != null) line3.setCustomName("§7Rewards remaining: " + totalRewards + "");
         }
     }
 
@@ -439,7 +439,7 @@ public class DrawMachine extends SlimefunItem implements EnergyNetComponent {
         BlockStorage.addBlockInfo(block, "templateAmount", String.valueOf(Math.max(0, amount)));
     }
 
-    // 存储原始物品数据到BlockStorage（使用完整的序列化方法）
+    // 存储原始物品数据到BlockStorage(使用完整的序列化方法)
     private void storeTemplateItemData(Block block, ItemStack item) {
         String serializedItem = itemToBase64(item);
         if (serializedItem != null) {
@@ -447,7 +447,7 @@ public class DrawMachine extends SlimefunItem implements EnergyNetComponent {
         }
     }
 
-    // 从BlockStorage获取原始物品数据（使用完整的反序列化方法）
+    // 从BlockStorage获取原始物品数据(使用完整的反序列化方法)
     private ItemStack getStoredTemplateItemData(Block block) {
         String serializedItem = BlockStorage.getLocationInfo(block.getLocation(), "templateItemData");
         if (serializedItem == null || serializedItem.isEmpty()) {
@@ -458,7 +458,7 @@ public class DrawMachine extends SlimefunItem implements EnergyNetComponent {
 
     // 获取物品显示名称
     private String getItemDisplayName(ItemStack item) {
-        if (item == null) return "未知物品";
+        if (item == null) return "Unknown Item";
 
         if (item.hasItemMeta() && item.getItemMeta().hasDisplayName()) {
             return item.getItemMeta().getDisplayName();
@@ -512,16 +512,16 @@ public class DrawMachine extends SlimefunItem implements EnergyNetComponent {
 
         // 添加分隔线和数量显示
         lore.add("");
-        lore.add("§7每次抽奖需要: §e" + requiredAmount + " 个");
-        lore.add("§7当前存储数量: §e" + storedAmount + " 个");
-        lore.add("§7奖池剩余数量: §e" + totalRewards + " 个");
+        lore.add("§7Required per draw: §e" + requiredAmount + " items");
+        lore.add("§7Currently stored: §e" + storedAmount + " items");
+        lore.add("§7Rewards remaining: §e" + totalRewards + " items");
         lore.add("");
-        lore.add("§e左键点击: §7设置模板物品");
-        lore.add("§eShift+左键: §7" + (isAutoOutput ? "关闭" : "开启") + "自动输出");
-        lore.add("§e右键点击: §7提取一组物品");
-        lore.add("§eShift+右键: §7填满背包");
+        lore.add("§eLeft-click: §7Set template item");
+        lore.add("§eShift-left-click: §7" + (isAutoOutput ? "Disabled" : "Enabled") + "Automatic Output");
+        lore.add("§eRight-click: §7Withdraw one stack");
+        lore.add("§eShift-right-click: §7Fill inventory");
         lore.add("");
-        lore.add("§c自动输出: " + (isAutoOutput ? "§a开启" : "§7关闭"));
+        lore.add("§cAutomatic Output: " + (isAutoOutput ? "§aEnabled" : "§7Disabled"));
 
         meta.setLore(lore);
         displayItem.setItemMeta(meta);
@@ -621,13 +621,13 @@ public class DrawMachine extends SlimefunItem implements EnergyNetComponent {
             autoOutputMap.put(loc, !currentState);
 
             if (!currentState) {
-                player.sendMessage(ChatColor.GREEN + "已开启自动输出模式！");
+                player.sendMessage(ChatColor.GREEN + "Automatic output enabled!");
             } else {
-                player.sendMessage(ChatColor.YELLOW + "已关闭自动输出模式！");
+                player.sendMessage(ChatColor.YELLOW + "Automatic output disabled!");
             }
             updateMenu(menu, targetBlock);
         }
-        // 普通左键点击 - 设置模板（只有当存储数量为0时才能重新设置）
+        // 普通左键点击 - 设置模板(只有当存储数量为0时才能重新设置)
         else if (!action.isRightClicked() && !action.isShiftClicked()) {
             ItemStack cursorItem = player.getItemOnCursor();
             if (!cursorItem.getType().isAir() && (storedAmount == 0 || !isTemplateSet)) {
@@ -635,11 +635,11 @@ public class DrawMachine extends SlimefunItem implements EnergyNetComponent {
                 storeTemplateItemData(targetBlock, cursorItem);
                 // 初始化存储数量为0
                 setStoredTemplateAmount(targetBlock, 0);
-                player.sendMessage(ChatColor.GREEN + "已设置抽奖模板物品！");
+                player.sendMessage(ChatColor.GREEN + "Lottery template item set!");
                 updateMenu(menu, targetBlock);
                 updateHologram(targetBlock); // 更新悬浮物
             } else if (storedAmount > 0) {
-                player.sendMessage(ChatColor.RED + "请先取出所有模板物品后才能重新设置模板！");
+                player.sendMessage(ChatColor.RED + "Remove all template items before setting a new template!");
             }
         }
         // 右键点击 - 提取物品
@@ -657,12 +657,12 @@ public class DrawMachine extends SlimefunItem implements EnergyNetComponent {
                 updateMenu(menu, targetBlock);
                 updateHologram(targetBlock); // 更新悬浮物
             } else if (originalItem != null && storedAmount == 0) {
-                player.sendMessage(ChatColor.RED + "模板中没有物品可提取！");
+                player.sendMessage(ChatColor.RED + "There are no template items to withdraw!");
             }
         }
     }
 
-    // 提取一组物品（最多64个）
+    // 提取一组物品(最多64个)
     private void extractOneStack(Player player, ItemStack templateItem, Block block, BlockMenu menu) {
         int storedAmount = getStoredTemplateAmount(block.getLocation());
         int maxStackSize = templateItem.getMaxStackSize();
@@ -671,7 +671,7 @@ public class DrawMachine extends SlimefunItem implements EnergyNetComponent {
         // 计算玩家背包能容纳的数量
         int playerCanTake = getMaxCanTake(player, templateItem);
         if (playerCanTake <= 0) {
-            player.sendMessage(ChatColor.RED + "背包已满，无法取出物品！");
+            player.sendMessage(ChatColor.RED + "Your inventory is full; the item could not be withdrawn!");
             return;
         }
 
@@ -684,15 +684,15 @@ public class DrawMachine extends SlimefunItem implements EnergyNetComponent {
         if (leftover.isEmpty()) {
             // 成功取出
             setStoredTemplateAmount(block, storedAmount - actualTake);
-            player.sendMessage(ChatColor.GREEN + "已取出 " + actualTake + " 个模板物品！");
+            player.sendMessage(ChatColor.GREEN + "Withdrew " + actualTake + " template items!");
         } else {
             // 部分取出
             int actuallyTaken = actualTake - leftover.get(0).getAmount();
             if (actuallyTaken > 0) {
                 setStoredTemplateAmount(block, storedAmount - actuallyTaken);
-                player.sendMessage(ChatColor.YELLOW + "已取出 " + actuallyTaken + " 个模板物品（背包已满）！");
+                player.sendMessage(ChatColor.YELLOW + "Withdrew " + actuallyTaken + " template items before the inventory became full!");
             } else {
-                player.sendMessage(ChatColor.RED + "背包已满，无法取出物品！");
+                player.sendMessage(ChatColor.RED + "Your inventory is full; the item could not be withdrawn!");
             }
         }
     }
@@ -701,7 +701,7 @@ public class DrawMachine extends SlimefunItem implements EnergyNetComponent {
     private void fillPlayerInventory(Player player, ItemStack templateItem, Block block, BlockMenu menu) {
         int storedAmount = getStoredTemplateAmount(block.getLocation());
         if (storedAmount <= 0) {
-            player.sendMessage(ChatColor.RED + "模板中没有物品可提取！");
+            player.sendMessage(ChatColor.RED + "There are no template items to withdraw!");
             return;
         }
 
@@ -731,9 +731,9 @@ public class DrawMachine extends SlimefunItem implements EnergyNetComponent {
 
         if (totalTaken > 0) {
             setStoredTemplateAmount(block, storedAmount);
-            player.sendMessage(ChatColor.GREEN + "已取出 " + totalTaken + " 个模板物品！");
+            player.sendMessage(ChatColor.GREEN + "Withdrew " + totalTaken + " template items!");
         } else {
-            player.sendMessage(ChatColor.RED + "背包已满，无法取出物品！");
+            player.sendMessage(ChatColor.RED + "Your inventory is full; the item could not be withdrawn!");
         }
     }
 
@@ -746,7 +746,7 @@ public class DrawMachine extends SlimefunItem implements EnergyNetComponent {
             return;
         }
 
-        // 如果输出槽位为空，直接放入
+        // 如果输出槽位为空,直接放入
         if (outputItem == null || outputItem.getType() == Material.AIR) {
             int toOutputAmount = Math.min(storedAmount, templateItem.getMaxStackSize());
             ItemStack toOutput = templateItem.clone();
@@ -757,7 +757,7 @@ public class DrawMachine extends SlimefunItem implements EnergyNetComponent {
             setStoredTemplateAmount(block, storedAmount - toOutputAmount);
             updateHologram(block); // 更新悬浮物
         }
-        // 如果输出槽位已经有相同物品，尝试叠加
+        // 如果输出槽位已经有相同物品,尝试叠加
         else if (outputItem.isSimilar(templateItem)) {
             int maxStackSize = outputItem.getMaxStackSize();
             int currentAmount = outputItem.getAmount();
@@ -772,9 +772,9 @@ public class DrawMachine extends SlimefunItem implements EnergyNetComponent {
                 setStoredTemplateAmount(block, storedAmount - toAdd);
                 updateHologram(block); // 更新悬浮物
             }
-            // 如果输出槽位已满，不做任何操作
+            // 如果输出槽位已满,不做任何操作
         }
-        // 如果输出槽位有不同物品，不做任何操作
+        // 如果输出槽位有不同物品,不做任何操作
     }
 
     // 计算玩家背包能容纳指定物品的最大数量
@@ -805,26 +805,26 @@ public class DrawMachine extends SlimefunItem implements EnergyNetComponent {
         // 左键点击 - 设置数量
         if (!action.isRightClicked()) {
             player.closeInventory(); // 关闭当前容器
-            player.sendMessage(ChatColor.YELLOW + "请在聊天框中输入每次抽奖需要的物品数量（≥1的整数）：");
+            player.sendMessage(ChatColor.YELLOW + "Enter the number of items required per draw in chat (integer ≥ 1):");
 
             ChatInput.waitForPlayer(Slimefun.instance(), player, message -> {
                 try {
                     int amount = Integer.parseInt(message);
                     if (amount < 1) {
-                        player.sendMessage(ChatColor.RED + "数量必须大于等于1！已设置为默认值1。");
+                        player.sendMessage(ChatColor.RED + "The amount must be at least 1. It was reset to the default of 1.");
                         amount = 1; // 强制设置为1
                     }
 
                     BlockStorage.addBlockInfo(menu.getBlock(), "requiredAmount", String.valueOf(amount));
                     updateMenu(menu, menu.getBlock());
-                    player.sendMessage(ChatColor.GREEN + "已设置每次抽奖需要物品数量为：" + amount);
+                    player.sendMessage(ChatColor.GREEN + "Required items per draw set to: " + amount);
 
                     // 重新打开菜单
                     Bukkit.getScheduler().runTask(Slimefun.instance(), () -> {
                         menu.open(player);
                     });
                 } catch (NumberFormatException e) {
-                    player.sendMessage(ChatColor.RED + "请输入有效的整数！已设置为默认值1。");
+                    player.sendMessage(ChatColor.RED + "Enter a valid integer. It was reset to the default of 1.");
                     BlockStorage.addBlockInfo(menu.getBlock(), "requiredAmount", "1");
                     updateMenu(menu, menu.getBlock());
 
@@ -839,7 +839,7 @@ public class DrawMachine extends SlimefunItem implements EnergyNetComponent {
         else if (action.isRightClicked()) {
             BlockStorage.addBlockInfo(menu.getBlock(), "requiredAmount", "1");
             updateMenu(menu, menu.getBlock());
-            player.sendMessage(ChatColor.GREEN + "已恢复默认数量：1");
+            player.sendMessage(ChatColor.GREEN + "Restored the default amount: 1");
         }
     }
 
@@ -852,11 +852,11 @@ public class DrawMachine extends SlimefunItem implements EnergyNetComponent {
         // 更新设置按钮显示
         menu.replaceExistingItem(SETTINGS_SLOT, new CustomItemStack(
                 Material.COMPARATOR,
-                "§6抽奖设置",
-                "§e左键点击: §7设置每次抽奖需要的物品数量",
-                "§e右键点击: §7恢复默认数量 (1)",
+                "§6Lottery Settings",
+                "§eLeft-click: §7Set the required amount per draw",
+                "§eRight-click: §7Restore default amount (1)",
                 "",
-                "§a当前设置: §e" + requiredAmount + " 个物品/次"
+                "§aCurrent setting: §e" + requiredAmount + " items per draw"
         ));
 
         // 更新模板槽位显示
@@ -866,22 +866,22 @@ public class DrawMachine extends SlimefunItem implements EnergyNetComponent {
 
         if (originalTemplateItem == null) {
             List<String> lore = new ArrayList<>();
-            lore.add("§7放入需要检测的物品作为模板");
+            lore.add("§7Insert the item to use as the detection template.");
             lore.add("");
-            lore.add("§e左键点击: §7设置模板物品");
-            lore.add("§eShift+左键: §7" + (isAutoOutput ? "关闭" : "开启") + "自动输出");
-            lore.add("§e右键点击: §7提取一组物品");
-            lore.add("§eShift+右键: §7填满背包");
+            lore.add("§eLeft-click: §7Set template item");
+            lore.add("§eShift-left-click: §7" + (isAutoOutput ? "Disabled" : "Enabled") + "Automatic Output");
+            lore.add("§eRight-click: §7Withdraw one stack");
+            lore.add("§eShift-right-click: §7Fill inventory");
             lore.add("");
-            lore.add("§c自动输出: " + (isAutoOutput ? "§a开启" : "§7关闭"));
+            lore.add("§cAutomatic Output: " + (isAutoOutput ? "§aEnabled" : "§7Disabled"));
 
             menu.replaceExistingItem(TEMPLATE_SLOT, new CustomItemStack(
                     Material.BARRIER,
-                    "§c抽奖模板物品",
+                    "§cLottery Template Item",
                     lore.toArray(new String[0])
             ));
         } else {
-            // 创建显示物品（带有操作提示）
+            // 创建显示物品(带有操作提示)
             ItemStack displayItem = createTemplateDisplayItem(originalTemplateItem, storedAmount, isAutoOutput, menu.getBlock());
             menu.replaceExistingItem(TEMPLATE_SLOT, displayItem);
         }
@@ -900,16 +900,16 @@ public class DrawMachine extends SlimefunItem implements EnergyNetComponent {
         int storedAmount = getStoredTemplateAmount(block.getLocation());
         boolean isAutoOutput = autoOutputMap.getOrDefault(menu.getLocation(), false);
 
-        // 第一行：模板物品名称和需要的数量
+        // 第一行:模板物品名称和需要的数量
         String templateInfo;
         if (originalTemplateItem != null) {
             String itemName = getItemDisplayName(originalTemplateItem);
-            templateInfo = "§a模板: §e" + itemName + " §a需要: §e" + requiredAmount + "个";
+            templateInfo = "§aTemplate: §e" + itemName + " §aRequired: §e" + requiredAmount + "";
         } else {
-            templateInfo = "§c未设置模板物品";
+            templateInfo = "§cNo template item set";
         }
 
-        // 第二行：当前奖品剩余数量
+        // 第二行:当前奖品剩余数量
         int totalRewards = 0;
         for (int slot : REWARD_SLOTS) {
             ItemStack reward = menu.getItemInSlot(slot);
@@ -917,36 +917,36 @@ public class DrawMachine extends SlimefunItem implements EnergyNetComponent {
                 totalRewards += reward.getAmount();
             }
         }
-        String rewardInfo = "§b剩余奖品: §e" + totalRewards + "个";
+        String rewardInfo = "§bRewards remaining: §e" + totalRewards + "";
 
         // 自动输出状态
-        String autoOutputInfo = "§6自动输出: " + (isAutoOutput ? "§a开启" : "§7关闭");
+        String autoOutputInfo = "§6Automatic Output: " + (isAutoOutput ? "§aEnabled" : "§7Disabled");
 
         // 更新信息显示
         List<String> lore = new ArrayList<>();
-        lore.add("§6§l抽奖机信息");
+        lore.add("§6§lLottery Machine Information");
         lore.add("");
 
         if (originalTemplateItem != null) {
             String itemName = getItemDisplayName(originalTemplateItem);
-            lore.add("§a模板物品: §e" + itemName);
-            lore.add("§a存储数量: §e" + storedAmount);
+            lore.add("§aTemplate Item: §e" + itemName);
+            lore.add("§aStored Amount: §e" + storedAmount);
         } else {
-            lore.add("§c未设置模板物品");
+            lore.add("§cNo template item set");
         }
 
-        lore.add("§a每次抽奖需要: §e" + requiredAmount + " 个物品");
+        lore.add("§aRequired per Draw: §e" + requiredAmount + " items");
         lore.add("");
         lore.add(templateInfo);
         lore.add(rewardInfo);
         lore.add(autoOutputInfo);
         lore.add("");
-        lore.add("§7检测范围: §b5格半径");
-        lore.add("§7奖励槽位: §e" + REWARD_SLOTS.length + " 个");
+        lore.add("§7Detection Range: §b5-block radius");
+        lore.add("§7Reward Slots: §e" + REWARD_SLOTS.length + " items");
 
         menu.replaceExistingItem(INFO_SLOT, new CustomItemStack(
                 Material.GHAST_TEAR,
-                "§a※※※ 抽奖机信息 ※※※",
+                "§a※※※ Lottery Machine Information ※※※",
                 lore.toArray(new String[0])
         ));
     }
@@ -977,7 +977,7 @@ public class DrawMachine extends SlimefunItem implements EnergyNetComponent {
             }
         }
 
-        // 如果没有奖品，直接返回
+        // 如果没有奖品,直接返回
         if (totalRewards <= 0) {
             return;
         }
@@ -987,7 +987,7 @@ public class DrawMachine extends SlimefunItem implements EnergyNetComponent {
         int totalFound = 0;
         List<Item> matchedItems = new ArrayList<>();
 
-        // 由于现在tick是同步的，可以直接调用getNearbyEntities
+        // 由于现在tick是同步的,可以直接调用getNearbyEntities
         for (Entity entity : block.getWorld().getNearbyEntities(center, 5, 5, 5)) {
             if (!(entity instanceof Item)) continue;
 
@@ -1000,7 +1000,7 @@ public class DrawMachine extends SlimefunItem implements EnergyNetComponent {
             }
 
             ItemStack itemStack = item.getItemStack();
-            // 使用原始物品数据进行比较，忽略数量
+            // 使用原始物品数据进行比较,忽略数量
             if (isSimilarSafe(itemStack, originalTemplateItem)) {
                 totalFound += itemStack.getAmount();
                 matchedItems.add(item);
@@ -1009,7 +1009,7 @@ public class DrawMachine extends SlimefunItem implements EnergyNetComponent {
 
         // 检查数量是否足够
         if (totalFound >= requiredAmount) {
-            // 计算最大可抽奖次数（考虑奖品数量和货币数量）
+            // 计算最大可抽奖次数(考虑奖品数量和货币数量)
             int maxPossibleByCurrency = totalFound / requiredAmount; // 基于货币的最大次数
             int maxPossibleByRewards = totalRewards; // 基于奖品的最大次数
             int multiplier = Math.min(maxPossibleByCurrency, maxPossibleByRewards);
@@ -1020,7 +1020,7 @@ public class DrawMachine extends SlimefunItem implements EnergyNetComponent {
             // 检查存储数量是否会超过上限
             int currentStoredAmount = getStoredTemplateAmount(block.getLocation());
             if (currentStoredAmount > Integer.MAX_VALUE - itemsToCollect) {
-                // 如果会超过上限，取消这次抽奖
+                // 如果会超过上限,取消这次抽奖
                 return;
             }
 
@@ -1028,7 +1028,7 @@ public class DrawMachine extends SlimefunItem implements EnergyNetComponent {
             int collected = collectItems(matchedItems, itemsToCollect);
 
             if (collected > 0) {
-                // 再次检查存储数量上限（防止并发问题）
+                // 再次检查存储数量上限(防止并发问题)
                 if (currentStoredAmount > Integer.MAX_VALUE - collected) {
                     return;
                 }
@@ -1105,7 +1105,7 @@ public class DrawMachine extends SlimefunItem implements EnergyNetComponent {
         int selectedSlot = availableSlots.get(random.nextInt(availableSlots.size()));
         ItemStack rewardItem = menu.getItemInSlot(selectedSlot).clone();
 
-        // 设置为1个，避免喷出整组
+        // 设置为1个,避免喷出整组
         rewardItem.setAmount(1);
 
         // 从菜单中移除该物品
@@ -1121,7 +1121,7 @@ public class DrawMachine extends SlimefunItem implements EnergyNetComponent {
         Location dropLocation = block.getLocation().add(0.5, 1, 0.5);
         Item droppedItem = block.getWorld().dropItem(dropLocation, rewardItem);
 
-        // 给物品一个随机的速度，使其看起来像是喷出来的
+        // 给物品一个随机的速度,使其看起来像是喷出来的
         double x = (random.nextDouble() - 0.5) * 0.5;
         double y = random.nextDouble() * 0.8 + 0.3;
         double z = (random.nextDouble() - 0.5) * 0.5;
@@ -1169,7 +1169,7 @@ public class DrawMachine extends SlimefunItem implements EnergyNetComponent {
     // 以下是您提供的物品序列化方法
     /**
      * ✅ 将 ItemStack 完整序列化为 Base64 字符串
-     * 支持：PDC、附魔、lore、自定义模型、Slimefun物品、NBT等所有数据
+     * 支持:PDC、附魔、lore、自定义模型、Slimefun物品、NBT等所有数据
      */
     private String itemToBase64(ItemStack item) {
         if (item == null || item.getType() == Material.AIR) {
@@ -1187,7 +1187,7 @@ public class DrawMachine extends SlimefunItem implements EnergyNetComponent {
             return Base64.getEncoder().encodeToString(serializedBytes);
 
         } catch (java.io.IOException e) {
-            System.err.println("物品序列化失败: " + item.getType());
+            System.err.println("Item serialization failed: " + item.getType());
             e.printStackTrace();
             return null;
         }
@@ -1195,7 +1195,7 @@ public class DrawMachine extends SlimefunItem implements EnergyNetComponent {
 
     /**
      * ✅ 将 Base64 字符串反序列化为 ItemStack
-     * 完全还原原始物品（包括 PDC、附魔、数量、NBT 等）
+     * 完全还原原始物品(包括 PDC、附魔、数量、NBT 等)
      */
     private ItemStack itemFromBase64(String data) {
         if (data == null || data.trim().isEmpty()) {
@@ -1206,23 +1206,23 @@ public class DrawMachine extends SlimefunItem implements EnergyNetComponent {
              org.bukkit.util.io.BukkitObjectInputStream dataInput = new org.bukkit.util.io.BukkitObjectInputStream(inputStream)) {
 
             ItemStack item = (ItemStack) dataInput.readObject();
-            // 重要：强制刷新 ItemMeta 引用，防止 PDC 缓存问题
+            // 重要:强制刷新 ItemMeta 引用,防止 PDC 缓存问题
             if (item.hasItemMeta()) {
                 ItemMeta meta = item.getItemMeta();
-                item.setItemMeta(meta); // 重新设置，确保一致性
+                item.setItemMeta(meta); // 重新设置,确保一致性
             }
             return item;
 
         } catch (java.io.IOException | ClassNotFoundException e) {
-            System.err.println("物品反序列化失败");
+            System.err.println("Item deserialization failed.");
             e.printStackTrace();
             return null;
         }
     }
 
     /**
-     * ✅ 安全判断两个 ItemStack 是否"相同"（可用于堆叠判断）
-     * 使用 Bukkit 内建的 isSimilar 方法，并兼容 Slimefun 物品
+     * ✅ 安全判断两个 ItemStack 是否"Same"(可用于堆叠判断)
+     * 使用 Bukkit 内建的 isSimilar 方法,并兼容 Slimefun 物品
      */
     private boolean isSimilarSafe(ItemStack item1, ItemStack item2) {
         if (item1 == item2) return true;

@@ -32,12 +32,12 @@ public abstract class AbstractElectricRecipeMachine extends AbstractMachine impl
     private int processingSpeed = -1;
 
     protected AbstractElectricRecipeMachine(ItemGroup itemGroup, SlimefunItemStack item, RecipeType recipeType, ItemStack[] recipe) {
-        super(itemGroup, item, recipeType, recipe); 
+        super(itemGroup, item, recipeType, recipe);
     }
 
     @Override
     protected boolean checkCraftPreconditions(Block b) {
-        return takeCharge(b.getLocation()); 
+        return takeCharge(b.getLocation());
     }
 
     @Nonnull
@@ -47,13 +47,13 @@ public abstract class AbstractElectricRecipeMachine extends AbstractMachine impl
     }
 
     public int getCapacity() {
-        return energyCapacity; 
+        return energyCapacity;
     }
 
     public int getEnergyConsumption() {
         return energyConsumedPerTick;
     }
-    
+
     public int getSpeed() {
         return processingSpeed;
     }
@@ -64,24 +64,24 @@ public abstract class AbstractElectricRecipeMachine extends AbstractMachine impl
     }
 
     public final AbstractElectricRecipeMachine setCapacity(int capacity) {
-        Preconditions.checkArgument(capacity > 0, "The capacity must be greater then 0");
+        Preconditions.checkArgument(capacity > 0, "The capacity must be greater than 0");
 
-        this.energyCapacity = capacity; 
+        this.energyCapacity = capacity;
         return this;
     }
 
     public final AbstractElectricRecipeMachine setConsumption(int consumption) {
         Preconditions.checkArgument(getCapacity() > 0, "Capacity must be set before consumption");
-        Preconditions.checkArgument(consumption < getCapacity() && consumption != 0, "Consuption can not be greater then capacity");
+        Preconditions.checkArgument(consumption < getCapacity() && consumption != 0, "Consumption cannot be greater than capacity");
         this.energyConsumedPerTick = consumption;
         return this;
     }
 
     public final AbstractElectricRecipeMachine setProcessingSpeed(int speed) {
-        Preconditions.checkArgument(speed > 0, "Speed must be greater then zero!"); 
+        Preconditions.checkArgument(speed > 0, "Speed must be greater than zero!");
 
-        this.processingSpeed = speed; 
-        return this; 
+        this.processingSpeed = speed;
+        return this;
     }
 
     public List<MachineRecipe> getMachineRecipes() {
@@ -89,8 +89,8 @@ public abstract class AbstractElectricRecipeMachine extends AbstractMachine impl
     }
 
     public void registerRecipe(MachineRecipe recipe) {
-        recipe.setTicks(recipe.getTicks() / getSpeed()); 
-        recipes.add(recipe); 
+        recipe.setTicks(recipe.getTicks() / getSpeed());
+        recipes.add(recipe);
     }
 
     public void registerRecipe(int seconds, ItemStack[] inputs, ItemStack[] outputs) {
@@ -103,13 +103,13 @@ public abstract class AbstractElectricRecipeMachine extends AbstractMachine impl
 
     public AbstractElectricRecipeMachine addRecipe(int sec, ItemStack[] inputs, ItemStack[] outputs){
         if (sec < 0) {
-            throw new IllegalArgumentException("Recipe duration must be greater then zero!");
+            throw new IllegalArgumentException("Recipe duration must be greater than zero!");
         }
         if (inputs.length == 0) {
-            throw new IllegalArgumentException("Inputs can not be null!");
+            throw new IllegalArgumentException("Inputs cannot be null!");
         }
         if (outputs.length == 0) {
-            throw new IllegalArgumentException("Outputs can not be null!");
+            throw new IllegalArgumentException("Outputs cannot be null!");
         }
         MachineRecipe registerRecipe = new MachineRecipe(sec, inputs, outputs);
         this.recipes.add(registerRecipe);
@@ -117,18 +117,18 @@ public abstract class AbstractElectricRecipeMachine extends AbstractMachine impl
     }
 
     protected boolean takeCharge(Location l) {
-        Preconditions.checkNotNull(l, "Can't take energy from a null location"); 
+        Preconditions.checkNotNull(l, "Can't take energy from a null location");
 
         if (isChargeable()) {
-            int charge = getCharge(l); 
+            int charge = getCharge(l);
 
              if (charge < getEnergyConsumption()) {
                 return false;
              }
 
-             setCharge(l, charge - getEnergyConsumption()); 
+             setCharge(l, charge - getEnergyConsumption());
         }
-        return true; 
+        return true;
     }
 
     @Nullable
@@ -146,7 +146,7 @@ public abstract class AbstractElectricRecipeMachine extends AbstractMachine impl
 
         int maxedSlots = 0;
         for (int slot : getOutputSlots()) {
-            ItemStack item = menu.getItemInSlot(slot); 
+            ItemStack item = menu.getItemInSlot(slot);
             if (item != null && item.getAmount() == item.getMaxStackSize()) {
                 maxedSlots += 1;
             }
@@ -170,12 +170,12 @@ public abstract class AbstractElectricRecipeMachine extends AbstractMachine impl
                 if(!InvUtils.fitAll(menu.toInventory(), recipe.getOutput(), getOutputSlots())) {
                         return null;
                 }
-                
+
                 for (Map.Entry<Integer, Integer> entry : found.entrySet()) {
                     menu.consumeItem(entry.getKey(), entry.getValue());
                 }
 
-                return recipe; 
+                return recipe;
             } else {
                 found.clear();
             }

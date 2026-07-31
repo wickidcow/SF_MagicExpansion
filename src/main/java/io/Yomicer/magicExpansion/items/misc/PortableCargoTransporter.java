@@ -29,7 +29,7 @@ public class PortableCargoTransporter extends SlimefunItem implements Listener {
     private static final Map<UUID, Boolean> playerTransmissionStatus = new HashMap<>();
     private static final Map<UUID, BukkitRunnable> activeTransmissions = new HashMap<>();
 
-    // 上次检查时间记录，避免频繁检查
+    // 上次检查时间记录,避免频繁检查
     private static final Map<UUID, Long> lastCheckTime = new HashMap<>();
 
     public PortableCargoTransporter(ItemGroup category, SlimefunItemStack item, RecipeType recipeType, ItemStack[] recipe) {
@@ -56,10 +56,10 @@ public class PortableCargoTransporter extends SlimefunItem implements Listener {
             ItemStack item = e.getItem();
 
             if (player.isSneaking()) {
-                // Shift+右键：显示使用说明
+                // Shift+右键:显示使用说明
                 showUsage(player);
             } else {
-                // 普通右键：切换传输状态
+                // 普通右键:切换传输状态
                 toggleTransmission(player);
             }
         };
@@ -69,23 +69,23 @@ public class PortableCargoTransporter extends SlimefunItem implements Listener {
      * 显示使用说明
      */
     private void showUsage(Player player) {
-        player.sendMessage("§6§l便携以太秘匣传输器使用说明");
+        player.sendMessage("§6§lPortable Aether Cargo Transporter");
         player.sendMessage("§7§m--------------------------------");
-        player.sendMessage("§f右键: §a启动传输");
-        player.sendMessage("§f再次右键: §c停止传输");
-        player.sendMessage("§fShift+右键: §e显示此说明");
+        player.sendMessage("§fRight-click: §aStart transfer");
+        player.sendMessage("§fRight-click again: §cStop transfer");
+        player.sendMessage("§fShift-right-click: §eShow these instructions");
         player.sendMessage("");
-        player.sendMessage("§7● 自动检测背包中的以太秘匣");
-        player.sendMessage("§7● 只处理堆叠数为1的以太秘匣");
-        player.sendMessage("§7● 每次处理背包中最前面的以太秘匣");
-        player.sendMessage("§7● 数量为0时自动删除以太秘匣");
-        player.sendMessage("§7● 传输间隔: 0.05秒");
-        player.sendMessage("§7● 玩家离线自动停止传输");
+        player.sendMessage("§7● Automatically detects Aether Cargo Chests in your inventory");
+        player.sendMessage("§7● Only processes Aether Cargo Chests with a stack size of 1");
+        player.sendMessage("§7● Processes the first Aether Cargo Chest in your inventory each cycle.");
+        player.sendMessage("§7● Removes an Aether Cargo Chest when its stored amount reaches 0");
+        player.sendMessage("§7● Transfer interval: 0.05 seconds");
+        player.sendMessage("§7● Stops automatically when the player logs out");
         player.sendMessage("§7§m--------------------------------");
     }
 
     /**
-     * 切换传输状态（右键触发）
+     * 切换传输状态(右键触发)
      */
     private void toggleTransmission(Player player) {
         UUID playerId = player.getUniqueId();
@@ -96,7 +96,7 @@ public class PortableCargoTransporter extends SlimefunItem implements Listener {
         if (isActive) {
             // 停止传输
             stopTransmission(player);
-            player.sendMessage("§c✗ 已停止传输！");
+            player.sendMessage("§c✗ Transfer stopped!");
             player.playSound(player.getLocation(), Sound.BLOCK_BEACON_DEACTIVATE, 1.0f, 1.0f);
         } else {
             // 启动传输
@@ -117,8 +117,8 @@ public class PortableCargoTransporter extends SlimefunItem implements Listener {
 
         // 检查背包中是否有以太秘匣
         if (!hasValidCargoFragment(player)) {
-            player.sendMessage("§c背包中没有有效的以太秘匣！");
-            player.sendMessage("§7请确保以太秘匣堆叠数为1");
+            player.sendMessage("§cNo valid Aether Cargo Chest was found in your inventory!");
+            player.sendMessage("§7Make sure the Aether Cargo Chest stack size is 1.");
             return;
         }
 
@@ -129,7 +129,7 @@ public class PortableCargoTransporter extends SlimefunItem implements Listener {
                 // 检查玩家是否在线 - 如果不在线则停止传输
                 if (!player.isOnline()) {
                     stopTransmission(player);
-//                    MagicExpansion.getInstance().getLogger().info("玩家 " + player.getName() + " 离线，自动停止传输");
+//                    MagicExpansion.getInstance().getLogger().info("玩家 " + player.getName() + " 离线,自动停止传输");
                     return;
                 }
 
@@ -143,12 +143,12 @@ public class PortableCargoTransporter extends SlimefunItem implements Listener {
             }
         };
 
-        // 每秒执行一次（20 tick = 1秒）
+        // 每秒执行一次(20 tick = 1秒)
         task.runTaskTimer(MagicExpansion.getInstance(), 0L, 1L);
         activeTransmissions.put(playerId, task);
         playerTransmissionStatus.put(playerId, true);
 
-        player.sendMessage("§a✓ 传输已启动！");
+        player.sendMessage("§a✓ Transfer started!");
         player.playSound(player.getLocation(), Sound.BLOCK_BEACON_ACTIVATE, 1.0f, 1.0f);
     }
 
@@ -174,7 +174,7 @@ public class PortableCargoTransporter extends SlimefunItem implements Listener {
         // 查找背包中最前面的以太秘匣
         ItemStack cargoFragment = findFirstValidCargoFragment(player);
         if (cargoFragment == null) {
-            // 没有有效的以太秘匣，不停止传输（等待玩家放入新的以太秘匣）
+            // 没有有效的以太秘匣,不停止传输(等待玩家放入新的以太秘匣)
             return;
         }
 
@@ -183,16 +183,16 @@ public class PortableCargoTransporter extends SlimefunItem implements Listener {
         int storedAmount = getStoredAmountFromFragment(cargoFragment);
 
         if (storedItem == null || storedAmount <= 0) {
-            // 空的以太秘匣，移除它
+            // 空的以太秘匣,移除它
             removeCargoFragment(player, cargoFragment);
-            player.sendMessage("§c发现空的以太秘匣，已移除！");
+            player.sendMessage("§cAn empty Aether Cargo Chest was found and removed!");
             return;
         }
 
         // 计算背包剩余空间
         int availableSpace = calculateAvailableSpace(player, storedItem);
         if (availableSpace <= 0) {
-            // 背包已满，跳过本次传输
+            // 背包已满,跳过本次传输
             return;
         }
 
@@ -206,13 +206,13 @@ public class PortableCargoTransporter extends SlimefunItem implements Listener {
             int newAmount = storedAmount - actuallyGiven;
 
             if (newAmount <= 0) {
-                // 数量为0，删除该以太秘匣
+                // 数量为0,删除该以太秘匣
                 removeCargoFragment(player, cargoFragment);
-                player.sendMessage("§a✓ 已完成传输: " + getItemDisplayName(storedItem));
+                player.sendMessage("§a✓ Transferring: " + getItemDisplayName(storedItem));
             } else {
                 // 更新以太秘匣数量
                 updateFragmentAmount(cargoFragment, newAmount);
-                player.sendMessage("§a✓ 正在传输: " + getItemDisplayName(storedItem) + " §7(剩余: " + newAmount + ")");
+                player.sendMessage("§a✓ Transferring: " + getItemDisplayName(storedItem) + " §7(Remaining: " + newAmount + ")");
             }
         }
     }
@@ -326,8 +326,8 @@ public class PortableCargoTransporter extends SlimefunItem implements Listener {
         if (meta.hasLore()) {
             java.util.List<String> lore = meta.getLore();
             for (int i = 0; i < lore.size(); i++) {
-                if (lore.get(i).startsWith("§f数量: §a")) {
-                    lore.set(i, "§f数量: §a" + newAmount);
+                if (lore.get(i).startsWith("§fAmount: §a") || lore.get(i).startsWith("§f\u6570\u91cf: §a")) {
+                    lore.set(i, "§fAmount: §a" + newAmount);
                     break;
                 }
             }
@@ -408,7 +408,7 @@ public class PortableCargoTransporter extends SlimefunItem implements Listener {
         if (item != null && item.hasItemMeta() && item.getItemMeta().hasDisplayName()) {
             return item.getItemMeta().getDisplayName();
         }
-        return item != null ? item.getType().name().toLowerCase().replace('_', ' ') : "未知物品";
+        return item != null ? item.getType().name().toLowerCase().replace('_', ' ') : "Unknown Item";
     }
 
     /**
@@ -422,7 +422,7 @@ public class PortableCargoTransporter extends SlimefunItem implements Listener {
                 playerTransmissionStatus.keySet().removeIf(uuid -> {
                     Player player = Bukkit.getPlayer(uuid);
                     if (player == null) {
-                        // 玩家不在线，停止传输任务
+                        // 玩家不在线,停止传输任务
                         BukkitRunnable task = activeTransmissions.get(uuid);
                         if (task != null) {
                             task.cancel();
@@ -438,13 +438,13 @@ public class PortableCargoTransporter extends SlimefunItem implements Listener {
     }
 
     /**
-     * 事件监听器：玩家退出时停止传输
+     * 事件监听器:玩家退出时停止传输
      */
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
         Player player = event.getPlayer();
         stopTransmission(player);
-//        MagicExpansion.getInstance().getLogger().info("玩家 " + player.getName() + " 退出游戏，停止传输");
+//        MagicExpansion.getInstance().getLogger().info("玩家 " + player.getName() + " 退出游戏,停止传输");
     }
 
     /**
@@ -454,7 +454,7 @@ public class PortableCargoTransporter extends SlimefunItem implements Listener {
         try {
             return io.Yomicer.magicExpansion.utils.SameItemJudge.itemFromBase64(data);
         } catch (Exception e) {
-            MagicExpansion.getInstance().getLogger().warning("物品反序列化失败: " + e.getMessage());
+            MagicExpansion.getInstance().getLogger().warning("Failed to deserialize item: " + e.getMessage());
             return null;
         }
     }

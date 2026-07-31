@@ -3,7 +3,7 @@ package io.Yomicer.magicExpansion.items.misc.magicAlter;
 import io.Yomicer.magicExpansion.MagicExpansion;
 import io.Yomicer.magicExpansion.utils.log.Debug;
 import io.github.thebusybiscuit.slimefun4.libraries.dough.items.CustomItemStack;
-import net.guizhanss.guizhanlib.minecraft.helper.inventory.ItemStackHelper;
+import io.Yomicer.magicExpansion.utils.compat.ItemStackHelper;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
@@ -71,7 +71,7 @@ public class MagicAltarManager {
     public void loadRecipes() {
         recipes.clear();
         new DefaultRecipes().registerRecipes(recipes);
-        Debug.logInfo("已加载 " + recipes.size() + " 个魔法祭坛配方");
+        Debug.logInfo("Loaded " + recipes.size() + " Magic Altar recipes");
     }
 
     // 检查祭坛结构是否正确
@@ -151,7 +151,7 @@ public class MagicAltarManager {
     public ItemStack[][] getDispenserItems(Location centerDispenserLoc) {
         ItemStack[][] items = new ItemStack[9][9];
 
-        // 定义发射器位置顺序（固定顺序，从左上开始顺时针）
+        // 定义发射器位置顺序(固定顺序,从左上开始顺时针)
         int[][] positions = {
                 {-1, -1}, // 0: 左上
                 {0, -1},  // 1: 中上
@@ -185,23 +185,23 @@ public class MagicAltarManager {
     // 开始合成过程 - 强制方位匹配
     public boolean startCrafting(Location centerDispenserLoc, Player player) {
         if (activeAltars.contains(centerDispenserLoc)) {
-            player.sendMessage("§c✗ 这个祭坛正在进行合成!");
+            player.sendMessage("§c✗ This altar is already crafting!");
             return false;
         }
 
         // 检查结构
         if (!checkAltarStructure(centerDispenserLoc)) {
-            player.sendMessage("§c✗ 祭坛底座结构不正确!");
+            player.sendMessage("§c✗ Altar Base!");
             return false;
         }
 
         if (!checkDispenserLayout(centerDispenserLoc)) {
-            player.sendMessage("§c✗ 发射器布局不正确!");
+            player.sendMessage("§c✗ Dispenser!");
             return false;
         }
 
         if (!checkItemFrame(centerDispenserLoc)) {
-            player.sendMessage("§c✗ 中心发射器上方需要空的物品展示框!");
+            player.sendMessage("§c✗ center dispenser requires Item Frame!");
             return false;
         }
 
@@ -225,14 +225,14 @@ public class MagicAltarManager {
         }
 
         if (matchedRecipe == null) {
-            player.sendMessage("§c✗ 没有找到匹配的配方!");
-            player.sendMessage("§7请检查物品数量和位置是否正确");
+            player.sendMessage("§c✗ has to recipe!");
+            player.sendMessage("§7Check that every item is in the correct slot and amount.");
             return false;
         }
 
         activeAltars.add(centerDispenserLoc);
-        player.sendMessage("§a✓ 发现配方: §e" + recipeName);
-        player.sendMessage("§a▶ 开始合成! 请勿移动任何物品...");
+        player.sendMessage("§a✓ recipe: §e" + recipeName);
+        player.sendMessage("§a▶ Altar activated. Add the required items...");
 
         startParticleEffect(centerDispenserLoc);
 
@@ -245,7 +245,7 @@ public class MagicAltarManager {
             public void run() {
                 // 每秒钟检查一次结构完整性
                 if (!checkStructureIntegrity(centerDispenserLoc, player)) {
-                    player.sendMessage("§c✗ 合成中断! 祭坛结构被破坏或物品被移动!");
+                    player.sendMessage("§c✗ Crafting interrupted! The altar structure was damaged or an item was moved!");
                     stopParticleEffect(centerDispenserLoc);
                     activeAltars.remove(centerDispenserLoc);
                     this.cancel();
@@ -255,11 +255,11 @@ public class MagicAltarManager {
 
                 // 进度提示
                 if (timeLeft == 11) {
-                    player.sendMessage("§6⏳ 合成进度: §e25% §6完成");
+                    player.sendMessage("§6⏳ Crafting Progress: §e25% §6complete");
                 } else if (timeLeft == 8) {
-                    player.sendMessage("§6⏳ 合成进度: §e50% §6完成");
+                    player.sendMessage("§6⏳ Crafting Progress: §e50% §6complete");
                 } else if (timeLeft == 4) {
-                    player.sendMessage("§6⏳ 合成进度: §e75% §6完成");
+                    player.sendMessage("§6⏳ Crafting Progress: §e75% §6complete");
                 } else if (timeLeft <= 0) {
                     // 合成完成
                     completeCrafting(centerDispenserLoc, finalMatchedRecipe, player);
@@ -286,7 +286,7 @@ public class MagicAltarManager {
         Location centerLoc = center.clone().add(0.5, 0, 0.5);
 
         for (int i = 0; i < count; i++) {
-            // 生成随机偏移（以方块中心为基准）
+            // 生成随机偏移(以方块中心为基准)
             double offsetX = (Math.random() - 0.5) * 8; // 减小偏移范围
             double offsetZ = (Math.random() - 0.5) * 8;
             double offsetY = Math.random() * 2; // 减小高度变化范围
@@ -367,7 +367,7 @@ public class MagicAltarManager {
     }
 
 
-    // 检查结构完整性（在合成过程中持续检查）
+    // 检查结构完整性(在合成过程中持续检查)
     private boolean checkStructureIntegrity(Location centerDispenserLoc, Player player) {
         // 检查祭坛底座
         if (!checkAltarStructure(centerDispenserLoc)) {
@@ -388,21 +388,21 @@ public class MagicAltarManager {
         ItemStack[][] currentItems = getDispenserItems(centerDispenserLoc);
         for (MagicAltarRecipe recipe : recipes.values()) {
             if (recipe.matches(currentItems)) {
-                return true; // 至少有一个配方匹配，说明物品还在
+                return true; // 至少有一个配方匹配,说明物品还在
             }
         }
 
-        return false; // 没有配方匹配，说明物品被移动了
+        return false; // 没有配方匹配,说明物品被移动了
     }
 
     // 发送发射器物品信息给玩家
     private void sendDispenserItemsToPlayer(Player player, ItemStack[][] items) {
-        player.sendMessage("§6=== 发射器物品信息 ===");
+        player.sendMessage("§6=== Dispenser Items ===");
 
         String[] dispenserNames = {
-                "§b左上发射器", "§b中上发射器", "§b右上发射器",
-                "§b左中发射器", "§b中心发射器", "§b右中发射器",
-                "§b左下发射器", "§b中下发射器", "§b右下发射器"
+                "§bTop-left Dispenser", "§bTop-center Dispenser", "§bTop-right Dispenser",
+                "§bMiddle-left Dispenser", "§bCenter Dispenser", "§bMiddle-right Dispenser",
+                "§bBottom-left Dispenser", "§bBottom-center Dispenser", "§bBottom-right Dispenser"
         };
 
         for (int i = 0; i < 9; i++) {
@@ -420,7 +420,7 @@ public class MagicAltarManager {
             if (hasItems) {
                 player.sendMessage(dispenserNames[i] + ": " + itemList.toString());
             } else {
-                player.sendMessage(dispenserNames[i] + ": §7空");
+                player.sendMessage(dispenserNames[i] + ": §7Empty");
             }
         }
         player.sendMessage("§6===================");
@@ -434,7 +434,7 @@ public class MagicAltarManager {
         BukkitTask particleTask = new BukkitRunnable() {
             @Override
             public void run() {
-                // 半径设为1，以中心方块的真正中心为原点
+                // 半径设为1,以中心方块的真正中心为原点
                 double radius = 2.0;
                 int particleSources = 12;
 
@@ -511,7 +511,7 @@ public class MagicAltarManager {
     private void completeCrafting(Location centerDispenserLoc, MagicAltarRecipe recipe, Player player) {
         ItemStack[][] dispenserItems = getDispenserItems(centerDispenserLoc);
 
-        // 定义发射器位置顺序（固定顺序）
+        // 定义发射器位置顺序(固定顺序)
         int[][] positions = {
                 {-1, -1}, // 0: 左上
                 {0, -1},  // 1: 中上
@@ -524,7 +524,7 @@ public class MagicAltarManager {
                 {1, 1}    // 8: 右下
         };
 
-        // 直接重新设置所有发射器（保持朝向）
+        // 直接重新设置所有发射器(保持朝向)
         for (int i = 0; i < 9; i++) {
             int[] pos = positions[i];
             Location loc = centerDispenserLoc.clone().add(pos[0], 0, pos[1]);
@@ -547,7 +547,7 @@ public class MagicAltarManager {
                     }
                     dispenser.update(true, false);
 
-                    // 方法2: 如果清空失败，重新放置发射器
+                    // 方法2: 如果清空失败,重新放置发射器
                     // 临时设置为空气
                     loc.getBlock().setType(Material.AIR);
 
@@ -579,17 +579,17 @@ public class MagicAltarManager {
                 ItemStack result = recipe.getResult().clone();
 
                 if (result.getAmount() > 1) {
-                    // 如果数量大于1，展示框只放1个
+                    // 如果数量大于1,展示框只放1个
                     ItemStack displayItem = result.clone();
                     displayItem.setAmount(1);
                     itemFrame.setItem(displayItem);
 
-                    // 掉落剩余数量的物品（使用分批掉落）
+                    // 掉落剩余数量的物品(使用分批掉落)
                     ItemStack dropItem = result.clone();
                     dropItem.setAmount(result.getAmount() - 1);
                     dropItemInBatches(player, itemFrame.getLocation(), dropItem);
                 } else {
-                    // 如果数量只有1个，直接放在展示框上
+                    // 如果数量只有1个,直接放在展示框上
                     itemFrame.setItem(result);
                 }
                 break;
@@ -600,7 +600,7 @@ public class MagicAltarManager {
         targetLoc.getWorld().spawnParticle(Particle.FIREWORKS_SPARK, targetLoc, 30, 0.5, 0.5, 0.5, 0.1);
         targetLoc.getWorld().playSound(targetLoc, Sound.ENTITY_PLAYER_LEVELUP, 1.0f, 1.0f);
 
-        player.sendMessage("§a✓ 合成完成! 100% §a获得了 " + recipe.getResult().getType().name());
+        player.sendMessage("§aItem received." + recipe.getResult().getType().name());
         activeAltars.remove(centerDispenserLoc);
     }
 
@@ -610,7 +610,7 @@ public class MagicAltarManager {
         int maxDropSize = 64; // 单次最大掉落数量
 
         while (totalAmount > 0) {
-            // 创建一个新的物品副本，设置当前批次的数量
+            // 创建一个新的物品副本,设置当前批次的数量
             ItemStack dropItem = item.clone();
             int currentBatchSize = Math.min(totalAmount, maxDropSize);
             dropItem.setAmount(currentBatchSize);

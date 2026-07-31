@@ -32,7 +32,7 @@ public class ResourceRandomOneMachine extends AbstractElectricResourceMachine {
     private static final ItemStack PROGRESS_ITEM = new ItemStack(Material.SOUL_LANTERN);
     private ItemStack material;
 
-    private static final ItemStack PROGRESS_STACK = new CustomItemStack(Material.SOUL_CAMPFIRE, getGradientName("信息"), getGradientName("类型：资源生成器"), getGradientName("所属附属：魔法"));
+    private static final ItemStack PROGRESS_STACK = new CustomItemStack(Material.SOUL_CAMPFIRE, getGradientName("Information"), getGradientName("type:"), getGradientName("Addon: MagicExpansion"));
 
 
 
@@ -48,7 +48,7 @@ public class ResourceRandomOneMachine extends AbstractElectricResourceMachine {
     public void postRegister() {
         registerRecipe(getCraftSecond(), new ItemStack[] { this.material }, getItemStackOutputs());
     }
-    
+
     @Override
     public void tick(BlockMenu menu, Block b) {
 //            updateInfoStack(menu);
@@ -67,7 +67,7 @@ public class ResourceRandomOneMachine extends AbstractElectricResourceMachine {
 
         // 如果有有效的输出
         if (!validOutputs.isEmpty()) {
-            // 如果只有一个，直接输出
+            // 如果只有一个,直接输出
             if (validOutputs.size() == 1) {
                 menu.pushItem(validOutputs.get(0).clone(), getOutputSlots());
             } else {
@@ -80,8 +80,8 @@ public class ResourceRandomOneMachine extends AbstractElectricResourceMachine {
 
     @Override
 	public MachineRecipe findNextRecipe(BlockMenu menu) {
-        
-        int maxedSlots = 0; 
+
+        int maxedSlots = 0;
         for (int slots : getOutputSlots()) {
             ItemStack item = menu.getItemInSlot(slots);
             if (item != null && item.getMaxStackSize() == item.getAmount()) {
@@ -102,8 +102,8 @@ public class ResourceRandomOneMachine extends AbstractElectricResourceMachine {
 	public List<ItemStack> getDisplayRecipes() {
 	    List<ItemStack> display = new ArrayList<>();
 
-        display.add(new CustomItemStack(Material.KNOWLEDGE_BOOK, getGradientName("产物⇨"),getGradientName("生产效率⇨ ⚙ 每 " + getCraftSecond() + " s生成一次"),getGradientName("生产能耗⇨ ⚡ "+ getEnergyConsumption()*2 +" J/s"),getGradientName("随机产出一种产物")));
-        display.add(new CustomItemStack(Material.KNOWLEDGE_BOOK, getGradientName("产物⇨"),getGradientName("生产效率⇨ ⚙ 每 " + getCraftSecond() + " s生成一次"),getGradientName("生产能耗⇨ ⚡ "+ getEnergyConsumption()*2 +" J/s"),getGradientName("随机产出一种产物")));
+        display.add(new CustomItemStack(Material.KNOWLEDGE_BOOK, getGradientName("Output Items ⇩"),getGradientName("Production Rate ⇨ ⚙ Every " + getCraftSecond() + " s per operation"),getGradientName("Energy Cost ⇨ ⚡ "+ getEnergyConsumption()*2 +" J/s"),getGradientName("type")));
+        display.add(new CustomItemStack(Material.KNOWLEDGE_BOOK, getGradientName("Output Items ⇩"),getGradientName("Production Rate ⇨ ⚙ Every " + getCraftSecond() + " s per operation"),getGradientName("Energy Cost ⇨ ⚡ "+ getEnergyConsumption()*2 +" J/s"),getGradientName("type")));
         // 将输出物品数组中的所有物品添加到显示列表
         display.addAll(Arrays.asList(getItemStackOutputs()));
 
@@ -127,7 +127,7 @@ public class ResourceRandomOneMachine extends AbstractElectricResourceMachine {
         preset.addItem(getProgressSlot(), new CustomItemStack(Material.PINK_STAINED_GLASS_PANE, " "), ChestMenuUtils.getEmptyClickHandler());
 
         preset.addItem(4, PROGRESS_STACK, ChestMenuUtils.getEmptyClickHandler());
- 
+
     }
 
 	@Override
@@ -139,7 +139,7 @@ public class ResourceRandomOneMachine extends AbstractElectricResourceMachine {
 	protected int[] getOutputSlots() {
 		return OUTPUT_SLOTS;
 	}
-    
+
     @Override
     public boolean isSynchronized() {
         return false;
@@ -157,7 +157,7 @@ public class ResourceRandomOneMachine extends AbstractElectricResourceMachine {
 //
 //        meta.setDisplayName(getGradientName("信息"));
 //        ArrayList lore = new ArrayList<>();
-//        lore.add(getGradientName("生产速率：" + getCraftSecondDisplay() + "秒"));
+//        lore.add(getGradientName("生产速率:" + getCraftSecondDisplay() + "秒"));
 //        item.setLore(lore);
 //        item.setItemMeta(meta);
 //

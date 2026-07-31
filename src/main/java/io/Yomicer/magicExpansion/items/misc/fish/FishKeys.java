@@ -23,11 +23,11 @@ public class FishKeys {
 
     public static final NamespacedKey FISH_TYPE = new NamespacedKey(JavaPlugin.getPlugin(MagicExpansion.class), "fish_type");
     public static final NamespacedKey FISH_WEIGHT = new NamespacedKey(JavaPlugin.getPlugin(MagicExpansion.class), "fish_weight");
-    // 可选：存储重量稀有度（字符串）
+    // 可选:存储重量稀有度(字符串)
     public static final NamespacedKey FISH_WEIGHT_RARITY = new NamespacedKey(JavaPlugin.getPlugin(MagicExpansion.class), "fish_weight_rarity");
 
 
-    // ✅ 定义：物品 → 对应的稀有度（集中管理，易扩展）
+    // ✅ 定义:物品 → 对应的稀有度(集中管理,易扩展)
     private static final Map<ItemStack, Fish.Rarity> RARITY_ITEM_MAP = new HashMap<>() {{
         put(MagicExpansionItems.RANDOM_FISH_COMMON,           Fish.Rarity.COMMON);
         put(MagicExpansionItems.RANDOM_FISH_UNCOMMON,         Fish.Rarity.UNCOMMON);
@@ -40,7 +40,7 @@ public class FishKeys {
         put(MagicExpansionItems.RANDOM_FISH_EPIC,             Fish.Rarity.EPIC);
         put(MagicExpansionItems.RANDOM_FISH_LEGENDARY,        Fish.Rarity.LEGENDARY);
         put(MagicExpansionItems.FISH_LEGENDARY_EEL_POWER,        Fish.Rarity.LEGENDARY_EEL);
-        // 👉 想加新稀有度？直接 put 一行即可！
+        // 👉 想加新稀有度？直接 put 一行即可!
     }};
 
     private static final Set<ItemStack> MAGIC_FISHING_RODS_NEW = new HashSet<>(Arrays.asList(
@@ -69,14 +69,14 @@ public class FishKeys {
             }
         }
 
-        // 如果不是目标物品，原样返回
+        // 如果不是目标物品,原样返回
         if (targetRarity == null) {
             return drop;
         }
 
         List<Fish> candidates = getPossibleFishesForRarity(targetRarity); // 确保类名正确
         if (candidates.isEmpty()) {
-            // 兜底：返回 COD
+            // 兜底:返回 COD
             candidates = Collections.singletonList(Fish.XueFish);
         }
 
@@ -106,28 +106,28 @@ public class FishKeys {
         pdc.set(FishKeys.FISH_WEIGHT_RARITY, PersistentDataType.STRING, weightRarity.name());
         String weightRareThis = "";
         if (weightRarity == Fish.WeightRarity.RARE_FISH) {
-            Bukkit.broadcastMessage("§a恭喜玩家 §e"+player.getName()+" §a在 §d"+ player.getWorld().getName() + " §a中垂钓意外捕获了一条§e稀有鱼！");
-            Bukkit.broadcastMessage("§a恭喜玩家 §e"+player.getName()+
-                    " §a在坐标 §dX: "+ String.format("%.2f",player.getLocation().getX())+
+            Bukkit.broadcastMessage("§aCongratulations to §e"+player.getName()+" §afor catching one in §d"+ player.getWorld().getName() + " §aand unexpectedly caught a §erare fish!");
+            Bukkit.broadcastMessage("§aCongratulations to §e"+player.getName()+
+                    "§aat coordinates §dX:"+ String.format("%.2f",player.getLocation().getX())+
                     " Y: " + String.format("%.2f",player.getLocation().getY())+
                     " Z: " + String.format("%.2f",player.getLocation().getZ()) +
-                    " §a附近捕获了 §e稀有鱼 "+chosenFish.getDisplayName());
+                    "§a §eRare Fish"+chosenFish.getDisplayName());
             weightRareThis = "§e§l⭐";
         }
         if (weightRarity == Fish.WeightRarity.SUPER_RARE_FISH) {
-            Bukkit.broadcastMessage("§a恭喜玩家 §e"+player.getName()+" §a在 §d"+ player.getWorld().getName() + " §a中垂钓意外捕获了一条§b超级稀有鱼！");
-            Bukkit.broadcastMessage("§a恭喜玩家 §e"+player.getName()+
-                    " §a在坐标 §dX: "+ String.format("%.2f",player.getLocation().getX())+
+            Bukkit.broadcastMessage("§aCongratulations to §e"+player.getName()+" §afor catching one in §d"+ player.getWorld().getName() + " §aand unexpectedly caught a §bsuper-rare fish!");
+            Bukkit.broadcastMessage("§aCongratulations to §e"+player.getName()+
+                    "§aat coordinates §dX:"+ String.format("%.2f",player.getLocation().getX())+
                     " Y: " + String.format("%.2f",player.getLocation().getY())+
-                    " Z: " + String.format("%.2f",player.getLocation().getZ()) + " §a附近捕获了 §b超级稀有鱼 "+chosenFish.getDisplayName());
+                    " Z: " + String.format("%.2f",player.getLocation().getZ()) + "§a §bRare Fish"+chosenFish.getDisplayName());
             weightRareThis = "§b§l\uD83D\uDC8E";
         }
         if (weightRarity == WeightRarity.MAX_WEIGHT_FISH) {
-            Bukkit.broadcastMessage("§a恭喜玩家 §e"+player.getName()+" §a在 §d"+ player.getWorld().getName() + " §a中垂钓意外捕获了一条§b§l鱼皇！");
-            Bukkit.broadcastMessage("§a恭喜玩家 §e"+player.getName()+
-                    " §a在坐标 §dX: "+ String.format("%.2f",player.getLocation().getX())+
+            Bukkit.broadcastMessage("§aCongratulations to §e"+player.getName()+" §afor catching one in §d"+ player.getWorld().getName() + " §aand unexpectedly caught a §b§lFish Emperor!");
+            Bukkit.broadcastMessage("§aCongratulations to §e"+player.getName()+
+                    "§aat coordinates §dX:"+ String.format("%.2f",player.getLocation().getX())+
                     " Y: " + String.format("%.2f",player.getLocation().getY())+
-                    " Z: " + String.format("%.2f",player.getLocation().getZ()) + " §a附近捕获了 §c§l鱼皇 "+chosenFish.getDisplayName());
+                    " Z: " + String.format("%.2f",player.getLocation().getZ()) + "§a §c§l"+chosenFish.getDisplayName());
             weightRareThis = "§c§l🎶";
         }
 
@@ -137,9 +137,9 @@ public class FishKeys {
         // --- 修改 Lore ---
         List<String> lore = new ArrayList<>();
         lore.add(""); // 空行分隔
-        lore.add(("§d鱼种稀有度: ")+ "§r§f" + chosenFish.getRarity().getDisplayName());
-        lore.add(("§a重量: ")+ "§r§f" + String.format("%.3f", weight) + " kg");
-        lore.add(("§e稀有度: ")+ "§r" + weightRarity.getDisplayName() +" "+ weightRareThis);
+        lore.add(("§dFish Rarity: ")+ "§r§f" + chosenFish.getRarity().getDisplayName());
+        lore.add(("Magic Fishing Rods Ultra")+ "§r§f" + String.format("%.3f", weight) + " kg");
+        lore.add(("§eWeight Rarity: ")+ "§r" + weightRarity.getDisplayName() +" "+ weightRareThis);
         if (chosenFish.getLoreLines() != null && chosenFish.getLoreLines().length > 0) {
             lore.add(""); // 空行分隔
             lore.addAll(Arrays.asList(chosenFish.getLoreLines()));
@@ -170,7 +170,7 @@ public class FishKeys {
                 Fish.GoldDustFish, Fish.IronDustFish, Fish.LeadDustFish, Fish.TinDustFish,
                         Fish.MagnesiumDustFish, Fish.SilverDustFish, Fish.ZincDustFish);
             case RARE_POOL_ORE:
-                // 稀有矿物鱼池：包含所有可产出矿物资源的稀有鱼种
+                // 稀有矿物鱼池:包含所有可产出矿物资源的稀有鱼种
                 return Arrays.asList(Fish.CoalFish,
                         Fish.EmeraldFish, Fish.LapisFish,
                         Fish.DiamondFish, Fish.QuartzFish,
@@ -179,7 +179,7 @@ public class FishKeys {
                         Fish.NetheriteFish,Fish.GlowStoneDustFish,
                         Fish.RedstoneFish);
             case RARE_POOL_DUST:
-                // 稀有矿粉鱼池：包含所有可产出矿粉资源的稀有鱼种
+                // 稀有矿粉鱼池:包含所有可产出矿粉资源的稀有鱼种
                 return Arrays.asList(Fish.ReDaiFish,
                         Fish.CopperDustFish, Fish.AluminumDustFish,
                         Fish.GoldDustFish, Fish.IronDustFish,
@@ -187,14 +187,14 @@ public class FishKeys {
                         Fish.MagnesiumDustFish, Fish.SilverDustFish,
                         Fish.ZincDustFish);
             case RARE_POOL_INDUSTRY:
-                // 稀有矿粉鱼池：包含所有可产出矿粉资源的稀有鱼种
+                // 稀有矿粉鱼池:包含所有可产出矿粉资源的稀有鱼种
                 return Arrays.asList(Fish.ShuLingYu,
                         Fish.UraniumFish,Fish.OilRockFish,
                         Fish.SiliconFish,Fish.SulfateFish
 
                         );
             case EPIC_POOL_INDUSTRY:
-                // 稀有矿粉鱼池：包含所有可产出矿粉资源的稀有鱼种
+                // 稀有矿粉鱼池:包含所有可产出矿粉资源的稀有鱼种
                 return Arrays.asList(Fish.FoamCrystalFish,
                         Fish.BlackDiamondFish,Fish.EnchantedBottleFish
 

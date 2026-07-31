@@ -29,15 +29,15 @@ public class MagicWand extends SimpleSlimefunItem<ItemUseHandler> implements Not
         ItemMeta meta = itemStack.getItemMeta();
 
         if (meta != null) {
-            meta.setDisplayName(ColorGradient.getRandomGradientName("魔法祭坛法杖"));
+            meta.setDisplayName(ColorGradient.getRandomGradientName("MagicWand"));
             meta.getPersistentDataContainer().set(
                     MagicExpansion.getInstance().getPluginInitializer().getAltarWandKey(),
                     PersistentDataType.BYTE,
                     (byte) 1
             );
             List<String> lore = new ArrayList<>();
-            lore.add(ColorGradient.getRandomGradientName("右键祭坛发射器来激活合成"));
-            lore.add(ColorGradient.getRandomGradientName("需要正确的方块布局和物品配方"));
+            lore.add(ColorGradient.getRandomGradientName("Right-click the dispenser"));
+            lore.add(ColorGradient.getRandomGradientName("View the required item recipe"));
             meta.setLore(lore);
 
             itemStack.setItemMeta(meta);
@@ -47,7 +47,7 @@ public class MagicWand extends SimpleSlimefunItem<ItemUseHandler> implements Not
     @Override
     public @NotNull ItemUseHandler getItemHandler() {
         return e -> {
-            // 阻止默认行为（放置方块或使用物品）
+            // 阻止默认行为(放置方块或使用物品)
             e.setUseItem(Event.Result.DENY);
             e.setUseBlock(Event.Result.DENY);
         };

@@ -15,7 +15,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class MagicGeoResourceDefault extends UnplaceableBlock implements GEOResource {
 
-    private String name = "未命名";
+    private String name = "MagicGeoResourceDefault";
     private boolean isObtainableFromGEOMiner = true;
     private int supply = 0;
     private int MaxDeviation = 0;

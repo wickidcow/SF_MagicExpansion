@@ -52,7 +52,7 @@ public class DefaultRecipes implements RecipeProvider{
 
     @Override
     public void registerRecipes(Map<String, MagicAltarRecipe> recipes) {
-        // 配方1：附魔金苹果x1314
+        // 配方1:附魔金苹果x1314
         ItemStack[][] recipe1 = new ItemStack[9][9];
         for (int i = 0; i < 9; i++) {
             if (i == 4) continue;
@@ -64,11 +64,11 @@ public class DefaultRecipes implements RecipeProvider{
             recipe1[4][j] = new ItemStack(Material.APPLE, 64);
         }
 
-        ItemStack result1 = new CustomItemStack(Material.ENCHANTED_GOLDEN_APPLE, "§e这是一个神奇的苹果", "§b很好吃");
+        ItemStack result1 = new CustomItemStack(Material.ENCHANTED_GOLDEN_APPLE, "§eThis is a magical apple.", "§bIt tastes wonderful.");
         result1.setAmount(1314);
         recipes.put("enchanted_apple", new MagicAltarRecipe(recipe1, result1));
 
-        // 配方2：烈焰弹x16
+        // 配方2:烈焰弹x16
         ItemStack[][] recipe2 = new ItemStack[9][9];
         for (int i = 0; i < 9; i++) {
             if (i != 4) {
@@ -81,7 +81,7 @@ public class DefaultRecipes implements RecipeProvider{
 
         recipes.put("fire_recipe", new MagicAltarRecipe(recipe2, result2, customBase));
 
-        // 配方3：锋利1314520附魔书
+        // 配方3:锋利1314520附魔书
         ItemStack[] [] recipe3 = new ItemStack[9][9];
         for (int i = 0; i < 9; i++){
             if(i == 0 || i == 2 || i == 6 || i == 8){
@@ -94,7 +94,7 @@ public class DefaultRecipes implements RecipeProvider{
             if(i == 1 || i == 3 || i == 5 || i == 7){
                 for (int j = 0; j < 9; j++){
                     if(j == 0 || j == 2 || j == 4 || j == 6 || j == 8) {
-                        recipe3[i][j] = new CustomItemStack(Material.NETHERITE_SWORD, "断剑重铸之日，骑士归来之时");
+                        recipe3[i][j] = new CustomItemStack(Material.NETHERITE_SWORD, "When the broken blade is reforged, the knight shall return.");
                     }else {
                         recipe3[i][j] = SlimefunItems.STAFF_STORM;
                     }
@@ -115,14 +115,14 @@ public class DefaultRecipes implements RecipeProvider{
                 Enchantment.DAMAGE_ALL, 255
         );
         List<String> sharpnessLore = List.of(
-                "§7这是一本蕴含着无尽力量的附魔书",
-                "§7据说只有真正的勇士才能驾驭它的力量",
-                "§e§l★ §c锋利 §fCCLV §7(255)",
-                "§8[§6传说级物品§8]",
-                "§7使用可为武器注入此附魔"
+                "§7An enchanted book containing immeasurable power.",
+                "§7Only a true champion is said to be capable of wielding it.",
+                "§e§l★ §c §fCCLV §7(255)",
+                "§8[§6item§8]",
+                "§7 is this"
         );
         ItemStack result3 = createCustomEnchantedBook(
-                "§d§l传奇之刃§r §7[§c§lLv.255§7]",
+                "§d§l§r §7[§c§lLv.255§7]",
                 sharpnessLore,
                 sharpnessEnchantments
         );
@@ -130,7 +130,7 @@ public class DefaultRecipes implements RecipeProvider{
         recipes.put("ultra_sharpness", new MagicAltarRecipe(recipe3, result3, enchantAlter));
 
 
-        // 配方4：抢夺1314520附魔书
+        // 配方4:抢夺1314520附魔书
         ItemStack[] [] recipe4 = new ItemStack[9][9];
         for (int i = 0; i < 9; i++){
             if(i == 0 || i == 2 || i == 6 || i == 8){
@@ -143,7 +143,7 @@ public class DefaultRecipes implements RecipeProvider{
             if(i == 1 || i == 3 || i == 5 || i == 7){
                 for (int j = 0; j < 9; j++){
                     if(j == 0 || j == 2 || j == 4 || j == 6 || j == 8) {
-                        recipe4[i][j] = new CustomItemStack(Material.NETHERITE_SWORD, "铭刻禁忌之力的残页，藏于剑脊之中");
+                        recipe4[i][j] = new CustomItemStack(Material.NETHERITE_SWORD, "A torn page inscribed with forbidden power, hidden within the blade.");
                     }else{
                         recipe4[i][j] = SlimefunItems.SWORD_OF_BEHEADING;
                     }
@@ -164,21 +164,21 @@ public class DefaultRecipes implements RecipeProvider{
                 Enchantment.LOOT_BONUS_MOBS, 255
         );
         List<String> lootingLore = List.of(
-                "§7这是一本被禁忌之力浸染的附魔书",
-                "§7持有者将从敌人的尸骸中攫取远超常理的战利品",
-                "§e§l★ §c抢夺 §fCCLV §7(255)",
-                "§8[§6传说级物品§8]",
-                "§7使用可为武器注入此附魔"
+                "§7An enchanted book saturated with forbidden power.",
+                "§7Its bearer claims extraordinary spoils from defeated enemies.",
+                "§e§l★ §c §fCCLV §7(255)",
+                "§8[§6item§8]",
+                "§7 is this"
         );
         ItemStack result4 = createCustomEnchantedBook(
-                "§d§l贪婪圣典§§r §7[§c§lLv.255§7]",
+                "§d§l§§r §7[§c§lLv.255§7]",
                 lootingLore,
                 LootingEnchantments
         );
         recipes.put("ultra_looting", new MagicAltarRecipe(recipe4, result4, enchantAlter));
 
 
-        // 配方5：星陨裁决
+        // 配方5:星陨裁决
         ItemStack[] [] recipe5 = new ItemStack[9][9];
 
         for (int j = 0; j < 9; j++){
@@ -240,7 +240,7 @@ public class DefaultRecipes implements RecipeProvider{
         recipes.put("weapon_star_shards_sword", new MagicAltarRecipe(recipe5, MagicExpansionItems.WEAPON_STAR_SHARDS_SWORD, anvilAlter));
 
 
-        // 配方6：创世核心
+        // 配方6:创世核心
         ItemStack[] [] recipe6 = new ItemStack[9][9];
         for (int i = 0; i < 9; i++) {
             recipe6[i][0] = sfItemAmount(MagicExpansionItems.PURE_ELEMENT_EARTH,64);

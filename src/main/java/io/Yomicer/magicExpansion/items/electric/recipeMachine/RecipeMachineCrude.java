@@ -34,7 +34,7 @@ public class RecipeMachineCrude extends AbstractElectricRecipeMachine {
     private static final int[] BACKGROUND_SLOTS = new int[] { 4, 49 };
 
     private static final ItemStack PROGRESS_ITEM = new ItemStack(Material.SOUL_LANTERN);
-    private static final ItemStack PROGRESS_STACK = new CustomItemStack(Material.SOUL_CAMPFIRE, getGradientName("信息"), getGradientName("类型：加工机器"), getGradientName("所属附属：魔法"));
+    private static final ItemStack PROGRESS_STACK = new CustomItemStack(Material.SOUL_CAMPFIRE, getGradientName("Information"), getGradientName("type: machine"), getGradientName("Addon: MagicExpansion"));
 
     private final double percent1;
     private final double percent2;
@@ -45,7 +45,7 @@ public class RecipeMachineCrude extends AbstractElectricRecipeMachine {
         this.percent1 = pc1;
         this.percent2 = pc2;
     }
-    
+
     @Override
     public void postRegister() {
         registerDefaultRecipes();
@@ -58,8 +58,8 @@ public class RecipeMachineCrude extends AbstractElectricRecipeMachine {
     @Override
 	public List<ItemStack> getDisplayRecipes() {
 		List<ItemStack> display = new ArrayList<>();
-        display.add(new CustomItemStack(Material.KNOWLEDGE_BOOK, getGradientName("材料⇨"),getGradientName("中间分割线用于分割各个配方")));
-        display.add(new CustomItemStack(Material.KNOWLEDGE_BOOK, getGradientName("产物⇨"),getGradientName("中间分割线用于分割各个配方")));
+        display.add(new CustomItemStack(Material.KNOWLEDGE_BOOK, getGradientName("Input Materials ⇩"),getGradientName("recipe")));
+        display.add(new CustomItemStack(Material.KNOWLEDGE_BOOK, getGradientName("Output Items ⇩"),getGradientName("recipe")));
         // 遍历所有配方并动态生成展示内容
         for (MachineRecipe recipe : recipes) {
             ItemStack[] inputs = recipe.getInput();
@@ -68,29 +68,29 @@ public class RecipeMachineCrude extends AbstractElectricRecipeMachine {
 
             int maxItems = Math.max(inputs.length, outputs.length); // 获取最大物品数量
             for (int i = 0; i < maxItems; i++) {
-                // 添加输入物品（带生产时间）
+                // 添加输入物品(带生产时间)
                 if (i < inputs.length) {
-                    display.add(addLore(inputs[i], "§7生产时间: §e" + productionTime + " 秒"));
+                    display.add(addLore(inputs[i], "§7Processing Time: §e" + productionTime + " seconds"));
                 } else {
-                    display.add(new ItemStack(Material.AIR)); // 如果没有更多输入物品，添加 AIR
+                    display.add(new ItemStack(Material.AIR)); // 如果没有更多输入物品,添加 AIR
                 }
 
-                // 添加输出物品（带生产时间）
+                // 添加输出物品(带生产时间)
                 if (i < outputs.length) {
-                    display.add(addLore(outputs[i], "§7成功生产概率: §a" + percent1 + "% ~ " + percent2 + "%"));
+                    display.add(addLore(outputs[i], "§7Success chance: §a" + percent1 + "% ~ " + percent2 + "%"));
                 } else {
-                    display.add(new ItemStack(Material.AIR)); // 如果没有更多输出物品，添加 AIR
+                    display.add(new ItemStack(Material.AIR)); // 如果没有更多输出物品,添加 AIR
                 }
             }
-            display.add(new CustomItemStack(Material.PINK_STAINED_GLASS_PANE, getGradientName("<== 配方分割线 =>>"),getGradientName("<== 输入材料 =>>")));
-            display.add(new CustomItemStack(Material.PINK_STAINED_GLASS_PANE, getGradientName("<== 配方分割线 =>>"),getGradientName("<== 输出材料 =>>")));
+            display.add(new CustomItemStack(Material.PINK_STAINED_GLASS_PANE, getGradientName("Recipe"),getGradientName("Input Materials")));
+            display.add(new CustomItemStack(Material.PINK_STAINED_GLASS_PANE, getGradientName("Recipe"),getGradientName("Output Items")));
             // 遍历所有配方并动态生成展示内容
         }
         return display;
 	}
 
     /**
-     * 为物品添加描述（lore）
+     * 为物品添加描述(lore)
      */
     private ItemStack addLore(ItemStack item, String loreText) {
         ItemStack newItem = item.clone();
@@ -109,9 +109,9 @@ public class RecipeMachineCrude extends AbstractElectricRecipeMachine {
 	protected void setupMenu(BlockMenuPreset preset) {
 
         preset.drawBackground(new CustomItemStack(Material.PINK_STAINED_GLASS_PANE," "), BACKGROUND_SLOTS);
-        preset.drawBackground(new CustomItemStack(Material.LIGHT_BLUE_STAINED_GLASS_PANE,getGradientName("←输入槽")), INPUT_BORDER_SLOTS);
-        preset.drawBackground(new CustomItemStack(Material.LIME_STAINED_GLASS_PANE,getGradientName("输出槽→")), OUTPUT_BORDER_SLOTS);
-    
+        preset.drawBackground(new CustomItemStack(Material.LIGHT_BLUE_STAINED_GLASS_PANE,getGradientName("←Input Slots")), INPUT_BORDER_SLOTS);
+        preset.drawBackground(new CustomItemStack(Material.LIME_STAINED_GLASS_PANE,getGradientName("Output Slots →")), OUTPUT_BORDER_SLOTS);
+
         preset.addItem(getProgressSlot(), new CustomItemStack(Material.PINK_STAINED_GLASS_PANE, " "), ChestMenuUtils.getEmptyClickHandler());
 
         preset.addItem(22, PROGRESS_STACK, ChestMenuUtils.getEmptyClickHandler());
@@ -162,7 +162,7 @@ public class RecipeMachineCrude extends AbstractElectricRecipeMachine {
 
     }
 
-    
+
 
 	@Override
 	protected int[] getInputSlots() {
@@ -174,7 +174,7 @@ public class RecipeMachineCrude extends AbstractElectricRecipeMachine {
 		return OUTPUT_SLOTS;
 	}
 
-  
+
     @Override
     public ItemStack getProgressBar() {
         return PROGRESS_ITEM;

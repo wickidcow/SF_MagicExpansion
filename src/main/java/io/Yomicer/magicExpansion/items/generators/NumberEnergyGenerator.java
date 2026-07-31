@@ -74,8 +74,8 @@ public class NumberEnergyGenerator extends MenuBlock implements EnergyNetProvide
                 10,11,12,13,14,15,16,
                 18,19,20,21,22,23,24,25,26
         });
-        blockMenuPreset.drawBackground(new CustomItemStack(Material.MAGENTA_GLAZED_TERRACOTTA,getGradientName("§b↑请在上方填入密钥↑"),
-                getGradientName("§b密钥为9位二进制码"),getGradientName("§e有物品代表1"),getGradientName("§d无物品代表0")),new int[] {
+        blockMenuPreset.drawBackground(new CustomItemStack(Material.MAGENTA_GLAZED_TERRACOTTA,getGradientName("§b↑ Place the number item above ↑"),
+                getGradientName("§bFilled slot = 1"),getGradientName("§eEmpty slot = 0"),getGradientName("§dMatch the required 9-bit pattern")),new int[] {
 
                 9,   17
         });
@@ -135,26 +135,26 @@ public class NumberEnergyGenerator extends MenuBlock implements EnergyNetProvide
             if (gen == 0) {
                 inv.replaceExistingItem(13, new CustomItemStack(
                         Material.LANTERN,
-                        getGradientName("口令错误，不允许发射"),
-                        getGradientName("已储存: " + ChargeLore.format(getCharge(l)) + " J")
+                        getGradientName("Invalid number pattern"),
+                        getGradientName("Stored: " + ChargeLore.format(getCharge(l)) + " J")
                 ));
             }
             else if(ifKey2 == 1&&power2 > 0){
                 inv.replaceExistingItem(13, new CustomItemStack(
                         Material.SOUL_LANTERN,
-                        getGradientName("密钥正确，允许发射，本期密钥之一为:"+key2),
-                        getGradientName("类型: " + getPowerType()),
-                        getGradientName("发电速度: " + ChargeLore.formatEnergy(gen) + " J/s "),
-                        getGradientName("已储存: " + ChargeLore.format(getCharge(l)) + " J")
+                        getGradientName("Valid key. Launch authorized. One current key is: "+key2),
+                        getGradientName("Type: " + getPowerType()),
+                        getGradientName("Generation Rate: " + ChargeLore.formatEnergy(gen) + " J/s "),
+                        getGradientName("Stored: " + ChargeLore.format(getCharge(l)) + " J")
                 ));
             }else{
                 inv.replaceExistingItem(13, new CustomItemStack(
                         Material.SOUL_LANTERN,
-                        getGradientName("密钥正确，允许发射，本期密钥之一为:"+key),
-                        getGradientName("类型: " + getPowerType()),
-                        getGradientName("功率波动: " + ChargeLore.formatEnergy(Math.min(power,power2)) + " ~ " + ChargeLore.formatEnergy(Math.max(power,power2)) +" J/s "),
-                        getGradientName("发电速度: " + ChargeLore.formatEnergy(gen) + " J/s "),
-                        getGradientName("已储存: " + ChargeLore.format(getCharge(l)) + " J")
+                        getGradientName("Valid key. Launch authorized. One current key is: "+key),
+                        getGradientName("Type: " + getPowerType()),
+                        getGradientName("Power Fluctuation: " + ChargeLore.formatEnergy(Math.min(power,power2)) + " ~ " + ChargeLore.formatEnergy(Math.max(power,power2)) +" J/s "),
+                        getGradientName("Generation Rate: " + ChargeLore.formatEnergy(gen) + " J/s "),
+                        getGradientName("Stored: " + ChargeLore.format(getCharge(l)) + " J")
                         ));
             }
         }

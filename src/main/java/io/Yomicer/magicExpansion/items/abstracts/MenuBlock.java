@@ -90,7 +90,7 @@ public abstract class MenuBlock extends SlimefunItem {
     }
 
 
-    private String PowerType = "魔法发电机";
+    private String PowerType = "MenuBlock";
 
     public final MenuBlock setPowerType(String powerType) {
         Preconditions.checkArgument(true, "The powerType must be not null");

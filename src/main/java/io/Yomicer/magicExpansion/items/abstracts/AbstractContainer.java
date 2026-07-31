@@ -25,38 +25,38 @@ import java.util.List;
 
 
 public abstract class AbstractContainer extends SlimefunItem implements NotHopperable {
-    
+
     protected AbstractContainer(ItemGroup itemGroup, SlimefunItemStack item, RecipeType recipeType, ItemStack[] recipe) {
-        super(itemGroup, item, recipeType, recipe); 
+        super(itemGroup, item, recipeType, recipe);
 
         new BlockMenuPreset(getId(), getItemName()) {
             @Override
             public void init() {
-                setupMenu(this); 
+                setupMenu(this);
             }
 
             @Override
             public boolean canOpen(Block b, Player p) {
-                return p.hasPermission("slimefun.inventory.bypass") || Slimefun.getProtectionManager().hasPermission(p, b.getLocation(), Interaction.INTERACT_BLOCK); 
+                return p.hasPermission("slimefun.inventory.bypass") || Slimefun.getProtectionManager().hasPermission(p, b.getLocation(), Interaction.INTERACT_BLOCK);
             }
-            
+
             @Nonnull
             @Override
             public int[] getSlotsAccessedByItemTransport(ItemTransportFlow flow) {
                 if (flow == ItemTransportFlow.INSERT) {
                     return getInputSlots();
                 } else {
-                    return getOutputSlots(); 
+                    return getOutputSlots();
                 }
             }
 
-            @Override 
+            @Override
             public void newInstance(BlockMenu m, Block b) {
-                onNewInstance(m, b); 
+                onNewInstance(m, b);
             }
         };
 
-    } 
+    }
 
     @Override
     public void preRegister() {
@@ -65,15 +65,15 @@ public abstract class AbstractContainer extends SlimefunItem implements NotHoppe
             public void onPlayerBreak(BlockBreakEvent e, ItemStack item, List<ItemStack> drops) {
                 BlockMenu menu = StorageCacheUtils.getMenu(e.getBlock().getLocation());
                 if (menu != null) {
-                    onBreak(e, menu, e.getBlock().getLocation()); 
+                    onBreak(e, menu, e.getBlock().getLocation());
                 }
             }
         });
-        
+
         addItemHandler(new BlockPlaceHandler(false) {
             @Override
             public void onPlayerPlace(BlockPlaceEvent e) {
-                    onPlace(e, e.getBlockPlaced()); 
+                    onPlace(e, e.getBlockPlaced());
             }
         });
 
@@ -84,7 +84,7 @@ public abstract class AbstractContainer extends SlimefunItem implements NotHoppe
     @Nonnull
     protected abstract int[] getInputSlots();
 
-    @Nonnull 
+    @Nonnull
     protected abstract int[] getOutputSlots();
 
     protected void onNewInstance(BlockMenu m, Block b) {}

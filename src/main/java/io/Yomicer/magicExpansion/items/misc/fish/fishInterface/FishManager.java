@@ -19,10 +19,10 @@ public class FishManager {
     }
 
     /**
-     * 获取图鉴专用的鱼类（自动添加图鉴信息）
+     * 获取图鉴专用的鱼类(自动添加图鉴信息)
      */
     public static ItemStack getFishItemForGuide(BaseFish fish) {
-        return fish.addLore("", "§7这是一个仅供展示的图鉴条目", "§8—— 仅展示用途及获取条件 ——").build();
+        return fish.addLore("", "§7This guide entry is for display only.", "§8— Shows uses and obtainment requirements only —").build();
     }
 
 }

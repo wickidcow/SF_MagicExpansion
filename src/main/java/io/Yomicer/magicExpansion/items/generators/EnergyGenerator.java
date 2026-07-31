@@ -90,26 +90,26 @@ public class EnergyGenerator extends MenuBlock implements EnergyNetProvider {
             if (gen == 0) {
                 inv.replaceExistingItem(13, new CustomItemStack(
                         Material.LANTERN,
-                        getGradientName("未发电"),
-                        getGradientName("已储存: " + ChargeLore.format(getCharge(l)) + " J")
+                        getGradientName("EnergyGenerator"),
+                        getGradientName("Stored: " + ChargeLore.format(getCharge(l)) + " J")
                 ));
             }
             else if(power2 == 0){
                 inv.replaceExistingItem(13, new CustomItemStack(
                         Material.SOUL_LANTERN,
-                        getGradientName("发电中"),
-                                getGradientName("类型: " + getPowerType()),
-                        getGradientName("发电速度: " + ChargeLore.formatEnergy(gen) + " J/s "),
-                        getGradientName("已储存: " + ChargeLore.format(getCharge(l)) + " J")
+                        getGradientName("Generating"),
+                                getGradientName("Type: " + getPowerType()),
+                        getGradientName("Generation Rate: " + ChargeLore.formatEnergy(gen) + " J/s "),
+                        getGradientName("Stored: " + ChargeLore.format(getCharge(l)) + " J")
                 ));
             }else{
                 inv.replaceExistingItem(13, new CustomItemStack(
                         Material.SOUL_LANTERN,
-                        getGradientName("发电中"),
-                        getGradientName("类型: " + getPowerType()),
-                        getGradientName("发电波动: " + ChargeLore.formatEnergy(Math.min(power,power2)) + " ~ " + ChargeLore.formatEnergy(Math.max(power,power2)) +" J/s "),
-                        getGradientName("发电速度: " + ChargeLore.formatEnergy(gen) + " J/s "),
-                        getGradientName("已储存: " + ChargeLore.format(getCharge(l)) + " J")
+                        getGradientName("Generating"),
+                        getGradientName("Type: " + getPowerType()),
+                        getGradientName("Generation Fluctuation: " + ChargeLore.formatEnergy(Math.min(power,power2)) + " ~ " + ChargeLore.formatEnergy(Math.max(power,power2)) +" J/s "),
+                        getGradientName("Generation Rate: " + ChargeLore.formatEnergy(gen) + " J/s "),
+                        getGradientName("Stored: " + ChargeLore.format(getCharge(l)) + " J")
                         ));
             }
         }

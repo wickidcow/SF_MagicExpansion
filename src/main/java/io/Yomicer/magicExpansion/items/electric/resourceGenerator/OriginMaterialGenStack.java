@@ -13,7 +13,7 @@ import me.mrCookieSlime.CSCoreLibPlugin.general.Inventory.ChestMenu;
 import me.mrCookieSlime.Slimefun.Objects.SlimefunItem.abstractItems.MachineRecipe;
 import me.mrCookieSlime.Slimefun.api.inventory.BlockMenu;
 import me.mrCookieSlime.Slimefun.api.inventory.BlockMenuPreset;
-import net.guizhanss.guizhanlib.minecraft.helper.inventory.ItemStackHelper;
+import io.Yomicer.magicExpansion.utils.compat.ItemStackHelper;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -185,24 +185,24 @@ public class OriginMaterialGenStack extends AbstractElectricResourceMachine {
         // 构建 Slot 4 的 Lore
         List<String> slot4Lore = new ArrayList<>();
         if (total > 0) {
-            slot4Lore.add(getGradientNameVer2("状态: 运行中"));
+            slot4Lore.add(getGradientNameVer2("Status: Generating"));
         } else {
-            slot4Lore.add(getGradientNameVer2("状态: 待机/无输入"));
+            slot4Lore.add(getGradientNameVer2("Status: Waiting for input"));
         }
-        slot4Lore.add(getGradientNameVer2("输出占用: " + String.format("%.1f", fillPercentage) + "%"));
-        slot4Lore.add(getGradientNameVer2("已用: " + usedOutputSlots + " / " + OUTPUT_SLOTS.length));
+        slot4Lore.add(getGradientNameVer2("Output Usage: " + String.format("%.1f", fillPercentage) + "%"));
+        slot4Lore.add(getGradientNameVer2("Used: " + usedOutputSlots + " / " + OUTPUT_SLOTS.length));
 
         menu.replaceExistingItem(4, new CustomItemStack(
                 total > 0 ? Material.LIME_STAINED_GLASS_PANE : Material.RED_STAINED_GLASS_PANE,
-                getGradientNameVer2("机器状态"),
+                getGradientNameVer2("Machine Status"),
                 slot4Lore
         ));
 
 
         List<String> combinedLore = new ArrayList<>();
-        combinedLore.add(getGradientNameVer2("演化台数量: " + total));
-        combinedLore.add(getGradientNameVer2("源聚倍率: " + String.format("%.2f", randomFactor)));
-        menu.replaceExistingItem(13, new CustomItemStack(Material.REPEATER, getGradientNameVer2("核心数据"), combinedLore));
+        combinedLore.add(getGradientNameVer2("Amount: " + total));
+        combinedLore.add(getGradientNameVer2("Source Multiplier: " + String.format("%.2f", randomFactor)));
+        menu.replaceExistingItem(13, new CustomItemStack(Material.REPEATER, getGradientNameVer2("Core Data"), combinedLore));
         updateInfoSlots(menu, productionMap, randomFactor);
     }
     private void updateInfoSlots(BlockMenu menu, Map<Material, Integer> productionMap, double randomFactor) {
@@ -211,14 +211,14 @@ public class OriginMaterialGenStack extends AbstractElectricResourceMachine {
             return;
         }
         String[] easterEggs = {
-                getGradientNameVer2("欧皇附体?"),
-                getGradientNameVer2("机器在摸鱼..."),
-                getGradientNameVer2("这不科学!"),
-                getGradientNameVer2("多刷刷倍率吧"),
-                getGradientNameVer2("高效生产中..."),
-                getGradientNameVer2("这也太慢了..."),
-                getGradientNameVer2("再快一点!"),
-                getGradientNameVer2("魔法发生中...")
+                getGradientNameVer2("Feeling lucky?"),
+                getGradientNameVer2("The machine hums softly..."),
+                getGradientNameVer2("That should not be possible!"),
+                getGradientNameVer2("Increase the multiplier for better results."),
+                getGradientNameVer2("Produces randomized resources from stored materials."),
+                getGradientNameVer2("This is far too slow..."),
+                getGradientNameVer2("A little faster!"),
+                getGradientNameVer2("Magic in progress...")
         };
 
         int[] infoSlots = {31, 40, 49};
@@ -226,11 +226,11 @@ public class OriginMaterialGenStack extends AbstractElectricResourceMachine {
         if (entryList.isEmpty()) {
             for (int i = 0; i < 3; i++) {
                 String eggText = easterEggs[(int) (Math.random() * easterEggs.length)];
-                menu.replaceExistingItem(infoSlots[i], new CustomItemStack(Material.PAPER, getGradientNameVer2("系统日志"), getGradientNameVer2(eggText)));
+                menu.replaceExistingItem(infoSlots[i], new CustomItemStack(Material.PAPER, getGradientNameVer2("System Log"), getGradientNameVer2(eggText)));
             }
         } else {
             List<String> linesToShow = new ArrayList<>();
-            linesToShow.add(getGradientNameVer2("--- 当前产出列表 ---"));
+            linesToShow.add(getGradientNameVer2("--- Current Output ---"));
             for (Map.Entry<Material, Integer> entry : entryList) {
                 Material mat = entry.getKey();
                 int count = entry.getValue();
@@ -239,9 +239,9 @@ public class OriginMaterialGenStack extends AbstractElectricResourceMachine {
                 linesToShow.add(getGradientNameVer2(name + ": " + outCount));
             }
             if (entryList.size() > 6) {
-                linesToShow.add(getGradientNameVer2("... (更多请点击查看)"));
+                linesToShow.add(getGradientNameVer2("... (Click to view more)"));
             } else {
-                linesToShow.add(getGradientNameVer2("(点击格子查看详情)"));
+                linesToShow.add(getGradientNameVer2("(Click to view)"));
             }
             for (int i = 0; i < 3; i++) {
                 List<String> slotLore = new ArrayList<>();
@@ -249,17 +249,17 @@ public class OriginMaterialGenStack extends AbstractElectricResourceMachine {
                 if (start < linesToShow.size()) {
                     int end = Math.min(start + 4, linesToShow.size());
                     slotLore = linesToShow.subList(start, end);
-                    menu.replaceExistingItem(infoSlots[i], new CustomItemStack(Material.WRITABLE_BOOK, getGradientNameVer2("生产记录"), slotLore));
+                    menu.replaceExistingItem(infoSlots[i], new CustomItemStack(Material.WRITABLE_BOOK, getGradientNameVer2("Produces randomized resources from stored materials."), slotLore));
                 } else {
                     String eggText = easterEggs[(int) (Math.random() * easterEggs.length)];
-                    menu.replaceExistingItem(infoSlots[i], new CustomItemStack(Material.PAPER, getGradientNameVer2("彩蛋"), (eggText)));
+                    menu.replaceExistingItem(infoSlots[i], new CustomItemStack(Material.PAPER, getGradientNameVer2("Easter Egg"), (eggText)));
                 }
             }
         }
     }
 
     private void openProductionMenu(Player p, Map<Material, Integer> productionMap) {
-        ChestMenu menu = new ChestMenu(getGradientNameVer2("详细生产报表"));
+        ChestMenu menu = new ChestMenu(getGradientNameVer2("Produces randomized resources from stored materials."));
 
         menu.setPlayerInventoryClickable(false);
         menu.setEmptySlotsClickable(false);
@@ -276,10 +276,10 @@ public class OriginMaterialGenStack extends AbstractElectricResourceMachine {
             ItemStack displayItem = new ItemStack(mat);
             ItemMeta meta = displayItem.getItemMeta();
             if (meta != null) {
-                meta.setDisplayName(getGradientNameVer2("产物: " + ItemStackHelper.getDisplayName(displayItem)));
+                meta.setDisplayName(getGradientNameVer2("Output: " + ItemStackHelper.getDisplayName(displayItem)));
                 List<String> lore = new ArrayList<>();
-                lore.add(getGradientNameVer2("演化台数量: " + count));
-                lore.add(getGradientNameVer2("最终产量受倍率影响"));
+                lore.add(getGradientNameVer2("Amount: " + count));
+                lore.add(getGradientNameVer2("Final output is affected by the multiplier."));
                 meta.setLore(lore);
                 displayItem.setItemMeta(meta);
             }
@@ -287,7 +287,7 @@ public class OriginMaterialGenStack extends AbstractElectricResourceMachine {
             slotIndex++;
         }
         if (productionMap.isEmpty()) {
-            menu.addItem(22, new CustomItemStack(Material.BARRIER, getGradientNameVer2("暂无生产数据")), ChestMenuUtils.getEmptyClickHandler());
+            menu.addItem(22, new CustomItemStack(Material.BARRIER, getGradientNameVer2("Produces randomized resources from stored materials.")), ChestMenuUtils.getEmptyClickHandler());
         }
         menu.open(p);
     }
@@ -329,9 +329,9 @@ public class OriginMaterialGenStack extends AbstractElectricResourceMachine {
             }
             return false;
         };
-        preset.addItem(31, new CustomItemStack(Material.BOOK, getGradientNameVer2("点击查看详情")), infoClickHandler);
-        preset.addItem(40, new CustomItemStack(Material.BOOK, getGradientNameVer2("点击查看详情")), infoClickHandler);
-        preset.addItem(49, new CustomItemStack(Material.BOOK, getGradientNameVer2("点击查看详情")), infoClickHandler);
+        preset.addItem(31, new CustomItemStack(Material.BOOK, getGradientNameVer2("Click to View")), infoClickHandler);
+        preset.addItem(40, new CustomItemStack(Material.BOOK, getGradientNameVer2("Click to View")), infoClickHandler);
+        preset.addItem(49, new CustomItemStack(Material.BOOK, getGradientNameVer2("Click to View")), infoClickHandler);
     }
 
 
@@ -346,7 +346,7 @@ public class OriginMaterialGenStack extends AbstractElectricResourceMachine {
     @Override
     public List<ItemStack> getDisplayRecipes() {
         List<ItemStack> list = new ArrayList<>();
-        list.add(new CustomItemStack(Material.KNOWLEDGE_BOOK, getGradientNameVer2("放入 万物演化台·源起"), getGradientNameVer2("放置机器时决定固定倍率")));
+        list.add(new CustomItemStack(Material.KNOWLEDGE_BOOK, getGradientNameVer2("Insert the required materials into the machine."), getGradientNameVer2("Machine")));
         list.addAll(Arrays.asList(getItemStackOutputs()));
         return list;
     }

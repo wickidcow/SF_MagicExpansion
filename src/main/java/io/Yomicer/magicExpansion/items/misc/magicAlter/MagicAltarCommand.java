@@ -23,34 +23,34 @@ public class MagicAltarCommand implements TabExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!(sender instanceof Player)) {
-            sender.sendMessage("§c只有玩家可以使用此命令!");
+            sender.sendMessage("§cOnly players can use this command!");
             return true;
         }
 
         Player player = (Player) sender;
 
         if (args.length == 0) {
-            player.sendMessage("§6/mxwand wand §7- 获取魔法祭坛法杖");
+            player.sendMessage("§6/mxwand wand §7-");
             return true;
         }
 
         if (args[0].equalsIgnoreCase("wand") && player.hasPermission("mxwand.wand")) {
             player.getInventory().addItem(createAltarWand());
-            player.sendMessage("§a已获得魔法祭坛法杖!");
+            player.sendMessage("§aItem received.");
             return true;
         }
 
-        player.sendMessage("§c未知子命令! 使用 /mxwand 查看可用命令");
+        player.sendMessage("§cUnknown subcommand! /mxwand");
         return true;
     }
 
-    // 创建特殊物品（祭坛法杖）
+    // 创建特殊物品(祭坛法杖)
     private ItemStack createAltarWand() {
         ItemStack wand = new ItemStack(org.bukkit.Material.BLAZE_ROD);
         ItemMeta meta = wand.getItemMeta();
 
         if (meta != null) {
-            meta.setDisplayName("§6魔法祭坛法杖");
+            meta.setDisplayName("§6Magic Altar Wand");
             meta.getPersistentDataContainer().set(
                     plugin.getPluginInitializer().getAltarWandKey(),
                     PersistentDataType.BYTE,
@@ -59,8 +59,8 @@ public class MagicAltarCommand implements TabExecutor {
 
             // 添加Lore说明
             List<String> lore = new ArrayList<>();
-            lore.add("§7右键祭坛发射器来激活合成");
-            lore.add("§7需要正确的方块布局和物品配方");
+            lore.add("§7Right-click the dispenser");
+            lore.add("§7View the required item recipe");
             meta.setLore(lore);
 
             wand.setItemMeta(meta);

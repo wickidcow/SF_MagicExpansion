@@ -26,13 +26,13 @@ public class RecipeBookListener implements Listener {
         String title = event.getView().getTitle();
 
         // 检查是否在配方书相关的GUI中
-        if (title.contains("祭坛配方") ||
-                title.contains("配方详情") ||
-                title.contains("发射器物品") ||
-                title.contains("发射器列表") ||
-                title.contains("祭坛底座")) {
+        if (title.contains("recipe") ||
+                title.contains("Recipe Details") ||
+                title.contains("Dispenser Items") ||
+                title.contains("Dispenser List") ||
+                title.contains("Altar Base")) {
 
-            // 完全取消事件，防止任何物品被移动
+            // 完全取消事件,防止任何物品被移动
             event.setCancelled(true);
 
             // 只处理有物品的点击
@@ -49,13 +49,13 @@ public class RecipeBookListener implements Listener {
         String title = event.getView().getTitle();
 
         // 检查是否在配方书相关的GUI中
-        if (title.contains("祭坛配方") ||
-                title.contains("配方详情") ||
-                title.contains("发射器物品") ||
-                title.contains("发射器列表") ||
-                title.contains("祭坛底座")) {
+        if (title.contains("recipe") ||
+                title.contains("Recipe Details") ||
+                title.contains("Dispenser Items") ||
+                title.contains("Dispenser List") ||
+                title.contains("Altar Base")) {
 
-            // 取消拖拽事件，防止物品被拖拽
+            // 取消拖拽事件,防止物品被拖拽
             event.setCancelled(true);
         }
     }

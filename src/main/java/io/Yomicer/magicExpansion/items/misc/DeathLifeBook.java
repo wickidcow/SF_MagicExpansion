@@ -26,7 +26,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static net.guizhanss.guizhanlib.minecraft.helper.entity.EntityHelper.getDisplayName;
+import static io.Yomicer.magicExpansion.utils.compat.EntityHelper.getDisplayName;
 
 public class DeathLifeBook extends SimpleSlimefunItem<ItemUseHandler> implements NotPlaceable {
 
@@ -49,12 +49,12 @@ public class DeathLifeBook extends SimpleSlimefunItem<ItemUseHandler> implements
     }
 
     private void openEntityMenu(Player player, int page) {
-        // 扫描半径20格内的活体生物（排除玩家、盔甲架、掉落物等非生物实体）
+        // 扫描半径20格内的活体生物(排除玩家、盔甲架、掉落物等非生物实体)
         List<LivingEntity> nearbyEntities = player.getLocation().getWorld()
                 .getNearbyEntities(player.getLocation(), 20, 20, 20)
                 .stream()
                 .filter(entity -> {
-                    // 只保留活体生物，排除玩家、盔甲架、物品展示框、掉落物等
+                    // 只保留活体生物,排除玩家、盔甲架、物品展示框、掉落物等
                     if (!(entity instanceof LivingEntity)) return false;
                     if (entity instanceof Player) return false;
                     if (entity instanceof ArmorStand) return false;
@@ -77,7 +77,7 @@ public class DeathLifeBook extends SimpleSlimefunItem<ItemUseHandler> implements
                 .collect(Collectors.toList());
 
         if (nearbyEntities.isEmpty()) {
-            player.sendMessage("§c附近没有发现任何生物!");
+            player.sendMessage("§cNo living creatures were found nearby!");
             player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 1.0f, 1.0f);
             return;
         }
@@ -95,7 +95,7 @@ public class DeathLifeBook extends SimpleSlimefunItem<ItemUseHandler> implements
         int endIndex = Math.min(startIndex + entitiesPerPage, nearbyEntities.size());
 
         // 创建菜单 - 保存标题用于后续解析
-        final String menuTitle = "§5生死簿 §7- 第 " + (page + 1) + "/" + totalPages + " 页";
+        final String menuTitle = "§5Book of Life and Death §7- Page " + (page + 1) + "/" + totalPages + "";
         ChestMenu menu = new ChestMenu(menuTitle);
 
         // 使用final变量来避免lambda问题
@@ -109,14 +109,14 @@ public class DeathLifeBook extends SimpleSlimefunItem<ItemUseHandler> implements
             addEntityToMenu(menu, slot, entity, player, menuTitle);
         }
 
-        // 添加上一页按钮（如果有上一页）
+        // 添加上一页按钮(如果有上一页)
         if (page > 0) {
             menu.addItem(45, new CustomItemStack(
                     Material.ARROW,
-                    "§6上一页",
-                    "§7点击查看上一页",
-                    "§e当前: 第 " + (page + 1) + " 页",
-                    "§a共发现: " + nearbyEntities.size() + " 个生物"
+                    "§6Previous Page",
+                    "§7Click to view the previous page.",
+                    "§eCurrent: Page " + (page + 1) + "",
+                    "§aCreatures Found: " + nearbyEntities.size() + " creatures"
             ), (p, slot, item, action) -> {
                 p.playSound(p.getLocation(), Sound.ITEM_BOOK_PAGE_TURN, 0.8f, 1.0f);
                 openEntityMenu(p, finalPage - 1);
@@ -127,10 +127,10 @@ public class DeathLifeBook extends SimpleSlimefunItem<ItemUseHandler> implements
         // 添加一键清除按钮
         menu.addItem(49, new CustomItemStack(
                 Material.TNT,
-                "§c§l一键清除所有生物",
-                "§7点击清除半径20格内的所有生物",
-                "§e数量: §6" + nearbyEntities.size() + " 个生物",
-                "§4警告: 此操作不可撤销!"
+                "§c§lRemove All Creatures",
+                "§7Click to remove every creature within 20 blocks.",
+                "§eAmount: §6" + nearbyEntities.size() + " creatures",
+                "§4Warning: this action cannot be undone!"
         ), (p, slot, item, action) -> {
             // 添加更强的失明效果
             p.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 60, 2)); // 3秒更强的失明
@@ -145,20 +145,20 @@ public class DeathLifeBook extends SimpleSlimefunItem<ItemUseHandler> implements
                 }
             }
 
-            p.sendMessage("§a已清除 §e" + killedCount + " §a个生物!");
+            p.sendMessage("§aRemoved §e" + killedCount + " §acreatures.");
             p.playSound(p.getLocation(), Sound.ENTITY_LIGHTNING_BOLT_THUNDER, 1.0f, 1.0f);
             p.closeInventory();
             return false;
         });
 
-        // 添加下一页按钮（如果有下一页）
+        // 添加下一页按钮(如果有下一页)
         if (page < totalPages - 1) {
             menu.addItem(53, new CustomItemStack(
                     Material.ARROW,
-                    "§6下一页",
-                    "§7点击查看下一页",
-                    "§e当前: 第 " + (page + 1) + " 页",
-                    "§a共发现: " + nearbyEntities.size() + " 个生物"
+                    "§6Next Page",
+                    "§7Click to view the next page.",
+                    "§eCurrent: Page " + (page + 1) + "",
+                    "§aCreatures Found: " + nearbyEntities.size() + " creatures"
             ), (p, slot, item, action) -> {
                 p.playSound(p.getLocation(), Sound.ITEM_BOOK_PAGE_TURN, 0.8f, 1.0f);
                 openEntityMenu(p, finalPage + 1);
@@ -169,10 +169,10 @@ public class DeathLifeBook extends SimpleSlimefunItem<ItemUseHandler> implements
         // 添加页码信息
         menu.addItem(48, new CustomItemStack(
                 Material.BOOK,
-                "§5生死簿",
-                "§7当前页码: §e" + (page + 1) + "§7/§e" + totalPages,
-                "§7发现生物: §a" + nearbyEntities.size() + " 个",
-                "§7扫描半径: §b20 格"
+                "§5Book of Life and Death",
+                "§7Current Page: §e" + (page + 1) + "§7/§e" + totalPages,
+                "§7Creatures Found: §a" + nearbyEntities.size(),
+                "§7Scan Radius: §b20 blocks"
         ), (p, slot, item, action) -> false);
 
         // 打开菜单
@@ -199,13 +199,13 @@ public class DeathLifeBook extends SimpleSlimefunItem<ItemUseHandler> implements
         // 创建显示物品
         Material icon = getEntityIcon(entity);
         List<String> lore = Arrays.asList(
-                "§7生命值: " + healthColor + String.format("%.1f", health) + "§7/§a" + String.format("%.1f", maxHealth),
-                "§7坐标: §eX: " + (int)loc.getX() + " Y: " + (int)loc.getY() + " Z: " + (int)loc.getZ(),
-                "§7世界: §b" + worldName,
-                "§7距离: §6" + String.format("%.1f", distance) + " 格",
+                "§7Health: " + healthColor + String.format("%.1f", health) + "§7/§a" + String.format("%.1f", maxHealth),
+                "§7Coordinates: §eX: " + (int)loc.getX() + " Y: " + (int)loc.getY() + " Z: " + (int)loc.getZ(),
+                "§7World: §b" + worldName,
+                "§7Distance: §6" + String.format("%.1f", distance) + " blocks",
                 "",
-                "§a左键点击 §8-> §e传送到生物",
-                "§c右键点击 §8-> §4杀死生物"
+                "§aLeft-click §8-> §eTeleport to creature",
+                "§cRight-click §8-> §4Remove creature"
         );
 
         CustomItemStack menuItem = new CustomItemStack(icon, "§6" + entityName, lore.toArray(new String[0]));
@@ -221,13 +221,13 @@ public class DeathLifeBook extends SimpleSlimefunItem<ItemUseHandler> implements
                 if (!finalEntity.isDead()) {
                     // 添加短暂失明效果
                     p.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 40, 1)); // 2秒失明 (40 ticks)
-                    p.addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, 60, 1)); // 3秒反胃效果，增强传送感
+                    p.addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, 60, 1)); // 3秒反胃效果,增强传送感
 
                     p.teleport(finalEntity.getLocation().add(0, 1, 0));
-                    p.sendMessage("§a已传送到 §e" + finalEntityName + " §a的位置!");
+                    p.sendMessage("§aTeleported to §e" + finalEntityName + "§a!");
                     p.playSound(p.getLocation(), Sound.ENTITY_ENDERMAN_TELEPORT, 1.0f, 1.0f);
                 } else {
-                    p.sendMessage("§c该生物已不存在!");
+                    p.sendMessage("§cThat creature no longer exists!");
                     p.playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 1.0f, 0.5f);
                 }
                 p.closeInventory();
@@ -240,12 +240,12 @@ public class DeathLifeBook extends SimpleSlimefunItem<ItemUseHandler> implements
                     // 播放死亡音效
                     p.playSound(p.getLocation(), Sound.ENTITY_PLAYER_DEATH, 0.8f, 1.0f);
 
-                    // 延迟一 tick 执行，让音效先播放
+                    // 延迟一 tick 执行,让音效先播放
                     new BukkitRunnable() {
                         @Override
                         public void run() {
                             finalEntity.remove();
-                            p.sendMessage("§a已从生死簿上抹去 §e" + finalEntityName + "§a!");
+                            p.sendMessage("§aRemoved from the Book of Life and Death: §e" + finalEntityName + "§a!");
 
                             // 刷新当前页菜单
                             int currentPage = getCurrentPageFromTitle(menuTitle);
@@ -253,7 +253,7 @@ public class DeathLifeBook extends SimpleSlimefunItem<ItemUseHandler> implements
                         }
                     }.runTaskLater(MagicExpansion.getInstance(), 1L);
                 } else {
-                    p.sendMessage("§c该生物已不存在!");
+                    p.sendMessage("§cThat creature no longer exists!");
                     p.playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 1.0f, 0.5f);
                     p.closeInventory();
                 }
@@ -271,7 +271,7 @@ public class DeathLifeBook extends SimpleSlimefunItem<ItemUseHandler> implements
             Material spawnEgg = Material.valueOf(entityTypeName + "_SPAWN_EGG");
             return spawnEgg;
         } catch (IllegalArgumentException e) {
-            // 如果找不到对应的生物蛋，返回NAME_TAG
+            // 如果找不到对应的生物蛋,返回NAME_TAG
             return Material.NAME_TAG;
         }
     }
@@ -288,9 +288,9 @@ public class DeathLifeBook extends SimpleSlimefunItem<ItemUseHandler> implements
                     return Integer.parseInt(currentPage) - 1; // 返回0-based页码
                 }
             }
-            return 0; // 如果解析失败，返回第一页
+            return 0; // 如果解析失败,返回第一页
         } catch (Exception e) {
-            return 0; // 如果解析失败，返回第一页
+            return 0; // 如果解析失败,返回第一页
         }
     }
 }

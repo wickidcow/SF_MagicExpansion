@@ -14,7 +14,7 @@ import io.github.thebusybiscuit.slimefun4.utils.ChestMenuUtils;
 import me.mrCookieSlime.Slimefun.Objects.SlimefunItem.abstractItems.MachineRecipe;
 import me.mrCookieSlime.Slimefun.api.inventory.BlockMenu;
 import me.mrCookieSlime.Slimefun.api.inventory.BlockMenuPreset;
-import net.guizhanss.guizhanlib.minecraft.helper.inventory.ItemStackHelper;
+import io.Yomicer.magicExpansion.utils.compat.ItemStackHelper;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -36,7 +36,7 @@ import static io.Yomicer.magicExpansion.utils.ColorGradient.getGradientName;
 import static io.Yomicer.magicExpansion.utils.ColorGradient.getGradientNameVer2;
 
 /**
- * 削弱版：基于 OriginMaterialGen 修改，每次只产出 1 个物品。
+ * 削弱版:基于 OriginMaterialGen 修改,每次只产出 1 个物品.
  */
 public class OriginMaterialGenLite extends AbstractElectricResourceMachine implements DistinctiveItem {
 
@@ -49,7 +49,7 @@ public class OriginMaterialGenLite extends AbstractElectricResourceMachine imple
     private static final ItemStack PROGRESS_ITEM = new ItemStack(Material.SOUL_LANTERN);
     private ItemStack material;
 
-    private static final ItemStack PROGRESS_STACK = new CustomItemStack(Material.SOUL_CAMPFIRE, getGradientNameVer2("信息"), getGradientNameVer2("类型：资源生成器"), getGradientNameVer2("所属附属：魔法"));
+    private static final ItemStack PROGRESS_STACK = new CustomItemStack(Material.SOUL_CAMPFIRE, getGradientNameVer2("Information"), getGradientNameVer2("type:"), getGradientNameVer2("Addon: MagicExpansion"));
 
     public OriginMaterialGenLite(ItemGroup itemGroup, SlimefunItemStack item, RecipeType recipeType, ItemStack[] recipe) {
         super(itemGroup, item, recipeType, recipe);
@@ -78,7 +78,7 @@ public class OriginMaterialGenLite extends AbstractElectricResourceMachine imple
             if (lore == null) {
                 lore = new ArrayList<>();
             }
-            lore.add(getGradientNameVer2( "当前推演物品：" + n));
+            lore.add(getGradientNameVer2("Current Item: " + n));
             meta.setLore(lore);
             NamespacedKey key = new NamespacedKey(MagicExpansion.getInstance(), "origin_material");
             meta.getPersistentDataContainer().set(key, PersistentDataType.STRING, materialName);
@@ -153,8 +153,8 @@ public class OriginMaterialGenLite extends AbstractElectricResourceMachine imple
     public List<ItemStack> getDisplayRecipes() {
         List<ItemStack> display = new ArrayList<>();
 
-        display.add(new CustomItemStack(Material.KNOWLEDGE_BOOK, getGradientNameVer2("产物⇨"),getGradientNameVer2("每次生产 1 个"),getGradientNameVer2("生产效率⇨ ⚙ 每 " + getCraftSecond() + " s生成一次"),getGradientNameVer2("生产能耗⇨ ⚡ "+ getEnergyConsumption()*2 +" J/s")));
-        display.add(new CustomItemStack(Material.KNOWLEDGE_BOOK, getGradientNameVer2("产物⇨"),getGradientNameVer2("每次生产 1 个"),getGradientNameVer2("生产效率⇨ ⚙ 每 " + getCraftSecond() + " s生成一次"),getGradientNameVer2("生产能耗⇨ ⚡ "+ getEnergyConsumption()*2 +" J/s")));
+        display.add(new CustomItemStack(Material.KNOWLEDGE_BOOK, getGradientNameVer2("Output ⇨"),getGradientNameVer2("Produces 1 item per operation."),getGradientNameVer2("Production Rate ⇨ ⚙ Every " + getCraftSecond() + " s per operation"),getGradientNameVer2("Energy Cost ⇨ ⚡ "+ getEnergyConsumption()*2 +" J/s")));
+        display.add(new CustomItemStack(Material.KNOWLEDGE_BOOK, getGradientNameVer2("Output ⇨"),getGradientNameVer2("Produces 1 item per operation."),getGradientNameVer2("Production Rate ⇨ ⚙ Every " + getCraftSecond() + " s per operation"),getGradientNameVer2("Energy Cost ⇨ ⚡ "+ getEnergyConsumption()*2 +" J/s")));
         display.addAll(Arrays.asList(getItemStackOutputs()));
 
         return display;
@@ -204,13 +204,13 @@ public class OriginMaterialGenLite extends AbstractElectricResourceMachine imple
         ItemStack item = PROGRESS_STACK.clone();
         ItemMeta meta = item.getItemMeta();
 
-        meta.setDisplayName(getGradientNameVer2("信息"));
+        meta.setDisplayName(getGradientNameVer2("Information"));
         ArrayList lore = new ArrayList<>();
-        lore.add(getGradientNameVer2("类型：资源生成器"));
-        lore.add(getGradientNameVer2("所属附属：魔法"));
-        lore.add(getGradientNameVer2("当前生产物品：" + ItemStackHelper.getDisplayName(output)));
-        lore.add(getGradientNameVer2("生产效率⇨ ⚙ 每 " + getCraftSecond() + " s生成一次"));
-        lore.add(getGradientNameVer2("生产能耗⇨ ⚡ "+ getEnergyConsumption()*2 +" J/s"));
+        lore.add(getGradientNameVer2("type:"));
+        lore.add(getGradientNameVer2("Addon: MagicExpansion"));
+        lore.add(getGradientNameVer2("Current Product: " + ItemStackHelper.getDisplayName(output)));
+        lore.add(getGradientNameVer2("Production Rate ⇨ ⚙ Every " + getCraftSecond() + " s per operation"));
+        lore.add(getGradientNameVer2("Energy Cost ⇨ ⚡ "+ getEnergyConsumption()*2 +" J/s"));
         meta.setLore(lore);
         item.setItemMeta(meta);
 

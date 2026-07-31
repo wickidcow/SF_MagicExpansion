@@ -23,22 +23,22 @@ public class MxEnchantCommand implements TabExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!(sender instanceof Player)) {
-            sender.sendMessage("§c只有玩家可以使用此命令!");
+            sender.sendMessage("§cOnly players can use this command!");
             return true;
         }
 
         Player player = (Player) sender;
 
         if (args.length == 0) {
-            player.sendMessage("§6/mxalter guide §7- 获取配方书");
-            player.sendMessage("§6/mxalter open_guide §7- 打开配方书");
+            player.sendMessage("§6/mxalter guide §7- recipe");
+            player.sendMessage("§6/mxalter open_guide §7- Open the recipe guide");
             return true;
         }
 
         switch (args[0].toLowerCase()) {
             case "guide":
                 player.getInventory().addItem(plugin.getPluginInitializer().getRecipeBookManager().createRecipeBook());
-                player.sendMessage("§a已获得魔法祭坛配方指南!");
+                player.sendMessage("§aMagic Altar Recipe Guide!");
                 break;
 
             case "open_guide":
@@ -46,7 +46,7 @@ public class MxEnchantCommand implements TabExecutor {
                 break;
 
             default:
-                player.sendMessage("§c未知子命令! 使用 /mxenchant 查看可用命令");
+                player.sendMessage("§cUnknown subcommand! /mxenchant");
                 break;
         }
 

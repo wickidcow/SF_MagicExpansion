@@ -59,14 +59,14 @@ public class NewYearsDayFireworkYuanDan extends SimpleSlimefunItem<ItemUseHandle
                 ItemStack itemInHand = player.getInventory().getItemInMainHand();
                 // 检查玩家手上是否有物品
                 if (e.getHand()!= HAND) {
-                    player.sendMessage(ColorGradient.getGradientName("请使用主手使用~"));
+                    player.sendMessage(ColorGradient.getGradientName("Hold this item in your main hand to use it."));
                     return;
                 }
                 // 减少手上的物品数量
                 if (itemInHand.getAmount() > 1) {
                     itemInHand.setAmount(itemInHand.getAmount() - 1);
                 } else {
-                    player.getInventory().setItemInMainHand(null); // 如果数量为 1，则直接移除
+                    player.getInventory().setItemInMainHand(null); // 如果数量为 1,则直接移除
                 }
 
                 Location blockLoc = e.getClickedBlock().get().getLocation().clone().add(0,1,0);
@@ -88,7 +88,7 @@ public class NewYearsDayFireworkYuanDan extends SimpleSlimefunItem<ItemUseHandle
                     new BukkitRunnable() {
                         @Override
                         public void run() {
-                            // 可选：根据迭代次数稍微偏移位置
+                            // 可选:根据迭代次数稍微偏移位置
                             Location launchLoc = blockLoc.clone();
                             if (currentIteration > 0) {
                                 double angle = currentIteration * (2 * Math.PI / 5); // 均匀分布在圆周上
@@ -185,7 +185,7 @@ public class NewYearsDayFireworkYuanDan extends SimpleSlimefunItem<ItemUseHandle
         world.playSound(center, Sound.ENTITY_ENDER_DRAGON_GROWL, 3.0f, 0.4f);
         world.playSound(center, Sound.UI_TOAST_CHALLENGE_COMPLETE, 2.5f, 0.7f);
 
-        // 创建中心主烟花（调整数量：原来5，可以增加到8）
+        // 创建中心主烟花(调整数量:原来5,可以增加到8)
         for (int i = 0; i < 8; i++) { // 增加中心烟花数量
             final int index = i;
             new BukkitRunnable() {
@@ -196,16 +196,16 @@ public class NewYearsDayFireworkYuanDan extends SimpleSlimefunItem<ItemUseHandle
             }.runTaskLater(MagicExpansion.getInstance(), i * 1L); // 间隔1 tick
         }
 
-        // 第一层：近距离小烟花（调整数量：12 -> 24）
+        // 第一层:近距离小烟花(调整数量:12 -> 24)
         launchRingFireworks(center.clone().add(0, EXPLOSION_HEIGHT, 0), 10, 30, 0); // 12改为24
 
-        // 第二层：中距离烟花（调整数量：16 -> 32）
+        // 第二层:中距离烟花(调整数量:16 -> 32)
         launchRingFireworks(center.clone().add(0, EXPLOSION_HEIGHT, 0), 20, 36, 5); // 16改为32
 
-        // 第三层：远距离大烟花（调整数量：20 -> 40）
+        // 第三层:远距离大烟花(调整数量:20 -> 40)
         launchRingFireworks(center.clone().add(0, EXPLOSION_HEIGHT, 0), 30, 42, 10); // 20改为40
 
-        // 第四层：超级大烟花（调整数量：8 -> 16）
+        // 第四层:超级大烟花(调整数量:8 -> 16)
         launchSuperFireworks(center.clone().add(0, EXPLOSION_HEIGHT, 0), 40, 24, 15);
     }
 
@@ -268,7 +268,7 @@ public class NewYearsDayFireworkYuanDan extends SimpleSlimefunItem<ItemUseHandle
                     // 从地面发射
                     Firework firework = world.spawn(spawnLoc.clone().subtract(0, EXPLOSION_HEIGHT, 0), Firework.class);
 
-                    // 计算发射方向（指向爆炸点）
+                    // 计算发射方向(指向爆炸点)
                     Vector direction = spawnLoc.clone().subtract(firework.getLocation()).toVector().normalize();
                     direction.setY(1.0); // 保持向上分量
                     direction.multiply(1.5);
@@ -710,7 +710,7 @@ public class NewYearsDayFireworkYuanDan extends SimpleSlimefunItem<ItemUseHandle
 
             // 增加每环的粒子密度
             for (int i = 0; i < 96; i++) { // 从48增加到96
-                double angle = i * 3.75; // 减小角度间隔，增加密度
+                double angle = i * 3.75; // 减小角度间隔,增加密度
                 double radians = Math.toRadians(angle);
 
                 double x = ringRadius * Math.cos(radians);
@@ -736,7 +736,7 @@ public class NewYearsDayFireworkYuanDan extends SimpleSlimefunItem<ItemUseHandle
         World world = center.getWorld();
 
         // 增加星形的密度
-        for (double t = 0; t < 2 * Math.PI; t += 0.02) { // 从0.04减小到0.02，增加密度
+        for (double t = 0; t < 2 * Math.PI; t += 0.02) { // 从0.04减小到0.02,增加密度
             double r = size * (0.4 + 0.6 * Math.cos(5 * t));
             double x = r * Math.cos(t);
             double y = r * Math.sin(t);

@@ -44,7 +44,7 @@ public class ResearchUnlocker extends SimpleSlimefunItem<ItemUseHandler> {
 
             Player player = e.getPlayer();
 
-            // 异步获取玩家档案（避免卡顿）
+            // 异步获取玩家档案(避免卡顿)
             PlayerProfile.get(player, profile -> {
                 Bukkit.getScheduler().runTask(MagicExpansion.getInstance(), () -> {
                     // 获取所有研究
@@ -71,17 +71,17 @@ public class ResearchUnlocker extends SimpleSlimefunItem<ItemUseHandler> {
                             // 随机选择一个未解锁的研究
                             Research target = lockedResearches.get(random.nextInt(lockedResearches.size()));
 
-                            // 使用 API 解锁研究（不再使用命令）
+                            // 使用 API 解锁研究(不再使用命令)
                             profile.setResearched(target, true);
                             profile.save(); // 立即保存更改
 
                             // 播放音效
                             player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1.0f, 1.0f);
-                            player.sendMessage(ChatColor.GREEN + "✓ 已解锁研究: " + ChatColor.YELLOW + target.getName(player));
+                            player.sendMessage(ChatColor.GREEN + "✓ Research unlocked: " + ChatColor.YELLOW + target.getName(player));
                         }
                     }
 
-                    // 消耗物品（可选）
+                    // 消耗物品(可选)
                     ItemStack item = e.getItem();
                     if (item.getAmount() > 1) {
                         item.setAmount(item.getAmount() - 1);
@@ -100,17 +100,17 @@ public class ResearchUnlocker extends SimpleSlimefunItem<ItemUseHandler> {
         // 发送醒目提示
         player.sendMessage("");
         player.sendMessage(ChatColor.GOLD + "════════════════════════════════");
-        player.sendMessage(ChatColor.LIGHT_PURPLE + "   你已经是全知全能的神了！  ");
+        player.sendMessage(ChatColor.LIGHT_PURPLE + "   You already possess every research!  ");
         player.sendMessage(ChatColor.GOLD + "════════════════════════════════");
         player.sendMessage("");
 
         // 播放特殊音效
         player.playSound(player.getLocation(), Sound.UI_TOAST_CHALLENGE_COMPLETE, 1.0f, 1.0f);
 
-        // 发送标题（1.8+支持）
+        // 发送标题(1.8+支持)
         player.sendTitle(
-                ChatColor.GOLD + "全知全能",
-                ChatColor.YELLOW + "你已经是神了",
+                ChatColor.GOLD + "Omniscience",
+                ChatColor.YELLOW + "You already possess every research.",
                 10, 70, 20
         );
     }
@@ -119,7 +119,7 @@ public class ResearchUnlocker extends SimpleSlimefunItem<ItemUseHandler> {
      * 解锁指定研究
      */
     private void unlockResearch(Player player, Research research) {
-        // 方法1：通过执行命令解锁
+        // 方法1:通过执行命令解锁
         String command = "sf research " + player.getName() + " " + research.getKey().getKey();
         Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
 

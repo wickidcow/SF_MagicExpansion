@@ -41,12 +41,12 @@ public class DoubleSidedTape extends SimpleSlimefunItem<ItemUseHandler> implemen
                     Block block = e.getClickedBlock().get();
 
                     if (!block.getType().isSolid() || !block.getType().isOccluding()) {
-                        e.getPlayer().sendMessage("§c这个表面无法挂载物品！");
+                        e.getPlayer().sendMessage("§cThis block cannot hold an item frame!");
                         return;
                     }
                     Location spawnLocation = getFrameSpawnLocation(block, blockFace);
                     if (hasItemFrameAtLocation(spawnLocation, blockFace)) {
-                        e.getPlayer().sendMessage("§c这个位置已有物品展示框！");
+                        e.getPlayer().sendMessage("§cAn item frame already exists at this location!");
                         return;
                     }
 
@@ -68,7 +68,7 @@ public class DoubleSidedTape extends SimpleSlimefunItem<ItemUseHandler> implemen
                     e.setUseItem(Event.Result.DENY);
                     e.setUseBlock(Event.Result.DENY);
                 } else {
-                    e.getPlayer().sendMessage("§c副手必须持有要贴附的物品！");
+                    e.getPlayer().sendMessage("§cmust has item!");
                 }
             }
         };

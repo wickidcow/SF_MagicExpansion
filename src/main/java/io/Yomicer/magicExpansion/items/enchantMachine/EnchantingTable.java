@@ -57,7 +57,7 @@ public class EnchantingTable extends SimpleSlimefunItem<ItemUseHandler> implemen
     private final int[] outputSlot = {49};
     private final String machineName;
 
-    // 定义属性池（带 MagicExpansion 前缀）
+    // 定义属性池(带 MagicExpansion 前缀)
     public static final Map<String, Object> ATTRIBUTE_POOL = new LinkedHashMap<>();
     public static final Map<String, Integer> ATTRIBUTE_POOL_S = new LinkedHashMap<>();
     public static final Map<String, Integer> ATTRIBUTE_POOL_A = new LinkedHashMap<>();
@@ -110,14 +110,14 @@ public class EnchantingTable extends SimpleSlimefunItem<ItemUseHandler> implemen
     public static final Map<String, String> ATTRIBUTE_NAME_MAP = new HashMap<>();
 
     static {
-        ATTRIBUTE_NAME_MAP.put("MagicExpansion.Knockback", "击飞等级");
-        ATTRIBUTE_NAME_MAP.put("MagicExpansion.Attraction", "吸引效果");
-        ATTRIBUTE_NAME_MAP.put("MagicExpansion.FireDamage", "火焰伤害");
-        ATTRIBUTE_NAME_MAP.put("MagicExpansion.Slowness", "减速等级");
-        ATTRIBUTE_NAME_MAP.put("MagicExpansion.Lightning", "雷击效果");
-        ATTRIBUTE_NAME_MAP.put("MagicExpansion.EntitySpawn", "创生之力");
-        ATTRIBUTE_NAME_MAP.put("MagicExpansion.ArrowTp", "末影珍珠箭矢");
-        ATTRIBUTE_NAME_MAP.put("MagicExpansion.AttackTpToTp", "攻击换位");
+        ATTRIBUTE_NAME_MAP.put("MagicExpansion.Knockback", "Knockback Level");
+        ATTRIBUTE_NAME_MAP.put("MagicExpansion.Attraction", "Attraction Effect");
+        ATTRIBUTE_NAME_MAP.put("MagicExpansion.FireDamage", "Fire Damage");
+        ATTRIBUTE_NAME_MAP.put("MagicExpansion.Slowness", "Slowness Level");
+        ATTRIBUTE_NAME_MAP.put("MagicExpansion.Lightning", "Lightning Effect");
+        ATTRIBUTE_NAME_MAP.put("MagicExpansion.EntitySpawn", "Creation Power");
+        ATTRIBUTE_NAME_MAP.put("MagicExpansion.ArrowTp", "Ender Pearl Arrow");
+        ATTRIBUTE_NAME_MAP.put("MagicExpansion.AttackTpToTp", "Attack Position Swap");
     }
 
     public EnchantingTable(ItemGroup category, SlimefunItemStack item, RecipeType recipeType, ItemStack[] recipe, String displayName, String machineName) {
@@ -152,8 +152,8 @@ public class EnchantingTable extends SimpleSlimefunItem<ItemUseHandler> implemen
 
         if(menu != null && menu.hasViewer()) {
             if (getCharge(block.getLocation()) < getEnergyConsumption()) {
-                menu.addItem(18, new CustomItemStack(doGlow(Material.NETHER_STAR), "§x§F§D§B§7§D§4⚡电力不足⚡",
-                                getGradientName("每次赋能需要消耗1w电力")),
+                menu.addItem(18, new CustomItemStack(doGlow(Material.NETHER_STAR), "§x§F§D§B§7§D§4⚡⚡",
+                                getGradientName("Each empowerment consumes 10,000 J.")),
                         (player1, slot, item, action) -> false);
                 return;
             }
@@ -168,7 +168,7 @@ public class EnchantingTable extends SimpleSlimefunItem<ItemUseHandler> implemen
      * 随机抽取 PDC 属性并设置到物品上
      *
      * @param item  输入的物品
-     * @param resourceLevel 输入值（1, 2, 3）
+     * @param resourceLevel 输入值(1, 2, 3)
      * @param num 1-3 数量
      * @return 修改后的物品
      */
@@ -262,7 +262,7 @@ public class EnchantingTable extends SimpleSlimefunItem<ItemUseHandler> implemen
                 usedAttributes.add(attribute);
             }
 
-            // 如果所有属性都已选中，则停止循环
+            // 如果所有属性都已选中,则停止循环
             if (usedAttributes.size() == weightMap.size()) {
                 break;
             }
@@ -284,7 +284,7 @@ public class EnchantingTable extends SimpleSlimefunItem<ItemUseHandler> implemen
         // 生成 [0, totalWeight) 范围内的随机数
         int randomValue = RANDOM.nextInt(totalWeight);
 
-        // 累积权重，找到对应的属性
+        // 累积权重,找到对应的属性
         int cumulativeWeight = 0;
         for (Map.Entry<String, Integer> entry : weightMap.entrySet()) {
             cumulativeWeight += entry.getValue(); // 累加当前属性的权重
@@ -293,7 +293,7 @@ public class EnchantingTable extends SimpleSlimefunItem<ItemUseHandler> implemen
             }
         }
 
-        // 如果未命中（理论上不会发生），返回 null
+        // 如果未命中(理论上不会发生),返回 null
         return null;
     }
 
@@ -318,11 +318,11 @@ public class EnchantingTable extends SimpleSlimefunItem<ItemUseHandler> implemen
         if (lore == null) {
             lore = new ArrayList<>();
         }
-        lore.add(getGradientName("魔法赋能："));
+        lore.add(getGradientName("Random1"));
 
         for (String attribute : selectedAttributes) {
             NamespacedKey key = new NamespacedKey("magicexpansion", attribute.toLowerCase().replace(".", "_"));
-            String chineseName = ATTRIBUTE_NAME_MAP.getOrDefault(attribute, "未知属性");
+            String chineseName = ATTRIBUTE_NAME_MAP.getOrDefault(attribute, "Unknown Attribute");
 
             if (pdc.has(key, PersistentDataType.INTEGER)) {
                 // 数值型属性
@@ -331,7 +331,7 @@ public class EnchantingTable extends SimpleSlimefunItem<ItemUseHandler> implemen
             } else if (pdc.has(key, PersistentDataType.BOOLEAN)) {
                 // 布尔型属性
                 boolean value = pdc.get(key, PersistentDataType.BOOLEAN);
-                lore.add("§f- " + getGradientName(chineseName) + ": " + (value ? "§e激活" : "§c封印"));
+                lore.add("§f- " + getGradientName(chineseName) + ": " + (value ? "Random1" : "Random1"));
             }
         }
         meta.setLore(lore);
@@ -349,7 +349,7 @@ public class EnchantingTable extends SimpleSlimefunItem<ItemUseHandler> implemen
         }
         ItemMeta meta = item.getItemMeta();
         if (meta == null) {
-            return false; // 如果没有 ItemMeta，直接返回 false
+            return false; // 如果没有 ItemMeta,直接返回 false
         }
 
         PersistentDataContainer pdc = meta.getPersistentDataContainer();
@@ -387,10 +387,10 @@ public class EnchantingTable extends SimpleSlimefunItem<ItemUseHandler> implemen
         // Check if slot 29 contains a weapon
         ItemStack weaponItem = menu.getItemInSlot(weaponSlot);
         if (!isWeapon(weaponItem)) {
-            menu.addItem(26, new CustomItemStack(doGlow(Material.NETHER_STAR),"§x§F§D§B§7§D§4缺失武器",
-                            getGradientName("请放入魔法赋能材料"),
-                            getGradientName("目前支持："),
-                            getGradientName("剑，斧，弓，弩，戟")),
+            menu.addItem(26, new CustomItemStack(doGlow(Material.NETHER_STAR),"§x§F§D§B§7§D§4",
+                            getGradientName("Required Materials"),
+                            getGradientName("Currently supports:"),
+                            getGradientName("Swords, axes, bows, crossbows, and halberds")),
                     (player1, slot, item, action) -> false);
             process = false; // Not a weapon, stop processing
         }else{
@@ -412,11 +412,11 @@ public class EnchantingTable extends SimpleSlimefunItem<ItemUseHandler> implemen
 //            return; // Not Lapis Lazuli, stop processing
 //        }
         if (finalresourceLevel == 0){
-            menu.addItem(44, new CustomItemStack(doGlow(Material.NETHER_STAR),"§x§F§D§B§7§D§4缺失必要材料",
-                            getGradientName("请放入魔法赋能材料"),
-                            getGradientName("目前支持："),
-                            getGradientName("星辰铁"),
-                            getGradientName("品质越高的材料赋能效果越好")),
+            menu.addItem(44, new CustomItemStack(doGlow(Material.NETHER_STAR),"§x§F§D§B§7§D§4Required Material",
+                            getGradientName("Required Materials"),
+                            getGradientName("Currently supports:"),
+                            getGradientName("Astral Iron"),
+                            getGradientName("Stellar Iron")),
                     (player1, slot, item, action) -> {
                         return false;
                     });
@@ -427,8 +427,8 @@ public class EnchantingTable extends SimpleSlimefunItem<ItemUseHandler> implemen
         }
 
         if (hasAnyAttribute(weaponItem)){
-            menu.addItem(36, new CustomItemStack(doGlow(Material.NETHER_STAR),"§x§F§D§B§7§D§4你的武器已经赋能过了",
-                            getGradientName("一件装备只能赋能一次")),
+            menu.addItem(36, new CustomItemStack(doGlow(Material.NETHER_STAR),"§x§F§D§B§7§D§4Already Empowered",
+                            getGradientName("A piece of equipment can be empowered only once.")),
                     (player1, slot, item, action) -> false);
             process = false;
         }else{
@@ -436,11 +436,11 @@ public class EnchantingTable extends SimpleSlimefunItem<ItemUseHandler> implemen
                     (player1, slot, item, action) -> false);
         }
         if (!process) {
-            menu.addItem(29, new CustomItemStack(doGlow(Material.BARRIER),ColorGradient.getGradientName("=======⚡一重赋能⚡=======")),
+            menu.addItem(29, new CustomItemStack(doGlow(Material.BARRIER),ColorGradient.getGradientName("=======⚡ Tier I Empowerment ⚡=======")),
                     (player1, slot, item, action) -> false);
-            menu.addItem(31, new CustomItemStack(doGlow(Material.BARRIER),ColorGradient.getGradientName("=======⚡二重赋能⚡=======")),
+            menu.addItem(31, new CustomItemStack(doGlow(Material.BARRIER),ColorGradient.getGradientName("=======⚡ Tier II Empowerment ⚡=======")),
                     (player1, slot, item, action) -> false);
-            menu.addItem(33, new CustomItemStack(doGlow(Material.BARRIER),ColorGradient.getGradientName("=======⚡三重赋能⚡=======")),
+            menu.addItem(33, new CustomItemStack(doGlow(Material.BARRIER),ColorGradient.getGradientName("=======⚡ Tier III Empowerment ⚡=======")),
                     (player1, slot, item, action) -> false);
             return;
         }
@@ -459,16 +459,16 @@ public class EnchantingTable extends SimpleSlimefunItem<ItemUseHandler> implemen
         Map<String, Integer> finalATTRIBUTE_POOL_USE = ATTRIBUTE_POOL_USE;
 
         if(resourceItem.getAmount()>=1) {
-            menu.addItem(29, newItem.themed(doGlow(Material.NETHER_STAR), "=======⚡一重赋能⚡=======",
+            menu.addItem(29, newItem.themed(doGlow(Material.NETHER_STAR), "=======⚡ Tier I Empowerment ⚡=======",
                             generateRandomLore(), 1),
                     (player1, slot, item, action) -> {
 
                         if(!isItemSimilar(menu.getItemInSlot(weaponSlot), weaponItem, true)){
-                            player1.sendMessage(ColorGradient.getGradientName("你这小byd又想卡bug了是吧？"));
+                            player1.sendMessage(ColorGradient.getGradientName("The input item changed while the menu was open. Please try again."));
                             return false;
                         }
                         if(resourceItem.getAmount()<1||!isItemSimilar(menu.getItemInSlot(resourceSlot), resourceItem, true)){
-                            player1.sendMessage(ColorGradient.getGradientName("小byd，没想到吧，这里也被我修复了"));
+                            player1.sendMessage(ColorGradient.getGradientName("Surprise—this interaction has been fixed too."));
                             return false;
                         }
                         ItemStack output = randomizeAttributes(weaponItem, finalresourceLevel, finalATTRIBUTE_POOL_USE,1);
@@ -484,20 +484,20 @@ public class EnchantingTable extends SimpleSlimefunItem<ItemUseHandler> implemen
                         return false;
                     });
         }else {
-            menu.addItem(29, new CustomItemStack(Material.BARRIER,ColorGradient.getGradientName("=======⚡一重赋能⚡=======")),
+            menu.addItem(29, new CustomItemStack(Material.BARRIER,ColorGradient.getGradientName("=======⚡ Tier I Empowerment ⚡=======")),
                     (player1, slot, item, action) -> false);
         }
         if(resourceItem.getAmount()>=2) {
-        menu.addItem(31, newItem.themed(doGlow(Material.NETHER_STAR), "=======⚡二重赋能⚡=======",
+        menu.addItem(31, newItem.themed(doGlow(Material.NETHER_STAR), "=======⚡ Tier II Empowerment ⚡=======",
                         generateRandomLore(),1),
                 (player1, slot, item, action) -> {
 
                     if(!isItemSimilar(menu.getItemInSlot(weaponSlot), weaponItem, true)){
-                        player1.sendMessage(ColorGradient.getGradientName("你这小byd又想卡bug了是吧？"));
+                        player1.sendMessage(ColorGradient.getGradientName("The input item changed while the menu was open. Please try again."));
                         return false;
                     }
                     if(resourceItem.getAmount()<2||!isItemSimilar(menu.getItemInSlot(resourceSlot), resourceItem, true)){
-                        player1.sendMessage(ColorGradient.getGradientName("小byd，没想到吧，这里也被我修复了"));
+                        player1.sendMessage(ColorGradient.getGradientName("Surprise—this interaction has been fixed too."));
                         return false;
                     }
                     ItemStack output = randomizeAttributes(weaponItem, finalresourceLevel,finalATTRIBUTE_POOL_USE,2);
@@ -513,20 +513,20 @@ public class EnchantingTable extends SimpleSlimefunItem<ItemUseHandler> implemen
                     return false;
                 });
         }else {
-            menu.addItem(31, new CustomItemStack(Material.BARRIER,ColorGradient.getGradientName("=======⚡二重赋能⚡=======")),
+            menu.addItem(31, new CustomItemStack(Material.BARRIER,ColorGradient.getGradientName("=======⚡ Tier II Empowerment ⚡=======")),
                     (player1, slot, item, action) -> false);
         }
         if(resourceItem.getAmount()>=3) {
-        menu.addItem(33, newItem.themed(doGlow(Material.NETHER_STAR), "=======⚡三重赋能⚡=======",
+        menu.addItem(33, newItem.themed(doGlow(Material.NETHER_STAR), "=======⚡ Tier III Empowerment ⚡=======",
                         generateRandomLore(),1),
                 (player1, slot, item, action) -> {
 
                     if(!isItemSimilar(menu.getItemInSlot(weaponSlot), weaponItem, true)){
-                        player1.sendMessage(ColorGradient.getGradientName("你这小byd又想卡bug了是吧？"));
+                        player1.sendMessage(ColorGradient.getGradientName("The input item changed while the menu was open. Please try again."));
                         return false;
                     }
                     if(resourceItem.getAmount()<3||!isItemSimilar(menu.getItemInSlot(resourceSlot), resourceItem, true)){
-                        player1.sendMessage(ColorGradient.getGradientName("小byd，没想到吧，这里也被我修复了"));
+                        player1.sendMessage(ColorGradient.getGradientName("Surprise—this interaction has been fixed too."));
                         return false;
                     }
                     ItemStack output = randomizeAttributes(weaponItem, finalresourceLevel,finalATTRIBUTE_POOL_USE,3);
@@ -542,7 +542,7 @@ public class EnchantingTable extends SimpleSlimefunItem<ItemUseHandler> implemen
                     return false;
                 });
         }else {
-            menu.addItem(33, new CustomItemStack(Material.BARRIER,ColorGradient.getGradientName( "=======⚡三重赋能⚡=======")),
+            menu.addItem(33, new CustomItemStack(Material.BARRIER,ColorGradient.getGradientName( "=======⚡ Tier III Empowerment ⚡=======")),
                     (player1, slot, item, action) -> false);
         }
 
@@ -646,7 +646,7 @@ public class EnchantingTable extends SimpleSlimefunItem<ItemUseHandler> implemen
     @Nonnull
     @Override
     public EnergyNetComponentType getEnergyComponentType() {
-        return EnergyNetComponentType.CONSUMER; // 定义该方块的类型，比如消费者（CONSUMER）
+        return EnergyNetComponentType.CONSUMER; // 定义该方块的类型,比如消费者(CONSUMER)
     }
 
     public int getEnergyConsumption() {
@@ -708,12 +708,12 @@ public class EnchantingTable extends SimpleSlimefunItem<ItemUseHandler> implemen
         }
 
         for (int i : j) {
-            preset.addItem(i, new CustomItemStack(doGlow(new ItemStack (Material.DIAMOND_SWORD)), ColorGradient.getGradientName("上面放入武器")),
+            preset.addItem(i, new CustomItemStack(doGlow(new ItemStack (Material.DIAMOND_SWORD)), ColorGradient.getGradientName("Insert the required materials into EnchantingTable.")),
                     (p, slot, item, action) -> false);
         }
 
         for (int i : jj) {
-            preset.addItem(i, new CustomItemStack(doGlow(new ItemStack (Material.LAPIS_LAZULI)), ColorGradient.getGradientName("上面放入赋能材料")),
+            preset.addItem(i, new CustomItemStack(doGlow(new ItemStack (Material.LAPIS_LAZULI)), ColorGradient.getGradientName("Stellar Iron")),
                     (p, slot, item, action) -> false);
         }
 
@@ -834,7 +834,7 @@ public class EnchantingTable extends SimpleSlimefunItem<ItemUseHandler> implemen
         // 每行以 §k 开头
         line.append("§k");
 
-        // 每行长度为 10 到 23 个字符（不包括开头的 §k）
+        // 每行长度为 10 到 23 个字符(不包括开头的 §k)
         int length = 10 + RANDOM.nextInt(14); // [10, 23]
 
         for (int i = 0; i < length; i++) {
@@ -859,7 +859,7 @@ public class EnchantingTable extends SimpleSlimefunItem<ItemUseHandler> implemen
     /**
      * 获取随机颜色代码
      *
-     * @return 随机生成的颜色代码（如 §c、§a、§b 等）
+     * @return 随机生成的颜色代码(如 §c、§a、§b 等)
      */
     private static String getRandomColorCode() {
         String[] colorCodes = {
@@ -876,8 +876,8 @@ public class EnchantingTable extends SimpleSlimefunItem<ItemUseHandler> implemen
      * @return 随机生成的字符
      */
     private static char getRandomCharacter() {
-        // 字符范围：大写字母、小写字母、数字、部分符号
-        String chars = "鸡你太美ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()-=_+[]{}|;:,.<>?";
+        // 字符范围:大写字母、小写字母、数字、部分符号
+        String chars = "you ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()-=_+[]{}|;:,.<>?";
         return chars.charAt(RANDOM.nextInt(chars.length()));
     }
 

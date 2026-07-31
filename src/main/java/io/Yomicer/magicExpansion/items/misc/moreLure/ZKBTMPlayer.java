@@ -27,11 +27,11 @@ public class ZKBTMPlayer {
 
         new BukkitRunnable() {
             int beat = 0;
-            final int TICKS_PER_BEAT = 12; // ≈100 BPM，轻快可爱节奏
+            final int TICKS_PER_BEAT = 12; // ≈100 BPM,轻快可爱节奏
 
             @Override
             public void run() {
-                // === 轻柔鼓点：每拍响一次铃铛，第2、4拍加沙锤 ===
+                // === 轻柔鼓点:每拍响一次铃铛,第2、4拍加沙锤 ===
                 if (beat % TICKS_PER_BEAT == 0) {
                     world.playSound(loc, Sound.BLOCK_NOTE_BLOCK_BELL, 0.4f, 0.8f);
                 }
@@ -40,9 +40,9 @@ public class ZKBTMPlayer {
                     world.playSound(loc, Sound.BLOCK_NOTE_BLOCK_HAT, 0.3f, 1.2f);
                 }
 
-                // === 前奏：C大调上行音阶（C D E F G）跳跃感 ===
+                // === 前奏:C大调上行音阶(C D E F G)跳跃感 ===
                 if (beat == 0) {
-                    player.sendTitle("§a🌸","§a前奏开始：蹦蹦跳跳的小兔子~");
+                    player.sendTitle("§a🌸","§a: ~");
                 }
                 int[] melody = {0,2,4,5,7, 7,5,4,2, 0,2,4,5,7}; // C D E F G, G F E D, C D E F G
                 float[] volumes = {1.0f, 0.9f, 1.0f, 0.9f, 1.2f, 1.2f, 0.9f, 0.8f, 0.7f, 0.8f, 0.9f, 1.0f, 1.1f, 1.3f};
@@ -54,9 +54,9 @@ public class ZKBTMPlayer {
                     }
                 }
 
-                // === 主旋律：可爱跳跃小调 ===
+                // === 主旋律:可爱跳跃小调 ===
                 if (beat == 14 * TICKS_PER_BEAT) {
-                    player.sendTitle("§d🎀","§d 主旋律：小猫咪追蝴蝶~",10,20,20);
+                    player.sendTitle("§d🎀","§d: ~",10,20,20);
                 }
                 if (beat >= 14 * TICKS_PER_BEAT && beat < 26 * TICKS_PER_BEAT) {
                     int idx = beat / TICKS_PER_BEAT - 14;
@@ -70,9 +70,9 @@ public class ZKBTMPlayer {
                     }
                 }
 
-                // === 副歌：欢快重复小段（情感高潮）===
+                // === 副歌:欢快重复小段(情感高潮)===
                 if (beat == 26 * TICKS_PER_BEAT) {
-                    player.sendTitle("§c💖","§c副歌：开心到转圈圈！",10,20,20);
+                    player.sendTitle("§c💖","§cChorus: spinning around with joy!",10,20,20);
                 }
                 if (beat >= 26 * TICKS_PER_BEAT && beat < 34 * TICKS_PER_BEAT) {
                     int idx = (beat / TICKS_PER_BEAT - 26) % 4;
@@ -84,7 +84,7 @@ public class ZKBTMPlayer {
 
                 // === 尾声渐弱 ===
                 if (beat == 34 * TICKS_PER_BEAT) {
-                    player.sendTitle("§7💫","§7尾声：小星星眨眼睛...",10,20,20);
+                    player.sendTitle("§7💫","§7Finale: little stars twinkle...",10,20,20);
                     for (int i = 0; i < 3; i++) {
                         int f = i;
                         Bukkit.getScheduler().runTaskLater(plugin, () -> {
@@ -99,7 +99,7 @@ public class ZKBTMPlayer {
                 // === 结束 ===
                 if (beat == 40 * TICKS_PER_BEAT) {
                     player.sendTitle("§l🌟🎶\uD83C\uDF39", "You're so cute too!", 0, 60, 20);
-                    player.sendMessage("§6🎶 音乐结束！希望你心情变好了~");
+                    player.sendMessage("§6🎶 The music has ended. Hope you feel better!");
                     this.cancel();
                 }
 

@@ -12,7 +12,7 @@ import io.github.thebusybiscuit.slimefun4.api.recipes.RecipeType;
 import io.github.thebusybiscuit.slimefun4.core.attributes.NotPlaceable;
 import io.github.thebusybiscuit.slimefun4.core.handlers.ItemUseHandler;
 import io.github.thebusybiscuit.slimefun4.implementation.items.SimpleSlimefunItem;
-import net.guizhanss.guizhanlib.minecraft.helper.inventory.ItemStackHelper;
+import io.Yomicer.magicExpansion.utils.compat.ItemStackHelper;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.NamespacedKey;
@@ -64,12 +64,12 @@ public class CargoFragmentExtract extends SimpleSlimefunItem<ItemUseHandler> imp
             // 1. 检查主手和副手物品数量必须为1
             if (extractItem.getAmount() != 1 || offhandItem.getAmount() != 1) {
                 if (extractItem.getAmount() != 1) {
-                    player.sendMessage(ChatColor.RED + "主手提取器的数量必须为1！");
-                    player.sendMessage(ChatColor.GRAY + "请确保只使用一个提取器。");
+                    player.sendMessage(ChatColor.RED + "Hold exactly one extractor!");
+                    player.sendMessage(ChatColor.GRAY + "Make sure you are using only one extractor.");
                 }
                 if (offhandItem.getAmount() != 1) {
-                    player.sendMessage(ChatColor.RED + "副手量子存储物品的数量必须为1！");
-                    player.sendMessage(ChatColor.GRAY + "请确保只持有一个存储容器。");
+                    player.sendMessage(ChatColor.RED + "Hold exactly one storage container in your off hand!");
+                    player.sendMessage(ChatColor.GRAY + "Make sure you are holding only one storage container.");
                 }
                 playSound(player, Sound.BLOCK_NOTE_BLOCK_BASS, 0.5f);
                 return;
@@ -77,14 +77,14 @@ public class CargoFragmentExtract extends SimpleSlimefunItem<ItemUseHandler> imp
 
             // 2. 检查副手物品
             if (offhandItem == null || offhandItem.getType().isAir()) {
-                sendError(player, "请将量子存储物品放在副手！");
+                sendError(player, "Place a compatible quantum storage container in your off hand!");
                 return;
             }
 
             // 3. 从副手物品获取QuantumCache
             ItemMeta offhandMeta = offhandItem.getItemMeta();
             if (offhandMeta == null) {
-                sendError(player, "副手物品数据异常！");
+                sendError(player, "The off-hand item's data is invalid!");
                 return;
             }
 
@@ -93,7 +93,7 @@ public class CargoFragmentExtract extends SimpleSlimefunItem<ItemUseHandler> imp
                     NetworksKeys.QUANTUM_STORAGE_INSTANCE, PersistentQuantumStorageType.TYPE);
 
             if (quantumCache == null || quantumCache.getItemStack() == null) {
-                sendError(player, "副手物品没有有效的量子存储数据！");
+                sendError(player, "The off-hand item has no valid quantum-storage data!");
                 return;
             }
 
@@ -102,12 +102,12 @@ public class CargoFragmentExtract extends SimpleSlimefunItem<ItemUseHandler> imp
             long storedAmount = quantumCache.getAmount();
 
             if (storedItem == null || storedAmount <= 1) {
-                // 存储中数量≤1时不能提取（需要至少保留1个）
-                sendError(player, "量子存储中的物品数量不足！至少需要2个物品才能提取。");
+                // 存储中数量≤1时不能提取(需要至少保留1个)
+                sendError(player, "Quantum storage must contain at least 2 items so one can remain inside.");
                 return;
             }
 
-            // 5. 计算最大可提取数量（当前数量-1）
+            // 5. 计算最大可提取数量(当前数量-1)
             long maxExtract = storedAmount - 1;
 
             // 6. 创建等待输入状态
@@ -139,18 +139,18 @@ public class CargoFragmentExtract extends SimpleSlimefunItem<ItemUseHandler> imp
      */
     private void showExtractPrompt(Player player, ItemStack storedItem, long storedAmount, long maxExtract) {
         player.sendMessage("");
-        player.sendMessage(ChatColor.GOLD + "══════ " + ChatColor.BOLD + "物品提取" +
+        player.sendMessage(ChatColor.GOLD + "══════ " + ChatColor.BOLD + "Item Extraction" +
                 ChatColor.RESET + ChatColor.GOLD + " ══════");
-        player.sendMessage(ChatColor.YELLOW + "物品类型: " + ChatColor.WHITE +
+        player.sendMessage(ChatColor.YELLOW + "Item Type: " + ChatColor.WHITE +
                 ItemStackHelper.getDisplayName(storedItem));
-        player.sendMessage(ChatColor.YELLOW + "存储总量: " + ChatColor.AQUA + storedAmount + " 个");
-        player.sendMessage(ChatColor.YELLOW + "最大可提: " + ChatColor.GOLD + maxExtract + " 个");
-        player.sendMessage(ChatColor.YELLOW + "最小保留: " + ChatColor.GREEN + "1 个");
+        player.sendMessage(ChatColor.YELLOW + "Total Stored: " + ChatColor.AQUA + storedAmount + " items");
+        player.sendMessage(ChatColor.YELLOW + "Maximum Extractable: " + ChatColor.GOLD + maxExtract + " items");
+        player.sendMessage(ChatColor.YELLOW + "Minimum Remaining: " + ChatColor.GREEN + "1 item");
         player.sendMessage("");
-        player.sendMessage(ChatColor.YELLOW + "请输入要提取的数量 (" + ChatColor.GREEN + "1-" +
+        player.sendMessage(ChatColor.YELLOW + "Enter an amount (" + ChatColor.GREEN + "1-" +
                 maxExtract + ChatColor.YELLOW + ")");
-        player.sendMessage(ChatColor.GRAY + "输入 " + ChatColor.RED + "'cancel'" +
-                ChatColor.GRAY + " 取消操作 (30秒超时)");
+        player.sendMessage(ChatColor.GRAY + "Enter " + ChatColor.RED + "'cancel'" +
+                ChatColor.GRAY + " to cancel (30-second timeout)");
         player.sendMessage("");
 
         playSound(player, Sound.BLOCK_NOTE_BLOCK_PLING, 1.5f);
@@ -193,63 +193,53 @@ public class CargoFragmentExtract extends SimpleSlimefunItem<ItemUseHandler> imp
      * 处理玩家提取输入
      */
     private void processExtractInput(Player player, ExtractOperation operation, String input) {
-        try {
-            // 处理取消
-            if (input.equalsIgnoreCase("cancel")) {
-                player.sendMessage(ChatColor.YELLOW + "已取消提取操作。");
-                pendingExtracts.remove(player.getUniqueId());
-                cleanupListenerIfNeeded();
-                return;
-            }
-
-            long extractAmount;
-
-            // 解析数字
-            try {
-                extractAmount = Long.parseLong(input);
-            } catch (NumberFormatException e) {
-                player.sendMessage(ChatColor.RED + "请输入有效的数字或 'cancel'！");
-                return;
-            }
-
-            // 验证范围
-            if (extractAmount <= 0) {
-                player.sendMessage(ChatColor.RED + "请输入大于0的数字！");
-                return;
-            }
-
-            if (extractAmount > operation.maxExtract) {
-                player.sendMessage(ChatColor.RED + "超过最大可提取数量 (" + operation.maxExtract + ")！");
-                return;
-            }
-
-            // 确保提取后至少保留1个
-            if (operation.storedAmount - extractAmount < 1) {
-                player.sendMessage(ChatColor.RED + "提取后量子存储中至少需要保留1个物品！");
-                return;
-            }
-
-            // 确保不超过int最大值（因为CargoFragment使用int存储数量）
-            if (extractAmount > Integer.MAX_VALUE) {
-                player.sendMessage(ChatColor.RED + "提取数量超过最大限制 (" + Integer.MAX_VALUE + ")！");
-                return;
-            }
-
-            // === 新增：验证物品是否发生变化 ===
-            if (!validateItemsUnchanged(player, operation)) {
-                player.sendMessage(ChatColor.RED + "操作失败：物品已发生变化！");
-                pendingExtracts.remove(player.getUniqueId());
-                cleanupListenerIfNeeded();
-                return;
-            }
-
-            // 执行提取
-            executeExtract(player, operation, extractAmount);
-
-        } finally {
-            pendingExtracts.remove(player.getUniqueId());
-            cleanupListenerIfNeeded();
+        if (input.equalsIgnoreCase("cancel")) {
+            player.sendMessage(ChatColor.YELLOW + "Extraction cancelled.");
+            finishExtractInput(player.getUniqueId());
+            return;
         }
+
+        long extractAmount;
+        try {
+            extractAmount = Long.parseLong(input);
+        } catch (NumberFormatException e) {
+            player.sendMessage(ChatColor.RED + "Enter a valid number, or type 'cancel'.");
+            return;
+        }
+
+        if (extractAmount <= 0) {
+            player.sendMessage(ChatColor.RED + "Enter an amount greater than 0.");
+            return;
+        }
+
+        if (extractAmount > operation.maxExtract) {
+            player.sendMessage(ChatColor.RED + "The maximum extractable amount is " + operation.maxExtract + ".");
+            return;
+        }
+
+        if (operation.storedAmount - extractAmount < 1) {
+            player.sendMessage(ChatColor.RED + "At least one item must remain in quantum storage.");
+            return;
+        }
+
+        if (extractAmount > Integer.MAX_VALUE) {
+            player.sendMessage(ChatColor.RED + "The extractor supports a maximum amount of " + Integer.MAX_VALUE + ".");
+            return;
+        }
+
+        if (!validateItemsUnchanged(player, operation)) {
+            player.sendMessage(ChatColor.RED + "Extraction cancelled because one of the items changed!");
+            finishExtractInput(player.getUniqueId());
+            return;
+        }
+
+        executeExtract(player, operation, extractAmount);
+        finishExtractInput(player.getUniqueId());
+    }
+
+    private void finishExtractInput(UUID playerId) {
+        pendingExtracts.remove(playerId);
+        cleanupListenerIfNeeded();
     }
 
     /**
@@ -264,44 +254,44 @@ public class CargoFragmentExtract extends SimpleSlimefunItem<ItemUseHandler> imp
         // 2. 检查主手物品是否还是提取器
         ItemStack currentMainHand = player.getInventory().getItemInMainHand();
         if (currentMainHand == null || currentMainHand.getType().isAir()) {
-            player.sendMessage(ChatColor.RED + "主手物品已消失！");
+            player.sendMessage(ChatColor.RED + "The item in your main hand is gone!");
             return false;
         }
 
-        // 检查是否是同一个物品（根据类型、名称等）
+        // 检查是否是同一个物品(根据类型、名称等)
         if (!isSameExtractorItem(currentMainHand, operation.extractItem)) {
-            player.sendMessage(ChatColor.RED + "主手物品已更换！");
+            player.sendMessage(ChatColor.RED + "The item in your main hand changed!");
             return false;
         }
 
         // 检查数量是否为1
         if (currentMainHand.getAmount() != 1) {
-            player.sendMessage(ChatColor.RED + "主手物品数量已发生变化！");
+            player.sendMessage(ChatColor.RED + "The item amount changed while waiting for input!");
             return false;
         }
 
         // 3. 检查副手物品是否还是量子存储物品
         ItemStack currentOffhand = player.getInventory().getItemInOffHand();
         if (currentOffhand == null || currentOffhand.getType().isAir()) {
-            player.sendMessage(ChatColor.RED + "副手物品已消失！");
+            player.sendMessage(ChatColor.RED + "The item in your off hand is gone!");
             return false;
         }
         // 检查数量是否为1
         if (currentOffhand.getAmount() != 1) {
-            player.sendMessage(ChatColor.RED + "副手物品数量已发生变化！");
+            player.sendMessage(ChatColor.RED + "The item amount changed while waiting for input!");
             return false;
         }
 
-        // 检查是否是同一个量子存储物品（通过PDC中的唯一标识）
+        // 检查是否是同一个量子存储物品(通过PDC中的唯一标识)
         if (!isSameQuantumStorageItem(currentOffhand, operation.offhandItem)) {
-            player.sendMessage(ChatColor.RED + "副手物品已更换！");
+            player.sendMessage(ChatColor.RED + "The item in your off hand changed!");
             return false;
         }
 
         // 4. 检查量子存储数据是否发生变化
         ItemMeta currentOffhandMeta = currentOffhand.getItemMeta();
         if (currentOffhandMeta == null) {
-            player.sendMessage(ChatColor.RED + "副手物品数据异常！");
+            player.sendMessage(ChatColor.RED + "The off-hand item's data is invalid!");
             return false;
         }
 
@@ -309,7 +299,7 @@ public class CargoFragmentExtract extends SimpleSlimefunItem<ItemUseHandler> imp
                 NetworksKeys.QUANTUM_STORAGE_INSTANCE, PersistentQuantumStorageType.TYPE);
 
         if (currentCache == null) {
-            player.sendMessage(ChatColor.RED + "副手物品的量子存储数据已丢失！");
+            player.sendMessage(ChatColor.RED + "The off-hand item's quantum storage data is missing!");
             return false;
         }
 
@@ -318,32 +308,32 @@ public class CargoFragmentExtract extends SimpleSlimefunItem<ItemUseHandler> imp
         long currentStoredAmount = currentCache.getAmount();
 
         if (currentStoredItem == null) {
-            player.sendMessage(ChatColor.RED + "量子存储中的物品已消失！");
+            player.sendMessage(ChatColor.RED + "The item stored in quantum storage is gone!");
             return false;
         }
 
         // 使用SameItemJudge比较物品是否相同
         if (!SameItemJudge.isSimilarSafe(currentStoredItem, operation.storedItem)) {
-            player.sendMessage(ChatColor.RED + "量子存储中的物品已发生变化！");
+            player.sendMessage(ChatColor.RED + "The item in quantum storage has changed!");
             return false;
         }
 
-        // 检查数量是否相同（不能少于之前记录的数量）
+        // 检查数量是否相同(不能少于之前记录的数量)
         if (currentStoredAmount < operation.storedAmount) {
-            player.sendMessage(ChatColor.RED + "量子存储中的物品数量已减少！");
+            player.sendMessage(ChatColor.RED + "The item amount changed while waiting for input!");
             return false;
         }
 
-        // 如果数量增加了，使用新的数量进行计算
+        // 如果数量增加了,使用新的数量进行计算
         if (currentStoredAmount > operation.storedAmount) {
             // 更新操作中的数量信息
             operation.storedAmount = currentStoredAmount;
             operation.maxExtract = currentStoredAmount - 1;
 
             // 通知玩家数量已更新
-            player.sendMessage(ChatColor.GREEN + "检测到数量增加，已更新可提取数量！");
-            player.sendMessage(ChatColor.YELLOW + "新的存储总量: " + ChatColor.AQUA + currentStoredAmount + " 个");
-            player.sendMessage(ChatColor.YELLOW + "新的最大可提: " + ChatColor.GOLD + operation.maxExtract + " 个");
+            player.sendMessage(ChatColor.GREEN + "The stored amount increased; the extractable amount was recalculated.");
+            player.sendMessage(ChatColor.YELLOW + "New Total Stored: " + ChatColor.AQUA + currentStoredAmount + " items");
+            player.sendMessage(ChatColor.YELLOW + "New Maximum Extractable: " + ChatColor.GOLD + operation.maxExtract + " items");
 
             // 更新缓存引用
             operation.quantumCache = currentCache;
@@ -356,7 +346,7 @@ public class CargoFragmentExtract extends SimpleSlimefunItem<ItemUseHandler> imp
      * 检查是否同一个提取器物品
      */
     private boolean isSameExtractorItem(ItemStack item1, ItemStack item2) {
-        // 简单比较：类型和自定义名称
+        // 简单比较:类型和自定义名称
         if (item1.getType() != item2.getType()) {
             return false;
         }
@@ -407,7 +397,7 @@ public class CargoFragmentExtract extends SimpleSlimefunItem<ItemUseHandler> imp
         QuantumCache cache2 = DataTypeMethods.getCustom(meta2,
                 NetworksKeys.QUANTUM_STORAGE_INSTANCE, PersistentQuantumStorageType.TYPE);
 
-        // 如果有一个没有量子缓存，则不同
+        // 如果有一个没有量子缓存,则不同
         if (cache1 == null || cache2 == null) {
             return false;
         }
@@ -416,14 +406,14 @@ public class CargoFragmentExtract extends SimpleSlimefunItem<ItemUseHandler> imp
             return cache1.getAmount() == cache2.getAmount();
         }
 
-        // 比较缓存ID或其他唯一标识（如果QuantumCache有getId方法）
+        // 比较缓存ID或其他唯一标识(如果QuantumCache有getId方法)
         try {
             // 如果有getId方法
             if (cache1.getItemStack()!= null && cache2.getItemStack() != null) {
                 return cache1.getItemStack().equals(cache2.getItemStack());
             }
         } catch (Exception e) {
-            // 如果QuantumCache没有getId方法，使用hashCode作为备用
+            // 如果QuantumCache没有getId方法,使用hashCode作为备用
             return cache1.hashCode() == cache2.hashCode();
         }
 
@@ -447,7 +437,7 @@ public class CargoFragmentExtract extends SimpleSlimefunItem<ItemUseHandler> imp
             // 3. 创建以太秘匣
             ItemStack cargoFragment = createCargoFragment(operation.storedItem, (int) extractAmount);
             if (cargoFragment == null) {
-                player.sendMessage(ChatColor.RED + "创建以太秘匣失败！");
+                player.sendMessage(ChatColor.RED + "Could not create the Aether Cargo Chest!");
                 return;
             }
 
@@ -458,13 +448,13 @@ public class CargoFragmentExtract extends SimpleSlimefunItem<ItemUseHandler> imp
             playSound(player, Sound.ENTITY_ITEM_PICKUP, 1.2f);
 
         } catch (Exception e) {
-            player.sendMessage(ChatColor.RED + "提取失败: " + e.getMessage());
+            player.sendMessage(ChatColor.RED + "Extraction failed: " + e.getMessage());
             e.printStackTrace();
         }
     }
 
     /**
-     * 创建一个 CargoFragment 物品，代表某个物品的"存储碎片"
+     * 创建一个 CargoFragment 物品,代表某个物品的"Storage Fragment"
      */
     private ItemStack createCargoFragment(ItemStack original, int amount) {
         ItemStack fragment = CARGO_FRAGMENT.clone();
@@ -472,14 +462,14 @@ public class CargoFragmentExtract extends SimpleSlimefunItem<ItemUseHandler> imp
         ItemMeta meta = fragment.getItemMeta();
         if (meta == null) return null;
 
-        // === 显示名：存储碎片: 原物品名 ===
+        // === 显示名:存储碎片: 原物品名 ===
         String itemName = ItemStackHelper.getDisplayName(original);
         if (original.hasItemMeta() && original.getItemMeta().hasDisplayName()) {
             itemName = original.getItemMeta().getDisplayName();
         }
-        meta.setDisplayName("§b「以太秘匣」");
+        meta.setDisplayName("§bAether Cargo Chest");
 
-        // === Lore：原物品 Lore + 数量 ===
+        // === Lore:原物品 Lore + 数量 ===
         List<String> lore = new ArrayList<>();
 
         lore.add(itemName);
@@ -489,13 +479,13 @@ public class CargoFragmentExtract extends SimpleSlimefunItem<ItemUseHandler> imp
             lore.add("");
         }
 
-        lore.add("§f数量: §a" + amount);
+        lore.add("§fAmount: §a" + amount);
         meta.setLore(lore);
 
-        // === 写入 PDC：原物品（JSON）+ 数量 ===
+        // === 写入 PDC:原物品(JSON)+ 数量 ===
         PersistentDataContainer container = meta.getPersistentDataContainer();
 
-        // 存储原物品 JSON（便于还原）
+        // 存储原物品 JSON(便于还原)
         String json = itemToBase64(original.clone());
         if (json != null) {
             NamespacedKey keyItem = new NamespacedKey(MagicExpansion.getInstance(), "cargo_item_json");
@@ -543,24 +533,24 @@ public class CargoFragmentExtract extends SimpleSlimefunItem<ItemUseHandler> imp
         // 尝试添加到玩家背包
         HashMap<Integer, ItemStack> leftover = player.getInventory().addItem(cargoFragment);
 
-        // 如果有剩余物品（背包满了）
+        // 如果有剩余物品(背包满了)
         if (!leftover.isEmpty()) {
             // 掉落在地上
             for (ItemStack item : leftover.values()) {
                 player.getWorld().dropItem(player.getLocation(), item);
             }
 
-            player.sendMessage(ChatColor.GREEN + "✓ 成功提取 " + ChatColor.YELLOW + extractedAmount +
-                    ChatColor.GREEN + " 个 " + ItemStackHelper.getDisplayName(storedItem));
-            player.sendMessage(ChatColor.GRAY + "背包已满，以太秘匣已掉落在地面上！");
+            player.sendMessage(ChatColor.GREEN + "✓ Extracted " + ChatColor.YELLOW + extractedAmount +
+                    ChatColor.GREEN + " items of " + ItemStackHelper.getDisplayName(storedItem));
+            player.sendMessage(ChatColor.GRAY + "Inventory full; the Aether Cargo Chest was dropped at your feet!");
         } else {
-            player.sendMessage(ChatColor.GREEN + "✓ 成功提取 " + ChatColor.YELLOW + extractedAmount +
-                    ChatColor.GREEN + " 个 " + ItemStackHelper.getDisplayName(storedItem));
-            player.sendMessage(ChatColor.GRAY + "已获得以太秘匣！");
+            player.sendMessage(ChatColor.GREEN + "✓ Extracted " + ChatColor.YELLOW + extractedAmount +
+                    ChatColor.GREEN + " items of " + ItemStackHelper.getDisplayName(storedItem));
+            player.sendMessage(ChatColor.GRAY + "Aether Cargo Chest added to your inventory!");
         }
 
         // 显示量子存储剩余数量
-        player.sendMessage(ChatColor.GRAY + "量子存储剩余: " + remainingAmount + " 个");
+        player.sendMessage(ChatColor.GRAY + "Remaining in quantum storage: " + remainingAmount + " items");
 
         // 更新副手物品显示
         player.getInventory().setItemInOffHand(player.getInventory().getItemInOffHand());
@@ -575,7 +565,7 @@ public class CargoFragmentExtract extends SimpleSlimefunItem<ItemUseHandler> imp
             if (operation != null) {
                 Player player = Bukkit.getPlayer(playerId);
                 if (player != null && player.isOnline()) {
-                    player.sendMessage(ChatColor.RED + "提取操作超时，已自动取消。");
+                    player.sendMessage(ChatColor.RED + "Extraction timed out and was cancelled.");
                 }
                 cleanupListenerIfNeeded();
             }
@@ -614,10 +604,10 @@ public class CargoFragmentExtract extends SimpleSlimefunItem<ItemUseHandler> imp
         final UUID playerId;
         final ItemStack extractItem;
         final ItemStack offhandItem;
-        ItemStack storedItem; // 改为非final，可能更新
-        long storedAmount; // 改为非final，可能更新
-        QuantumCache quantumCache; // 改为非final，可能更新
-        long maxExtract; // 改为非final，可能更新
+        ItemStack storedItem; // 改为非final,可能更新
+        long storedAmount; // 改为非final,可能更新
+        QuantumCache quantumCache; // 改为非final,可能更新
+        long maxExtract; // 改为非final,可能更新
 
         ExtractOperation(UUID playerId, ItemStack extractItem, ItemStack offhandItem,
                          ItemStack storedItem, long storedAmount,

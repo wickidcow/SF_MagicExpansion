@@ -45,14 +45,14 @@ public class PowerEel extends SimpleSlimefunItem<ItemUseHandler> implements NotP
     public @NotNull ItemUseHandler getItemHandler() {
         return e -> {
 
-            // 阻止默认行为（放置方块或使用物品）
+            // 阻止默认行为(放置方块或使用物品)
             e.setUseItem(Event.Result.DENY);
             e.setUseBlock(Event.Result.DENY);
             ItemStack item = e.getItem();
             Player player = e.getPlayer();
             // 必须按住 Shift 才能设置
             if (!player.isSneaking()) {
-                player.sendMessage("§e提示: 按住 Shift + 右键 来设置最大储能值。");
+                player.sendMessage("§eSneak-right-click to configure maximum energy storage.");
                 return;
             }
             // 开始等待输入
@@ -64,13 +64,13 @@ public class PowerEel extends SimpleSlimefunItem<ItemUseHandler> implements NotP
 
 
     /**
-     * 等待玩家输入最大储能值（正整数，long 范围）
+     * 等待玩家输入最大储能值(正整数,long 范围)
      */
     private void waitForMaxPowerInput(Player player, ItemStack item) {
-        player.sendMessage(getRandomGradientName("[魔法2.0] 请输入一个正整数作为最大储能值（ 1 ~ "+ Long.MAX_VALUE +" ）："));
-        player.sendMessage(getRandomGradientName("提示：输入 'cancel' 可取消操作。"));
+        player.sendMessage(getRandomGradientName("[MagicExpansion] Enter maximum energy storage (1 to "+ Long.MAX_VALUE +"):"));
+        player.sendMessage(getRandomGradientName("Type 'cancel' to cancel."));
 
-        // <<< 声明任务变量，用于后续取消 >>>
+        // <<< 声明任务变量,用于后续取消 >>>
         BukkitTask[] timeoutTask = new BukkitTask[1];
         // 创建临时监听器
         Listener tempListener = new Listener() {
@@ -84,29 +84,30 @@ public class PowerEel extends SimpleSlimefunItem<ItemUseHandler> implements NotP
                 String message = event.getMessage().trim();
 
                 if ("cancel".equalsIgnoreCase(message)) {
-                    player.sendMessage(getRandomGradientName("[魔法2.0] 已取消操作。"));
+                    player.sendMessage(getRandomGradientName("[MagicExpansion] Configuration cancelled."));
                 }else {
 
                     try {
                         long maxPowerValue = Long.parseLong(message);
                         if (maxPowerValue <= 0) {
-                            player.sendMessage(getRandomGradientName("错误：请输入一个大于 0 的正整数。"));
-                            return; // 不注销，继续等待
+                            player.sendMessage(getRandomGradientName("Error: Enter a whole number greater than 0."));
+                            return; // 不注销,继续等待
                         }
 
-                        // 成功解析，开始处理物品
-                        handlePowerConfiguration(item, maxPowerValue);
-
-                        player.sendMessage(getRandomGradientName("✔ 成功设置最大储能值为: " + maxPowerValue + " J"));
-                        player.updateInventory(); // 强制刷新
+                        // Apply item changes on the primary server thread.
+                        MagicExpansion.getInstance().getServer().getScheduler().runTask(MagicExpansion.getInstance(), () -> {
+                            handlePowerConfiguration(item, maxPowerValue);
+                            player.sendMessage(getRandomGradientName("✔ Maximum energy storage set to: " + maxPowerValue + " J"));
+                            player.updateInventory();
+                        });
 
                     } catch (NumberFormatException ex) {
-                        player.sendMessage(getRandomGradientName("错误：'" + message + "' 不是一个有效的整数，请重新输入。"));
+                        player.sendMessage(getRandomGradientName("Error: '" + message + "' is not a valid integer. Enter a whole number."));
                         return; // 继续等待
                     }
                 }
 
-                // <<< 输入完成或取消：取消超时任务 >>>
+                // <<< 输入完成或取消:取消超时任务 >>>
                 if (timeoutTask[0] != null && !timeoutTask[0].isCancelled()) {
                     timeoutTask[0].cancel();
                 }
@@ -123,13 +124,13 @@ public class PowerEel extends SimpleSlimefunItem<ItemUseHandler> implements NotP
         timeoutTask[0] = MagicExpansion.getInstance().getServer().getScheduler().runTaskLater(MagicExpansion.getInstance(), () -> {
             org.bukkit.event.HandlerList.unregisterAll(tempListener);
             if (player.isOnline()) {
-                player.sendMessage(getRandomGradientName("[魔法2.0] ⏰ 输入超时（15秒），已自动取消。"));
+                player.sendMessage(getRandomGradientName("[MagicExpansion] Input timed out after 15 seconds; cancelled."));
             }
         }, 300L); // 15秒 = 300 ticks
     }
 
     /**
-     * 处理物品的储能配置（PDC + Lore 更新）
+     * 处理物品的储能配置(PDC + Lore 更新)
      */
     private void handlePowerConfiguration(ItemStack item, long maxPowerValue) {
         ItemMeta meta = item.getItemMeta();
@@ -137,15 +138,15 @@ public class PowerEel extends SimpleSlimefunItem<ItemUseHandler> implements NotP
 
         PersistentDataContainer pdc = meta.getPersistentDataContainer();
 
-        // 获取当前电量（继承或初始化为0）
+        // 获取当前电量(继承或初始化为0)
         long nowPower = pdc.has(NowPower, PersistentDataType.LONG)
                 ? pdc.get(NowPower, PersistentDataType.LONG) : 0L;
 
         // 设置最大电量
         pdc.set(MaxPower, PersistentDataType.LONG, maxPowerValue);
-        pdc.set(NowPower, PersistentDataType.LONG, nowPower); // 显式设置（确保存在）
+        pdc.set(NowPower, PersistentDataType.LONG, nowPower); // 显式设置(确保存在)
 
-        // 更新 Lore：保留前11行，添加电量信息
+        // 更新 Lore:保留前11行,添加电量信息
         List<String> lore = new ArrayList<>();
         if (meta.hasLore()) {
             List<String> existingLore = meta.getLore();
@@ -156,7 +157,7 @@ public class PowerEel extends SimpleSlimefunItem<ItemUseHandler> implements NotP
         }
 
         // 添加电量显示
-        String powerLine = ("§x§F§F§3§2§C§E当前储电量: " + nowPower + "/" + maxPowerValue + " J");
+        String powerLine = ("§x§F§F§3§2§C§EStored Energy: " + nowPower + "/" + maxPowerValue + " J");
         lore.add(powerLine);
 
         meta.setLore(lore);

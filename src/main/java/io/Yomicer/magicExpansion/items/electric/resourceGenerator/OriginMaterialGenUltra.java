@@ -13,7 +13,7 @@ import io.github.thebusybiscuit.slimefun4.utils.ChestMenuUtils;
 import me.mrCookieSlime.Slimefun.Objects.SlimefunItem.abstractItems.MachineRecipe;
 import me.mrCookieSlime.Slimefun.api.inventory.BlockMenu;
 import me.mrCookieSlime.Slimefun.api.inventory.BlockMenuPreset;
-import net.guizhanss.guizhanlib.minecraft.helper.inventory.ItemStackHelper;
+import io.Yomicer.magicExpansion.utils.compat.ItemStackHelper;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -49,7 +49,7 @@ public class OriginMaterialGenUltra extends AbstractElectricResourceMachine impl
     private static final ItemStack PROGRESS_ITEM = new ItemStack(Material.SOUL_LANTERN);
     private ItemStack material;
 
-    private static final ItemStack PROGRESS_STACK = new CustomItemStack(Material.SOUL_CAMPFIRE, getGradientNameVer2("信息"), getGradientNameVer2("类型：资源生成器"), getGradientNameVer2("所属附属：魔法"));
+    private static final ItemStack PROGRESS_STACK = new CustomItemStack(Material.SOUL_CAMPFIRE, getGradientNameVer2("Information"), getGradientNameVer2("type:"), getGradientNameVer2("Addon: MagicExpansion"));
 
 
 
@@ -88,7 +88,7 @@ public class OriginMaterialGenUltra extends AbstractElectricResourceMachine impl
             if (lore == null) {
                 lore = new ArrayList<>();
             }
-            lore.add(getGradientNameVer2("当前推演物品：" )+ n);
+            lore.add(getGradientNameVer2("Current Item: ") + n);
             meta.setLore(lore);
 
             NamespacedKey key = new NamespacedKey(MagicExpansion.getInstance(), "origin_material");
@@ -127,7 +127,7 @@ public class OriginMaterialGenUltra extends AbstractElectricResourceMachine impl
     public void postRegister() {
         registerRecipe(getCraftSecond(), new ItemStack[] { this.material }, getItemStackOutputs());
     }
-    
+
 //    @Override
 //    public void tick(BlockMenu menu, Block b) {
 ////            updateInfoStack(menu);
@@ -136,8 +136,8 @@ public class OriginMaterialGenUltra extends AbstractElectricResourceMachine impl
 
     @Override
 	public MachineRecipe findNextRecipe(BlockMenu menu) {
-        
-        int maxedSlots = 0; 
+
+        int maxedSlots = 0;
         for (int slots : getOutputSlots()) {
             ItemStack item = menu.getItemInSlot(slots);
             if (item != null && item.getMaxStackSize() == item.getAmount()) {
@@ -187,8 +187,8 @@ public class OriginMaterialGenUltra extends AbstractElectricResourceMachine impl
 	public List<ItemStack> getDisplayRecipes() {
 	    List<ItemStack> display = new ArrayList<>();
 
-        display.add(new CustomItemStack(Material.KNOWLEDGE_BOOK, getGradientNameVer2("产物⇨"),getGradientNameVer2("每次生产 2304 个"),getGradientNameVer2("生产效率⇨ ⚙ 每 " + getCraftSecond() + " s生成一次"),getGradientNameVer2("生产能耗⇨ ⚡ "+ getEnergyConsumption()*2 +" J/s")));
-        display.add(new CustomItemStack(Material.KNOWLEDGE_BOOK, getGradientNameVer2("产物⇨"),getGradientNameVer2("每次生产 2304 个"),getGradientNameVer2("生产效率⇨ ⚙ 每 " + getCraftSecond() + " s生成一次"),getGradientNameVer2("生产能耗⇨ ⚡ "+ getEnergyConsumption()*2 +" J/s")));
+        display.add(new CustomItemStack(Material.KNOWLEDGE_BOOK, getGradientNameVer2("Output ⇨"),getGradientNameVer2("Produces 2,304 items per operation."),getGradientNameVer2("Production Rate ⇨ ⚙ Every " + getCraftSecond() + " s per operation"),getGradientNameVer2("Energy Cost ⇨ ⚡ "+ getEnergyConsumption()*2 +" J/s")));
+        display.add(new CustomItemStack(Material.KNOWLEDGE_BOOK, getGradientNameVer2("Output ⇨"),getGradientNameVer2("Produces 2,304 items per operation."),getGradientNameVer2("Production Rate ⇨ ⚙ Every " + getCraftSecond() + " s per operation"),getGradientNameVer2("Energy Cost ⇨ ⚡ "+ getEnergyConsumption()*2 +" J/s")));
         // 将输出物品数组中的所有物品添加到显示列表
         display.addAll(Arrays.asList(getItemStackOutputs()));
 
@@ -212,7 +212,7 @@ public class OriginMaterialGenUltra extends AbstractElectricResourceMachine impl
         preset.addItem(getProgressSlot(), new CustomItemStack(Material.PINK_STAINED_GLASS_PANE, " "), ChestMenuUtils.getEmptyClickHandler());
 
         preset.addItem(4, PROGRESS_STACK, ChestMenuUtils.getEmptyClickHandler());
- 
+
     }
 
 	@Override
@@ -224,7 +224,7 @@ public class OriginMaterialGenUltra extends AbstractElectricResourceMachine impl
 	protected int[] getOutputSlots() {
 		return OUTPUT_SLOTS;
 	}
-    
+
     @Override
     public boolean isSynchronized() {
         return false;
@@ -240,13 +240,13 @@ public class OriginMaterialGenUltra extends AbstractElectricResourceMachine impl
         ItemStack item = PROGRESS_STACK.clone();
         ItemMeta meta = item.getItemMeta();
 
-        meta.setDisplayName(getGradientNameVer2("信息⇨"));
+        meta.setDisplayName(getGradientNameVer2("Information ⇨"));
         ArrayList lore = new ArrayList<>();
-        lore.add(getGradientNameVer2("类型：资源生成器"));
-        lore.add(getGradientNameVer2("所属附属：魔法"));
-        lore.add(getGradientNameVer2("当前生产物品：") + ItemStackHelper.getDisplayName(output));
-        lore.add(getGradientNameVer2("生产效率⇨ ⚙ 每 " + getCraftSecond() + " s生成一次"));
-        lore.add(getGradientNameVer2("生产能耗⇨ ⚡ "+ getEnergyConsumption()*2 +" J/s"));
+        lore.add(getGradientNameVer2("type:"));
+        lore.add(getGradientNameVer2("Addon: MagicExpansion"));
+        lore.add(getGradientNameVer2("Current Product: ") + ItemStackHelper.getDisplayName(output));
+        lore.add(getGradientNameVer2("Production Rate ⇨ ⚙ Every " + getCraftSecond() + " s per operation"));
+        lore.add(getGradientNameVer2("Energy Cost ⇨ ⚡ "+ getEnergyConsumption()*2 +" J/s"));
         meta.setLore(lore);
         item.setItemMeta(meta);
 

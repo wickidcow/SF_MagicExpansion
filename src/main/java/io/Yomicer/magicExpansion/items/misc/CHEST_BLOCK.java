@@ -28,13 +28,13 @@ public class CHEST_BLOCK extends AbstractElectricRecipeMachine {
     private static final int[] OUTPUT_BORDER_SLOTS = new int[] { 53 };
 
     private static final ItemStack PROGRESS_ITEM = new ItemStack(Material.SOUL_LANTERN);
-    private static final ItemStack PROGRESS_STACK = new CustomItemStack(Material.SOUL_CAMPFIRE, getGradientName("信息"), getGradientName("类型：容器"), getGradientName("所属附属：魔法"));
+    private static final ItemStack PROGRESS_STACK = new CustomItemStack(Material.SOUL_CAMPFIRE, getGradientName("Information"), getGradientName("type:"), getGradientName("Addon: MagicExpansion"));
 
     public CHEST_BLOCK(ItemGroup itemGroup, SlimefunItemStack item, RecipeType recipeType, ItemStack[] recipe) {
         super(itemGroup, item, recipeType, recipe);
 
     }
-    
+
     @Override
     public void postRegister() {
         registerDefaultRecipes();
@@ -47,8 +47,8 @@ public class CHEST_BLOCK extends AbstractElectricRecipeMachine {
     @Override
 	public List<ItemStack> getDisplayRecipes() {
 		List<ItemStack> display = new ArrayList<>();
-        display.add(new CustomItemStack(Material.KNOWLEDGE_BOOK, getGradientName("输入端⇨"),getGradientName("每一个格子都是输入槽")));
-        display.add(new CustomItemStack(Material.KNOWLEDGE_BOOK, getGradientName("输出端⇨"),getGradientName("每一个格子都是输出槽")));
+        display.add(new CustomItemStack(Material.KNOWLEDGE_BOOK, getGradientName("input⇨"),getGradientName("is Input Slots")));
+        display.add(new CustomItemStack(Material.KNOWLEDGE_BOOK, getGradientName("Output"),getGradientName("Items are placed in the output slots.")));
         // 遍历所有配方并动态生成展示内容
         for (MachineRecipe recipe : recipes) {
             ItemStack[] inputs = recipe.getInput();
@@ -57,29 +57,29 @@ public class CHEST_BLOCK extends AbstractElectricRecipeMachine {
 
             int maxItems = Math.max(inputs.length, outputs.length); // 获取最大物品数量
             for (int i = 0; i < maxItems; i++) {
-                // 添加输入物品（带生产时间）
+                // 添加输入物品(带生产时间)
                 if (i < inputs.length) {
-                    display.add(addLore(inputs[i], "§7生产时间: §e" + productionTime + " 秒"));
+                    display.add(addLore(inputs[i], "§7Processing Time: §e" + productionTime + " seconds"));
                 } else {
-                    display.add(new ItemStack(Material.AIR)); // 如果没有更多输入物品，添加 AIR
+                    display.add(new ItemStack(Material.AIR)); // 如果没有更多输入物品,添加 AIR
                 }
 
-                // 添加输出物品（带生产时间）
+                // 添加输出物品(带生产时间)
                 if (i < outputs.length) {
-                    display.add(addLore(outputs[i], "§7生产时间: §e" + productionTime + " 秒"));
+                    display.add(addLore(outputs[i], "§7Processing Time: §e" + productionTime + " seconds"));
                 } else {
-                    display.add(new ItemStack(Material.AIR)); // 如果没有更多输出物品，添加 AIR
+                    display.add(new ItemStack(Material.AIR)); // 如果没有更多输出物品,添加 AIR
                 }
             }
-            display.add(new CustomItemStack(Material.PINK_STAINED_GLASS_PANE, getGradientName("<== 配方分割线 =>>"),getGradientName("<== 输入材料 =>>")));
-            display.add(new CustomItemStack(Material.PINK_STAINED_GLASS_PANE, getGradientName("<== 配方分割线 =>>"),getGradientName("<== 输出材料 =>>")));
+            display.add(new CustomItemStack(Material.PINK_STAINED_GLASS_PANE, getGradientName("Recipe"),getGradientName("Input Materials")));
+            display.add(new CustomItemStack(Material.PINK_STAINED_GLASS_PANE, getGradientName("Recipe"),getGradientName("Output Items")));
             // 遍历所有配方并动态生成展示内容
         }
         return display;
 	}
 
     /**
-     * 为物品添加描述（lore）
+     * 为物品添加描述(lore)
      */
     private ItemStack addLore(ItemStack item, String loreText) {
         ItemStack newItem = item.clone(); // 防止直接修改原始物品
@@ -110,7 +110,7 @@ public class CHEST_BLOCK extends AbstractElectricRecipeMachine {
 		return OUTPUT_SLOTS;
 	}
 
-  
+
     @Override
     public ItemStack getProgressBar() {
         return PROGRESS_ITEM;

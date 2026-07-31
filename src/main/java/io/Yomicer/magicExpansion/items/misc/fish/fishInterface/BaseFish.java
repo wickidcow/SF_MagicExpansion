@@ -28,7 +28,7 @@ public class BaseFish {
     }
 
     /**
-     * 为每个鱼类创建静态实例（方便直接调用）
+     * 为每个鱼类创建静态实例(方便直接调用)
      */
     public static final BaseFish SanWenFish = of(Fish.SanWenFish);
     public static final BaseFish XueFish = of(Fish.XueFish);
@@ -144,7 +144,7 @@ public class BaseFish {
     }
 
     /**
-     * 设置材质（覆盖根据稀有度设置的材质）
+     * 设置材质(覆盖根据稀有度设置的材质)
      */
     public BaseFish setMaterial(Material material) {
         this.material = material;
@@ -174,7 +174,7 @@ public class BaseFish {
     }
 
     /**
-     * 快速获取ItemStack（不添加额外Lore）
+     * 快速获取ItemStack(不添加额外Lore)
      */
     public ItemStack toItemStack() {
         return build();

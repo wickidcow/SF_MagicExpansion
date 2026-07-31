@@ -45,7 +45,7 @@ public class SfTimingsMachine extends SlimefunItem implements EnergyNetComponent
     public SfTimingsMachine(ItemGroup category, SlimefunItemStack item, RecipeType recipeType, ItemStack[] recipe) {
         super(category, item, recipeType, recipe);
 
-        constructMenu("粘液刻投影");
+        constructMenu("SfTimingsMachine");
         addItemHandler(onBlockPlace(), onBlockBreak());
     }
 
@@ -75,7 +75,7 @@ public class SfTimingsMachine extends SlimefunItem implements EnergyNetComponent
             public void onPlayerPlace(BlockPlaceEvent e) {
                 Location loc = e.getBlock().getLocation().clone().add(SfTimingsMachine.this.getHologramOffsetSfTimings(e.getBlock()));
                 Location loc1 = loc.clone().add(0, 1.0, 0);
-                Slimefun.getHologramsService().setHologramLabel(loc1, ColorGradient.getGradientName("待机中..."));
+                Slimefun.getHologramsService().setHologramLabel(loc1, ColorGradient.getGradientName("Idle..."));
             }
         };
     }
@@ -96,9 +96,9 @@ public class SfTimingsMachine extends SlimefunItem implements EnergyNetComponent
         if(menu != null && menu.hasViewer()) {
 
 
-            menu.addItem(13, new CustomItemStack(new ItemStack (Material.GHAST_TEAR), "§a※※※ 性能分析器 ※※※",
-                            "&6Tick 总用时: &e" + Slimefun.getProfiler().getTime(),
-                    "&d当前区块Tick 总用时: &e" + Slimefun.getProfiler().getTime(block.getChunk())
+            menu.addItem(13, new CustomItemStack(new ItemStack (Material.GHAST_TEAR), "§a※※※ Performance Analyzer ※※※",
+                            "&6Tick: &e" + Slimefun.getProfiler().getTime(),
+                    "&dcurrentTick: &e" + Slimefun.getProfiler().getTime(block.getChunk())
                     ),
                     (p, slot, item, action) -> false);
 
@@ -112,9 +112,9 @@ public class SfTimingsMachine extends SlimefunItem implements EnergyNetComponent
     private void updateHologramSfTimings(@Nonnull Block b) {
         Location loc = b.getLocation().add(this.getHologramOffsetSfTimings(b));
         Location loc1 = loc.clone().add(0, 1.0, 0);
-        Slimefun.getHologramsService().setHologramLabel(loc1, ColorGradient.getGradientName("当前区块Tick 总用时: ") +"§r§e"+Slimefun.getProfiler().getTime(b.getChunk()));
+        Slimefun.getHologramsService().setHologramLabel(loc1, ColorGradient.getGradientName("currentTick:") +"§r§e"+Slimefun.getProfiler().getTime(b.getChunk()));
         Location loc2 = loc.clone().add(0, 1.5, 0);
-        Slimefun.getHologramsService().setHologramLabel(loc2, ColorGradient.getGradientName("Tick 总用时: ")+"§r§e"+ Slimefun.getProfiler().getTime());
+        Slimefun.getHologramsService().setHologramLabel(loc2, ColorGradient.getGradientName("Tick:")+"§r§e"+ Slimefun.getProfiler().getTime());
     }
     private void removeHologramSfTimings(@Nonnull Block b) {
         Location loc = b.getLocation().add(this.getHologramOffsetSfTimings(b));

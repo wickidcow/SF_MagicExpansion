@@ -20,22 +20,22 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public abstract class AbstractMachine extends AbstractTickingContainer implements MachineProcessHolder<CraftingOperation>, RecipeDisplayItem {
-        
-    private final MachineProcessor<CraftingOperation> processor = new MachineProcessor<>(this); 
+
+    private final MachineProcessor<CraftingOperation> processor = new MachineProcessor<>(this);
 
     protected AbstractMachine(ItemGroup itemGroup, SlimefunItemStack item, RecipeType recipeType, ItemStack[] recipe) {
         super(itemGroup, item, recipeType, recipe);
-        
-        processor.setProgressBar(getProgressBar()); 
+
+        processor.setProgressBar(getProgressBar());
     }
 
     @Nonnull
     @Override
     public MachineProcessor<CraftingOperation> getMachineProcessor() {
-        return processor; 
+        return processor;
     }
 
-    @Nullable 
+    @Nullable
     public abstract MachineRecipe findNextRecipe(BlockMenu menu);
 
     @Nonnull
@@ -46,25 +46,25 @@ public abstract class AbstractMachine extends AbstractTickingContainer implement
     }
 
     protected boolean onCraftFinish(BlockMenu menu, ItemStack[] ingredients) {
-        return true; 
+        return true;
     }
 
     protected void addOutputs(BlockMenu menu, Block b, ItemStack[] outputs) {
         for (ItemStack output: outputs) {
             if (output != null) {
-                menu.pushItem(output.clone(), getOutputSlots()); 
+                menu.pushItem(output.clone(), getOutputSlots());
             }
         }
     }
 
     @Override
     protected void onBreak(BlockBreakEvent e, BlockMenu menu, Location l) {
-        super.onBreak(e, menu, l); 
+        super.onBreak(e, menu, l);
 
         menu.dropItems(l, getInputSlots());
         menu.dropItems(l, getOutputSlots());
 
-        processor.endOperation(e.getBlock()); 
+        processor.endOperation(e.getBlock());
     }
 
     @Override
@@ -73,20 +73,20 @@ public abstract class AbstractMachine extends AbstractTickingContainer implement
 
         if (currentOp != null) {
             if (checkCraftPreconditions(b)) {
-                
+
                 if(!currentOp.isFinished()) {
-                    processor.updateProgressBar(menu, getProgressSlot(), currentOp); 
+                    processor.updateProgressBar(menu, getProgressSlot(), currentOp);
                     currentOp.addProgress(1);
                 } else {
-                    menu.replaceExistingItem(getProgressSlot(), new CustomItemStack(Material.BLACK_STAINED_GLASS_PANE, " ")); 
+                    menu.replaceExistingItem(getProgressSlot(), new CustomItemStack(Material.BLACK_STAINED_GLASS_PANE, " "));
 
-                    boolean isFinished = onCraftFinish(menu, currentOp.getIngredients()); 
+                    boolean isFinished = onCraftFinish(menu, currentOp.getIngredients());
                     if (isFinished) {
-                        addOutputs(menu, b, currentOp.getResults()); 
+                        addOutputs(menu, b, currentOp.getResults());
                     }
 
                     processor.endOperation(b);
-                }     
+                }
             }
         } else {
             MachineRecipe next = findNextRecipe(menu);

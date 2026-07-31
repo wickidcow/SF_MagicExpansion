@@ -62,7 +62,7 @@ public class EnergyOutputGenerator extends MenuBlock implements EnergyNetProvide
     protected void onPlace(BlockPlaceEvent e, Block b) {
         Location loc = e.getBlock().getLocation().clone().add(EnergyOutputGenerator.this.getHologramOffsetSfTimings(e.getBlock()));
         Location loc1 = loc.clone().add(0, 1.0, 0);
-        Slimefun.getHologramsService().setHologramLabel(loc1, ColorGradient.getGradientName("待机中..."));
+        Slimefun.getHologramsService().setHologramLabel(loc1, ColorGradient.getGradientName("Idle..."));
     }
 
     private Vector getHologramOffsetSfTimings(@Nonnull Block block) {
@@ -80,8 +80,8 @@ public class EnergyOutputGenerator extends MenuBlock implements EnergyNetProvide
         Location loc = b.getLocation().clone().add(this.getHologramOffsetSfTimings(b));
         Location loc1 = loc.clone().add(0, 1.0, 0);
         Location loc2 = loc.clone().add(0, 1.5, 0);
-        Slimefun.getHologramsService().setHologramLabel(loc2, getGradientName("发电效率: " + ChargeLore.formatEnergy(takePower) + " J/s"));
-        Slimefun.getHologramsService().setHologramLabel(loc1, ColorGradient.getGradientName("内部电力存储: ")+"§r§e"+ po1 +"/"+po2+" J");
+        Slimefun.getHologramsService().setHologramLabel(loc2, getGradientName("Transfer Rate: " + ChargeLore.formatEnergy(takePower) + " J/s"));
+        Slimefun.getHologramsService().setHologramLabel(loc1, ColorGradient.getGradientName("Stored Energy: ") + "§r§e" + po1 + "/" + po2 + " J");
     }
 
     @Override
@@ -132,8 +132,8 @@ public class EnergyOutputGenerator extends MenuBlock implements EnergyNetProvide
 
         BlockMenu menu = StorageCacheUtils.getMenu(l);
         if (menu == null) {
-            Slimefun.getHologramsService().setHologramLabel(loc1, ColorGradient.getGradientName("待机中..."));
-            Slimefun.getHologramsService().setHologramLabel(loc2, ColorGradient.getGradientName("不存在菜单..."));
+            Slimefun.getHologramsService().setHologramLabel(loc1, ColorGradient.getGradientName("Idle..."));
+            Slimefun.getHologramsService().setHologramLabel(loc2, ColorGradient.getGradientName("does not existmenu..."));
             return gen;
         }
         ItemStack PowerCard = menu.getItemInSlot(19);
@@ -141,24 +141,24 @@ public class EnergyOutputGenerator extends MenuBlock implements EnergyNetProvide
             if (menu != null && menu.hasViewer()) {
                 menu.replaceExistingItem(22, new CustomItemStack(
                         Material.LANTERN,
-                        getGradientName("类型: " + getPowerType()),
-                        getGradientName("不在工作状态")
+                        getGradientName("Type: " + getPowerType()),
+                        getGradientName("Not operating")
                 ));
             }
-            Slimefun.getHologramsService().setHologramLabel(loc1, ColorGradient.getGradientName("待机中..."));
-            Slimefun.getHologramsService().setHologramLabel(loc2, ColorGradient.getGradientName("待机中..."));
+            Slimefun.getHologramsService().setHologramLabel(loc1, ColorGradient.getGradientName("Idle..."));
+            Slimefun.getHologramsService().setHologramLabel(loc2, ColorGradient.getGradientName("Idle..."));
             return gen;
         }
         if (PowerCard.getAmount() != 1){
             if (menu != null && menu.hasViewer()) {
                 menu.replaceExistingItem(22, new CustomItemStack(
                         Material.LANTERN,
-                        getGradientName("类型: " + getPowerType()),
-                        getGradientName("不在工作状态")
+                        getGradientName("Type: " + getPowerType()),
+                        getGradientName("Not operating")
                 ));
             }
-            Slimefun.getHologramsService().setHologramLabel(loc1, ColorGradient.getGradientName("待机中..."));
-            Slimefun.getHologramsService().setHologramLabel(loc2, ColorGradient.getGradientName("待机中..."));
+            Slimefun.getHologramsService().setHologramLabel(loc1, ColorGradient.getGradientName("Idle..."));
+            Slimefun.getHologramsService().setHologramLabel(loc2, ColorGradient.getGradientName("Idle..."));
             return gen;
         }
         ItemMeta meta = PowerCard.getItemMeta();
@@ -166,12 +166,12 @@ public class EnergyOutputGenerator extends MenuBlock implements EnergyNetProvide
             if (menu != null && menu.hasViewer()) {
                 menu.replaceExistingItem(22, new CustomItemStack(
                         Material.LANTERN,
-                        getGradientName("类型: " + getPowerType()),
-                        getGradientName("不在工作状态")
+                        getGradientName("Type: " + getPowerType()),
+                        getGradientName("Not operating")
                 ));
             }
-            Slimefun.getHologramsService().setHologramLabel(loc1, ColorGradient.getGradientName("待机中..."));
-            Slimefun.getHologramsService().setHologramLabel(loc2, ColorGradient.getGradientName("待机中..."));
+            Slimefun.getHologramsService().setHologramLabel(loc1, ColorGradient.getGradientName("Idle..."));
+            Slimefun.getHologramsService().setHologramLabel(loc2, ColorGradient.getGradientName("Idle..."));
             return gen;
         }
         PersistentDataContainer pdc = meta.getPersistentDataContainer();
@@ -181,12 +181,12 @@ public class EnergyOutputGenerator extends MenuBlock implements EnergyNetProvide
             if (menu != null && menu.hasViewer()) {
                 menu.replaceExistingItem(22, new CustomItemStack(
                         Material.LANTERN,
-                        getGradientName("类型: " + getPowerType()),
-                        getGradientName("不在工作状态")
+                        getGradientName("Type: " + getPowerType()),
+                        getGradientName("Not operating")
                 ));
             }
-            Slimefun.getHologramsService().setHologramLabel(loc1, ColorGradient.getGradientName("待机中..."));
-            Slimefun.getHologramsService().setHologramLabel(loc2, ColorGradient.getGradientName("待机中..."));
+            Slimefun.getHologramsService().setHologramLabel(loc1, ColorGradient.getGradientName("Idle..."));
+            Slimefun.getHologramsService().setHologramLabel(loc2, ColorGradient.getGradientName("Idle..."));
             return gen;
         }
 
@@ -233,18 +233,18 @@ public class EnergyOutputGenerator extends MenuBlock implements EnergyNetProvide
             if(gen <= 0){
                 menu.replaceExistingItem(22, new CustomItemStack(
                         Material.LANTERN,
-                        getGradientName("类型: " + getPowerType()),
-                        getGradientName("不在工作状态")
+                        getGradientName("Type: " + getPowerType()),
+                        getGradientName("Not operating")
                 ));
-                Slimefun.getHologramsService().setHologramLabel(loc1, ColorGradient.getGradientName("中转站工作已完成..."));
-                Slimefun.getHologramsService().setHologramLabel(loc2, ColorGradient.getGradientName("中转站工作已完成..."));
+                Slimefun.getHologramsService().setHologramLabel(loc1, ColorGradient.getGradientName("Relay operation complete..."));
+                Slimefun.getHologramsService().setHologramLabel(loc2, ColorGradient.getGradientName("Relay operation complete..."));
             }
             else {
                 menu.replaceExistingItem(22, new CustomItemStack(
                         Material.SOUL_LANTERN,
-                        getGradientName("类型: " + getPowerType()),
-                        getGradientName("正在发电中: " + ChargeLore.formatEnergy(gen) + " J/s"),
-                        getGradientName("电量剩余: " + newNowPower + "/" + maxPower + " J")
+                        getGradientName("Type: " + getPowerType()),
+                        getGradientName("Generating Energy: " + ChargeLore.formatEnergy(gen) + " J/s"),
+                        getGradientName("remaining:" + newNowPower + "/" + maxPower + " J")
                 ));
                 updateHologramSfTimings(l.getBlock(), newNowPower, maxPower, gen);
             }
@@ -260,7 +260,7 @@ public class EnergyOutputGenerator extends MenuBlock implements EnergyNetProvide
     private void updatePowerCardLore(ItemMeta meta, long nowPower, long maxPower, int num) {
         List<String> lore = new ArrayList<>();
 
-        // 保留原有 Lore 前11行（参考你之前的逻辑）
+        // 保留原有 Lore 前11行(参考你之前的逻辑)
         if (meta.hasLore()) {
             List<String> existingLore = meta.getLore();
             int linesToKeep = Math.min(num, existingLore.size());
@@ -270,7 +270,7 @@ public class EnergyOutputGenerator extends MenuBlock implements EnergyNetProvide
         }
 
         // 添加电量行
-        String powerLine = ColorGradient.getGradientName("当前储电量: " + nowPower + "/" + maxPower + " J");
+        String powerLine = ColorGradient.getGradientName("Stored Energy: " + nowPower + "/" + maxPower + " J");
         lore.add(powerLine);
 
         meta.setLore(lore);

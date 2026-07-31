@@ -52,8 +52,8 @@ import static io.Yomicer.magicExpansion.utils.ColorGradient.getGradientName;
 public class FiveElementsMiner extends AContainer implements RecipeDisplayItem , HologramOwner{
 
     private static final String HOLOGRAM_ENABLED_KEY = "hologram_enabled";
-    private static final ItemStack TOGGLE_ON = new CustomItemStack(Material.GREEN_DYE, "&a全息文字: &f开启", "&7点击关闭");
-    private static final ItemStack TOGGLE_OFF = new CustomItemStack(Material.GRAY_DYE, "&c全息文字: &f关闭", "&7点击开启");
+    private static final ItemStack TOGGLE_ON = new CustomItemStack(Material.GREEN_DYE, "&aEnabled", "&7Click to disable");
+    private static final ItemStack TOGGLE_OFF = new CustomItemStack(Material.GRAY_DYE, "&cDisabled", "&7Click to enable");
     private static final int[] INPUT_SLOTS = new int[] { 0,1,2,3, 9,10,11,12, 18,19,20,21, 27,28,29,30, 36,37,38,39, 45,46,47,48  };
     private static final int[] OUTPUT_SLOTS = new int[] { 5,6,7,8, 14,15,16,17, 23,24,25,26, 32,33,34,35, 41,42,43,44, 50,51,52,53 };
 
@@ -62,7 +62,7 @@ public class FiveElementsMiner extends AContainer implements RecipeDisplayItem ,
     private static final int[] BACKGROUND_SLOTS = new int[] { 49 };
 
     private static final ItemStack PROGRESS_ITEM = new ItemStack(Material.SOUL_LANTERN);
-    private static final ItemStack PROGRESS_STACK = new CustomItemStack(Material.SOUL_CAMPFIRE, getGradientName("信息"), getGradientName("类型：五行资源采集器"), getGradientName("所属附属：魔法"));
+    private static final ItemStack PROGRESS_STACK = new CustomItemStack(Material.SOUL_CAMPFIRE, getGradientName("Information"), getGradientName("type:"), getGradientName("Addon: MagicExpansion"));
 
     private final MachineProcessor<CraftingOperation> processor = new MachineProcessor<>(this);
 
@@ -166,7 +166,7 @@ public class FiveElementsMiner extends AContainer implements RecipeDisplayItem ,
                 if (data != null) {
                     data.setData(HOLOGRAM_ENABLED_KEY, "true"); // 显式初始化
                 }
-                updateHologram(e.getBlock(), "&7待机中...");
+                updateHologram(e.getBlock(), "&7Idle...");
             }
         };
     }
@@ -196,7 +196,7 @@ public class FiveElementsMiner extends AContainer implements RecipeDisplayItem ,
                     @Override
                     public void onResult(SlimefunChunkData result) {
                         if (result.getAllData().isEmpty()) {
-                            updateHologram(b, "&4需要先进行地形扫描!");
+                            updateHologram(b, "&4requires!");
                         }else{
                             startTick(b);
                         }
@@ -291,15 +291,15 @@ public class FiveElementsMiner extends AContainer implements RecipeDisplayItem ,
                     Slimefun.getGPSNetwork()
                             .getResourceManager()
                             .setSupplies(resourceType, b.getWorld(), b.getX() >> 4, b.getZ() >> 4, supplies.getAsInt() - 1);
-                    this.updateHologram(b, "&7开采中: &r" + resourceType.getName());
+                    this.updateHologram(b, "&7: &r" + resourceType.getName());
 
                     return recipe;
                 } else {
-                    // 资源不足，把空桶之类的东西移到输出槽，避免重复尝试（防卡顿）
+                    // 资源不足,把空桶之类的东西移到输出槽,避免重复尝试(防卡顿)
                     ItemStack item = itemInSlot.clone();
                     inv.replaceExistingItem(slot, null);
                     inv.pushItem(item, getOutputSlots());
-                    this.updateHologram(b, resourceType.getName()+ "&7 开采完成");
+                    this.updateHologram(b, resourceType.getName()+ "&7 Mining Complete");
                     return null;
                 }
             }
@@ -329,7 +329,7 @@ public class FiveElementsMiner extends AContainer implements RecipeDisplayItem ,
 
         preset.addItem(22, PROGRESS_STACK, ChestMenuUtils.getEmptyClickHandler());
 
-        // === 新增：开关按钮在 slot 4 ===
+        // === 新增:开关按钮在 slot 4 ===
         preset.addItem(4, TOGGLE_ON,
                 new ChestMenu.AdvancedMenuClickHandler() {
                     @Override
@@ -388,8 +388,8 @@ public class FiveElementsMiner extends AContainer implements RecipeDisplayItem ,
     @Override
     public List<ItemStack> getDisplayRecipes() {
         List<ItemStack> display = new ArrayList<>();
-        display.add(new CustomItemStack(Material.KNOWLEDGE_BOOK, getGradientName("材料⇨")));
-        display.add(new CustomItemStack(Material.KNOWLEDGE_BOOK, getGradientName("产物(开采时间：2秒)⇨")));
+        display.add(new CustomItemStack(Material.KNOWLEDGE_BOOK, getGradientName("Input Materials ⇩")));
+        display.add(new CustomItemStack(Material.KNOWLEDGE_BOOK, getGradientName("Output (Mining Time: 2 seconds) ⇨")));
         display.add(gold_input);
         display.add(GOLD_ELEMENT);
         display.add(wood_input);

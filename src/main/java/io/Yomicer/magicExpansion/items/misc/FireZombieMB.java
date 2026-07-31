@@ -44,9 +44,9 @@ public class FireZombieMB extends MultiBlockMachine {
 
         if(!StorageCacheUtils.isBlock(locationUp, "MAGIC_EXPANSION_FIREZOMBIE_HEAD") || !StorageCacheUtils.isBlock(location, "MAGIC_EXPANSION_FIREZOMBIE_BODY") || !StorageCacheUtils.isBlock(locationDown, "MAGIC_EXPANSION_FIREZOMBIE_BODY")) {
 
-            p.sendMessage(ColorGradient.getGradientName("[魔法·BOSS召唤]你需要使用正确的搭建方式"));
-            p.sendMessage(ColorGradient.getGradientName("[魔法·BOSS召唤]请检查你放置的方块"));
-            p.sendMessage(ColorGradient.getGradientName("[魔法·BOSS召唤]他可能是一个粘液物品"));
+            p.sendMessage(ColorGradient.getGradientName("[ BOSS]you requires"));
+            p.sendMessage(ColorGradient.getGradientName("[Boss] A powerful enemy is approaching!"));
+            p.sendMessage(ColorGradient.getGradientName("[Boss] Prepare for battle."));
             return;
         }
 
@@ -69,10 +69,10 @@ public class FireZombieMB extends MultiBlockMachine {
         LivingEntity mob = (LivingEntity) location.getWorld().spawnEntity(location, EntityType.ZOMBIE);
 
         // 设置怪物名称
-        String zombieName = "§c§l烈焰僵尸";
+        String zombieName = "§c§lFlame Zombie";
         mob.setCustomName(zombieName);
         mob.setCustomNameVisible(true);
-        // 设置自定义元数据：用于标识这是烈火僵尸
+        // 设置自定义元数据:用于标识这是烈火僵尸
         mob.setMetadata("magicMobType", new FixedMetadataValue(MagicExpansion.getInstance(), "FireZombie"));
         mob.setMetadata("isInvincibleFireZombie", new FixedMetadataValue(MagicExpansion.getInstance(), false)); // 设置无敌元数据
         // 调整最大生命值并设置初始血量
@@ -98,12 +98,12 @@ public class FireZombieMB extends MultiBlockMachine {
             @Override
             public void run() {
                 if (mob.isDead()) {
-                    this.cancel(); // 如果怪物死亡，停止任务
+                    this.cancel(); // 如果怪物死亡,停止任务
                     return;
                 }
-                // 修改名称，添加“无法选中·”前缀
+                // 修改名称,添加"无法选中·"前缀
                 mob.setMetadata("isInvincibleFireZombie", new FixedMetadataValue(MagicExpansion.getInstance(), true));
-                mob.setCustomName(zombieName + "§e§l[霸体]");
+                mob.setCustomName(zombieName + "§e§l[Unstoppable]");
                 mob.setCustomNameVisible(true);
 
                 new BukkitRunnable() {
@@ -122,19 +122,19 @@ public class FireZombieMB extends MultiBlockMachine {
             }
         }.runTaskTimer(MagicExpansion.getInstance(), 0L, 80L + new Random().nextInt(81)); // 每4-8秒执行一次
 
-        // 添加：每隔11秒进行一次传送
+        // 添加:每隔11秒进行一次传送
         new BukkitRunnable() {
             @Override
             public void run() {
                 if (mob.isDead()) {
-                    this.cancel(); // 如果怪物死亡，停止任务
+                    this.cancel(); // 如果怪物死亡,停止任务
                     return;
                 }
 
                 // 获取附近玩家
                 List<Player> nearbyPlayers = getNearbyPlayers(mob);
 
-                // 如果没有玩家在范围内，取消本次传送
+                // 如果没有玩家在范围内,取消本次传送
                 if (nearbyPlayers.isEmpty()) {
                     return;
                 }
@@ -152,7 +152,7 @@ public class FireZombieMB extends MultiBlockMachine {
 
                 Location newLocation = new Location(mob.getWorld(), x, y, z);
 
-                // 确保新位置是安全的（避免卡在方块中）
+                // 确保新位置是安全的(避免卡在方块中)
                 while (!newLocation.getBlock().getType().isAir() || !newLocation.clone().add(0, 1, 0).getBlock().getType().isAir()) {
                     y += 1; // 向上移动直到找到空旷位置
                     newLocation.setY(y);
@@ -170,7 +170,7 @@ public class FireZombieMB extends MultiBlockMachine {
 
     // 生成雷击效果
     public void worldStrikeLightningEffect(Location location) {
-        location.getWorld().strikeLightningEffect(location); // 只有视觉效果，不会造成伤害
+        location.getWorld().strikeLightningEffect(location); // 只有视觉效果,不会造成伤害
     }
 
     private static List<Player> getNearbyPlayers(LivingEntity mob) {

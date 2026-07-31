@@ -53,14 +53,14 @@ public class FishWeightEnhancer extends SimpleSlimefunItem<ItemUseHandler> imple
             if (enhancerItem.getAmount() < 1) return;
 
             if (fishItem == null || fishItem.getType().isAir()) {
-                player.sendMessage(ChatColor.RED + "请将需要增重的魔法鱼放在副手！");
+                player.sendMessage(ChatColor.RED + "Place the Magic Fish you want to increase in your off hand!");
                 player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 0.5f, 0.5f);
                 return;
             }
 
             ItemMeta fishMeta = fishItem.getItemMeta();
             if (fishMeta == null) {
-                player.sendMessage(ChatColor.RED + "副手物品数据异常！");
+                player.sendMessage(ChatColor.RED + "The off-hand item's data is invalid!");
                 return;
             }
 
@@ -70,14 +70,14 @@ public class FishWeightEnhancer extends SimpleSlimefunItem<ItemUseHandler> imple
 
             // 验证是否是魔法鱼
             if (fishType == null || currentWeight == null) {
-                player.sendMessage(ChatColor.RED + "副手物品不是有效的魔法鱼！");
+                player.sendMessage(ChatColor.RED + "The off-hand item is not a valid Magic Fish!");
                 player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 0.5f, 0.5f);
                 return;
             }
 
             Fish fish = Fish.fromString(fishType);
             if (fish == null) {
-                player.sendMessage(ChatColor.RED + "无法识别的鱼种！");
+                player.sendMessage(ChatColor.RED + "The fish type is not recognized.");
                 return;
             }
 
@@ -86,12 +86,12 @@ public class FishWeightEnhancer extends SimpleSlimefunItem<ItemUseHandler> imple
 
             // 检查是否已经达到最大重量
             if (currentWeight >= maxWeight) {
-                player.sendMessage(ChatColor.YELLOW + "这条鱼已经达到最大重量 " + String.format("%.3f", maxWeight) + " kg！");
+                player.sendMessage(ChatColor.YELLOW + "This fish is already at its maximum weight of " + String.format("%.3f", maxWeight) + " kg.");
                 player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1f, 1f);
                 return;
             }
 
-            // 计算增加量：区间差值 * 随机比例(0.01%~0.5%)
+            // 计算增加量:区间差值 * 随机比例(0.01%~0.5%)
             double range = maxWeight - minWeight;
             double randomPercent = ThreadLocalRandom.current().nextDouble(MIN_PERCENT, MAX_PERCENT);
             double increaseAmount = range * randomPercent;
@@ -122,9 +122,9 @@ public class FishWeightEnhancer extends SimpleSlimefunItem<ItemUseHandler> imple
             // 更新 Lore 信息
             List<String> lore = new ArrayList<>();
             lore.add("");
-            lore.add("§d鱼种稀有度: §r§f" + fish.getRarity().getDisplayName());
-            lore.add("§a重量: §r§f" + String.format("%.3f", newWeight) + " kg");
-            lore.add("§e稀有度: §r" + weightRarity.getDisplayName() + " " + weightRareThis);
+            lore.add("§dFish Rarity: §r§f" + fish.getRarity().getDisplayName());
+            lore.add("§aWeight: §r§f" + String.format("%.3f", newWeight) + " kg");
+            lore.add("§eWeight Rarity: §r" + weightRarity.getDisplayName() + " " + weightRareThis);
             if (fish.getLoreLines() != null && fish.getLoreLines().length > 0) {
                 lore.add("");
                 lore.addAll(Arrays.asList(fish.getLoreLines()));
@@ -144,8 +144,8 @@ public class FishWeightEnhancer extends SimpleSlimefunItem<ItemUseHandler> imple
             player.getInventory().setItemInOffHand(fishItem);
 
             // 反馈与音效
-            player.sendMessage(ChatColor.GREEN + "✓ 增重成功！鱼重量增加了 " + ChatColor.GOLD + String.format("%.3f", actualIncrease) + " kg" + ChatColor.GREEN + "！");
-            player.sendMessage(ChatColor.GRAY + "当前重量: " + ChatColor.AQUA + String.format("%.3f", newWeight) + " kg" +
+            player.sendMessage(ChatColor.GREEN + "✓ Fish weight increased by " + ChatColor.GOLD + String.format("%.3f", actualIncrease) + " kg" + ChatColor.GREEN + ".");
+            player.sendMessage(ChatColor.GRAY + "Current weight: " + ChatColor.AQUA + String.format("%.3f", newWeight) + " kg" +
                     ChatColor.GRAY + " / " + ChatColor.RED + String.format("%.3f", maxWeight) + " kg");
             player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1f, 1.5f);
         };

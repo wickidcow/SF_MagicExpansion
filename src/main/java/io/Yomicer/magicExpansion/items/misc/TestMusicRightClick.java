@@ -11,7 +11,7 @@ import io.github.thebusybiscuit.slimefun4.core.handlers.ItemUseHandler;
 import io.github.thebusybiscuit.slimefun4.implementation.SlimefunItems;
 import io.github.thebusybiscuit.slimefun4.implementation.items.SimpleSlimefunItem;
 import me.mrCookieSlime.CSCoreLibPlugin.general.Inventory.ChestMenu;
-import net.guizhanss.guizhanlib.minecraft.helper.inventory.ItemStackHelper;
+import io.Yomicer.magicExpansion.utils.compat.ItemStackHelper;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -40,7 +40,7 @@ public class TestMusicRightClick extends SimpleSlimefunItem<ItemUseHandler> impl
     public ItemUseHandler getItemHandler() {
 
         return e -> {
-            // 阻止默认行为（放置方块或使用物品）
+            // 阻止默认行为(放置方块或使用物品)
             e.setUseItem(Event.Result.DENY);
             e.setUseBlock(Event.Result.DENY);
             // 获取玩家
@@ -54,14 +54,14 @@ public class TestMusicRightClick extends SimpleSlimefunItem<ItemUseHandler> impl
                 long lastUsed = cooldowns.get(playerId);
                 if (now - lastUsed < COOLDOWN_MS) {
                     long remaining = (COOLDOWN_MS - (now - lastUsed)) / 1000 + 1;
-                    player.sendMessage("§c该道具冷却中，请等待 " + remaining + " 秒后再使用。");
+                    player.sendMessage("§cThis item is on cooldown. Wait " + remaining + " seconds before using it again.");
                     return;
                 }
             }
             //player.sendTitle("✨🌹", "聆听星空的低语...", 10, 60, 10);
-            // 播放旋律（调用我们封装的函数）
+            // 播放旋律(调用我们封装的函数)
             new ZKBTMPlayer(MagicExpansion.getInstance()).playCuteMusic(player);
-            // ✅ 使用成功，更新冷却时间
+            // ✅ 使用成功,更新冷却时间
             cooldowns.put(playerId, now);
         };
     }

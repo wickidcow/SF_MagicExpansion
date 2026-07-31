@@ -60,7 +60,7 @@ public class ForceTwoToRsc extends SlimefunItem implements EnergyNetComponent {
 
         this.power = power;
         this.craftPerTick = craftPerTick;
-        constructMenu(ColorGradient.getGradientNameVer2("魔法2.0 To Rsc魔法 资源转换器"));
+        constructMenu(ColorGradient.getGradientNameVer2("2.0 To Rsc"));
     }
 
 
@@ -90,15 +90,15 @@ public class ForceTwoToRsc extends SlimefunItem implements EnergyNetComponent {
         if(menu != null && menu.hasViewer()) {
         if (getCharge(block.getLocation()) < getEnergyConsumption()) {
             //电量不足
-            menu.addItem(4, new CustomItemStack(new ItemStack (Material.CAMPFIRE), "§c电量不足"),
+            menu.addItem(4, new CustomItemStack(new ItemStack (Material.CAMPFIRE), "§cNot Enough Energy"),
                     (p, slot, item, action) -> false);
             return;
         }
             //电量不足
-            menu.addItem(4, new CustomItemStack(new ItemStack(Material.SOUL_CAMPFIRE), "§b资源转换器",
-                            "§b类型：§e" + "魔法2.0转RSC魔法资源",
-                            "§b耗电速度：§e" + getEnergyConsumption() * 2 + " J/s",
-                            "§b电量存储：§e" + getCharge(block.getLocation()) + " J"),
+            menu.addItem(4, new CustomItemStack(new ItemStack(Material.SOUL_CAMPFIRE), "§bResource Converter",
+                            "§bType: §e" + "2.0RSC",
+                            "§bEnergy Use: §e" + getEnergyConsumption() * 2 + " J/s",
+                            "§bStored Energy: §e" + getCharge(block.getLocation()) + " J"),
                     (p, slot, item, action) -> false);
 
         }
@@ -108,7 +108,7 @@ public class ForceTwoToRsc extends SlimefunItem implements EnergyNetComponent {
         conversionMap.put(MagicExpansionItems.RSC_MAGIC_COSMIC_DUST, "MAGIC_COSMIC_DUST");
         conversionMap.put(MagicExpansionItems.RSC_MAGIC_SOUL, "MAGIC_SOUL");
 
-        // 🔍 先检查 outputSlots 是否有空间（空槽 或 可叠加槽）
+        // 🔍 先检查 outputSlots 是否有空间(空槽 或 可叠加槽)
         boolean hasOutputSpace = false;
         for (int slot : outputSlots) {
             ItemStack existing = menu.getItemInSlot(slot);

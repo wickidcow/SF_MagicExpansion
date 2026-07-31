@@ -66,12 +66,12 @@ public class MagicAltarRecipe {
                         return false;
                     }
 
-                    // 检查NBT数据（如果有的话）
+                    // 检查NBT数据(如果有的话)
                     if (recipeItem.hasItemMeta() && !recipeItem.getItemMeta().equals(inputItem.getItemMeta())) {
                         return false;
                     }
                 } else {
-                    // 配方中该位置为空，但输入有物品
+                    // 配方中该位置为空,但输入有物品
                     if (inputItem != null) {
                         return false;
                     }
@@ -100,10 +100,10 @@ public class MagicAltarRecipe {
         ItemMeta meta = dispenser.getItemMeta();
 
         if (meta != null) {
-            meta.setDisplayName("§b发射器 #" + (dispenserIndex + 1));
+            meta.setDisplayName("§bDispenser #" + (dispenserIndex + 1));
 
             java.util.List<String> lore = new java.util.ArrayList<>();
-            lore.add("§7点击查看详细配置");
+            lore.add("§7Click to view its detailed configuration.");
 
             int itemCount = 0;
             for (int i = 0; i < 9; i++) {
@@ -111,7 +111,7 @@ public class MagicAltarRecipe {
                     itemCount++;
                 }
             }
-            lore.add("§7物品数量: " + itemCount + "/9");
+            lore.add("§7Item Amount: " + itemCount + "/9");
 
             meta.setLore(lore);
             dispenser.setItemMeta(meta);

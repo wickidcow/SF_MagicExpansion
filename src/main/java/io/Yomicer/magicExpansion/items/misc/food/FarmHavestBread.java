@@ -35,7 +35,7 @@ public class FarmHavestBread extends SimpleSlimefunItem<ItemConsumptionHandler> 
             if (RANDOM.nextDouble() < 0.20) {
                 ItemStack seeds = MagicExpansionItems.WHEAT_SEEDS;
                 p.getWorld().dropItemNaturally(p.getLocation(), seeds);
-                p.sendMessage("§e✨ 丰收女神的恩赐！你获得了一些糖心麦种。");
+                p.sendMessage("§e✨!you type.");
             }
             p.playSound(p.getLocation(), Sound.ENTITY_PLAYER_BURP, 1.0f, 1.2f);
             p.getWorld().playEffect(p.getLocation().add(0, 1, 0), Effect.VILLAGER_PLANT_GROW, 10);

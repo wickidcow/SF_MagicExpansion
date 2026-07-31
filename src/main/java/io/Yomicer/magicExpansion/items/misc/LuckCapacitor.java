@@ -103,7 +103,7 @@ public class LuckCapacitor extends SlimefunItem implements EnergyNetComponent {
                 ItemMeta meta = drop.getItemMeta();
                 if (charge != 0){
                     if (meta != null) {
-                        meta.setDisplayName(meta.getDisplayName()+" §r§b(§e⚡ §b电能: §e" + charge + " §bJ)");
+                        meta.setDisplayName(meta.getDisplayName()+" §r§b(§e⚡ §bEnergy: §e" + charge + " §bJ)");
                         PersistentDataContainer pdc = meta.getPersistentDataContainer();
                         pdc.set(CHARGE_KEY, PersistentDataType.INTEGER, charge);
                         drop.setItemMeta(meta);

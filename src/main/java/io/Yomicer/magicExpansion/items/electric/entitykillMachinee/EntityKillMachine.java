@@ -54,7 +54,7 @@ public class EntityKillMachine extends SlimefunItem implements EnergyNetComponen
         this.entityType = entityType;
         this.name = name;
 
-        constructMenu(name+"抑制器");
+        constructMenu(name+"EntityKillMachine");
     }
 
 
@@ -81,15 +81,15 @@ public class EntityKillMachine extends SlimefunItem implements EnergyNetComponen
         if(menu != null && menu.hasViewer()) {
         if (getCharge(block.getLocation()) < getEnergyConsumption()) {
             //电量不足
-            menu.addItem(13, new CustomItemStack(new ItemStack (Material.GHAST_TEAR), "§c电量不足"),
+            menu.addItem(13, new CustomItemStack(new ItemStack (Material.GHAST_TEAR), "§cNot Enough Energy"),
                     (p, slot, item, action) -> false);
             return;
         }
             //电量不足
-            menu.addItem(13, new CustomItemStack(new ItemStack(Material.BLUE_BED), "§b抑制中",
-                            "§b类型：§e" + name,
-                            "§b耗电速度：§e" + getEnergyConsumption() * 2 + " J/s",
-                            "§b电量存储：§e" + getCharge(block.getLocation()) + " J"),
+            menu.addItem(13, new CustomItemStack(new ItemStack(Material.BLUE_BED), "§bSuppressing",
+                            "§bType: §e" + name,
+                            "§bEnergy Use: §e" + getEnergyConsumption() * 2 + " J/s",
+                            "§bStored Energy: §e" + getCharge(block.getLocation()) + " J"),
                     (p, slot, item, action) -> false);
 
         }
@@ -105,10 +105,10 @@ public class EntityKillMachine extends SlimefunItem implements EnergyNetComponen
         };
 
         if (Bukkit.isPrimaryThread()) {
-            // 当前是主线程，直接执行
+            // 当前是主线程,直接执行
             removeEntitiesTask.run();
         } else {
-            // 当前是异步线程，调度到主线程执行
+            // 当前是异步线程,调度到主线程执行
             Bukkit.getScheduler().runTask(MagicExpansion.getInstance(), removeEntitiesTask);
         }
 

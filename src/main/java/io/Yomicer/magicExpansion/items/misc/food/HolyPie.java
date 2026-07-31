@@ -50,12 +50,12 @@ public class HolyPie extends SimpleSlimefunItem<ItemConsumptionHandler> implemen
                 public void run() {
                     holyProtectedPlayers.remove(p.getUniqueId());
                     if (p.isOnline()) {
-                        p.sendMessage(ChatColor.GRAY + "§7神圣庇护已消散...");
+                        p.sendMessage(ChatColor.GRAY + "§7Divine Protection faded...");
                     }
                 }
             }.runTaskLater(MagicExpansion.getInstance(), 30L);
             playHolyEffects(p);
-            p.sendMessage(ChatColor.GOLD + "✨ " + ChatColor.BOLD + "神圣庇护激活！" + ChatColor.RESET + ChatColor.GRAY + " (免疫一切伤害)");
+            p.sendMessage(ChatColor.GOLD + "✨ " + ChatColor.BOLD + "Divine Protection activated!" + ChatColor.RESET + ChatColor.GRAY + " (immune to all damage)");
         };
     }
 

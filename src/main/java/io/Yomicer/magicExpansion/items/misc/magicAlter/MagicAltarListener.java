@@ -48,12 +48,12 @@ public class MagicAltarListener implements Listener {
                     boolean success = plugin.getPluginInitializer().getAltarManager().startCrafting(block.getLocation(), player);
 
                     if (success) {
-                        player.sendMessage("§a✓ 已激活魔法祭坛！开始检查配方...");
+                        player.sendMessage("§a✓ Magic Altar activated! Checking recipes...");
                     } else {
-                        player.sendMessage("§c✗ 无法激活祭坛，请检查结构和配方！");
+                        player.sendMessage("§c✗ No matching recipe was found!");
                     }
                 } else {
-                    player.sendMessage("§e⚠ 请右键中心发射器来激活整个祭坛！");
+                    player.sendMessage("§e⚠ Right-click the center dispenser to activate the altar!");
                 }
             }
         }
@@ -70,7 +70,7 @@ public class MagicAltarListener implements Listener {
         );
     }
 
-    // 检查是否是中心发射器（周围8格都是发射器）
+    // 检查是否是中心发射器(周围8格都是发射器)
     private boolean isCenterDispenser(Location location) {
         int dispenserCount = 0;
 

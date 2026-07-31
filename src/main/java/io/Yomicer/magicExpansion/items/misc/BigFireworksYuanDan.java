@@ -67,7 +67,7 @@ public class BigFireworksYuanDan extends SimpleSlimefunItem<ItemUseHandler> impl
 
             // 检查是否使用主手
             if (e.getHand() != HAND) {
-                player.sendMessage(ColorGradient.getGradientName("请使用主手使用~"));
+                player.sendMessage(ColorGradient.getGradientName("Hold this item in your main hand to use it."));
                 return;
             }
 
@@ -94,9 +94,9 @@ public class BigFireworksYuanDan extends SimpleSlimefunItem<ItemUseHandler> impl
         world.playSound(startLoc, Sound.ENTITY_FIREWORK_ROCKET_LAUNCH, 3.0f, 0.5f);
 
         // 给玩家提示
-        player.sendMessage(ColorGradient.getGradientName("☄ 飞饼发射！ ☄"));
+        player.sendMessage(ColorGradient.getGradientName("☄ Flying Cake Launched! ☄"));
 
-        // 计算目标位置（正上方）
+        // 计算目标位置(正上方)
         Location targetLoc = startLoc.clone().add(0, EXPLOSION_HEIGHT, 0);
 
         // 创建引导粒子轨迹
@@ -119,8 +119,8 @@ public class BigFireworksYuanDan extends SimpleSlimefunItem<ItemUseHandler> impl
                 for (Player p : world.getPlayers()) {
                     if (p.getLocation().distance(targetLoc) < 200) {
                         p.sendTitle(
-                                ColorGradient.getGradientName("🎇 飞饼 🎇"),
-                                ColorGradient.getGradientName("震撼全场！"),
+                                ColorGradient.getGradientName("Explosion Particles"),
+                                ColorGradient.getGradientName("Explosion Particles"),
                                 10, 60, 20
                         );
                     }
@@ -165,16 +165,16 @@ public class BigFireworksYuanDan extends SimpleSlimefunItem<ItemUseHandler> impl
     }
 
     private void createSuperExplosionEffect(Location center, World world, Player player) {
-        // 第一步：核心大爆炸（白色闪光）
+        // 第一步:核心大爆炸(白色闪光)
         createCoreExplosion(center, world);
 
-        // 第二步：彩色爆炸环
+        // 第二步:彩色爆炸环
         createColorRings(center, world);
 
-        // 第三步：流星雨效果
+        // 第三步:流星雨效果
         createMeteorShower(center, world);
 
-        // 第四步：最后的余辉
+        // 第四步:最后的余辉
         new BukkitRunnable() {
             @Override
             public void run() {
@@ -322,7 +322,7 @@ public class BigFireworksYuanDan extends SimpleSlimefunItem<ItemUseHandler> impl
 
             Location particleLoc = center.clone().add(x, height, z);
 
-            // 随机颜色（偏暖色）- 使用 fromRGB 方法
+            // 随机颜色(偏暖色)- 使用 fromRGB 方法
             Color color = Color.fromRGB(
                     255,
                     random.nextInt(100) + 155,
@@ -336,7 +336,7 @@ public class BigFireworksYuanDan extends SimpleSlimefunItem<ItemUseHandler> impl
         }
     }
 
-    // 辅助方法：创建爆炸球体
+    // 辅助方法:创建爆炸球体
     private void createExplosionSphere(Location center, World world, double radius, Particle particle, int count, Color color) {
         for (int i = 0; i < count; i++) {
             double phi = Math.acos(2 * random.nextDouble() - 1);
@@ -357,7 +357,7 @@ public class BigFireworksYuanDan extends SimpleSlimefunItem<ItemUseHandler> impl
         }
     }
 
-    // 辅助方法：创建爆炸环
+    // 辅助方法:创建爆炸环
     private void createExplosionRing(Location center, World world, double radius, Particle particle, int count) {
         for (int i = 0; i < count; i++) {
             double angle = (2 * Math.PI * i) / count;

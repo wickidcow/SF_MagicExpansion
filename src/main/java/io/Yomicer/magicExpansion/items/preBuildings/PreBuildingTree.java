@@ -8,7 +8,7 @@ import io.github.thebusybiscuit.slimefun4.api.recipes.RecipeType;
 import io.github.thebusybiscuit.slimefun4.core.attributes.NotPlaceable;
 import io.github.thebusybiscuit.slimefun4.core.handlers.ItemUseHandler;
 import io.github.thebusybiscuit.slimefun4.implementation.items.SimpleSlimefunItem;
-import net.guizhanss.guizhanlib.minecraft.helper.inventory.ItemStackHelper;
+import io.Yomicer.magicExpansion.utils.compat.ItemStackHelper;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
@@ -62,7 +62,7 @@ public class PreBuildingTree extends SimpleSlimefunItem<ItemUseHandler> implemen
             ItemStack itemInHand = player.getInventory().getItemInMainHand();
             // 检查玩家手上是否有物品
             if (e.getHand()!= HAND) {
-                player.sendMessage(getGradientName("请使用主手使用~"));
+                player.sendMessage(getGradientName("Hold this item in your main hand to use it."));
                 return;
             }
             // 检查是否按住 Shift
@@ -72,7 +72,7 @@ public class PreBuildingTree extends SimpleSlimefunItem<ItemUseHandler> implemen
                 // 调用工具类获取尺寸
                 int[] dims = PreBuildingsTreeUtils.getBuildingDimensions(fileName);
                 if (dims == null) {
-                    player.sendMessage(getGradientNameVer2("错误：无法读取建筑文件，请检查 resources/buildings/" + fileName + ".json"));
+                    player.sendMessage(getGradientNameVer2("The structure file could not be loaded: resources/buildings/" + fileName + ".json"));
                     return;
                 }
 
@@ -82,45 +82,25 @@ public class PreBuildingTree extends SimpleSlimefunItem<ItemUseHandler> implemen
 
                 // 发送消息给玩家
                 player.sendMessage(getGradientNameVer2("========================="));
-                player.sendMessage(getGradientNameVer2("建筑预览信息："));
-                player.sendMessage(getGradientNameVer2("文件名：" + fileName + ".json"));
-                player.sendMessage(getGradientNameVer2("尺寸大小：X: " + x + " | Y: " + y + " | Z: " + z));
-                player.sendMessage(getGradientNameVer2("占地面积：" + (x * z) + " 方块"));
-                player.sendMessage(getGradientNameVer2("占地体积：" + (x * y * z) + " 方块"));
+                player.sendMessage(getGradientNameVer2("Structure Preview:"));
+                player.sendMessage(getGradientNameVer2("File Name: " + fileName + ".json"));
+                player.sendMessage(getGradientNameVer2("Dimensions — X: " + x + " | Y: " + y + " | Z: " + z));
+                player.sendMessage(getGradientNameVer2("Footprint: " + (x * z) + " blocks"));
+                player.sendMessage(getGradientNameVer2("Volume: " + (x * y * z) + " blocks"));
                 player.sendMessage(getGradientNameVer2("========================="));
 
-                return; // 处理完 Shift+右键 后直接返回，不再执行放置逻辑
+                return; // 处理完 Shift+右键 后直接返回,不再执行放置逻辑
             }
 
             if(!ItemPermissionUtils.hasPermissionRe(player)){
                 return;
             }
-            if(player.isOp()){
-                Bukkit.broadcastMessage(getRandomGradientName("✨ 你是服务器的星辰，无需冷却的永恒光芒！(这段是发给"+player.getName()+"看的,不要让其他玩家看到)"));
-                Bukkit.broadcastMessage(getRandomGradientName("✨ 你的命令就是规则，冷却？那是给凡人的枷锁！(这段是发给"+player.getName()+"看的,不要让其他玩家看到)"));
-                Bukkit.broadcastMessage(getRandomGradientName("✨ 你站在服务器的巅峰，俯瞰着所有方块的律动！(这段是发给"+player.getName()+"看的,不要让其他玩家看到)"));
-                Bukkit.broadcastMessage(getRandomGradientName("⚡  无需等待，你的每一步都是瞬移般的优雅！(这段是发给"+player.getName()+"看的,不要让其他玩家看到)"));
-                Bukkit.broadcastMessage(getRandomGradientName("⚡  冷却时间？那是普通玩家的烦恼，你拥有神之权限！(这段是发给"+player.getName()+"看的,不要让其他玩家看到)"));
-                Bukkit.broadcastMessage(getRandomGradientName("⚡  你的存在就是服务器的秩序，无需冷却的永恒法则！(这段是发给"+player.getName()+"看的,不要让其他玩家看到)"));
-                Bukkit.broadcastMessage(getRandomGradientName("✨ 你掌控着维度的脉动，冷却？那是给末影人的专利！(这段是发给"+player.getName()+"看的,不要让其他玩家看到)"));
-                Bukkit.broadcastMessage(getRandomGradientName("✨ 你的指令让世界运转，冷却？那是给生存玩家的笑话！(这段是发给"+player.getName()+"看的,不要让其他玩家看到)"));
-                Bukkit.broadcastMessage(getRandomGradientName("✨ 无需冷却，你的每一次操作都是史诗级的传奇！(这段是发给"+player.getName()+"看的,不要让其他玩家看到)"));
-                Bukkit.broadcastMessage(getRandomGradientName("⚡  你站在服务器的王座，俯视着所有玩家的挣扎！(这段是发给"+player.getName()+"看的,不要让其他玩家看到)"));
-                Bukkit.broadcastMessage(getRandomGradientName("⚡  你的权限超越时间，冷却？那只是凡人的幻觉！(这段是发给"+player.getName()+"看的,不要让其他玩家看到)"));
-                Bukkit.broadcastMessage(getRandomGradientName("⚡  服务器因你而闪耀，冷却？那是给新手的安慰剂！(这段是发给"+player.getName()+"看的,不要让其他玩家看到)"));
-                Bukkit.broadcastMessage(getRandomGradientName("✨ 你让世界充满魔法，无需冷却的永恒荣耀！(这段是发给"+player.getName()+"看的,不要让其他玩家看到)"));
-                Bukkit.broadcastMessage(getRandomGradientName("✨ 你的命令即刻生效，冷却？那是给普通玩家的束缚！(这段是发给"+player.getName()+"看的,不要让其他玩家看到)"));
-                Bukkit.broadcastMessage(getRandomGradientName("✨ 你是服务器的守护神，尊贵到连时间都为你停驻！(这段是发给"+player.getName()+"看的,不要让其他玩家看到)"));
-                Bukkit.broadcastMessage(getRandomGradientName("【至高无上】管理员"+player.getName()+"已开启无冷却权限，时间在您面前臣服！"));
-                Bukkit.broadcastMessage(getRandomGradientName("【服务器之主】"+player.getName()+"的命令即刻撼动世界，无需等待！"));
-                Bukkit.broadcastMessage(getRandomGradientName("【凡人之界】"+player.getName()+"的意志，就是服务器的法则！"));
-                if(!PreBuildingsTreeUtils.pasteMap(player,buildingName, originName, replaceName)){
-                    Bukkit.broadcastMessage(getRandomGradientName("【规则】 管理员"+player.getName()+"好像有点小笨笨，并没有认真阅读使用说明"));
-                    Bukkit.broadcastMessage(getRandomGradientName("【规则】 管理员"+player.getName()+"放置物品时似乎受到了奇怪规则的约束"));
+            if (player.isOp()) {
+                if (!PreBuildingsTreeUtils.pasteMap(player, buildingName, originName, replaceName)) {
+                    player.sendMessage(getGradientNameVer2("The structure could not be placed at this location."));
                     return;
                 }
-                Bukkit.broadcastMessage(getRandomGradientName("【世界播报】 管理员"+player.getName()+"成功使用了道具: "+ ItemStackHelper.getDisplayName(itemInHand)));
-                Bukkit.broadcastMessage(getRandomGradientName("【世界播报】 让我们热烈庆祝管理员"+player.getName()+"成功使用了道具: "+ ItemStackHelper.getDisplayName(itemInHand)));
+                player.sendMessage(getRandomGradientName("Placed " + ItemStackHelper.getDisplayName(itemInHand) + " with operator cooldown bypass."));
                 return;
             }
 
@@ -133,7 +113,7 @@ public class PreBuildingTree extends SimpleSlimefunItem<ItemUseHandler> implemen
                 long lastUsed = cooldowns.get(playerId);
                 if (now - lastUsed < COOLDOWN_MS) {
                     long remaining = (COOLDOWN_MS - (now - lastUsed)) / 1000 + 1;
-                    player.sendMessage("§c该道具冷却中，请等待 " + remaining + " 秒后再使用。");
+                    player.sendMessage("§cThis item is on cooldown. Wait " + remaining + " seconds before using it again.");
                     return;
                 }
             }
@@ -142,14 +122,14 @@ public class PreBuildingTree extends SimpleSlimefunItem<ItemUseHandler> implemen
             if(!PreBuildingsTreeUtils.pasteMap(player,buildingName, originName, replaceName)){
                 return;
             }
-            // ✅ 使用成功，更新冷却时间
+            // ✅ 使用成功,更新冷却时间
             cooldowns.put(playerId, now);
 
             // 减少手上的物品数量
             if (itemInHand.getAmount() > 1) {
                 itemInHand.setAmount(itemInHand.getAmount() - 1);
             } else {
-                player.getInventory().setItemInMainHand(null); // 如果数量为 1，则直接移除
+                player.getInventory().setItemInMainHand(null); // 如果数量为 1,则直接移除
             }
         };
     }

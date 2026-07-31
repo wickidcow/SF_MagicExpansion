@@ -45,12 +45,12 @@ public class SchrodingerFrame extends SimpleSlimefunItem<ItemUseHandler> impleme
                     Block block = e.getClickedBlock().get();
 
                     if (!block.getType().isSolid() || !block.getType().isOccluding()) {
-                        e.getPlayer().sendMessage("§c这个表面无法挂载物品！");
+                        e.getPlayer().sendMessage("§cThis block cannot hold an item frame!");
                         return;
                     }
                     Location spawnLocation = getFrameSpawnLocation(block, blockFace);
                     if (hasItemFrameAtLocation(spawnLocation, blockFace)) {
-                        e.getPlayer().sendMessage("§c这个位置已有物品展示框！");
+                        e.getPlayer().sendMessage("§cAn item frame already exists at this location!");
                         return;
                     }
 
