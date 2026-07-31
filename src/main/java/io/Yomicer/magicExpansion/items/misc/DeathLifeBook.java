@@ -279,7 +279,7 @@ public class DeathLifeBook extends SimpleSlimefunItem<ItemUseHandler> implements
     // 从菜单标题中提取当前页码
     private int getCurrentPageFromTitle(String title) {
         try {
-            // 标题格式: "§5生死簿 §7- 第 X/Y 页"
+            // 标题格式: "§5Book of Life and Death §7- Page X/Y"
             String[] parts = title.split(" ");
             for (String part : parts) {
                 if (part.contains("/")) {

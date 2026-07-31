@@ -83,63 +83,63 @@ public class StarShardsSword extends SimpleSlimefunItem<ItemUseHandler> implemen
             // 💥 攻击力 +1314(固定值)
             UUID atk1Id = UUID.nameUUIDFromBytes((namespace + "_atk_add").getBytes());
             meta.addAttributeModifier(
-                    Attribute.GENERIC_ATTACK_DAMAGE,
+                    Attribute.ATTACK_DAMAGE,
                     new AttributeModifier(atk1Id, "StarShards_Atk_Add", StarShards_Atk_Add, AttributeModifier.Operation.ADD_NUMBER)
             );
 
             // 💥 攻击力 +618%(乘法)
             UUID atk2Id = UUID.nameUUIDFromBytes((namespace + "_atk_mult").getBytes());
             meta.addAttributeModifier(
-                    Attribute.GENERIC_ATTACK_DAMAGE,
+                    Attribute.ATTACK_DAMAGE,
                     new AttributeModifier(atk2Id, "StarShards_Atk_Mult", StarShards_Atk_Mult, AttributeModifier.Operation.MULTIPLY_SCALAR_1)
             );
 
             // ⚡ 攻击速度 +2000% → 最终速度 = 原速 × (1 + 20.0) = 21倍!
             UUID atkSpeedId = UUID.nameUUIDFromBytes((namespace + "_atk_speed").getBytes());
             meta.addAttributeModifier(
-                    Attribute.GENERIC_ATTACK_SPEED,
+                    Attribute.ATTACK_SPEED,
                     new AttributeModifier(atkSpeedId, "StarShards_AtkSpeed", StarShards_Atk_Speed, AttributeModifier.Operation.MULTIPLY_SCALAR_1)
             );
 
-            // ❤️ 生命值 +1314(固定值,单位是"半心",所以 +1314 = +657 颗心!)
+            // ❤️ 生命值 +1314(固定值,单位是"half-heart",所以 +1314 = +657 颗心!)
             UUID health1Id = UUID.nameUUIDFromBytes((namespace + "_health_add").getBytes());
             meta.addAttributeModifier(
-                    Attribute.GENERIC_MAX_HEALTH,
+                    Attribute.MAX_HEALTH,
                     new AttributeModifier(health1Id, "StarShards_Health_Add", StarShards_Health_Add, AttributeModifier.Operation.ADD_NUMBER)
             );
 
             // ❤️ 生命值 +618%(乘法)
             UUID health2Id = UUID.nameUUIDFromBytes((namespace + "_health_mult").getBytes());
             meta.addAttributeModifier(
-                    Attribute.GENERIC_MAX_HEALTH,
+                    Attribute.MAX_HEALTH,
                     new AttributeModifier(health2Id, "StarShards_Health_Mult", StarShards_Health_Mult, AttributeModifier.Operation.MULTIPLY_SCALAR_1)
             );
 
             // 🏃 移动速度 +1314% → 最终速度 = 原速 × (1 + 13.14) = 14.14倍!
             UUID moveSpeedId = UUID.nameUUIDFromBytes((namespace + "_move_speed").getBytes());
             meta.addAttributeModifier(
-                    Attribute.GENERIC_MOVEMENT_SPEED,
+                    Attribute.MOVEMENT_SPEED,
                     new AttributeModifier(moveSpeedId, "StarShards_MoveSpeed", StarShards_MoveSpeed, AttributeModifier.Operation.MULTIPLY_SCALAR_1)
             );
 
             // 🛡️ 护甲值 +200(固定值)
             UUID armorId = UUID.nameUUIDFromBytes((namespace + "_armor").getBytes());
             meta.addAttributeModifier(
-                    Attribute.GENERIC_ARMOR,
+                    Attribute.ARMOR,
                     new AttributeModifier(armorId, "StarShards_Armor", StarShards_Armor, AttributeModifier.Operation.ADD_NUMBER)
             );
 
             // 🧱 护甲韧性 +200(固定值)
             UUID toughnessId = UUID.nameUUIDFromBytes((namespace + "_toughness").getBytes());
             meta.addAttributeModifier(
-                    Attribute.GENERIC_ARMOR_TOUGHNESS,
+                    Attribute.ARMOR_TOUGHNESS,
                     new AttributeModifier(toughnessId, "StarShards_Toughness", StarShards_Toughness, AttributeModifier.Operation.ADD_NUMBER)
             );
 
             // ✈️ 飞行速度 +1314%
             UUID flySpeedId = UUID.nameUUIDFromBytes((namespace + "_fly_speed").getBytes());
             meta.addAttributeModifier(
-                    Attribute.GENERIC_FLYING_SPEED,
+                    Attribute.FLYING_SPEED,
                     new AttributeModifier(flySpeedId, "StarShards_FlySpeed", StarShards_FlySpeed, AttributeModifier.Operation.MULTIPLY_SCALAR_1)
             );
 
@@ -215,10 +215,10 @@ public class StarShardsSword extends SimpleSlimefunItem<ItemUseHandler> implemen
 //        double damage =  event.getDamage();
 //        String formatted = String.format("%.2f", damage);
 //        Bukkit.broadcastMessage(ChatColor.GOLD + "⚔ " + ChatColor.YELLOW + player.getName()
-//                + ChatColor.GOLD + " 使用 " + ChatColor.AQUA + handSfItem.getItemName()
-//                + ChatColor.GOLD + " 对 " + ChatColor.RED + target.getName()
-//                + ChatColor.GOLD + " 造成了 " + ChatColor.WHITE + formatted
-//                + ChatColor.GOLD + " 点真实伤害!");
+//                + ChatColor.GOLD + " used " + ChatColor.AQUA + handSfItem.getItemName()
+//                + ChatColor.GOLD + " on " + ChatColor.RED + target.getName()
+//                + ChatColor.GOLD + " dealt " + ChatColor.WHITE + formatted
+//                + ChatColor.GOLD + " true damage!");
 
         if (target.isDead()) return;
 
@@ -240,7 +240,7 @@ public class StarShardsSword extends SimpleSlimefunItem<ItemUseHandler> implemen
         double damagePerSecond = target.getMaxHealth() * StarShards_Atk_Blood;
 
         // 2. 为流血效果创建一个唯一的标识符,用于在目标身上打标签
-        // 格式为 "MagicExpansion_BLEED_<攻击者UUID>",确保来自不同玩家的流血效果可以叠加
+        // 格式为 "MagicExpansion_BLEED_<ATTACKER_UUID>",确保来自不同玩家的流血效果可以叠加
         String bleedTagKey = "MagicExpansion_BLEED_" + damager.getUniqueId();
 
         // 3. 启动一个持续3秒的异步任务

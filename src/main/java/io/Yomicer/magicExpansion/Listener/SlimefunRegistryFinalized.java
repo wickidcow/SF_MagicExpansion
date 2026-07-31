@@ -70,7 +70,7 @@ public class SlimefunRegistryFinalized implements Listener {
 //        loadGrindStoneRecipes(ID7,MAGIC_WORKBENCH_RECIPES);
 
         Debug.logInfo("load recipes");
-//        Debug.logError("磨石配方list:"+ GRIND_STONE_RECIPES);
+//        Debug.logError("Grindstone recipe list:"+ GRIND_STONE_RECIPES);
     }
 
 
@@ -104,14 +104,14 @@ public class SlimefunRegistryFinalized implements Listener {
         List<ItemStack> outputList = getRecipeOutputList(machine);
 
         if (inputList == null || inputList.isEmpty() || outputList == null || outputList.isEmpty()) {
-//            Debug.logInfo("未能加载任何有效的输入或输出物品列表.");
-//            System.out.println("配方类型为:"+machine);
+//            Debug.logInfo("Could not load any valid input or output item lists.");
+//            System.out.println("Recipe type: "+machine);
             return;
         }
 
         // 确保输入和输出的配方数量一致
         if (inputList.size() != outputList.size()) {
-//            Debug.logInfo("输入和输出配方数量不匹配!");
+//            Debug.logInfo("Input and output recipe counts do not match!");
             return;
         }
 
@@ -123,12 +123,12 @@ public class SlimefunRegistryFinalized implements Listener {
 
             // 确保输入和输出都有效
             if (Arrays.stream(input).allMatch(item -> item == null || item.getType() == Material.AIR)) {
-//                Debug.logInfo("无效的输入物品: " + Arrays.toString(input));
+//                Debug.logInfo("Invalid input item: " + Arrays.toString(input));
                 continue;
             }
 
             if (output == null || output.getType() == Material.AIR) {
-//                Debug.logInfo("无效的输出物品: " + output);
+//                Debug.logInfo("Invalid output item: " + output);
                 continue;
             }
 
@@ -145,7 +145,7 @@ public class SlimefunRegistryFinalized implements Listener {
                 if (itemKey != null) {
                     recipeMap.put(itemKey, recipeMap.getOrDefault(itemKey, 0) + requiredItem.getAmount());
                 } else {
-//                    Debug.logInfo("无法识别输入物品: " + requiredItem);
+//                    Debug.logInfo("Unrecognized input item: " + requiredItem);
                 }
             }
 
@@ -155,10 +155,10 @@ public class SlimefunRegistryFinalized implements Listener {
             validRecipesCount++;
 
             // 输出加载成功的配方
-//            System.out.println("成功加载配方: " + recipeMap);
+//            System.out.println("Successfully loaded recipe: " + recipeMap);
         }
 
-//        System.out.println("总共加载了 " + validRecipesCount + " 个有效 recipes.");
+//        System.out.println("Loaded " + validRecipesCount + " valid recipes.");
     }
 
     /**
@@ -225,7 +225,7 @@ public class SlimefunRegistryFinalized implements Listener {
             SlimefunItem slimefunItem = SlimefunItem.getByItem(item);
             return slimefunItem != null ? "sf:" + slimefunItem.getId() : "mc:" + item.getType().name();
         } catch (Exception e) {
-//            Debug.logInfo("获取物品唯一键时出错: " + e.getMessage());
+//            Debug.logInfo("Error while getting item unique key: " + e.getMessage());
             return null;
         }
     }

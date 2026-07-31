@@ -315,13 +315,13 @@ public class QuickMachineMBUtile {
                         int outputAmount = result != null ? result.getAmount() : 1; // 默认数量为 1
 
                         // 打印完整的配方信息
-//                        System.out.println("匹配成功: 配方=" + recipeMap);
-//                        System.out.println("输出物品: " + result);
+//                        System.out.println("Recipe matched: recipe=" + recipeMap);
+//                        System.out.println("Output item: " + result);
 
                         return new Pair<>(result, outputAmount);
                     } else {
                         // 打印不匹配的日志
-//                        System.out.println("配方不匹配: 当前配方=" + recipeMap + " vs 目标配方=" + targetRecipe);
+//                        System.out.println("Recipe mismatch: current recipe=" + recipeMap + " vs target recipe=" + targetRecipe);
                     }
                 }
             }
@@ -373,11 +373,11 @@ public class QuickMachineMBUtile {
 
         // 添加配方到菜单中
         int slot = 0;
-//        System.out.println("可用的所有配方: "+ currentPageRecipes);
+//        System.out.println("All available recipes: "+ currentPageRecipes);
         for (Map<String, Integer> recipe : currentPageRecipes) {
             Pair<ItemStack, Integer> recipeResult = getRecipeResultWithAmount(recipe);
             if (recipeResult == null || recipeResult.getFirstValue() == null) {
-//                System.out.println("无效的配方结果: " + recipe); // Debug 输出
+//                System.out.println("Invalid recipe result: " + recipe); // Debug 输出
                 continue;
             }
 
@@ -387,12 +387,12 @@ public class QuickMachineMBUtile {
             if (resultItemDisplay.hasItemMeta()) { // 确保 ItemStack 不为空且有 ItemMeta
                 ItemMeta itemMeta = resultItemDisplay.getItemMeta(); // 获取 ItemMeta
 //                    String originalName = itemMeta.getDisplayName(); // 获取原始显示名称
-//                    String newName = "§x§F§D§B§7§D§4"+originalName + "§e [产物]"; // 添加后缀 [产物]
+//                    String newName = "§x§F§D§B§7§D§4"+originalName + "§e [Output]"; // 添加后缀 [产物]
 //                    itemMeta.setDisplayName(newName); // 设置新的显示名称
                     // 准备 Lore 列表
                     List<String> lore = new ArrayList<>();
                     lore.add("");
-                    // 添加"所需材料"标题
+                    // 添加"Required Materials"标题
                     lore.add("§aRequired materials:");
                     // 添加每种材料
                     for (Map.Entry<String, Integer> ingredient : recipe.entrySet()) {
@@ -405,13 +405,13 @@ public class QuickMachineMBUtile {
                     resultItemDisplay.setItemMeta(itemMeta); // 将修改后的 ItemMeta 应用回 ItemStack
             }else{
 //                String name = "§x§F§D§B§7§D§4"+ItemStackHelper.getName(resultItemDisplay);
-//                String newName = name + "§e [产物]";
+//                String newName = name + "§e [Output]";
                 ItemMeta meta = Bukkit.getItemFactory().getItemMeta(resultItemDisplay.getType());
 //                meta.setDisplayName(newName);
                 // 准备 Lore 列表
                 List<String> lore = new ArrayList<>();
                 lore.add("");
-                // 添加"所需材料"标题
+                // 添加"Required Materials"标题
                 lore.add("§aRequired materials:");
                 // 添加每种材料
                 for (Map.Entry<String, Integer> ingredient : recipe.entrySet()) {

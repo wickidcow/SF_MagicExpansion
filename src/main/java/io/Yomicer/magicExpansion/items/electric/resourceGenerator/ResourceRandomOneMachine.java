@@ -155,9 +155,9 @@ public class ResourceRandomOneMachine extends AbstractElectricResourceMachine {
 //        ItemStack item = PROGRESS_STACK.clone();
 //        ItemMeta meta = item.getItemMeta();
 //
-//        meta.setDisplayName(getGradientName("信息"));
+//        meta.setDisplayName(getGradientName("Information"));
 //        ArrayList lore = new ArrayList<>();
-//        lore.add(getGradientName("生产速率:" + getCraftSecondDisplay() + "秒"));
+//        lore.add(getGradientName("Production interval: " + getCraftSecondDisplay() + " seconds"));
 //        item.setLore(lore);
 //        item.setItemMeta(meta);
 //

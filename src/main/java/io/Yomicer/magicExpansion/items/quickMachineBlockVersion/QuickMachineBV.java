@@ -174,12 +174,12 @@ public class QuickMachineBV extends SlimefunItem implements EnergyNetComponent {
 
     static void borders(BlockMenuPreset preset, int[] inputInfo, int[] outputInfo, int[] arrow, int[] star, int[] iBorder) {
 //        for (int i : inputInfo ) {
-//            preset.addItem(i, new CustomItemStack(doGlow(new ItemStack (Material.LIGHT_BLUE_STAINED_GLASS_PANE)), "§b材料输入槽→","§b材料输入槽↓","§b1~3行为材料输入槽"),
+//            preset.addItem(i, new CustomItemStack(doGlow(new ItemStack (Material.LIGHT_BLUE_STAINED_GLASS_PANE)), "§bMaterial input slot →","§bMaterial input slots ↓","§bRows 1–3 are material input slots"),
 //                    (p, slot, item, action) -> false);
 //        }
 
 //        for (int i : outputInfo) {
-//            preset.addItem(i, new CustomItemStack(new ItemStack (Material.YELLOW_STAINED_GLASS_PANE), "§b产物输入槽→","§b产物列表↓"),
+//            preset.addItem(i, new CustomItemStack(new ItemStack (Material.YELLOW_STAINED_GLASS_PANE), "§bOutput item slot →","§bOutput list ↓"),
 //                    (p, slot, item, action) -> false);
 //        }
 
@@ -190,12 +190,12 @@ public class QuickMachineBV extends SlimefunItem implements EnergyNetComponent {
 //        }
 
 //        for (int i : star) {
-//            preset.addItem(i, new CustomItemStack(Material.NETHER_STAR, "§x§F§D§B§7§D§4使用说明",
-//                            "§x§F§D§B§7§D§4§l首次打开需要手动放入一个材料来初始化机器",
-//                            "§e右键 §b查看单次合成所需的材料",
-//                            "§e左键 §b制作一次",
-//                            "§b按住 §eShift 右键 §b一次制作32个物品",
-//                            "§b按住 §eShift 左键 §b制作所有可制作的物品"),
+//            preset.addItem(i, new CustomItemStack(Material.NETHER_STAR, "§x§F§D§B§7§D§4Instructions",
+//                            "§x§F§D§B§7§D§4§lPlace one ingredient manually the first time to initialize the machine",
+//                            "§eRight-click §bto view the materials required for one craft",
+//                            "§eLeft-click §bto craft once",
+//                            "§bHold §eShift and right-click §bto craft 32 items",
+//                            "§bHold §eShift and left-click §bto craft all available items"),
 //                    (player1, slot, item, action) -> false);
 //        }
 

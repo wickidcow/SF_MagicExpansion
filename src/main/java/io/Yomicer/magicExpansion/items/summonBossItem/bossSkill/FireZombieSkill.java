@@ -19,28 +19,28 @@ public class FireZombieSkill {
     private static void spawnParticleEffects(Location location,Player player) {
         // 火焰粒子
         location.getWorld().spawnParticle(Particle.FLAME, location, 1000, 10, 8, 10, 0.1);
-//        player.sendMessage("FLAME触发");
+//        player.sendMessage("FLAME triggered");
 
         // 烟雾粒子
         location.getWorld().spawnParticle(Particle.CAMPFIRE_COSY_SMOKE, location, 1000, 10, 8, 10, 0.1);
-//        player.sendMessage("CAMPFIRE_COSY_SMOKE触发");
+//        player.sendMessage("CAMPFIRE_COSY_SMOKE triggered");
         // 魔法粒子
         // 定义粒子的颜色(青色)
 //        Particle.DustOptions dustOptions = new Particle.DustOptions(Color.fromRGB(0, 255, 255), 1.0f);
         location.getWorld().spawnParticle(Particle.ENCHANT, location, 1000, 10, 8, 10, 0.1);
-//        player.sendMessage("ENCHANT触发");
+//        player.sendMessage("ENCHANT triggered");
     }
 
     // 生成粒子特效
     private static void spawnOneParticle(Location location,Player player, Particle particle, int num) {
         // 火焰粒子
         location.getWorld().spawnParticle(particle, location, num, 10, 8, 10, 0.1);
-//        player.sendMessage("FLAME触发");
+//        player.sendMessage("FLAME triggered");
     }
     private static void spawnOneParticle(Location location,Player player, Particle particle, int num, double x, double y, double z) {
         // 火焰粒子
         location.getWorld().spawnParticle(particle, location, num, x, y, z, 0.1);
-//        player.sendMessage("FLAME触发");
+//        player.sendMessage("FLAME triggered");
     }
 
     private static void spawnOneParticle(Location location, Player player, Particle particle, Particle.DustOptions extraInfo){
@@ -102,7 +102,7 @@ public class FireZombieSkill {
             nearbyPlayer.damage(21, mob); // 造成21点伤害
             nearbyPlayer.sendMessage("§3§lThe Wind Spirit has struck you!");
             spawnOneParticle(nearbyPlayer.getLocation(), nearbyPlayer, Particle.DUST, dustOptions);
-            // 1. 失衡:跳跃提升(反向效果)→ 模拟"被狂风吹起,无法落地"
+            // 1. 失衡:跳跃提升(反向效果)→ 模拟"Powerful winds lift you off the ground!"
             nearbyPlayer.addPotionEffect(new PotionEffect(PotionEffectType.LEVITATION, 80, 5)); // 被气流托起,漂浮
             nearbyPlayer.sendMessage(ChatColor.AQUA + "§l↑↑↑ A violent current hurls you into the air!" + ChatColor.WHITE + " §lYou float upward uncontrollably...");
 
@@ -123,7 +123,7 @@ public class FireZombieSkill {
             nearbyPlayer.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 40, 100));
             nearbyPlayer.sendMessage(ChatColor.BLACK + "§l🌫️ Pale windblown sand strikes your face," + ChatColor.WHITE + "§land your eyes can barely see...");
 
-            // 可选:1.19+ 支持 DARKNESS(更契合"风暴遮蔽光明")
+            // 可选:1.19+ 支持 DARKNESS(更契合"The storm obscures the light!")
             if (Bukkit.getVersion().contains("1.19") || Bukkit.getVersion().contains("1.20") || Bukkit.getVersion().contains("1.21")) {
                 nearbyPlayer.addPotionEffect(new PotionEffect(PotionEffectType.DARKNESS, 100, 100));
                 nearbyPlayer.sendMessage(ChatColor.DARK_GRAY + "🌑 The Wind Spirit's fury blocks out the light," + ChatColor.GRAY + "§land darkness corrodes even your soul...");

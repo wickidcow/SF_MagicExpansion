@@ -129,7 +129,7 @@ public class PortableCargoTransporter extends SlimefunItem implements Listener {
                 // 检查玩家是否在线 - 如果不在线则停止传输
                 if (!player.isOnline()) {
                     stopTransmission(player);
-//                    MagicExpansion.getInstance().getLogger().info("玩家 " + player.getName() + " 离线,自动停止传输");
+//                    MagicExpansion.getInstance().getLogger().info("Player " + player.getName() + " went offline; transfer stopped automatically");
                     return;
                 }
 
@@ -444,7 +444,7 @@ public class PortableCargoTransporter extends SlimefunItem implements Listener {
     public void onPlayerQuit(PlayerQuitEvent event) {
         Player player = event.getPlayer();
         stopTransmission(player);
-//        MagicExpansion.getInstance().getLogger().info("玩家 " + player.getName() + " 退出游戏,停止传输");
+//        MagicExpansion.getInstance().getLogger().info("Player " + player.getName() + " left the game; transfer stopped");
     }
 
     /**

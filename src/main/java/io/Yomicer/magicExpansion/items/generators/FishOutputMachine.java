@@ -476,7 +476,7 @@ public class FishOutputMachine extends MenuBlock implements EnergyNetComponent, 
 
                 40
         });
-        var1.drawBackground(new CustomItemStack(Material.CHAIN,getGradientName("Void Touch Slot")),new int[] {
+        var1.drawBackground(new CustomItemStack(Material.IRON_CHAIN,getGradientName("Void Touch Slot")),new int[] {
 
                 41
         });
@@ -536,7 +536,7 @@ public class FishOutputMachine extends MenuBlock implements EnergyNetComponent, 
         display.add(new CustomItemStack(CustomHead.getHead("26314d31b095e4d421760497be6a156f459d8c9957b7e6b1c12deb4e47860d71"),getGradientName("Max Stored Items")));
         display.add(new CustomItemStack(CustomHead.getHead("26314d31b095e4d421760497be6a156f459d8c9957b7e6b1c12deb4e47860d71"),getGradientName("Max Stored Items")));
 
-//        display.add(new CustomItemStack(Material.PUFFERFISH_BUCKET,CopperDustFish.getDisplayName(),getGradientName("每秒产出个数:"+ " 重量 * 魔法鱼稀有程度 ")));
+//        display.add(new CustomItemStack(Material.PUFFERFISH_BUCKET,CopperDustFish.getDisplayName(),getGradientName("Items produced per second: "+ " weight × magic-fish rarity ")));
 //        display.add(outputCopperDust);
 
 

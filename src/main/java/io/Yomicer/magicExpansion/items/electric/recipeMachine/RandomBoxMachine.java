@@ -79,12 +79,12 @@ public class RandomBoxMachine extends AbstractElectricRecipeMachine {
 
         if (box != null && box.getType() != Material.AIR) {
             inv.consumeItem(slot);
-//            Debug.logInfo("已消耗盲盒");
+//            Debug.logInfo("Mystery box consumed");
         }
 
         if (output != null && output.getType() != Material.AIR) {
             inv.pushItem(output, getOutputSlots());
-//            Debug.logInfo("已生成礼物");
+//            Debug.logInfo("Gift generated");
         }
     }
 

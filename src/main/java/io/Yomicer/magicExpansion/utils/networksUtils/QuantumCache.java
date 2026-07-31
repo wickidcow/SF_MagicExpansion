@@ -1,7 +1,5 @@
 package io.Yomicer.magicExpansion.utils.networksUtils;
 
-import lombok.Getter;
-import lombok.Setter;
 import io.Yomicer.magicExpansion.utils.compat.ItemStackHelper;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -19,7 +17,6 @@ public class QuantumCache extends ItemStackCache {
 
     private final boolean supportsCustomMaxAmount;
 
-    @Setter
     private long limit;
 
     public int getLimit() {
@@ -30,8 +27,15 @@ public class QuantumCache extends ItemStackCache {
         return limit;
     }
 
-    @Getter
+    public void setLimit(long limit) {
+        this.limit = limit;
+    }
+
     private long amount;
+
+    public long getAmount() {
+        return amount;
+    }
 
     public int getAmountInt() {
         return amount > Integer.MAX_VALUE ? Integer.MAX_VALUE : (int) amount;
@@ -41,9 +45,15 @@ public class QuantumCache extends ItemStackCache {
         return amount;
     }
 
-    @Setter
-    @Getter
     private boolean voidExcess;
+
+    public boolean isVoidExcess() {
+        return voidExcess;
+    }
+
+    public void setVoidExcess(boolean voidExcess) {
+        this.voidExcess = voidExcess;
+    }
 
     public QuantumCache(
             @Nullable ItemStack storedItem,

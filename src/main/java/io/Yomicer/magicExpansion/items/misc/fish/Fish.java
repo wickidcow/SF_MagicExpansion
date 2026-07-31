@@ -553,7 +553,7 @@ public enum Fish {
 
 
     /**
-     * 按"越轻越稀有"原则生成重量
+     * 按"lighter is rarer"原则生成重量
      * 使用偏态分布:更大概率生成接近 minWeight 的小重量
      */
     public double rollWeight() {
@@ -623,7 +623,7 @@ public enum Fish {
     }
 
     /**
-     * 计算重量在范围内的"归一化百分比"(0.0 ~ 1.0)
+     * 计算重量在范围内的"normalized percentage"(0.0 ~ 1.0)
      * 注意:值越小表示越轻
      */
     public double getWeightPercent(double weight) {
@@ -633,7 +633,7 @@ public enum Fish {
     }
 
     /**
-     * 根据重量判断"重量稀有度"
+     * 根据重量判断"weight rarity"
      */
     public WeightRarity getWeightRarity(double weight) {
         double percent = getWeightPercent(weight);

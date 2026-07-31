@@ -1004,7 +1004,7 @@ public class CargoCoreMore extends SlimefunItem implements EnergyNetComponent{
                     lore.add("§7Maximum Amount: §aUnlimited");
                 }
 
-                // ✅ 添加"正在输出"状态提示
+                // ✅ 添加"Outputting"状态提示
                 if (dataSlot == currentOutputSlot) {
                     lore.add(""); // 空行分隔
                     lore.add("§6§l▶ §eOutputting"); // 金色箭头 + 黄色文字
@@ -1146,11 +1146,11 @@ public class CargoCoreMore extends SlimefunItem implements EnergyNetComponent{
 //                    if (player.getInventory().addItem(toTake).isEmpty()) {
 //                        itemCount -= take;
 //                        data.setData("item_count_" + targetDataSlot, String.valueOf(itemCount));
-//                        player.sendMessage("§a已取出 §e" + take + " §a个 " + ItemStackHelper.getDisplayName(itemPrototypeClone));
+//                        player.sendMessage("§aWithdrew §e" + take + " §a " + ItemStackHelper.getDisplayName(itemPrototypeClone));
 //                        player.playSound(player.getLocation(), Sound.ENTITY_ITEM_PICKUP, 0.5F, 1.0F);
 //                        updateStorageDisplay(menu, data);
 //                    } else {
-//                        player.sendMessage("§c背包空间不足,无法取出物品.");
+//                        player.sendMessage("§cNot enough inventory space to withdraw the items.");
 //                        player.playSound(player.getLocation(), Sound.BLOCK_METAL_HIT, 0.3F, 0.5F);
 //                    }
 
@@ -1455,7 +1455,7 @@ public class CargoCoreMore extends SlimefunItem implements EnergyNetComponent{
                     lore.add("§7Maximum Amount: §aUnlimited");
                 }
 
-                // ✅ 添加"正在输出"状态提示
+                // ✅ 添加"Outputting"状态提示
                 int currentOutput = -1;
                 try {
                     String outputStr = data.getData(OUTPUT_TARGET_KEY);
@@ -1604,11 +1604,11 @@ public class CargoCoreMore extends SlimefunItem implements EnergyNetComponent{
 //                    if (p.getInventory().addItem(toTake).isEmpty()) {
 //                        itemCount1 -= take;
 //                        data.setData("item_count_" + targetDataSlot1, String.valueOf(itemCount1));
-//                        p.sendMessage("§a已取出 §e" + take + " §a个 " + ItemStackHelper.getDisplayName(itemPrototypeClone1));
+//                        p.sendMessage("§aWithdrew §e" + take + " §a " + ItemStackHelper.getDisplayName(itemPrototypeClone1));
 //                        p.playSound(p.getLocation(), Sound.ENTITY_ITEM_PICKUP, 0.5F, 1.0F);
 //                        refreshStorageMenu(menu, data, finalCurrentPage2);
 //                    } else {
-//                        p.sendMessage("§c背包空间不足,无法取出物品.");
+//                        p.sendMessage("§cNot enough inventory space to withdraw the items.");
 //                        p.playSound(p.getLocation(), Sound.BLOCK_METAL_HIT, 0.3F, 0.5F);
 //                    }
 
@@ -1789,7 +1789,7 @@ public class CargoCoreMore extends SlimefunItem implements EnergyNetComponent{
     protected void constructMenu(BlockMenuPreset preset) {
 
 //        for (int i : pinkBorder ) {
-//            preset.addItem(i, new CustomItemStack(doGlow(new ItemStack (Material.PINK_STAINED_GLASS_PANE)), ColorGradient.getGradientName("快捷合成翻页")),
+//            preset.addItem(i, new CustomItemStack(doGlow(new ItemStack (Material.PINK_STAINED_GLASS_PANE)), ColorGradient.getGradientName("Quick Crafting Page")),
 //                    (p, slot, item, action) -> false);
 //        }
 
@@ -1939,8 +1939,8 @@ public class CargoCoreMore extends SlimefunItem implements EnergyNetComponent{
 //                                        } catch (IllegalStateException e) {
 //                                            // 如果仍然失败,记录错误并使用默认方式
 //                                            MagicExpansion.getInstance().getLogger().warning(
-//                                                    "无法获取方块状态在位置: " + block.getLocation() +
-//                                                            ", 类型: " + block.getType()
+//                                                    "Could not get block state at location: " + block.getLocation() +
+//                                                            ", type: " + block.getType()
 //                                            );
 //                                        }
 //                                    });
@@ -2325,10 +2325,10 @@ public class CargoCoreMore extends SlimefunItem implements EnergyNetComponent{
             if (base64 != null && !base64.isEmpty()) {
                 BlockStorage.addBlockInfo(b.getLocation(), key, base64);
             } else {
-//                Debug.logWarn("无法序列化模板物品 #" + index + " 为 Base64");
+//                Debug.logWarn("Could not serialize template item #" + index + " to Base64");
             }
         } catch (Exception e) {
-//            Debug.logWarn("序列化模板物品失败: " + e.getMessage());
+//            Debug.logWarn("Failed to serialize template item: " + e.getMessage());
         }
     }
 
@@ -2772,7 +2772,7 @@ public class CargoCoreMore extends SlimefunItem implements EnergyNetComponent{
             try {
                 leftover = targetMenu.pushItem(toPush, inputSlots);
             } catch (Exception e) {
-//                Debug.logInfo("推送物品到目标时发生错误: " + e.getMessage());
+//                Debug.logInfo("Error while pushing items to target: " + e.getMessage());
                 break;
             }
 
@@ -2882,14 +2882,14 @@ public class CargoCoreMore extends SlimefunItem implements EnergyNetComponent{
         Block targetBlock = location.getBlock();
         SlimefunItem sfItem = BlockStorage.check(targetBlock);
         if (sfItem == null) {
-//            Debug.logInfo("输入源不是Slimefun方块: " + location);
+//            Debug.logInfo("Input source is not a Slimefun block: " + location);
             return false;
         }
 
         // 检查是否有有效的物品槽位
         BlockMenu sourceMenu = BlockStorage.getInventory(targetBlock);
         if (sourceMenu == null) {
-//            Debug.logInfo("输入源没有有效的菜单: " + location);
+//            Debug.logInfo("Input source has no valid menu: " + location);
             return false;
         }
 
@@ -2904,17 +2904,17 @@ public class CargoCoreMore extends SlimefunItem implements EnergyNetComponent{
         BlockMenu sourceMenu = BlockStorage.getInventory(sourceBlock);
 
         if (sourceMenu == null) {
-//            Debug.logInfo("源机器菜单为null: " + sourceLocation);
+//            Debug.logInfo("Source machine menu is null: " + sourceLocation);
             return;
         }
 
         // 调试信息:打印源机器信息
 //        SlimefunItem sourceSfItem = BlockStorage.check(sourceBlock);
-//        Debug.logInfo("尝试从源机器抽取: " + (sourceSfItem != null ? sourceSfItem.getId() : "未知") + " 位置: " + sourceLocation);
+//        Debug.logInfo("Attempting extraction from source machine: " + (sourceSfItem != null ? sourceSfItem.getId() : "Unknown") + " at location: " + sourceLocation);
 //
         // 方法1:先尝试获取输出槽
         int[] outputSlots = sourceMenu.getPreset().getSlotsAccessedByItemTransport(ItemTransportFlow.WITHDRAW);
-//        Debug.logInfo("方法1 - 输出槽数量: " + (outputSlots != null ? outputSlots.length : 0));
+//        Debug.logInfo("Method 1 - output slot count: " + (outputSlots != null ? outputSlots.length : 0));
 
         if (outputSlots != null && outputSlots.length > 0) {
             // 从输出槽抽取
@@ -2923,7 +2923,7 @@ public class CargoCoreMore extends SlimefunItem implements EnergyNetComponent{
         }
 
         // 方法2:如果没有明确的输出槽,尝试所有槽位(除了特定类型槽位)
-//        Debug.logInfo("方法1失败,尝试方法2 - 扫描所有槽位");
+//        Debug.logInfo("Method 1 failed; trying Method 2 - scan all slots");
 //        extractFromAllSlots(sourceMenu, data, pairIndex, destBlock, sourceSfItem);
     }
 
@@ -2931,23 +2931,23 @@ public class CargoCoreMore extends SlimefunItem implements EnergyNetComponent{
      * 从输出槽抽取物品
      */
     private void extractFromOutputSlots(BlockMenu sourceMenu, int[] outputSlots, SlimefunBlockData destData, int pairIndex, Block destBlock) {
-//        Debug.logInfo("开始从输出槽抽取,槽位: " + Arrays.toString(outputSlots));
+//        Debug.logInfo("Starting extraction from output slots: " + Arrays.toString(outputSlots));
         boolean hasExtracted = false;
 
         for (int outputSlot : outputSlots) {
             ItemStack itemToExtract = sourceMenu.getItemInSlot(outputSlot);
             if (itemToExtract == null || itemToExtract.getType() == Material.AIR) {
-//                Debug.logInfo("槽位 " + outputSlot + " 为空");
+//                Debug.logInfo("Slot " + outputSlot + " is empty");
                 continue;
             }
 
-//            Debug.logInfo("找到物品: " + itemToExtract.getType() + " 数量: " + itemToExtract.getAmount() + " 在槽位: " + outputSlot);
+//            Debug.logInfo("Found item: " + itemToExtract.getType() + " amount: " + itemToExtract.getAmount() + " in slot: " + outputSlot);
 
             // 检查过滤模板
             ItemStack filterTemplate = getInputFilterTemplate(destBlock, pairIndex);
             if (filterTemplate != null && !filterTemplate.getType().isAir()) {
                 if (!isItemMatchFilter(itemToExtract, filterTemplate)) {
-//                    Debug.logInfo("物品不匹配过滤模板,跳过");
+//                    Debug.logInfo("Item does not match the filter template; skipping");
                     continue;
                 }
             }
@@ -2959,7 +2959,7 @@ public class CargoCoreMore extends SlimefunItem implements EnergyNetComponent{
 
             // 尝试抽取物品
             int extractedAmount = extractItemDirectly(sourceMenu, outputSlot, itemToExtract, destData);
-//            Debug.logInfo("抽取结果: " + extractedAmount + " 个物品");
+//            Debug.logInfo("Extraction result: " + extractedAmount + " items");
 
             if (extractedAmount > 0) {
                 // 播放抽取音效
@@ -2986,13 +2986,13 @@ public class CargoCoreMore extends SlimefunItem implements EnergyNetComponent{
      */
     private int extractItemDirectly(BlockMenu sourceMenu, int sourceSlot, ItemStack sourceItem, SlimefunBlockData destData) {
         if (sourceItem == null || sourceItem.getType() == Material.AIR) {
-//            Debug.logInfo("源物品为空");
+//            Debug.logInfo("Source item is empty");
             return 0;
         }
 
         // 计算最大抽取数量(每次最多64个)
         int maxExtract = Math.min(sourceItem.getAmount(), 64);
-//        Debug.logInfo("准备抽取 " + maxExtract + " 个物品");
+//        Debug.logInfo("Preparing to extract " + maxExtract + " items");
 
         // 创建要抽取的物品
         ItemStack toExtract = sourceItem.clone();
@@ -3006,25 +3006,25 @@ public class CargoCoreMore extends SlimefunItem implements EnergyNetComponent{
 
         // 直接存储到目标存储系统
         storeItemCargoCoreMore(destData, toExtract);
-//        Debug.logInfo("物品已存储到目标存储");
+//        Debug.logInfo("Item stored in target storage");
 
         // 更新源槽位:减少数量或清空
         int newAmount = sourceItem.getAmount() - maxExtract;
-//        Debug.logInfo("源槽位新数量: " + newAmount);
+//        Debug.logInfo("New source slot amount: " + newAmount);
 
         if (newAmount <= 0) {
             // 完全抽取完毕,清空槽位
             sourceMenu.replaceExistingItem(sourceSlot, null);
-//            Debug.logInfo("清空源槽位");
+//            Debug.logInfo("Cleared source slot");
         } else {
             // 更新数量
             ItemStack updatedItem = sourceItem.clone();
             updatedItem.setAmount(newAmount);
             sourceMenu.replaceExistingItem(sourceSlot, updatedItem);
-//            Debug.logInfo("更新源槽位数量");
+//            Debug.logInfo("Updated source slot amount");
         }
 
-//        Debug.logInfo("成功抽取 " + maxExtract + " 个 " + sourceItem.getType());
+//        Debug.logInfo("Successfully extracted " + maxExtract + " " + sourceItem.getType());
         return maxExtract;
     }
 
@@ -3041,7 +3041,7 @@ public class CargoCoreMore extends SlimefunItem implements EnergyNetComponent{
 
         boolean isSimilar = SameItemJudge.isSimilarSafe(itemCopy, filterCopy);
 //        boolean isSimilar = SlimefunUtils.isItemSimilar(itemCopy, filterCopy, true);
-//        Debug.logInfo("物品匹配检查: " + item.getType() + " vs " + filter.getType() + " = " + isSimilar);
+//        Debug.logInfo("Item match check: " + item.getType() + " vs " + filter.getType() + " = " + isSimilar);
 
         return isSimilar;
     }
@@ -3052,20 +3052,20 @@ public class CargoCoreMore extends SlimefunItem implements EnergyNetComponent{
     private Location getInputSourceLocation(Block block, int index) {
         String locStr = BlockStorage.getLocationInfo(block.getLocation()).getString("input_bind_pair_" + index);
         if (locStr == null || locStr.isEmpty()) {
-//            Debug.logInfo("输入源绑定 " + index + " 为空");
+//            Debug.logInfo("Input source binding " + index + " is empty");
             return null;
         }
 
         String[] parts = locStr.split(",");
         if (parts.length != 4) {
-//            Debug.logInfo("输入源坐标格式错误: " + locStr);
+//            Debug.logInfo("Input source coordinate format is invalid: " + locStr);
             return null;
         }
 
         try {
             World world = Bukkit.getWorld(parts[3]);
             if (world == null) {
-//                Debug.logInfo("世界不存在: " + parts[3]);
+//                Debug.logInfo("World does not exist: " + parts[3]);
                 return null;
             }
 
@@ -3074,10 +3074,10 @@ public class CargoCoreMore extends SlimefunItem implements EnergyNetComponent{
             int z = Integer.parseInt(parts[2]);
 
             Location location = new Location(world, x, y, z);
-//            Debug.logInfo("解析输入源位置: " + location);
+//            Debug.logInfo("Parsed input source location: " + location);
             return location;
         } catch (NumberFormatException e) {
-//            Debug.logInfo("坐标解析错误: " + e.getMessage());
+//            Debug.logInfo("Coordinate parsing error: " + e.getMessage());
             return null;
         }
     }
@@ -3090,18 +3090,18 @@ public class CargoCoreMore extends SlimefunItem implements EnergyNetComponent{
         String key = "input_filter_template_" + index;
 
         if (!config.contains(key)) {
-//            Debug.logInfo("过滤模板 " + index + " 不存在");
+//            Debug.logInfo("Filter template " + index + " does not exist");
             return null;
         }
 
         String base64 = config.getString(key);
         if (base64 == null || base64.isEmpty()) {
-//            Debug.logInfo("过滤模板 " + index + " 数据为空");
+//            Debug.logInfo("Filter template " + index + " has no data");
             return null;
         }
 
         ItemStack template = SameItemJudge.itemFromBase64(base64);
-//        Debug.logInfo("获取过滤模板 " + index + ": " + (template != null ? template.getType() : "null"));
+//        Debug.logInfo("Retrieved filter template " + index + ": " + (template != null ? template.getType() : "null"));
         return template;
     }
 
@@ -3113,7 +3113,7 @@ public class CargoCoreMore extends SlimefunItem implements EnergyNetComponent{
 
         if (item == null || item.getType().isAir()) {
             BlockStorage.addBlockInfo(block.getLocation(), key, "");
-//            Debug.logInfo("清除过滤模板 " + index);
+//            Debug.logInfo("Cleared filter template " + index);
             return;
         }
 
@@ -3121,13 +3121,13 @@ public class CargoCoreMore extends SlimefunItem implements EnergyNetComponent{
             String base64 = SameItemJudge.itemToBase64(item);
             if (base64 != null && !base64.isEmpty()) {
                 BlockStorage.addBlockInfo(block.getLocation(), key, base64);
-//                Debug.logInfo("设置过滤模板 " + index + ": " + item.getType());
+//                Debug.logInfo("Set filter template " + index + ": " + item.getType());
             } else {
-//                Debug.logInfo("过滤模板序列化失败");
+//                Debug.logInfo("Filter template serialization failed");
             }
         } catch (Exception e) {
-//            Debug.logInfo("设置过滤模板失败: " + e.getMessage());
-//            Debug.logInfo("设置输入过滤模板失败: " + e.getMessage());
+//            Debug.logInfo("Failed to set filter template: " + e.getMessage());
+//            Debug.logInfo("Failed to set input filter template: " + e.getMessage());
         }
     }
     /**
@@ -3193,8 +3193,8 @@ public class CargoCoreMore extends SlimefunItem implements EnergyNetComponent{
 //                                        } catch (IllegalStateException e) {
 //                                            // 如果仍然失败,记录错误并使用默认方式
 //                                            MagicExpansion.getInstance().getLogger().warning(
-//                                                    "无法获取方块状态在位置: " + block.getLocation() +
-//                                                            ", 类型: " + block.getType()
+//                                                    "Could not get block state at location: " + block.getLocation() +
+//                                                            ", type: " + block.getType()
 //                                            );
 //                                        }
 //                                    });
@@ -3596,8 +3596,8 @@ public class CargoCoreMore extends SlimefunItem implements EnergyNetComponent{
 //                                } catch (IllegalStateException e) {
 //                                    // 如果仍然失败,记录错误
 //                                    MagicExpansion.getInstance().getLogger().warning(
-//                                            "无法获取方块状态在位置: " + block.getLocation() +
-//                                                    ", 类型: " + block.getType()
+//                                            "Could not get block state at location: " + block.getLocation() +
+//                                                    ", type: " + block.getType()
 //                                    );
 //                                }
 //                            });
@@ -3894,8 +3894,8 @@ public class CargoCoreMore extends SlimefunItem implements EnergyNetComponent{
 //                                } catch (IllegalStateException e) {
 //                                    // 如果仍然失败,记录错误
 //                                    MagicExpansion.getInstance().getLogger().warning(
-//                                            "无法获取方块状态在位置: " + finalBlock.getLocation() +
-//                                                    ", 类型: " + finalBlock.getType()
+//                                            "Could not get block state at location: " + finalBlock.getLocation() +
+//                                                    ", type: " + finalBlock.getType()
 //                                    );
 //                                }
 //                            });

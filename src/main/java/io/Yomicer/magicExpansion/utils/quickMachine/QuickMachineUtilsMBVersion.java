@@ -459,12 +459,12 @@ public class QuickMachineUtilsMBVersion {
             if (resultItemDisplay.hasItemMeta()) { // 确保 ItemStack 不为空且有 ItemMeta
                 ItemMeta itemMeta = resultItemDisplay.getItemMeta(); // 获取 ItemMeta
 //                    String originalName = itemMeta.getDisplayName(); // 获取原始显示名称
-//                    String newName = "§x§F§D§B§7§D§4"+originalName + "§e [产物]"; // 添加后缀 [产物]
+//                    String newName = "§x§F§D§B§7§D§4"+originalName + "§e [Output]"; // 添加后缀 [产物]
 //                    itemMeta.setDisplayName(newName); // 设置新的显示名称
                     // 准备 Lore 列表
                     List<String> lore = new ArrayList<>();
                     lore.add("");
-                    // 添加"所需材料"标题
+                    // 添加"Required Materials"标题
                     lore.add("§aRequired materials:");
                     // 添加每种材料
                     for (Map.Entry<String, Integer> ingredient : recipe.entrySet()) {
@@ -477,13 +477,13 @@ public class QuickMachineUtilsMBVersion {
                     resultItemDisplay.setItemMeta(itemMeta); // 将修改后的 ItemMeta 应用回 ItemStack
             }else{
 //                String name = "§x§F§D§B§7§D§4"+ItemStackHelper.getName(resultItemDisplay);
-//                String newName = name + "§e [产物]";
+//                String newName = name + "§e [Output]";
                 ItemMeta meta = Bukkit.getItemFactory().getItemMeta(resultItemDisplay.getType());
 //                meta.setDisplayName(newName);
                 // 准备 Lore 列表
                 List<String> lore = new ArrayList<>();
                 lore.add("");
-                // 添加"所需材料"标题
+                // 添加"Required Materials"标题
                 lore.add("§aRequired materials:");
                 // 添加每种材料
                 for (Map.Entry<String, Integer> ingredient : recipe.entrySet()) {

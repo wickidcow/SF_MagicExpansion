@@ -219,7 +219,7 @@ public class MagicAltarManager {
             if (recipe.matches(items)) {
                 matchedRecipe = recipe;
                 recipeName = currentRecipeName;
-//                Bukkit.getLogger().info("找到匹配的配方: " + recipeName);
+//                Bukkit.getLogger().info("Found matching recipe: " + recipeName);
                 break;
             }
         }

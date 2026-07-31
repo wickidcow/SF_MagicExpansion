@@ -74,8 +74,8 @@ public class MagicExpansionQuickHeatedPressureChamber extends SimpleSlimefunItem
 //            // 将整合后的配方存入列表
 //            HEATED_PRESSURE_CHAMBER_RECIPES.add(recipeMap);
 //        }
-////        Debug.logWarn("预加载的配方HEATED_PRESSURE_CHAMBER_RECIPES:" + HEATED_PRESSURE_CHAMBER_RECIPES);
-////        System.out.println("预加载的配方数量ANCIENT_ALTAR_RECIPES:" + ANCIENT_ALTAR_RECIPES.size());
+////        Debug.logWarn("Preloaded HEATED_PRESSURE_CHAMBER recipes: " + HEATED_PRESSURE_CHAMBER_RECIPES);
+////        System.out.println("Number of preloaded ANCIENT_ALTAR recipes: " + ANCIENT_ALTAR_RECIPES.size());
 //    }
 
 

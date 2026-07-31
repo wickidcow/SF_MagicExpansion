@@ -45,7 +45,7 @@ public class MagicExpansionQuickGrindStone extends SimpleSlimefunItem<ItemUseHan
 //            // 使用 getRecipes() 获取配方
 //            List<ItemStack[]> recipes = multiBlockMachine.getRecipes();
 //            if (recipes == null || recipes.isEmpty()) {
-//                System.out.println("无法找到 GrindStone 的 recipes.");
+//                System.out.println("Could not find recipes for the Grindstone.");
 //                return;
 //            }
 //

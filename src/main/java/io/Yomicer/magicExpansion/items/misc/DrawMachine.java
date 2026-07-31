@@ -316,7 +316,7 @@ public class DrawMachine extends SlimefunItem implements EnergyNetComponent {
             }
 
             // 更新三行文字显示
-//            textEntity.setCustomName("§a每次抽奖所需: "+ itemName + "§r§b x " + requiredAmount);
+//            textEntity.setCustomName("§aRequired per draw: "+ itemName + "§r§b x " + requiredAmount);
             if (line1 != null) line1.setCustomName("§aCost per draw: " + itemName + " §b x " + requiredAmount);
             if (line2 != null) line2.setCustomName("§bCurrency stored in machine: " + storedAmount + "");
             if (line3 != null) line3.setCustomName("§dRewards remaining: " + totalRewards + "");
@@ -328,7 +328,7 @@ public class DrawMachine extends SlimefunItem implements EnergyNetComponent {
             }
 
             // 更新三行文字显示
-//            textEntity.setCustomName("§c未设置模板");
+//            textEntity.setCustomName("§cNo template set");
             if (line1 != null) line1.setCustomName("§cNo template set");
             if (line2 != null) line2.setCustomName("§7Set the lottery currency first.");
             if (line3 != null) line3.setCustomName("§7Rewards remaining: " + totalRewards + "");

@@ -1,7 +1,6 @@
 package io.Yomicer.magicExpansion.utils.networksUtils;
 
 import io.github.thebusybiscuit.slimefun4.libraries.dough.data.persistent.PersistentDataAPI;
-import lombok.experimental.UtilityClass;
 import org.bukkit.NamespacedKey;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataHolder;
@@ -11,8 +10,11 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 
-@UtilityClass
-public class DataTypeMethods {
+public final class DataTypeMethods {
+
+    private DataTypeMethods() {
+        throw new UnsupportedOperationException("Utility class");
+    }
 
     /**
      * Get an object based on the provided {@link PersistentDataType} in a {@link PersistentDataContainer}, if the key doesn't exist it returns null.

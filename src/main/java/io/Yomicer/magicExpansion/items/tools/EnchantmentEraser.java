@@ -143,19 +143,19 @@ public class EnchantmentEraser extends SimpleSlimefunItem<ItemUseHandler> {
             String line = lore.get(i);
             String strippedLine = stripAllColorCodes(line);
 
-            // 检查是否是"魔法赋能:"标题行
+            // 检查是否是"Magic Empowerment:"标题行
             if ((strippedLine.contains("Magic Empowerment") || strippedLine.contains("\u9b54\u6cd5\u8d4b\u80fd")) && (strippedLine.contains(":") || strippedLine.contains(":"))) {
                 // 如果已经在赋能段落中,先结束之前的段落
                 if (inEnchantmentSection) {
                     // 跳过之前段落的所有行
-//                    MagicExpansion.getInstance().getLogger().info("结束魔法赋能段落 " + sectionCount + ",从行 " + enchantmentSectionStart + " 到 " + (i-1));
+//                    MagicExpansion.getInstance().getLogger().info("Ended Magic Empowerment section " + sectionCount + ", from line " + enchantmentSectionStart + " to " + (i-1));
                 }
 
                 // 开始新的赋能段落
                 inEnchantmentSection = true;
                 enchantmentSectionStart = i;
                 sectionCount++;
-//                MagicExpansion.getInstance().getLogger().info("发现魔法赋能段落 " + sectionCount + ",标题行: " + strippedLine);
+//                MagicExpansion.getInstance().getLogger().info("Found Magic Empowerment section " + sectionCount + ", title line: " + strippedLine);
                 continue; // 跳过标题行
             }
 
@@ -163,12 +163,12 @@ public class EnchantmentEraser extends SimpleSlimefunItem<ItemUseHandler> {
             if (inEnchantmentSection) {
                 // 检查是否是属性行(去色后以"- "开头)
                 if (strippedLine.startsWith("- ")) {
-//                    MagicExpansion.getInstance().getLogger().info("跳过属性行: " + strippedLine);
+//                    MagicExpansion.getInstance().getLogger().info("Skipping attribute line: " + strippedLine);
                     continue; // 跳过属性行
                 }
 
                 // 如果不是属性行,结束当前赋能段落
-//                MagicExpansion.getInstance().getLogger().info("结束魔法赋能段落 " + sectionCount + ",从行 " + enchantmentSectionStart + " 到 " + (i-1));
+//                MagicExpansion.getInstance().getLogger().info("Ended Magic Empowerment section " + sectionCount + ", from line " + enchantmentSectionStart + " to " + (i-1));
                 inEnchantmentSection = false;
 
                 // 当前行不是属性行,添加到新Lore
@@ -181,10 +181,10 @@ public class EnchantmentEraser extends SimpleSlimefunItem<ItemUseHandler> {
 
         // 如果最后还在赋能段落中,结束它
         if (inEnchantmentSection) {
-//            MagicExpansion.getInstance().getLogger().info("结束魔法赋能段落 " + sectionCount + ",从行 " + enchantmentSectionStart + " 到末尾");
+//            MagicExpansion.getInstance().getLogger().info("Ended Magic Empowerment section " + sectionCount + ", from line " + enchantmentSectionStart + " to the end");
         }
 
-//        MagicExpansion.getInstance().getLogger().info("原始Lore行数: " + lore.size() + ", 新Lore行数: " + newLore.size());
+//        MagicExpansion.getInstance().getLogger().info("Original lore lines: " + lore.size() + ", new lore lines: " + newLore.size());
 
         // 如果移除了整个赋能段落导致Lore为空,设为null
         if (newLore.isEmpty()) {
@@ -291,7 +291,7 @@ public class EnchantmentEraser extends SimpleSlimefunItem<ItemUseHandler> {
             }
         }
 
-        // 如果PDC中没有,检查Lore中是否有"魔法赋能:"字样
+        // 如果PDC中没有,检查Lore中是否有"Magic Empowerment:"字样
         List<String> lore = meta.getLore();
         if (lore != null) {
             for (String line : lore) {

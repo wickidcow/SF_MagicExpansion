@@ -63,7 +63,7 @@ public class PreBuildingsTreeUtils {
 
 //            // 检查是否有冲突
 //            if (hasConflicts(blocks, pasteLocation, player.getWorld())) {
-//                player.sendMessage("§c当前空间大小不足,请选择其他地方放置.");
+//                player.sendMessage("§cThere is not enough room here. Choose another location.");
 //                return false; // 存在冲突,返回 false
 //            }
 

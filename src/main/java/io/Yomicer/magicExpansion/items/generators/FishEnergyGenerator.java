@@ -211,8 +211,8 @@ public class FishEnergyGenerator extends MenuBlock implements EnergyNetProvider,
                 ,getGradientName("Common / Rare / Super Rare: 1 / 4 / 11")));
         display.add(new CustomItemStack(CustomHead.getHead("26314d31b095e4d421760497be6a156f459d8c9957b7e6b1c12deb4e47860d71"),getGradientName("Used by the MagicExpansion fishing system.")));
         display.add(new CustomItemStack(CustomHead.getHead("26314d31b095e4d421760497be6a156f459d8c9957b7e6b1c12deb4e47860d71"),getGradientName("Used by the MagicExpansion fishing system.")));
-//        display.add(new CustomItemStack(Material.TROPICAL_FISH_BUCKET,MYSTIC_EEL.getDisplayName(),getGradientName("每kg每秒发电量:"+ChargeLore.formatEnergy(power)+" J")));
-//        display.add(new CustomItemStack(Material.COD_BUCKET,XueFish.getDisplayName(),getGradientName("每kg每秒发电量:"+ChargeLore.formatEnergy(power2)+" J")));
+//        display.add(new CustomItemStack(Material.TROPICAL_FISH_BUCKET,MYSTIC_EEL.getDisplayName(),getGradientName("Energy per kg per second: "+ChargeLore.formatEnergy(power)+" J")));
+//        display.add(new CustomItemStack(Material.COD_BUCKET,XueFish.getDisplayName(),getGradientName("Energy per kg per second: "+ChargeLore.formatEnergy(power2)+" J")));
         // ✅ 自动为所有在 FISH_POWER_MAP 中注册的鱼生成展示项
         for (Map.Entry<String, Integer> entry : FISH_POWER_MAP.entrySet()) {
 

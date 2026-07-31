@@ -77,7 +77,7 @@ public class WindElf extends SimpleSlimefunItem<ItemUseHandler> implements NotPl
         mob.setMetadata("isInvincibleWindElf", new FixedMetadataValue(MagicExpansion.getInstance(), false)); // 设置无敌元数据
         // 调整最大生命值并设置初始血量
         double maxHealth = 200.0; // 自定义最大生命值
-        mob.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(maxHealth);
+        mob.getAttribute(Attribute.MAX_HEALTH).setBaseValue(maxHealth);
         mob.setHealth(maxHealth); // 设置初始血量为最大生命值
 
 
@@ -101,7 +101,7 @@ public class WindElf extends SimpleSlimefunItem<ItemUseHandler> implements NotPl
                     this.cancel(); // 如果怪物死亡,停止任务
                     return;
                 }
-                // 修改名称,添加"无法选中·"前缀
+                // 修改名称,添加"Untargetable ·"前缀
                 mob.setMetadata("isInvincibleWindElf", new FixedMetadataValue(MagicExpansion.getInstance(), true));
                 mob.setCustomName(zombieName + "§e§l[Invulnerable]");
                 mob.setCustomNameVisible(true);

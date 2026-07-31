@@ -74,7 +74,7 @@ public class SameItemJudge {
     }
 
     /**
-     * ✅ 安全判断两个 ItemStack 是否"相同"(可用于堆叠判断)
+     * ✅ 安全判断两个 ItemStack 是否"same"(可用于堆叠判断)
      * 使用 Bukkit 内建的 isSimilar 方法,并兼容 Slimefun 物品
      */
     public static boolean isSimilarSafe(ItemStack item1, ItemStack item2) {
@@ -91,7 +91,7 @@ public class SameItemJudge {
     }
 
     /**
-     * ✅ 判断两个 Base64 字符串对应的物品是否"相同"
+     * ✅ 判断两个 Base64 字符串对应的物品是否"same"
      */
     public static boolean isSameBase64Item(String data1, String data2) {
         if (data1 == null && data2 == null) return true;

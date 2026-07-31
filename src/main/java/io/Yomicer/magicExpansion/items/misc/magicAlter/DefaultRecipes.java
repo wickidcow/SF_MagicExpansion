@@ -112,7 +112,7 @@ public class DefaultRecipes implements RecipeProvider{
         recipe3 [4][8] = sfItemAmount(MagicExpansionItems.PURE_FIVE_ELEMENT,64);
 
         Map<Enchantment, Integer> sharpnessEnchantments = Map.of(
-                Enchantment.DAMAGE_ALL, 255
+                Enchantment.SHARPNESS, 255
         );
         List<String> sharpnessLore = List.of(
                 "§7An enchanted book containing immeasurable power.",
@@ -161,7 +161,7 @@ public class DefaultRecipes implements RecipeProvider{
         recipe4 [4][8] = sfItemAmount(MagicExpansionItems.PURE_FIVE_ELEMENT,64);
 
         Map<Enchantment, Integer> LootingEnchantments = Map.of(
-                Enchantment.LOOT_BONUS_MOBS, 255
+                Enchantment.LOOTING, 255
         );
         List<String> lootingLore = List.of(
                 "§7An enchanted book saturated with forbidden power.",

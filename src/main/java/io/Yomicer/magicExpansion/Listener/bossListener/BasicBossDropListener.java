@@ -41,7 +41,7 @@ public class BasicBossDropListener implements Listener {
                 dropWindElfLoot(entity);
                 break;
             default:
-//                Debug.logWarn("未知的怪物类型: " + mobType);
+//                Debug.logWarn("Unknown mob type: " + mobType);
                 break;
         }
     }

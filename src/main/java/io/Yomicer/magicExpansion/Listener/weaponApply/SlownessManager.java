@@ -25,7 +25,7 @@ public class SlownessManager {
      * @param durationTicks 持续时间(单位:tick,20 ticks = 1 秒)
      */
     public static void applySlowness(LivingEntity livingTarget, double slownessLevel, int durationTicks) {
-        AttributeInstance movementSpeed = livingTarget.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED);
+        AttributeInstance movementSpeed = livingTarget.getAttribute(Attribute.MOVEMENT_SPEED);
         if (movementSpeed == null) return;
 
         // 先移除所有已有的修饰符
@@ -75,7 +75,7 @@ public class SlownessManager {
      * @param livingTarget 目标生物
      */
     public static void removeSlowness(LivingEntity livingTarget) {
-        AttributeInstance movementSpeed = livingTarget.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED);
+        AttributeInstance movementSpeed = livingTarget.getAttribute(Attribute.MOVEMENT_SPEED);
         if (movementSpeed == null) return;
 
         UUID playerId = livingTarget.getUniqueId();

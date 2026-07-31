@@ -58,7 +58,7 @@ public class TestMusicRightClick extends SimpleSlimefunItem<ItemUseHandler> impl
                     return;
                 }
             }
-            //player.sendTitle("✨🌹", "聆听星空的低语...", 10, 60, 10);
+            //player.sendTitle("✨🌹", "Listen to the whispers of the stars...", 10, 60, 10);
             // 播放旋律(调用我们封装的函数)
             new ZKBTMPlayer(MagicExpansion.getInstance()).playCuteMusic(player);
             // ✅ 使用成功,更新冷却时间

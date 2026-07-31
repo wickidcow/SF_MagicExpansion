@@ -35,7 +35,7 @@ public class CloudBread extends SimpleSlimefunItem<ItemConsumptionHandler> {
             p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_FALLING, 300, 0));
 
             // --- 3. 特殊机制:即时抵消坠落动能 ---
-            // 如果玩家正在下坠 (垂直速度 < 0),立即将其垂直速度设为 0,实现"空中急停"
+            // 如果玩家正在下坠 (垂直速度 < 0),立即将其垂直速度设为 0,实现"midair braking"
             Vector velocity = p.getVelocity();
             if (velocity.getY() < -0.5) {
                 velocity.setY(0);

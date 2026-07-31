@@ -86,7 +86,7 @@ public class ItemPermissionUtils {
                 Slimefun.getProtectionManager().hasPermission(player, l, Interaction.PLACE_BLOCK)) {
             return true;
         }
-//        player.sendMessage(getGradientName("[魔法]你没有权限进行此操作~"));
+//        player.sendMessage(getGradientName("[Magic] You do not have permission to do that."));
 
         return false;
     }

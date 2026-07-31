@@ -1,12 +1,10 @@
 package io.Yomicer.magicExpansion.utils.networksUtils;
 
-import lombok.ToString;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.Nullable;
 
-@ToString
 public class ItemStackCache {
 
     private @Nullable ItemStack itemStack;
@@ -45,5 +43,14 @@ public class ItemStackCache {
     @Nullable
     public Material getItemType() {
         return this.itemStack == null ? null : this.itemStack.getType();
+    }
+
+    @Override
+    public String toString() {
+        return "ItemStackCache{"
+                + "itemStack=" + itemStack
+                + ", itemMeta=" + itemMeta
+                + ", metaCached=" + metaCached
+                + '}';
     }
 }

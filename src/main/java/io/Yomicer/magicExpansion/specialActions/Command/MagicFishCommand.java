@@ -107,7 +107,7 @@ public class MagicFishCommand implements CommandExecutor, TabCompleter {
             player.sendMessage("§7Adjust Fish.admin-give.max-weight in config.yml.");
             return;
         }
-        // 同时不允许超过该鱼种自身设定的 maxWeight(防止产出"超规格"鱼)
+        // 同时不允许超过该鱼种自身设定的 maxWeight(防止产出"oversized"鱼)
         if (weight > fish.getMaxWeight()) {
             player.sendMessage("§cWeight " + weight + " exceeds this fish's maximum weight of " + fish.getMaxWeight() + "!");
             return;
