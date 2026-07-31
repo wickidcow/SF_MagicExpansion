@@ -1,84 +1,45 @@
-# MagicExpansion（魔法拓展）
+# MagicExpansion Legacy English
 
-This is Yomicer‘s first Slimefun addon project
+An English-first maintenance fork of **MagicExpansion**, updated for modern Paper servers and designed to run with **Slimefun Legacy**.
 
-这是Yomicer的第一个粘液科技插件
+## Requirements
 
-## Installation（注意事项）
+- Paper or Purpur 26.2.x
+- Java 25 or newer
+- Slimefun Legacy (recommended) or a compatible Slimefun 4 API provider
 
-**Hard Depends (硬前置)：**
+GuizhanLibPlugin is no longer required by this fork. The small item/entity-name helpers used by the original project are implemented locally, and the automatic Guizhan updater has been removed.
 
-```
-- Slimefun
-```
+## Main features
 
-**Soft Depends（软前置）:**
+- Portable and placeable quick-recipe machines
+- Resource generators and electric processing machines
+- Magic empowerment and combat items
+- Fishing progression, fish generators, and lure systems
+- Prefabricated trees and structures
+- Cargo and storage utilities
+- Magic bosses, SkyBlock tools, shops, and novelty items
 
-```
-- RykenSlimefunCustomizer 
-- RSC_Magic	(rsc版本的Magic配置文件)
-```
+## English conversion
 
-## Content （内容）
+Player-facing item names, lore, menus, messages, command descriptions, configuration notes, and startup logs are maintained in English. Existing Slimefun item IDs remain unchanged so items and recipes keep their stable identifiers.
 
-**Main Function List（主要功能列表）：**
+## Slimefun Legacy compatibility
 
-- **Quick Machine (快捷机器)**
-  - Magic Mine Cave（随身矿洞）
-  - Quick Recipe Machine（快捷配方机器）  - 目前10个配方分布给了10个不同的机器。可理解为随身合成计划，展示可合成产物，快捷合成。目前有两个版本，一种随身机器，一种放置机器。
+This fork uses the modern `SlimefunBlockData` ticker overload already provided by Slimefun Legacy while retaining established Slimefun addon entry points. It builds with a Java 25 toolchain against the Paper 26.2 API while emitting Java 21 bytecode, matching Slimefun Legacy's current build strategy.
 
-```
-- 增强型工作台
-- 魔法工作台
-- 冶炼炉
-- 淘金机
-- 磨石
-- 粉碎机
-- 盔甲锻造台
-- 压缩机
-- 压力机
-- 远古祭坛
-- 破损的碎矿机
-- 加热压力舱
+## Building
+
+```bash
+mvn -DskipTests clean package
 ```
 
-**partial content display(以下只是部分内容展示)**
+The shaded JAR is written to `target/`.
 
-- **Special Item（特殊道具）**
-  - Random Entity Spawn（随机实体蛋）
-  - Better Hoe（更好的镰刀）
-  - More Useful Tools（更多有用的工具）
-- **Generator（资源生成器）**
-  - Wood Machine（魔法翠木之源）（生产8种原木的机器）
-  - More Generator（更多的生成器）
-- **Recipe Machine（机器）**
-  - Wood Transform（翠木转换机）（转换原木）
-  - More Recipe Machine（更多的配方机器）
-- **Special machine（特殊机器）**
-  - Magic Enchant（魔法赋能机）
-  - More Special Machine（更多的特殊机器）
-- **Boss（大怪物）**
-  - Fire Zombie（烈焰僵尸）
-  - Wind Elf（风灵）
-  - Coming soon（敬请期待）
-- **Pre Buildings（预制建筑）**
-  - 8 Pre Tree（8种预制树）
-  - More Pre Building（更多的预制建筑）
-- **Sky Block（空岛）**
-  - Single Cube（起源单方块）
-  - Ore Single Cube（矿脉单方块）
-- **More Future（更多未来）**
-  - In Update Log（更多内容见更新日志）
+## Important
 
+Back up your server before replacing an existing build. Test machines, cargo links, custom items, fishing, bosses, and prefabricated buildings on a staging server before production use. Do not use `/reload`.
 
+## Credits and license
 
-**问题反馈**
-
-- 直接向本仓库提出issue
-  - 请确保使用的是最新版构建
-- 企鹅交流群: 770346419
-
-
-
-
-
+Original project by Yomicer. This is an unofficial English maintenance fork. The original license remains in effect; retain attribution and provide source code when distribution requires it.
