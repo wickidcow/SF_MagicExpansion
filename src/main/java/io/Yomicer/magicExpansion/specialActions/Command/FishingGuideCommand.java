@@ -20,7 +20,7 @@ public class FishingGuideCommand implements CommandExecutor, TabCompleter {
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         // 检查发送者是否是玩家
         if (!(sender instanceof Player)) {
-            sender.sendMessage("§c只有玩家才能使用这个命令！");
+            sender.sendMessage("§cOnly players can use this command.");
             return true;
         }
 
@@ -35,13 +35,13 @@ public class FishingGuideCommand implements CommandExecutor, TabCompleter {
             case "open_guide":
                 // 打开图鉴界面
                 FishingGuideMenu.openMainMenu(player);
-                player.sendMessage("§a已打开钓鱼图鉴！");
+                player.sendMessage("§aopenFishing Guide!");
                 break;
 
             case "guide":
                 // 给予图鉴书
                 giveGuideBook(player);
-                player.sendMessage("§a已获得钓鱼图鉴书！");
+                player.sendMessage("§aFishing Guide!");
                 break;
 
             default:
@@ -73,9 +73,9 @@ public class FishingGuideCommand implements CommandExecutor, TabCompleter {
      * 发送命令用法
      */
     private void sendUsage(Player player) {
-        player.sendMessage("§6=== 钓鱼图鉴命令 ===");
-        player.sendMessage("§a/mxf open_guide §7- 打开钓鱼图鉴界面");
-        player.sendMessage("§a/mxf guide §7- 获取钓鱼图鉴书");
+        player.sendMessage("§6=== Fishing Guide ===");
+        player.sendMessage("§a/mxf open_guide §7- openFishing Guide");
+        player.sendMessage("§a/mxf guide §7- Fishing Guide");
         player.sendMessage("§6===================");
     }
 
@@ -84,13 +84,13 @@ public class FishingGuideCommand implements CommandExecutor, TabCompleter {
      */
     private void giveGuideBook(Player player) {
         ItemStack guideBook = MagicExpansionItems.FISHING_BOOK;
-        // 尝试将书添加到玩家背包，如果背包满了就掉落在地上
+        // 尝试将书添加到玩家背包,如果背包满了就掉落在地上
         if (player.getInventory().firstEmpty() == -1) {
-            // 背包满了，掉落在地上
+            // 背包满了,掉落在地上
             player.getWorld().dropItemNaturally(player.getLocation(), guideBook);
-            player.sendMessage("§e你的背包已满，图鉴书已掉落在地上！");
+            player.sendMessage("§eYour inventory is full, was dropped on the ground!");
         } else {
-            // 背包有空位，添加到背包
+            // 背包有空位,添加到背包
             player.getInventory().addItem(guideBook);
         }
     }

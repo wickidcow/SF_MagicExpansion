@@ -21,8 +21,8 @@ public class SlownessManager {
      * 施加减速效果
      *
      * @param livingTarget 目标生物
-     * @param slownessLevel 减速等级（0 ~ 1）
-     * @param durationTicks 持续时间（单位：tick，20 ticks = 1 秒）
+     * @param slownessLevel 减速等级(0 ~ 1)
+     * @param durationTicks 持续时间(单位:tick,20 ticks = 1 秒)
      */
     public static void applySlowness(LivingEntity livingTarget, double slownessLevel, int durationTicks) {
         AttributeInstance movementSpeed = livingTarget.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED);
@@ -33,7 +33,7 @@ public class SlownessManager {
         UUID playerId = livingTarget.getUniqueId();
         UUID modifierId = playerSlownessModifierIds.get(playerId);
 
-        // 如果已经存在减速修饰符，则先移除
+        // 如果已经存在减速修饰符,则先移除
         if (modifierId != null) {
             removeExistingModifier(movementSpeed, modifierId);
         }

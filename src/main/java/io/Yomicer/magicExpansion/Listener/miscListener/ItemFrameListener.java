@@ -1,7 +1,7 @@
 package io.Yomicer.magicExpansion.Listener.miscListener;
 import io.Yomicer.magicExpansion.utils.log.Debug;
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItem;
-import net.guizhanss.guizhanlib.minecraft.helper.inventory.ItemStackHelper;
+import io.Yomicer.magicExpansion.utils.compat.ItemStackHelper;
 import org.bukkit.Material;
 import org.bukkit.block.ShulkerBox;
 import org.bukkit.entity.Player;
@@ -32,7 +32,7 @@ public class ItemFrameListener implements Listener {
                 ItemStack doubleDrop = itemInside.clone();
                 itemFrame.getWorld().dropItemNaturally(itemFrame.getLocation(), doubleDrop);
                 itemFrame.setItem(null);
-                p.sendMessage("请不要将携带NBT的物品放上去");
+                p.sendMessage("This item cannot be placed in an item frame because it contains protected data.");
                 return;
             }
 
@@ -49,13 +49,13 @@ public class ItemFrameListener implements Listener {
                     if (!hasInfiniteTag(itemFrame)) {
                         itemFrame.remove();
                     }
-                    p.sendMessage("✅ 被薛定谔眷顾的人！恭喜掉落掉落双倍物品：" + ItemStackHelper.getDisplayName(doubleDrop) + " x" + doubleDrop.getAmount());
+                    p.sendMessage("✅ Schrödinger favored you! Double drop: " + ItemStackHelper.getDisplayName(doubleDrop) + " x" + doubleDrop.getAmount());
                 } else {
                     itemFrame.setItem(null);
                     if (!hasInfiniteTag(itemFrame)) {
                         itemFrame.remove();
                     }
-                    p.sendMessage("❌ 薛定谔没有眷顾于你");
+                    p.sendMessage("❌ Schrödinger did not favor you this time.");
                 }
             }
         }

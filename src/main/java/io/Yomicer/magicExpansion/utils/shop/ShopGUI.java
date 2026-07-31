@@ -2,7 +2,7 @@ package io.Yomicer.magicExpansion.utils.shop;
 
 import io.github.thebusybiscuit.slimefun4.utils.SlimefunUtils;
 import io.Yomicer.magicExpansion.MagicExpansion;
-import net.guizhanss.guizhanlib.minecraft.helper.inventory.ItemStackHelper;
+import io.Yomicer.magicExpansion.utils.compat.ItemStackHelper;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -86,10 +86,10 @@ public class ShopGUI implements Listener {
 
     public static void openPlayerMainMenu(Player player, int page) {
         playerMainPage.put(player.getUniqueId(), page);
-        Inventory inv = Bukkit.createInventory(new ShopHolder(), 54, ChatColor.DARK_GREEN + "魔法·集市");
+        Inventory inv = Bukkit.createInventory(new ShopHolder(), 54, ChatColor.DARK_GREEN + "Magic Market");
         fillBorder(inv);
 
-        inv.setItem(4, createInfoItem(Material.BOOK, ChatColor.AQUA + "魔法·集市", Arrays.asList(ChatColor.GRAY + "请选择你要进入的商店")));
+        inv.setItem(4, createInfoItem(Material.BOOK, ChatColor.AQUA + "Magic Market", Arrays.asList(ChatColor.GRAY + "Choose a shop to enter.")));
 
         List<ShopManager.Shop> shops = ShopManager.getShops();
         int maxPage = Math.max(0, (shops.size() - 1) / CONTENT_SLOTS.length);
@@ -101,20 +101,20 @@ public class ShopGUI implements Listener {
             ItemStack icon = new ItemStack(Material.CHEST);
             ItemMeta meta = icon.getItemMeta();
             meta.setDisplayName(ChatColor.GOLD + shop.name);
-            meta.setLore(Arrays.asList(ChatColor.GRAY + "点击查看兑换列表", ChatColor.GRAY + "共有 " + shop.trades.size() + " 个交易"));
+            meta.setLore(Arrays.asList(ChatColor.GRAY + "Click to view available trades.", ChatColor.GRAY + "Total: " + shop.trades.size() + " trades"));
             icon.setItemMeta(meta);
             inv.setItem(CONTENT_SLOTS[i], icon);
         }
 
-        if (page > 0) inv.setItem(45, createInfoItem(Material.ARROW, ChatColor.YELLOW + "上一页", null));
-        if (page < maxPage) inv.setItem(53, createInfoItem(Material.ARROW, ChatColor.YELLOW + "下一页", null));
+        if (page > 0) inv.setItem(45, createInfoItem(Material.ARROW, ChatColor.YELLOW + "Previous Page", null));
+        if (page < maxPage) inv.setItem(53, createInfoItem(Material.ARROW, ChatColor.YELLOW + "Next Page", null));
 
-        // 新增：每日黑市入口 (放在第49格)
-        inv.setItem(49, createInfoItem(Material.WITHER_SKELETON_SKULL, ChatColor.DARK_PURPLE + "每日神秘黑市", Arrays.asList(
-                ChatColor.GRAY + "每4小时刷新 10 个神秘商品",
-                ChatColor.GRAY + "有概率出现免费好礼",
-                ChatColor.GRAY + "每人每款商品限购 1 次",
-                ChatColor.GRAY + "每天商品的刷新概率均会变化哦"
+        // 新增:每日黑市入口 (放在第49格)
+        inv.setItem(49, createInfoItem(Material.WITHER_SKELETON_SKULL, ChatColor.DARK_PURPLE + "Daily Mystery Black Market", Arrays.asList(
+                ChatColor.GRAY + "Refreshes with 10 mystery items every 4 hours.",
+                ChatColor.GRAY + "Free rewards may appear.",
+                ChatColor.GRAY + "Each player may purchase each item once.",
+                ChatColor.GRAY + "Refresh chances change each day."
         )));
 
         player.openInventory(inv);
@@ -133,7 +133,7 @@ public class ShopGUI implements Listener {
         Inventory inv = Bukkit.createInventory(new ShopHolder(), 54, ChatColor.DARK_GREEN + shopName);
         fillBorder(inv);
 
-        inv.setItem(4, createInfoItem(Material.ENDER_CHEST, ChatColor.AQUA + shopName, Arrays.asList(ChatColor.GRAY + "点击物品进行兑换")));
+        inv.setItem(4, createInfoItem(Material.ENDER_CHEST, ChatColor.AQUA + shopName, Arrays.asList(ChatColor.GRAY + "Click an item to make the trade.")));
 
         int maxPage = Math.max(0, (shop.trades.size() - 1) / CONTENT_SLOTS.length);
         page = Math.min(page, maxPage);
@@ -149,7 +149,7 @@ public class ShopGUI implements Listener {
 
             List<String> lore = meta.hasLore() ? new ArrayList<>(meta.getLore()) : new ArrayList<>();
             lore.add("");
-            lore.add(ChatColor.AQUA + "兑换所需物品：");
+            lore.add(ChatColor.AQUA + "Required items:");
             if (trade.costItems != null && !trade.costItems.isEmpty()) {
                 for (ItemStack cost : trade.costItems) {
                     if (cost != null && cost.getType() != Material.AIR) {
@@ -158,21 +158,21 @@ public class ShopGUI implements Listener {
                     }
                 }
             } else {
-                lore.add(ChatColor.RED + " (免费)");
+                lore.add(ChatColor.RED + " (Free)");
             }
 
             boolean canBuy = ShopManager.canPurchase(playerId, trade);
             if (trade.globalLimit > 0 || trade.personalLimit > 0) {
                 lore.add("");
                 if (trade.globalLimit > 0) {
-                    lore.add(ChatColor.YELLOW + "全服剩余: " + (canBuy ? ChatColor.AQUA : ChatColor.RED) + (trade.globalLimit - trade.globalUsed));
+                    lore.add(ChatColor.YELLOW + "Server-wide Remaining: " + (canBuy ? ChatColor.AQUA : ChatColor.RED) + (trade.globalLimit - trade.globalUsed));
                 }
                 if (trade.personalLimit > 0) {
                     int used = trade.personalUsed.getOrDefault(playerId, 0);
-                    lore.add(ChatColor.YELLOW + "个人剩余: " + (canBuy ? ChatColor.AQUA : ChatColor.RED) + (trade.personalLimit - used));
+                    lore.add(ChatColor.YELLOW + "Personal Remaining: " + (canBuy ? ChatColor.AQUA : ChatColor.RED) + (trade.personalLimit - used));
                 }
                 if (!canBuy) {
-                    lore.add(ChatColor.DARK_RED + "已达购买上限！");
+                    lore.add(ChatColor.DARK_RED + "Purchase limit reached!");
                 }
             }
 
@@ -181,9 +181,9 @@ public class ShopGUI implements Listener {
             inv.setItem(CONTENT_SLOTS[i], display);
         }
 
-        if (page > 0) inv.setItem(45, createInfoItem(Material.ARROW, ChatColor.YELLOW + "上一页", null));
-        inv.setItem(49, createInfoItem(Material.ARROW, ChatColor.GRAY + "返回", null));
-        if (page < maxPage) inv.setItem(53, createInfoItem(Material.ARROW, ChatColor.YELLOW + "下一页", null));
+        if (page > 0) inv.setItem(45, createInfoItem(Material.ARROW, ChatColor.YELLOW + "Previous Page", null));
+        inv.setItem(49, createInfoItem(Material.ARROW, ChatColor.GRAY + "Back", null));
+        if (page < maxPage) inv.setItem(53, createInfoItem(Material.ARROW, ChatColor.YELLOW + "Next Page", null));
 
         player.openInventory(inv);
     }
@@ -195,10 +195,10 @@ public class ShopGUI implements Listener {
 
     public static void openAdminMainMenu(Player player, int page) {
         adminMainPage.put(player.getUniqueId(), page);
-        Inventory inv = Bukkit.createInventory(new ShopHolder(), 54, ChatColor.DARK_RED + "魔法·集市管理");
+        Inventory inv = Bukkit.createInventory(new ShopHolder(), 54, ChatColor.DARK_RED + "Magic Market Administration");
         fillBorder(inv);
 
-        inv.setItem(4, createInfoItem(Material.WRITABLE_BOOK, ChatColor.AQUA + "管理员菜单", Arrays.asList(ChatColor.GRAY + "管理全服魔法·集市")));
+        inv.setItem(4, createInfoItem(Material.WRITABLE_BOOK, ChatColor.AQUA + "Administrator Menu", Arrays.asList(ChatColor.GRAY + "Manage the server-wide Magic Market.")));
 
         List<ShopManager.Shop> shops = ShopManager.getShops();
         int maxPage = Math.max(0, (shops.size() - 1) / CONTENT_SLOTS.length);
@@ -211,26 +211,26 @@ public class ShopGUI implements Listener {
             ItemMeta meta = icon.getItemMeta();
             meta.setDisplayName(ChatColor.GOLD + shop.name);
             meta.setLore(Arrays.asList(
-                    ChatColor.GRAY + "左键: 管理内部交易",
-                    ChatColor.RED + "右键: 删除商店"
+                    ChatColor.GRAY + "Left-click: Manage trades",
+                    ChatColor.RED + "Right-click: Delete shop"
             ));
             icon.setItemMeta(meta);
             inv.setItem(CONTENT_SLOTS[i], icon);
         }
 
-        if (page > 0) inv.setItem(45, createInfoItem(Material.ARROW, ChatColor.YELLOW + "上一页", null));
-        inv.setItem(49, createInfoItem(Material.WRITABLE_BOOK, ChatColor.GREEN + "创建新商店", Arrays.asList(ChatColor.GRAY + "点击在聊天框输入名字")));
-        if (page < maxPage) inv.setItem(53, createInfoItem(Material.ARROW, ChatColor.YELLOW + "下一页", null));
+        if (page > 0) inv.setItem(45, createInfoItem(Material.ARROW, ChatColor.YELLOW + "Previous Page", null));
+        inv.setItem(49, createInfoItem(Material.WRITABLE_BOOK, ChatColor.GREEN + "Create New Shop", Arrays.asList(ChatColor.GRAY + "Click, then enter a name in chat.")));
+        if (page < maxPage) inv.setItem(53, createInfoItem(Material.ARROW, ChatColor.YELLOW + "Next Page", null));
 
-        inv.setItem(51, createInfoItem(Material.SUNFLOWER, ChatColor.AQUA + "热重载商店数据", Arrays.asList(
-                ChatColor.GRAY + "点击从文件夹重新读取数据",
-                ChatColor.YELLOW + "注意：会覆盖未保存的修改"
+        inv.setItem(51, createInfoItem(Material.SUNFLOWER, ChatColor.AQUA + "Reload Shop Data", Arrays.asList(
+                ChatColor.GRAY + "Click to reload data from disk.",
+                ChatColor.YELLOW + "Warning: Unsaved changes will be overwritten."
         )));
 
-        // 新增：强制刷新黑市按钮
-        inv.setItem(52, createInfoItem(Material.WITHER_SKELETON_SKULL, ChatColor.DARK_PURPLE + "强制刷新黑市", Arrays.asList(
-                ChatColor.GRAY + "立即刷新今日黑市物品",
-                ChatColor.YELLOW + "当前剩余: " + BlackMarketManager.getTimeRemaining()
+        // 新增:强制刷新黑市按钮
+        inv.setItem(52, createInfoItem(Material.WITHER_SKELETON_SKULL, ChatColor.DARK_PURPLE + "Force Refresh Black Market", Arrays.asList(
+                ChatColor.GRAY + "Immediately refresh today's Black Market items.",
+                ChatColor.YELLOW + "Remaining: " + BlackMarketManager.getTimeRemaining()
         )));
 
         player.openInventory(inv);
@@ -246,10 +246,10 @@ public class ShopGUI implements Listener {
         ShopManager.Shop shop = ShopManager.getShop(shopName);
         if (shop == null) return;
 
-        Inventory inv = Bukkit.createInventory(new ShopHolder(), 54, ChatColor.DARK_RED + "管理: " + shopName);
+        Inventory inv = Bukkit.createInventory(new ShopHolder(), 54, ChatColor.DARK_RED + "Manage: " + shopName);
         fillBorder(inv);
 
-        inv.setItem(4, createInfoItem(Material.ENDER_CHEST, ChatColor.AQUA + "管理: " + shopName, Arrays.asList(ChatColor.GRAY + "中键重置购买次数")));
+        inv.setItem(4, createInfoItem(Material.ENDER_CHEST, ChatColor.AQUA + "Manage: " + shopName, Arrays.asList(ChatColor.GRAY + "Middle-click: Reset purchase counts")));
 
         int maxPage = Math.max(0, (shop.trades.size() - 1) / CONTENT_SLOTS.length);
         page = Math.min(page, maxPage);
@@ -261,17 +261,17 @@ public class ShopGUI implements Listener {
             ItemStack display = trade.result.clone();
             ItemMeta meta = display.getItemMeta();
             List<String> lore = new ArrayList<>();
-            lore.add(ChatColor.GRAY + "左键: 编辑交易");
-            lore.add(ChatColor.RED + "右键: 删除交易");
-            lore.add(ChatColor.BLUE + "中键: 重置全服和个人购买次数");
+            lore.add(ChatColor.GRAY + "Left-click: Edit trade");
+            lore.add(ChatColor.RED + "Right-click: Delete trade");
+            lore.add(ChatColor.BLUE + "Middle-click: Reset server-wide and personal purchase counts");
             meta.setLore(lore);
             display.setItemMeta(meta);
             inv.setItem(CONTENT_SLOTS[i], display);
         }
 
-        if (page > 0) inv.setItem(45, createInfoItem(Material.ARROW, ChatColor.YELLOW + "上一页", null));
-        inv.setItem(49, createInfoItem(Material.LIME_DYE, ChatColor.GREEN + "新建交易", null));
-        if (page < maxPage) inv.setItem(53, createInfoItem(Material.ARROW, ChatColor.YELLOW + "下一页", null));
+        if (page > 0) inv.setItem(45, createInfoItem(Material.ARROW, ChatColor.YELLOW + "Previous Page", null));
+        inv.setItem(49, createInfoItem(Material.LIME_DYE, ChatColor.GREEN + "Create New Trade", null));
+        if (page < maxPage) inv.setItem(53, createInfoItem(Material.ARROW, ChatColor.YELLOW + "Next Page", null));
 
         player.openInventory(inv);
     }
@@ -279,18 +279,18 @@ public class ShopGUI implements Listener {
     public static void openTradeEditor(Player player, String shopName, ShopEditData editData) {
         currentEditingData.put(player.getUniqueId(), editData);
 
-        Inventory inv = Bukkit.createInventory(new ShopHolder(), 54, ChatColor.DARK_RED + "配置: " + shopName);
+        Inventory inv = Bukkit.createInventory(new ShopHolder(), 54, ChatColor.DARK_RED + "Configure: " + shopName);
 
         for (int i = 0; i < 54; i++) {
             inv.setItem(i, createBorder());
         }
 
-        inv.setItem(4, createInfoItem(Material.ANVIL, ChatColor.AQUA + "交易编辑器", Arrays.asList(ChatColor.GRAY + "配置兑换与限制")));
+        inv.setItem(4, createInfoItem(Material.ANVIL, ChatColor.AQUA + "Trade Editor", Arrays.asList(ChatColor.GRAY + "Configure trade items and limits.")));
 
-        inv.setItem(11, createInfoItem(Material.PINK_STAINED_GLASS_PANE, ChatColor.LIGHT_PURPLE + "右侧放置兑换物→→", null));
-        inv.setItem(12, createInfoItem(Material.PINK_STAINED_GLASS_PANE, ChatColor.LIGHT_PURPLE + "右侧放置兑换物→→", null));
-        inv.setItem(14, createInfoItem(Material.PINK_STAINED_GLASS_PANE, ChatColor.LIGHT_PURPLE + "←←左侧放置兑换物", null));
-        inv.setItem(15, createInfoItem(Material.PINK_STAINED_GLASS_PANE, ChatColor.LIGHT_PURPLE + "←←左侧放置兑换物", null));
+        inv.setItem(11, createInfoItem(Material.PINK_STAINED_GLASS_PANE, ChatColor.LIGHT_PURPLE + "Place the received item on the right →→", null));
+        inv.setItem(12, createInfoItem(Material.PINK_STAINED_GLASS_PANE, ChatColor.LIGHT_PURPLE + "Place the received item on the right →→", null));
+        inv.setItem(14, createInfoItem(Material.PINK_STAINED_GLASS_PANE, ChatColor.LIGHT_PURPLE + "←← Place required items on the left", null));
+        inv.setItem(15, createInfoItem(Material.PINK_STAINED_GLASS_PANE, ChatColor.LIGHT_PURPLE + "←← Place required items on the left", null));
 
         if (editData.result != null) {
             inv.setItem(13, editData.result.clone());
@@ -298,8 +298,8 @@ public class ShopGUI implements Listener {
             inv.setItem(13, null);
         }
 
-        inv.setItem(27, createInfoItem(Material.BLUE_STAINED_GLASS_PANE, ChatColor.BLUE + "放置消耗品", null));
-        inv.setItem(35, createInfoItem(Material.BLUE_STAINED_GLASS_PANE, ChatColor.BLUE + "放置消耗品", null));
+        inv.setItem(27, createInfoItem(Material.BLUE_STAINED_GLASS_PANE, ChatColor.BLUE + "Place required items here.", null));
+        inv.setItem(35, createInfoItem(Material.BLUE_STAINED_GLASS_PANE, ChatColor.BLUE + "Place required items here.", null));
 
         for (int i = 28; i <= 34; i++) {
             int costIndex = i - 28;
@@ -310,12 +310,12 @@ public class ShopGUI implements Listener {
             }
         }
 
-        inv.setItem(40, createInfoItem(Material.COMPARATOR, ChatColor.GOLD + "全服限购: " + (editData.globalLimit == 0 ? "无限制" : editData.globalLimit), Arrays.asList(ChatColor.GRAY + "左键设置")));
-        inv.setItem(41, createInfoItem(Material.PAPER, ChatColor.GOLD + "个人限购: " + (editData.personalLimit == 0 ? "无限制" : editData.personalLimit), Arrays.asList(ChatColor.GRAY + "左键设置")));
+        inv.setItem(40, createInfoItem(Material.COMPARATOR, ChatColor.GOLD + "Server-wide Limit: " + (editData.globalLimit == 0 ? "Unlimited" : editData.globalLimit), Arrays.asList(ChatColor.GRAY + "Left-click to set")));
+        inv.setItem(41, createInfoItem(Material.PAPER, ChatColor.GOLD + "Per-player Limit: " + (editData.personalLimit == 0 ? "Unlimited" : editData.personalLimit), Arrays.asList(ChatColor.GRAY + "Left-click to set")));
 
-        inv.setItem(45, createInfoItem(Material.RED_CONCRETE, ChatColor.RED + "删除交易", Collections.singletonList(ChatColor.GRAY + "仅编辑时有效")));
-        inv.setItem(49, createInfoItem(Material.ARROW, ChatColor.GRAY + "返回(不保存)", null));
-        inv.setItem(53, createInfoItem(Material.LIME_CONCRETE, ChatColor.GREEN + "保存交易", null));
+        inv.setItem(45, createInfoItem(Material.RED_CONCRETE, ChatColor.RED + "Delete Trade", Collections.singletonList(ChatColor.GRAY + "Available only while editing.")));
+        inv.setItem(49, createInfoItem(Material.ARROW, ChatColor.GRAY + "Back (Do Not Save)", null));
+        inv.setItem(53, createInfoItem(Material.LIME_CONCRETE, ChatColor.GREEN + "Save Trade", null));
 
         player.openInventory(inv);
     }
@@ -323,7 +323,7 @@ public class ShopGUI implements Listener {
     // ================= 黑市界面 =================
     public static void openBlackMarket(Player player) {
         BlackMarketManager.checkAndRefresh();
-        Inventory inv = Bukkit.createInventory(new ShopHolder(), 54, ChatColor.DARK_PURPLE + "每日神秘黑市");
+        Inventory inv = Bukkit.createInventory(new ShopHolder(), 54, ChatColor.DARK_PURPLE + "Daily Mystery Black Market");
 
         // 全部铺满黑色玻璃板
         for (int i = 0; i < 54; i++) {
@@ -331,10 +331,10 @@ public class ShopGUI implements Listener {
         }
 
         // 顶部信息
-        inv.setItem(4, createInfoItem(Material.WITHER_SKELETON_SKULL, ChatColor.LIGHT_PURPLE + "今日黑市", Arrays.asList(
-                ChatColor.GRAY + "每4小时自动刷新",
-                ChatColor.GRAY + "每人每款限购1次",
-                ChatColor.YELLOW + "距离下次刷新: " + BlackMarketManager.getTimeRemaining()
+        inv.setItem(4, createInfoItem(Material.WITHER_SKELETON_SKULL, ChatColor.LIGHT_PURPLE + "Today's Black Market", Arrays.asList(
+                ChatColor.GRAY + "Automatically refreshes every 4 hours.",
+                ChatColor.GRAY + "One purchase per player for each item.",
+                ChatColor.YELLOW + "Time Until Refresh: " + BlackMarketManager.getTimeRemaining()
         )));
 
         // 清空中心 10 个槽位准备放商品
@@ -351,20 +351,20 @@ public class ShopGUI implements Listener {
             if (trade.result == null || trade.result.getType() == Material.AIR) continue;
 
             if (BlackMarketManager.hasPurchased(playerId, i)) {
-                inv.setItem(slot, createInfoItem(Material.GRAY_STAINED_GLASS_PANE, ChatColor.DARK_RED + "已购买", null));
+                inv.setItem(slot, createInfoItem(Material.GRAY_STAINED_GLASS_PANE, ChatColor.DARK_RED + "Purchased", null));
                 continue;
             }
 
             if (!BlackMarketManager.isRevealed(playerId, i)) {
-                inv.setItem(slot, createInfoItem(Material.PURPLE_SHULKER_BOX, ChatColor.DARK_PURPLE + "神秘黑市盲盒", Arrays.asList(
-                        ChatColor.GRAY + "点击揭开惊喜！"
+                inv.setItem(slot, createInfoItem(Material.PURPLE_SHULKER_BOX, ChatColor.DARK_PURPLE + "Mystery Black Market Box", Arrays.asList(
+                        ChatColor.GRAY + "Click to reveal the surprise!"
                 )));
                 continue;
             }
 
             ItemStack display = trade.result.clone();
             ItemMeta meta = display.getItemMeta();
-            // 修复点：如果 meta 为 null，尝试从工厂获取
+            // 修复点:如果 meta 为 null,尝试从工厂获取
             if (meta == null) {
                 meta = Bukkit.getItemFactory().getItemMeta(display.getType());
             }
@@ -373,13 +373,13 @@ public class ShopGUI implements Listener {
                 List<String> lore = meta.hasLore() ? new ArrayList<>(meta.getLore()) : new ArrayList<>();
                 lore.add("");
 
-                if (trade.isHard) lore.add(ChatColor.GOLD + "稀有物品！");
-                else lore.add(ChatColor.GRAY + "普通物品");
+                if (trade.isHard) lore.add(ChatColor.GOLD + "Rare Item!");
+                else lore.add(ChatColor.GRAY + "Common Item");
 
                 if (trade.isFree) {
-                    lore.add(ChatColor.GOLD + "★ 免费兑换 ★");
+                    lore.add(ChatColor.GOLD + "★ FREE TRADE ★");
                 } else {
-                    lore.add(ChatColor.DARK_RED + "----需要消耗：");
+                    lore.add(ChatColor.DARK_RED + "---- Required Cost:");
                     if (trade.costs != null) {
                         for (ItemStack cost : trade.costs) {
                             if (cost != null && cost.getType() != Material.AIR) {
@@ -390,7 +390,7 @@ public class ShopGUI implements Listener {
                     }
                 }
                 lore.add("");
-                lore.add(ChatColor.GREEN + "再次点击进行兑换");
+                lore.add(ChatColor.GREEN + "Click again to complete the trade.");
 
                 meta.setLore(lore);
                 display.setItemMeta(meta);
@@ -398,9 +398,9 @@ public class ShopGUI implements Listener {
             inv.setItem(slot, display);
         }
 
-        inv.setItem(45, createInfoItem(Material.KNOWLEDGE_BOOK, ChatColor.AQUA + "物品概率公示", Arrays.asList(ChatColor.GRAY + "点击查看所有物品的刷出概率")));
+        inv.setItem(45, createInfoItem(Material.KNOWLEDGE_BOOK, ChatColor.AQUA + "Item Probability List", Arrays.asList(ChatColor.GRAY + "Click to view every item's refresh chance.")));
         // 返回按钮放在第49格
-        inv.setItem(49, createInfoItem(Material.ARROW, ChatColor.GRAY + "返回", null));
+        inv.setItem(49, createInfoItem(Material.ARROW, ChatColor.GRAY + "Back", null));
         player.openInventory(inv);
     }
 
@@ -453,7 +453,7 @@ public class ShopGUI implements Listener {
         // 将 Map 转为 List 方便分页
         List<Map.Entry<String, Double>> probList = new ArrayList<>(nameToProb.entrySet());
 
-        Inventory inv = Bukkit.createInventory(new ShopHolder(), 54, ChatColor.DARK_AQUA + "黑市物品概率公示");
+        Inventory inv = Bukkit.createInventory(new ShopHolder(), 54, ChatColor.DARK_AQUA + "Black Market Item Probabilities");
         fillBorder(inv);
 
         int maxPage = Math.max(0, (probList.size() - 1) / CONTENT_SLOTS.length);
@@ -470,7 +470,7 @@ public class ShopGUI implements Listener {
                 List<String> lore = meta.hasLore() ? new ArrayList<>(meta.getLore()) : new ArrayList<>();
                 lore.add("");
                 double prob = entry.getValue() * 100;
-                lore.add(ChatColor.GOLD + "刷新概率: " + String.format("%.5f", prob) + "%");
+                lore.add(ChatColor.GOLD + "Refresh Chance: " + String.format("%.5f", prob) + "%");
                 meta.setLore(lore);
                 displayItem.setItemMeta(meta);
             }
@@ -478,10 +478,10 @@ public class ShopGUI implements Listener {
         }
 
         // 翻页按钮
-        if (page > 0) inv.setItem(45, createInfoItem(Material.ARROW, ChatColor.YELLOW + "上一页", null));
-        if (page < maxPage) inv.setItem(53, createInfoItem(Material.ARROW, ChatColor.YELLOW + "下一页", null));
+        if (page > 0) inv.setItem(45, createInfoItem(Material.ARROW, ChatColor.YELLOW + "Previous Page", null));
+        if (page < maxPage) inv.setItem(53, createInfoItem(Material.ARROW, ChatColor.YELLOW + "Next Page", null));
 
-        inv.setItem(49, createInfoItem(Material.ARROW, ChatColor.GRAY + "返回", null));
+        inv.setItem(49, createInfoItem(Material.ARROW, ChatColor.GRAY + "Back", null));
         player.openInventory(inv);
     }
 
@@ -497,7 +497,7 @@ public class ShopGUI implements Listener {
         UUID playerId = player.getUniqueId();
 
         if (BlackMarketManager.hasPurchased(playerId, index)) {
-            player.sendMessage(ChatColor.RED + "你今天已经购买过这个商品了！");
+            player.sendMessage(ChatColor.RED + "You have already purchased this item today!");
             return;
         }
 
@@ -514,7 +514,7 @@ public class ShopGUI implements Listener {
                 sound = org.bukkit.Sound.BLOCK_NOTE_BLOCK_PLING;
             }
             player.playSound(player.getLocation(), sound, 1f, 1f);
-            player.sendMessage(ChatColor.LIGHT_PURPLE + "盲盒已揭开！");
+            player.sendMessage(ChatColor.LIGHT_PURPLE + "Mystery box revealed!");
 
             openBlackMarket(player);
             return;
@@ -532,7 +532,7 @@ public class ShopGUI implements Listener {
                 if (cost == null || cost.getType() == Material.AIR) continue;
                 if (!player.getInventory().containsAtLeast(cost, cost.getAmount())) {
                     String costName = ItemStackHelper.getDisplayName(cost);
-                    player.sendMessage(ChatColor.RED + "缺少物品: " + costName + " x" + cost.getAmount());
+                    player.sendMessage(ChatColor.RED + "Missing items: " + costName + " x" + cost.getAmount());
                     player.playSound(player.getLocation(), org.bukkit.Sound.ENTITY_VILLAGER_NO, 1f, 1f);
                     return;
                 }
@@ -555,12 +555,12 @@ public class ShopGUI implements Listener {
             for (ItemStack drop : overflow.values()) {
                 player.getWorld().dropItemNaturally(player.getLocation(), drop);
             }
-            player.sendMessage(ChatColor.YELLOW + "背包已满，部分物品掉落在地上！");
+            player.sendMessage(ChatColor.YELLOW + "Your inventory was full, so some items were dropped on the ground!");
         }
 
         BlackMarketManager.recordPurchase(playerId, index);
 
-        player.sendMessage(ChatColor.GREEN + "黑市兑换成功！");
+        player.sendMessage(ChatColor.GREEN + "Black Market trade completed!");
         player.playSound(player.getLocation(), org.bukkit.Sound.UI_TOAST_CHALLENGE_COMPLETE, 1f, 1f);
 
         openBlackMarket(player);
@@ -579,7 +579,7 @@ public class ShopGUI implements Listener {
         String title = e.getView().getTitle();
         Player player = (Player) e.getWhoClicked();
 
-        if (title.startsWith(ChatColor.DARK_RED + "配置: ")) {
+        if (title.startsWith(ChatColor.DARK_RED + "Configure: ")) {
             if (e.getClick() == ClickType.SHIFT_LEFT || e.getClick() == ClickType.SHIFT_RIGHT) {
                 e.setCancelled(true);
                 return;
@@ -607,7 +607,7 @@ public class ShopGUI implements Listener {
         if (item == null || item.getType() == Material.AIR) return;
 
         // 玩家商店列表
-        if (title.equals(ChatColor.DARK_GREEN + "魔法·集市")) {
+        if (title.equals(ChatColor.DARK_GREEN + "Magic Market")) {
             if (slot == 49) {
                 openBlackMarket(player);
                 return;
@@ -635,7 +635,7 @@ public class ShopGUI implements Listener {
             handlePurchase(player, shopName, slot, item);
         }
         // 黑市界面
-        else if (title.equals(ChatColor.DARK_PURPLE + "每日神秘黑市")) {
+        else if (title.equals(ChatColor.DARK_PURPLE + "Daily Mystery Black Market")) {
             if (slot == 49) {
                 openPlayerMainMenu(player);
             } else if (slot == 45) {
@@ -645,7 +645,7 @@ public class ShopGUI implements Listener {
             }
         }
         // 黑市概率公示界面
-        else if (title.equals(ChatColor.DARK_AQUA + "黑市物品概率公示")) {
+        else if (title.equals(ChatColor.DARK_AQUA + "Black Market Item Probabilities")) {
             if (slot == 49) {
                 // 返回到黑市主界面
                 openBlackMarket(player);
@@ -658,18 +658,18 @@ public class ShopGUI implements Listener {
             }
         }
         // 管理员商店列表
-        else if (title.equals(ChatColor.DARK_RED + "魔法·集市管理")) {
+        else if (title.equals(ChatColor.DARK_RED + "Magic Market Administration")) {
             if (slot == 51) {
                 player.closeInventory();
                 ShopManager.reload();
-                player.sendMessage(ChatColor.GREEN + "魔法·集市数据已热重载！");
+                player.sendMessage(ChatColor.GREEN + "Magic Market data reloaded!");
                 player.playSound(player.getLocation(), org.bukkit.Sound.BLOCK_BEACON_ACTIVATE, 1f, 2f);
                 Bukkit.getScheduler().runTaskLater(MagicExpansion.getInstance(), () -> openAdminMainMenu(player, adminMainPage.getOrDefault(player.getUniqueId(), 0)), 1L);
                 return;
             }
             if (slot == 52) {
                 BlackMarketManager.forceRefresh();
-                player.sendMessage(ChatColor.DARK_PURPLE + "黑市已强制刷新！");
+                player.sendMessage(ChatColor.DARK_PURPLE + "Black Market forcibly refreshed!");
                 player.playSound(player.getLocation(), org.bukkit.Sound.ENTITY_WITHER_SPAWN, 1f, 1f);
                 openAdminMainMenu(player, adminMainPage.getOrDefault(player.getUniqueId(), 0));
                 return;
@@ -678,7 +678,7 @@ public class ShopGUI implements Listener {
             else if (slot == 53) openAdminMainMenu(player, adminMainPage.getOrDefault(player.getUniqueId(), 0) + 1);
             else if (slot == 49) {
                 player.closeInventory();
-                player.sendMessage(ChatColor.GREEN + "请在聊天框输入新商店的名称，输入 'cancel' 取消。");
+                player.sendMessage(ChatColor.GREEN + "Enter the new shop name in chat, or type 'cancel' to cancel.");
                 pendingShopNameCreation.put(player.getUniqueId(), "");
             } else if (item.getType() == Material.CHEST) {
                 String shopName = ChatColor.stripColor(item.getItemMeta().getDisplayName());
@@ -691,8 +691,8 @@ public class ShopGUI implements Listener {
             }
         }
         // 管理员交易列表
-        else if (title.startsWith(ChatColor.DARK_RED + "管理: ")) {
-            String shopName = title.replace(ChatColor.DARK_RED + "管理: ", "");
+        else if (title.startsWith(ChatColor.DARK_RED + "Manage: ")) {
+            String shopName = title.replace(ChatColor.DARK_RED + "Manage: ", "");
             if (slot == 49) {
                 ShopEditData data = new ShopEditData();
                 data.shopName = shopName;
@@ -725,13 +725,13 @@ public class ShopGUI implements Listener {
                 openTradeEditor(player, shopName, data);
             } else if (e.getClick() == ClickType.MIDDLE) {
                 ShopManager.resetUsage(shop, shop.trades.get(index));
-                player.sendMessage(ChatColor.GREEN + "已重置该交易的购买次数！");
+                player.sendMessage(ChatColor.GREEN + "Purchase counts for this trade were reset!");
                 openAdminTradesMenu(player, shopName, adminTradesPage.getOrDefault(player.getUniqueId(), new HashMap<>()).getOrDefault(shopName, 0));
             }
         }
         // 管理员编辑器
-        else if (title.startsWith(ChatColor.DARK_RED + "配置: ")) {
-            String shopName = title.replace(ChatColor.DARK_RED + "配置: ", "");
+        else if (title.startsWith(ChatColor.DARK_RED + "Configure: ")) {
+            String shopName = title.replace(ChatColor.DARK_RED + "Configure: ", "");
             ShopEditData currentData = readEditDataFromInventory(e.getInventory(), shopName);
             currentData.isNew = currentEditingData.get(player.getUniqueId()).isNew;
 
@@ -741,7 +741,7 @@ public class ShopGUI implements Listener {
                 if (currentData.result != null) {
                     shop.trades.removeIf(t -> t.result != null && SlimefunUtils.isItemSimilar(t.result, currentData.result, true));
                     ShopManager.saveShop(shop);
-                    player.sendMessage(ChatColor.RED + "交易已删除！");
+                    player.sendMessage(ChatColor.RED + "Trade deleted!");
                 }
                 openAdminTradesMenu(player, shopName);
                 return;
@@ -755,7 +755,7 @@ public class ShopGUI implements Listener {
                 player.closeInventory();
                 currentData.editing = "global";
                 pendingEditData.put(player.getUniqueId(), currentData);
-                player.sendMessage(ChatColor.GREEN + "请在聊天框输入全服限购次数 (0表示无限制)，输入 'cancel' 取消。");
+                player.sendMessage(ChatColor.GREEN + "Enter the server-wide purchase limit in chat (0 for unlimited), or type 'cancel' to cancel.");
                 return;
             }
             if (slot == 41) {
@@ -763,7 +763,7 @@ public class ShopGUI implements Listener {
                 player.closeInventory();
                 currentData.editing = "personal";
                 pendingEditData.put(player.getUniqueId(), currentData);
-                player.sendMessage(ChatColor.GREEN + "请在聊天框输入个人限购次数 (0表示无限制)，输入 'cancel' 取消。");
+                player.sendMessage(ChatColor.GREEN + "Enter the per-player purchase limit in chat (0 for unlimited), or type 'cancel' to cancel.");
                 return;
             }
             if (slot == 53) {
@@ -777,7 +777,7 @@ public class ShopGUI implements Listener {
                 newTrade.personalLimit = currentData.personalLimit;
 
                 if (newTrade.result == null || newTrade.result.getType() == Material.AIR) {
-                    player.sendMessage(ChatColor.RED + "请先在槽位 13 放置兑换产物！");
+                    player.sendMessage(ChatColor.RED + "Place the trade result in slot 13 first!");
                     safeClose.remove(player.getUniqueId());
                     openTradeEditor(player, shopName, currentData);
                     return;
@@ -798,7 +798,7 @@ public class ShopGUI implements Listener {
                     shop.trades.add(newTrade);
                 }
                 ShopManager.saveShop(shop);
-                player.sendMessage(ChatColor.GREEN + "交易保存成功！");
+                player.sendMessage(ChatColor.GREEN + "Trade saved successfully!");
                 openAdminTradesMenu(player, shopName);
                 return;
             }
@@ -809,7 +809,7 @@ public class ShopGUI implements Listener {
     public void onInventoryDrag(InventoryDragEvent e) {
         if (!(e.getInventory().getHolder() instanceof ShopHolder)) return;
         String title = e.getView().getTitle();
-        if (title.startsWith(ChatColor.DARK_RED + "配置: ")) {
+        if (title.startsWith(ChatColor.DARK_RED + "Configure: ")) {
             for (int slot : e.getRawSlots()) {
                 if (slot != 13 && (slot < 28 || slot > 34)) {
                     e.setCancelled(true);
@@ -829,7 +829,7 @@ public class ShopGUI implements Listener {
         Player player = (Player) e.getPlayer();
         UUID uuid = player.getUniqueId();
 
-        if (title.startsWith(ChatColor.DARK_RED + "配置: ")) {
+        if (title.startsWith(ChatColor.DARK_RED + "Configure: ")) {
             ShopEditData data = currentEditingData.get(uuid);
             currentEditingData.remove(uuid);
 
@@ -856,7 +856,7 @@ public class ShopGUI implements Listener {
                     }
                 }
                 if (hasItem) {
-                    player.sendMessage(ChatColor.YELLOW + "检测到未保存的物品，已退回到你的背包！");
+                    player.sendMessage(ChatColor.YELLOW + "Unsaved items were returned to your inventory!");
                 }
             }
         }
@@ -872,7 +872,7 @@ public class ShopGUI implements Listener {
             String msg = e.getMessage().trim();
 
             if (msg.equalsIgnoreCase("cancel")) {
-                player.sendMessage(ChatColor.YELLOW + "已取消创建商店。");
+                player.sendMessage(ChatColor.YELLOW + "Shop creation cancelled.");
                 pendingShopNameCreation.remove(uuid);
             } else {
                 boolean exists = false;
@@ -884,10 +884,10 @@ public class ShopGUI implements Listener {
                 }
 
                 if (exists) {
-                    player.sendMessage(ChatColor.RED + "已存在同名商店 " + msg + " ，请重新输入名称或输入 'cancel' 取消。");
+                    player.sendMessage(ChatColor.RED + "A shop with that name already exists: " + msg + ". Enter a different name or type 'cancel' to cancel.");
                 } else {
                     ShopManager.createShop(msg);
-                    player.sendMessage(ChatColor.GREEN + "商店 " + msg + " 创建成功！");
+                    player.sendMessage(ChatColor.GREEN + "Shop " + msg + " created successfully!");
                     pendingShopNameCreation.remove(uuid);
                     Bukkit.getScheduler().runTask(MagicExpansion.getInstance(), () -> openAdminMainMenu(player));
                 }
@@ -901,19 +901,19 @@ public class ShopGUI implements Listener {
             ShopEditData data = pendingEditData.get(uuid);
 
             if (msg.equalsIgnoreCase("cancel")) {
-                player.sendMessage(ChatColor.YELLOW + "已取消设置次数。");
+                player.sendMessage(ChatColor.YELLOW + "Limit setting cancelled.");
             } else {
                 try {
                     int amount = Math.max(0, Integer.parseInt(msg));
                     if (data.editing.equals("global")) {
                         data.globalLimit = amount;
-                        player.sendMessage(ChatColor.GREEN + "全服限购次数已设置为: " + (amount == 0 ? "无限制" : amount));
+                        player.sendMessage(ChatColor.GREEN + "Server-wide purchase limit set to: " + (amount == 0 ? "Unlimited" : amount));
                     } else if (data.editing.equals("personal")) {
                         data.personalLimit = amount;
-                        player.sendMessage(ChatColor.GREEN + "个人限购次数已设置为: " + (amount == 0 ? "无限制" : amount));
+                        player.sendMessage(ChatColor.GREEN + "Per-player purchase limit set to: " + (amount == 0 ? "Unlimited" : amount));
                     }
                 } catch (NumberFormatException ex) {
-                    player.sendMessage(ChatColor.RED + "输入无效，必须是数字！");
+                    player.sendMessage(ChatColor.RED + "Invalid input; enter a number!");
                 }
             }
 
@@ -936,7 +936,7 @@ public class ShopGUI implements Listener {
 
         UUID playerId = player.getUniqueId();
         if (!ShopManager.canPurchase(playerId, trade)) {
-            player.sendMessage(ChatColor.RED + "已达购买上限！");
+            player.sendMessage(ChatColor.RED + "Purchase limit reached!");
             player.playSound(player.getLocation(), org.bukkit.Sound.ENTITY_VILLAGER_NO, 1f, 1f);
             return;
         }
@@ -945,7 +945,7 @@ public class ShopGUI implements Listener {
             if (cost == null || cost.getType() == Material.AIR) continue;
             if (!player.getInventory().containsAtLeast(cost, cost.getAmount())) {
                 String costName = ItemStackHelper.getDisplayName(cost);
-                player.sendMessage(ChatColor.RED + "缺少物品: " + costName + " x" + cost.getAmount());
+                player.sendMessage(ChatColor.RED + "Missing items: " + costName + " x" + cost.getAmount());
                 player.playSound(player.getLocation(), org.bukkit.Sound.ENTITY_VILLAGER_NO, 1f, 1f);
                 return;
             }
@@ -967,12 +967,12 @@ public class ShopGUI implements Listener {
             for (ItemStack drop : overflow.values()) {
                 player.getWorld().dropItemNaturally(player.getLocation(), drop);
             }
-            player.sendMessage(ChatColor.YELLOW + "背包已满，部分物品掉落在地上！");
+            player.sendMessage(ChatColor.YELLOW + "Your inventory was full, so some items were dropped on the ground!");
         }
 
         ShopManager.recordPurchase(playerId, shop, trade);
 
-        player.sendMessage(ChatColor.GREEN + "兑换成功！");
+        player.sendMessage(ChatColor.GREEN + "Trade completed successfully!");
         player.playSound(player.getLocation(), org.bukkit.Sound.ENTITY_PLAYER_LEVELUP, 1f, 1.5f);
 
         openShopTrades(player, shopName, shopTradesPage.getOrDefault(player.getUniqueId(), new HashMap<>()).getOrDefault(shopName, 0));
@@ -1030,18 +1030,18 @@ public class ShopGUI implements Listener {
         ItemStack gItem = inv.getItem(40);
         if (gItem != null && gItem.hasItemMeta()) {
             String name = gItem.getItemMeta().getDisplayName();
-            String numStr = name.replace(ChatColor.GOLD + "全服限购: ", "").replaceAll("[^0-9]", "");
+            String numStr = name.replace(ChatColor.GOLD + "Server-wide Limit: ", "").replaceAll("[^0-9]", "");
             try {
-                if (!name.contains("无限制")) data.globalLimit = Integer.parseInt(numStr);
+                if (!name.contains("Unlimited")) data.globalLimit = Integer.parseInt(numStr);
             } catch (Exception ignored) {}
         }
 
         ItemStack pItem = inv.getItem(41);
         if (pItem != null && pItem.hasItemMeta()) {
             String name = pItem.getItemMeta().getDisplayName();
-            String numStr = name.replace(ChatColor.GOLD + "个人限购: ", "").replaceAll("[^0-9]", "");
+            String numStr = name.replace(ChatColor.GOLD + "Per-player Limit: ", "").replaceAll("[^0-9]", "");
             try {
-                if (!name.contains("无限制")) data.personalLimit = Integer.parseInt(numStr);
+                if (!name.contains("Unlimited")) data.personalLimit = Integer.parseInt(numStr);
             } catch (Exception ignored) {}
         }
         return data;

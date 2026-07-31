@@ -51,8 +51,8 @@ public class MagicExpansionFoodSetup {
         //丰收小麦
         new UnplaceableBlock(magicexpansionfoodresource, MagicExpansionItems.HARVEST_WHEAT, RecipeType.NULL, new ItemStack[] {
                 null, null ,null,
-                null, new CustomItemStack(new ItemStack(Material.IRON_HOE), ColorGradient.getGradientNameVer2("通过收割成熟农作物获取"),
-                ColorGradient.getGradientNameVer2("成熟的糖心小麦有概率掉落")), null,
+                null, new CustomItemStack(new ItemStack(Material.IRON_HOE), ColorGradient.getGradientNameVer2("Obtained by harvesting mature crops."),
+                ColorGradient.getGradientNameVer2("Has a chance to drop from mature Sweetheart Wheat.")), null,
                 null, null,null
         }).register(plugin);
         //小麦粉
@@ -64,36 +64,36 @@ public class MagicExpansionFoodSetup {
         //
         new UnplaceableBlock(magicexpansionfoodresource, MagicExpansionItems.HARVEST_RICE, RecipeType.NULL, new ItemStack[] {
                 null, null ,null,
-                null, new CustomItemStack(new ItemStack(Material.IRON_HOE), ColorGradient.getGradientNameVer2("通过收割成熟农作物获取"),
-                ColorGradient.getGradientNameVer2("成熟的杂交水稻有概率掉落")), null,
+                null, new CustomItemStack(new ItemStack(Material.IRON_HOE), ColorGradient.getGradientNameVer2("Obtained by harvesting mature crops."),
+                ColorGradient.getGradientNameVer2("Has a chance to drop from mature Hybrid Rice.")), null,
                 null, null,null
         }).register(plugin);
         //
         new UnplaceableBlock(magicexpansionfoodresource, MagicExpansionItems.DREAM_KERNEL, RecipeType.NULL, new ItemStack[] {
                 null, null ,null,
-                null, new CustomItemStack(new ItemStack(Material.IRON_HOE), ColorGradient.getGradientNameVer2("通过收割成熟农作物获取"),
-                ColorGradient.getGradientNameVer2("成熟的杂交水稻有概率掉落")), null,
+                null, new CustomItemStack(new ItemStack(Material.IRON_HOE), ColorGradient.getGradientNameVer2("Obtained by harvesting mature crops."),
+                ColorGradient.getGradientNameVer2("Has a chance to drop from mature Hybrid Rice.")), null,
                 null, null,null
         }).register(plugin);
         //
         new UnplaceableBlock(magicexpansionfoodresource, MagicExpansionItems.ORE_DUST_CRYSTAL, RecipeType.NULL, new ItemStack[] {
                 null, null ,null,
-                null, new CustomItemStack(new ItemStack(Material.IRON_HOE), ColorGradient.getGradientNameVer2("通过收割成熟农作物获取"),
-                ColorGradient.getGradientNameVer2("成熟的矿粉农作物有概率掉落")), null,
+                null, new CustomItemStack(new ItemStack(Material.IRON_HOE), ColorGradient.getGradientNameVer2("Obtained by harvesting mature crops."),
+                ColorGradient.getGradientNameVer2("Has a chance to drop from mature Mineral Dust Crops.")), null,
                 null, null,null
         }).register(plugin);
         //
         new UnplaceableBlock(magicexpansionfoodresource, MagicExpansionItems.ORE_INGOT_CRYSTAL, RecipeType.NULL, new ItemStack[] {
                 null, null ,null,
-                null, new CustomItemStack(new ItemStack(Material.IRON_HOE), ColorGradient.getGradientNameVer2("通过收割成熟农作物获取"),
-                ColorGradient.getGradientNameVer2("成熟的矿锭农作物有概率掉落")), null,
+                null, new CustomItemStack(new ItemStack(Material.IRON_HOE), ColorGradient.getGradientNameVer2("Obtained by harvesting mature crops."),
+                ColorGradient.getGradientNameVer2("Has a chance to drop from mature Mineral Ingot Crops.")), null,
                 null, null,null
         }).register(plugin);
         //
         new UnplaceableBlock(magicexpansionfoodresource, MagicExpansionItems.ORE_MIX_CRYSTAL, RecipeType.NULL, new ItemStack[] {
                 null, null ,null,
-                null, new CustomItemStack(new ItemStack(Material.IRON_HOE), ColorGradient.getGradientNameVer2("通过收割成熟农作物获取"),
-                ColorGradient.getGradientNameVer2("成熟的合金锭锭农作物有概率掉落")), null,
+                null, new CustomItemStack(new ItemStack(Material.IRON_HOE), ColorGradient.getGradientNameVer2("Obtained by harvesting mature crops."),
+                ColorGradient.getGradientNameVer2("Has a chance to drop from mature Alloy Ingot Crops.")), null,
                 null, null,null
         }).register(plugin);
 

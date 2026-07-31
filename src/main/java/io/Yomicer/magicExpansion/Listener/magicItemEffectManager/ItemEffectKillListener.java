@@ -3,7 +3,7 @@ package io.Yomicer.magicExpansion.Listener.magicItemEffectManager;
 import io.Yomicer.magicExpansion.utils.GiveItem;
 import io.Yomicer.magicExpansion.utils.entity.EntityEgg;
 import io.Yomicer.magicExpansion.utils.log.Debug;
-import net.guizhanss.guizhanlib.minecraft.helper.entity.EntityHelper;
+import io.Yomicer.magicExpansion.utils.compat.EntityHelper;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.*;
@@ -24,7 +24,7 @@ public class ItemEffectKillListener implements Listener {
 
     @EventHandler
     public void onEntityDeath(EntityDeathEvent event) {
-        // 获取导致死亡的实体（即杀手）
+        // 获取导致死亡的实体(即杀手)
         Entity killer = event.getEntity().getKiller();
 
         // 检查杀手是否是玩家
@@ -75,9 +75,9 @@ public class ItemEffectKillListener implements Listener {
                             // 创建刷怪蛋物品
                             ItemStack spawnEgg = new ItemStack(spawnEggMaterial);
                             // 打印信息到控制台或发送消息给玩家
-                            player.sendMessage("§b在0.00001秒前，你击杀了 §d" + EntityHelper.getName(target));
-                            player.sendMessage("§b你的武器 §e[" + item.getItemMeta().getDisplayName() + "§e] §b对 §d"+ EntityHelper.getName(target) +" §b进行了§c生命重构");
-                            player.sendMessage("§b你获得了 §e" + EntityHelper.getName(target) + " §b生物蛋");
+                            player.sendMessage("§bYou defeated §d" + EntityHelper.getName(target) + "§b.");
+                            player.sendMessage("§bYour weapon §e[" + item.getItemMeta().getDisplayName() + "§e] §bused §cLife Reconstruction §bon §d" + EntityHelper.getName(target) + "§b.");
+                            player.sendMessage("§bYou received a §e" + EntityHelper.getName(target) + " §bspawn egg.");
 
                             GiveItem.giveOrDropItem(player, spawnEgg);
                         }

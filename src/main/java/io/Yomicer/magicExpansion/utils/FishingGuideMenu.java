@@ -9,7 +9,7 @@ import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItem;
 import io.github.thebusybiscuit.slimefun4.implementation.SlimefunItems;
 import io.github.thebusybiscuit.slimefun4.libraries.dough.items.CustomItemStack;
 import me.mrCookieSlime.CSCoreLibPlugin.general.Inventory.ChestMenu;
-import net.guizhanss.guizhanlib.minecraft.helper.inventory.ItemStackHelper;
+import io.Yomicer.magicExpansion.utils.compat.ItemStackHelper;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.AreaEffectCloud;
@@ -26,8 +26,8 @@ import static io.Yomicer.magicExpansion.utils.ColorGradient.getGradientName;
 
 public class FishingGuideMenu {
 
-    // 主菜单标题（渐变色）
-    private static final String MAIN_TITLE = getGradientName("✨钓鱼图鉴✨");
+    // 主菜单标题(渐变色)
+    private static final String MAIN_TITLE = getGradientName("✨ Fishing Guide ✨");
 
     // 分类数据
     private static final String[] CATEGORIES = {
@@ -36,9 +36,9 @@ public class FishingGuideMenu {
             "magic_sugar", "bread"
     };
     private static final String[] DISPLAY_NAMES = {
-            "§f✦ 常见鱼", "§a✦ 罕见鱼", "§9✦ 稀有鱼",
-            "§5✦ 史诗鱼", "§6✦ 传奇鱼", "§e✦ 神话鱼", "§7✦ 杂物",
-            "§d✦ 鱼饵·魔法糖", "§b✦ 鱼饵·面包"
+            "§f✦ Common Fish", "§a✦ Uncommon Fish", "§9✦ Rare Fish",
+            "§5✦ Epic Fish", "§6✦ Legendary Fish", "§e✦ Mythical Fish", "§7✦ Junk",
+            "§d✦ Bait: Magic Sugar", "§b✦ Bait: Bread"
     };
     private static final Material[] ICONS = {
             Material.COD, Material.SALMON, Material.PUFFERFISH,
@@ -46,15 +46,15 @@ public class FishingGuideMenu {
             Material.SUGAR, Material.BREAD
     };
     private static final String[] LORES = {
-            "§e最常见的鱼类，随手可得",
-            "§e比普通鱼少见，但不算稀有",
-            "§e深海出没，需要耐心等待",
-            "§e传说中的海洋生物，极其罕见",
-            "§e神迹显现！只在特殊天气出现",
-            "§e只存在于神话里的鱼！",
-            "§e钓上来一堆破烂……但也可能有惊喜？",
-            "§e—— 仅展示可能的鱼获·图鉴暂不展示强定向鱼饵鱼获 ——",
-            "§e—— 仅展示可能的鱼获·图鉴暂不展示强定向鱼饵鱼获 ——"
+            "§eThe most common catches and easy to find.",
+            "§eLess common than ordinary fish, but not truly rare.",
+            "§eFound in deeper waters and requires patience.",
+            "§eA legendary sea creature that is exceptionally rare.",
+            "§eA miraculous catch that appears only in special weather.",
+            "§eA fish believed to exist only in myth!",
+            "§eMostly junk... but perhaps there is a surprise?",
+            "§e— Shows possible catches; strongly targeted bait catches are omitted —",
+            "§e— Shows possible catches; strongly targeted bait catches are omitted —"
     };
 
     // 装饰玻璃
@@ -62,7 +62,7 @@ public class FishingGuideMenu {
     private static final Material CORNER_GLASS = Material.LIGHT_BLUE_STAINED_GLASS_PANE;
 
     // 返回按钮
-    private static final ItemStack BACK_BUTTON = createItemWithLore(Material.ARROW, "§a← 返回");
+    private static final ItemStack BACK_BUTTON = createItemWithLore(Material.ARROW, "§a← Back");
 
     /**
      * 创建带有lore的物品
@@ -83,7 +83,7 @@ public class FishingGuideMenu {
      * 创建分类物品
      */
     private static ItemStack createCategoryItem(Material material, String name, String lore) {
-        List<String> loreList = Arrays.asList("", lore, "", "§a▶ 点击进入");
+        List<String> loreList = Arrays.asList("", lore, "", "§a▶ Click to Enter");
         return createItemWithLore(material, name, loreList.toArray(new String[0]));
     }
 
@@ -91,7 +91,7 @@ public class FishingGuideMenu {
      * 创建装饰玻璃
      */
     private static ItemStack createDecorItem(Material material, String name) {
-        return createItemWithLore(material, name, "§7钓鱼图鉴");
+        return createItemWithLore(material, name, "§7Fishing Guide");
     }
 
     /**
@@ -103,7 +103,7 @@ public class FishingGuideMenu {
         // 设置边框装饰
         setupMenuBorders(menu);
 
-        // 添加分类按钮（从第一个空位开始）
+        // 添加分类按钮(从第一个空位开始)
         int[] categorySlots = getAvailableSlots();
         for (int i = 0; i < CATEGORIES.length && i < categorySlots.length; i++) {
             ItemStack item = createCategoryItem(ICONS[i], DISPLAY_NAMES[i], LORES[i]);
@@ -117,8 +117,8 @@ public class FishingGuideMenu {
             });
         }
 
-        // 添加关闭按钮（49位置）
-        menu.addItem(49, createItemWithLore(Material.BARRIER, "§c关闭菜单"));
+        // 添加关闭按钮(49位置)
+        menu.addItem(49, createItemWithLore(Material.BARRIER, "§cClose Menu"));
         menu.addMenuClickHandler(49, (p, slot, item, click) -> {
             p.closeInventory();
             player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1.0f);
@@ -134,8 +134,8 @@ public class FishingGuideMenu {
                 case 0:
                     menu.addItem(randomSlot,
                             new CustomItemStack(Material.BREAD,
-                                    getGradientName("鱼饵·面包"),
-                                    getGradientName("点我拾取一个面包")),
+                                    getGradientName("Bait: Bread"),
+                                    getGradientName("Click to receive one Bread.")),
                             (player1, slot, item, action) -> {
                                 ItemStack drop = new ItemStack(Material.BREAD);
                                 player1.getWorld().dropItemNaturally(player1.getLocation(), drop);
@@ -148,8 +148,8 @@ public class FishingGuideMenu {
                 case 1:
                     menu.addItem(randomSlot,
                             new CustomItemStack(Material.SUGAR,
-                                    getGradientName("鱼饵·魔法糖"),
-                                    getGradientName("点我拾取一个魔法糖")),
+                                    getGradientName("Bait: Magic Sugar"),
+                                    getGradientName("Click to receive one Magic Sugar.")),
                             (player1, slot, item, action) -> {
                                 SlimefunItem sfItem = SlimefunItem.getByItem(SlimefunItems.MAGIC_SUGAR);
                                 ItemStack drop = sfItem.getItem().clone();
@@ -163,8 +163,8 @@ public class FishingGuideMenu {
                 case 2:
                     menu.addItem(randomSlot,
                             new CustomItemStack(Material.BONE_MEAL,
-                                    getGradientName("鱼饵·基础魔法饵料"),
-                                    getGradientName("点我拾取一个基础魔法饵料")),
+                                    getGradientName("Bait: Basic Magic Bait"),
+                                    getGradientName("Click to receive one Basic Magic Bait.")),
                             (player1, slot, item, action) -> {
                                 SlimefunItem sfItem = SlimefunItem.getByItem(MagicExpansionItems.FISH_LURE_BASIC);
                                 ItemStack drop = sfItem.getItem().clone();
@@ -200,12 +200,12 @@ public class FishingGuideMenu {
         menu.addMenuClickHandler(53, (p, slot, item, click) -> false);
 
         for (int i = 1; i < 8; i++) {
-            menu.addItem(i, createDecorItem(BORDER_GLASS, "§9🌊 海洋图鉴"));
+            menu.addItem(i, createDecorItem(BORDER_GLASS, "§9🌊 Ocean Guide"));
             menu.addMenuClickHandler(i, (p, slot, item, click) -> false);
         }
 
         for (int i = 46; i < 53; i++) {
-            menu.addItem(i, createDecorItem(BORDER_GLASS, "§b潜水探索中..."));
+            menu.addItem(i, createDecorItem(BORDER_GLASS, "§bExploring the depths..."));
             menu.addMenuClickHandler(i, (p, slot, item, click) -> false);
         }
 
@@ -225,7 +225,7 @@ public class FishingGuideMenu {
     }
 
     /**
-     * 获取可用的槽位（排除边框后的空位）
+     * 获取可用的槽位(排除边框后的空位)
      */
     private static int[] getAvailableSlots() {
         // 所有被占用的边框槽位
@@ -257,7 +257,7 @@ public class FishingGuideMenu {
     }
 
     /**
-     * 打开分类详情页（支持分页）
+     * 打开分类详情页(支持分页)
      */
     public static void openCategoryPage(Player player, String category) {
         openCategoryPage(player, category, 0); // 默认打开第0页
@@ -321,15 +321,15 @@ public class FishingGuideMenu {
     private static @NotNull List<String> getStrings(int page, ItemMeta meta, int totalPages) {
         List<String> originalLore = meta.getLore();
         List<String> newLore = new ArrayList<>();
-        // 如果原有Lore不为空，先添加原有Lore
+        // 如果原有Lore不为空,先添加原有Lore
         if (originalLore != null && !originalLore.isEmpty()) {
             newLore.addAll(originalLore);
         }
         newLore.add("");
-        newLore.add("§7这是一个仅供展示的图鉴条目");
-        newLore.add("§8—— 仅展示用途及获取条件 ——");
+        newLore.add("§7This guide entry is for display only.");
+        newLore.add("§8— Shows uses and obtainment requirements only —");
         if (totalPages > 1) {
-            newLore.add("§6页码: " + (page + 1) + "/" + totalPages); // 多页时才显示页码
+            newLore.add("§6Page: " + (page + 1) + "/" + totalPages); // 多页时才显示页码
         }
         return newLore;
     }
@@ -346,7 +346,7 @@ public class FishingGuideMenu {
             return false;
         });
 
-        // 只有一页时不显示分页按钮，用屏障占位
+        // 只有一页时不显示分页按钮,用屏障占位
         if (totalPages <= 1) {
             // 上一页位置放屏障
             menu.addItem(48, createItemWithLore(Material.BARRIER, "§8"));
@@ -362,9 +362,9 @@ public class FishingGuideMenu {
         if (currentPage > 0) {
             ItemStack prevButton = createItemWithLore(
                     Material.ARROW,
-                    "§6← 上一页",
-                    "§7点击查看上一页",
-                    "§8当前: " + (currentPage + 1) + " / " + totalPages
+                    "§6← Previous Page",
+                    "§7Click to view the previous page.",
+                    "§8Page: " + (currentPage + 1) + " / " + totalPages
             );
             menu.addItem(48, prevButton);
             menu.addMenuClickHandler(48, (p, s, i, c) -> {
@@ -382,9 +382,9 @@ public class FishingGuideMenu {
         if (currentPage < totalPages - 1) {
             ItemStack nextButton = createItemWithLore(
                     Material.ARROW,
-                    "§6下一页 →",
-                    "§7点击查看下一页",
-                    "§8当前: " + (currentPage + 1) + " / " + totalPages
+                    "§6Next Page →",
+                    "§7Click to view the next page.",
+                    "§8Page: " + (currentPage + 1) + " / " + totalPages
             );
             menu.addItem(50, nextButton);
             menu.addMenuClickHandler(50, (p, s, i, c) -> {
@@ -420,10 +420,10 @@ public class FishingGuideMenu {
             menu.addMenuClickHandler(i, (p, slot, item, click) -> false);
         }
 
-        // 下边框 - 跳过48,49,50槽位（用于分页按钮）
+        // 下边框 - 跳过48,49,50槽位(用于分页按钮)
         for (int i = 46; i < 53; i++) {
             if (i == 48 || i == 49 || i == 50) continue; // 跳过分页按钮位置
-            menu.addItem(i, createDecorItem(BORDER_GLASS, "§b分类：" + title));
+            menu.addItem(i, createDecorItem(BORDER_GLASS, "§bCategory: " + title));
             menu.addMenuClickHandler(i, (p, slot, item, click) -> false);
         }
 
@@ -447,16 +447,16 @@ public class FishingGuideMenu {
      */
     private static String getCategoryTitle(String category) {
         return switch (category) {
-            case "common_fish" -> "常见鱼";
-            case "uncommon_fish" -> "罕见鱼";
-            case "rare_fish" -> "稀有鱼";
-            case "epic_fish" -> "史诗鱼";
-            case "legendary_fish" -> "传奇鱼";
-            case "mythical_fish" -> "神话鱼";
-            case "junk" -> "杂物";
-            case "magic_sugar" -> "魔法糖·鱼获";
-            case "bread" -> "面包·鱼获";
-            default -> "未知分类";
+            case "common_fish" -> "Common Fish";
+            case "uncommon_fish" -> "Uncommon Fish";
+            case "rare_fish" -> "Rare Fish";
+            case "epic_fish" -> "Epic Fish";
+            case "legendary_fish" -> "Legendary Fish";
+            case "mythical_fish" -> "Mythical Fish";
+            case "junk" -> "Junk";
+            case "magic_sugar" -> "Magic Sugar Catches";
+            case "bread" -> "Bread Catches";
+            default -> "Unknown Category";
         };
     }
 
@@ -469,172 +469,172 @@ public class FishingGuideMenu {
         switch (category) {
             case "common_fish":
                 // 添加常见鱼类
-                items.add(new CustomItemStack(Material.COD,getGradientName("关于鱼群喜好"),getGradientName("喜好只是这种鱼更喜欢这种鱼饵"),getGradientName("其他鱼饵也有一定概率钓到这种鱼"),getGradientName("当然也有可能根本钓不到")));
-                items.add(FishManager.getFishItemWithLore(BaseFish.SanWenFish,"",getGradientName("任何鱼饵都可以钓到它")));
-                items.add(FishManager.getFishItemWithLore(BaseFish.XueFish,"",getGradientName("任何鱼饵都可以钓到它")));
+                items.add(new CustomItemStack(Material.COD,getGradientName("About Fish Preferences"),getGradientName("A preference means this fish is more attracted to that bait."),getGradientName("Other bait can still catch this fish at a lower chance."),getGradientName("Some bait may not be able to catch it at all.")));
+                items.add(FishManager.getFishItemWithLore(BaseFish.SanWenFish,"",getGradientName("It can be caught with any bait.")));
+                items.add(FishManager.getFishItemWithLore(BaseFish.XueFish,"",getGradientName("It can be caught with any bait.")));
                 break;
             case "uncommon_fish":
-                items.add(new CustomItemStack(Material.COD,getGradientName("关于鱼群喜好"),getGradientName("喜好只是这种鱼更喜欢这种鱼饵"),getGradientName("其他鱼饵也有一定概率钓到这种鱼"),getGradientName("当然也有可能根本钓不到")));
-                items.add(FishManager.getFishItemWithLore(BaseFish.HeTun,"",getGradientName("任何鱼饵都可以钓到它")));
+                items.add(new CustomItemStack(Material.COD,getGradientName("About Fish Preferences"),getGradientName("A preference means this fish is more attracted to that bait."),getGradientName("Other bait can still catch this fish at a lower chance."),getGradientName("Some bait may not be able to catch it at all.")));
+                items.add(FishManager.getFishItemWithLore(BaseFish.HeTun,"",getGradientName("It can be caught with any bait.")));
                 break;
             case "rare_fish":
-                items.add(new CustomItemStack(Material.COD,getGradientName("关于鱼群喜好"),getGradientName("喜好只是这种鱼更喜欢这种鱼饵"),getGradientName("其他鱼饵也有一定概率钓到这种鱼"),getGradientName("当然也有可能根本钓不到")));
-                items.add(FishManager.getFishItemWithLore(BaseFish.ReDaiFish,"",getGradientName("任何鱼饵都可以钓到它")));
-                items.add(FishManager.getFishItemWithLore(BaseFish.CopperDustFish,"",getGradientName("咬钩喜好：魔法鱼饵·混合矿粉")));
-                items.add(FishManager.getFishItemWithLore(BaseFish.GoldDustFish,"",getGradientName("咬钩喜好：魔法鱼饵·混合矿粉")));
-                items.add(FishManager.getFishItemWithLore(BaseFish.IronDustFish,"",getGradientName("咬钩喜好：魔法鱼饵·混合矿粉")));
-                items.add(FishManager.getFishItemWithLore(BaseFish.TinDustFish,"",getGradientName("咬钩喜好：魔法鱼饵·混合矿粉")));
-                items.add(FishManager.getFishItemWithLore(BaseFish.SilverDustFish,"",getGradientName("咬钩喜好：魔法鱼饵·混合矿粉")));
-                items.add(FishManager.getFishItemWithLore(BaseFish.AluminumDustFish,"",getGradientName("咬钩喜好：魔法鱼饵·混合矿粉")));
-                items.add(FishManager.getFishItemWithLore(BaseFish.LeadDustFish,"",getGradientName("咬钩喜好：魔法鱼饵·混合矿粉")));
-                items.add(FishManager.getFishItemWithLore(BaseFish.ZincDustFish,"",getGradientName("咬钩喜好：魔法鱼饵·混合矿粉")));
-                items.add(FishManager.getFishItemWithLore(BaseFish.MagnesiumDustFish,"",getGradientName("咬钩喜好：魔法鱼饵·混合矿粉")));
-                items.add(FishManager.getFishItemWithLore(BaseFish.CoalFish,"",getGradientName("咬钩喜好：魔法鱼饵·混合矿物质")));
-                items.add(FishManager.getFishItemWithLore(BaseFish.EmeraldFish,"",getGradientName("咬钩喜好：魔法鱼饵·混合矿物质")));
-                items.add(FishManager.getFishItemWithLore(BaseFish.LapisFish,"",getGradientName("咬钩喜好：魔法鱼饵·混合矿物质")));
-                items.add(FishManager.getFishItemWithLore(BaseFish.DiamondFish,"",getGradientName("咬钩喜好：魔法鱼饵·混合矿物质")));
-                items.add(FishManager.getFishItemWithLore(BaseFish.QuartzFish,"",getGradientName("咬钩喜好：魔法鱼饵·混合矿物质")));
-                items.add(FishManager.getFishItemWithLore(BaseFish.AmethystFish,"",getGradientName("咬钩喜好：魔法鱼饵·混合矿物质")));
-                items.add(FishManager.getFishItemWithLore(BaseFish.IronFish,"",getGradientName("咬钩喜好：魔法鱼饵·混合矿物质")));
-                items.add(FishManager.getFishItemWithLore(BaseFish.GoldFish,"",getGradientName("咬钩喜好：魔法鱼饵·混合矿物质")));
-                items.add(FishManager.getFishItemWithLore(BaseFish.CopperFish,"",getGradientName("咬钩喜好：魔法鱼饵·混合矿物质")));
-                items.add(FishManager.getFishItemWithLore(BaseFish.RedstoneFish,"",getGradientName("咬钩喜好：魔法鱼饵·混合矿物质")));
-                items.add(FishManager.getFishItemWithLore(BaseFish.NetheriteFish,"",getGradientName("咬钩喜好：魔法鱼饵·混合矿物质")));
-                items.add(FishManager.getFishItemWithLore(BaseFish.GlowStoneDustFish,"",getGradientName("咬钩喜好：魔法鱼饵·混合矿物质")));
-                items.add(FishManager.getFishItemWithLore(BaseFish.ShuLingYu,"",getGradientName("咬钩喜好：基础魔法饵料"),getGradientName("青睐：更强大的魔法鱼竿")));
-                items.add(FishManager.getFishItemWithLore(BaseFish.SulfateFish,"",getGradientName("咬钩喜好：基础魔法饵料"),getGradientName("青睐：更强大的魔法鱼竿")));
-                items.add(FishManager.getFishItemWithLore(BaseFish.SiliconFish,"",getGradientName("咬钩喜好：基础魔法饵料"),getGradientName("青睐：更强大的魔法鱼竿")));
-                items.add(FishManager.getFishItemWithLore(BaseFish.UraniumFish,"",getGradientName("咬钩喜好：基础魔法饵料"),getGradientName("青睐：更强大的魔法鱼竿")));
-                items.add(FishManager.getFishItemWithLore(BaseFish.OilRockFish,"",getGradientName("咬钩喜好：基础魔法饵料"),getGradientName("青睐：更强大的魔法鱼竿")));
+                items.add(new CustomItemStack(Material.COD,getGradientName("About Fish Preferences"),getGradientName("A preference means this fish is more attracted to that bait."),getGradientName("Other bait can still catch this fish at a lower chance."),getGradientName("Some bait may not be able to catch it at all.")));
+                items.add(FishManager.getFishItemWithLore(BaseFish.ReDaiFish,"",getGradientName("It can be caught with any bait.")));
+                items.add(FishManager.getFishItemWithLore(BaseFish.CopperDustFish,"",getGradientName("Preferred Bait: Mixed Mineral Dust")));
+                items.add(FishManager.getFishItemWithLore(BaseFish.GoldDustFish,"",getGradientName("Preferred Bait: Mixed Mineral Dust")));
+                items.add(FishManager.getFishItemWithLore(BaseFish.IronDustFish,"",getGradientName("Preferred Bait: Mixed Mineral Dust")));
+                items.add(FishManager.getFishItemWithLore(BaseFish.TinDustFish,"",getGradientName("Preferred Bait: Mixed Mineral Dust")));
+                items.add(FishManager.getFishItemWithLore(BaseFish.SilverDustFish,"",getGradientName("Preferred Bait: Mixed Mineral Dust")));
+                items.add(FishManager.getFishItemWithLore(BaseFish.AluminumDustFish,"",getGradientName("Preferred Bait: Mixed Mineral Dust")));
+                items.add(FishManager.getFishItemWithLore(BaseFish.LeadDustFish,"",getGradientName("Preferred Bait: Mixed Mineral Dust")));
+                items.add(FishManager.getFishItemWithLore(BaseFish.ZincDustFish,"",getGradientName("Preferred Bait: Mixed Mineral Dust")));
+                items.add(FishManager.getFishItemWithLore(BaseFish.MagnesiumDustFish,"",getGradientName("Preferred Bait: Mixed Mineral Dust")));
+                items.add(FishManager.getFishItemWithLore(BaseFish.CoalFish,"",getGradientName("Preferred Bait: Mixed Minerals")));
+                items.add(FishManager.getFishItemWithLore(BaseFish.EmeraldFish,"",getGradientName("Preferred Bait: Mixed Minerals")));
+                items.add(FishManager.getFishItemWithLore(BaseFish.LapisFish,"",getGradientName("Preferred Bait: Mixed Minerals")));
+                items.add(FishManager.getFishItemWithLore(BaseFish.DiamondFish,"",getGradientName("Preferred Bait: Mixed Minerals")));
+                items.add(FishManager.getFishItemWithLore(BaseFish.QuartzFish,"",getGradientName("Preferred Bait: Mixed Minerals")));
+                items.add(FishManager.getFishItemWithLore(BaseFish.AmethystFish,"",getGradientName("Preferred Bait: Mixed Minerals")));
+                items.add(FishManager.getFishItemWithLore(BaseFish.IronFish,"",getGradientName("Preferred Bait: Mixed Minerals")));
+                items.add(FishManager.getFishItemWithLore(BaseFish.GoldFish,"",getGradientName("Preferred Bait: Mixed Minerals")));
+                items.add(FishManager.getFishItemWithLore(BaseFish.CopperFish,"",getGradientName("Preferred Bait: Mixed Minerals")));
+                items.add(FishManager.getFishItemWithLore(BaseFish.RedstoneFish,"",getGradientName("Preferred Bait: Mixed Minerals")));
+                items.add(FishManager.getFishItemWithLore(BaseFish.NetheriteFish,"",getGradientName("Preferred Bait: Mixed Minerals")));
+                items.add(FishManager.getFishItemWithLore(BaseFish.GlowStoneDustFish,"",getGradientName("Preferred Bait: Mixed Minerals")));
+                items.add(FishManager.getFishItemWithLore(BaseFish.ShuLingYu,"",getGradientName("Preferred Bait: Basic Magic Bait"),getGradientName("Favors more powerful magic fishing rods.")));
+                items.add(FishManager.getFishItemWithLore(BaseFish.SulfateFish,"",getGradientName("Preferred Bait: Basic Magic Bait"),getGradientName("Favors more powerful magic fishing rods.")));
+                items.add(FishManager.getFishItemWithLore(BaseFish.SiliconFish,"",getGradientName("Preferred Bait: Basic Magic Bait"),getGradientName("Favors more powerful magic fishing rods.")));
+                items.add(FishManager.getFishItemWithLore(BaseFish.UraniumFish,"",getGradientName("Preferred Bait: Basic Magic Bait"),getGradientName("Favors more powerful magic fishing rods.")));
+                items.add(FishManager.getFishItemWithLore(BaseFish.OilRockFish,"",getGradientName("Preferred Bait: Basic Magic Bait"),getGradientName("Favors more powerful magic fishing rods.")));
                 break;
             case "epic_fish":
-                items.add(new CustomItemStack(Material.COD,getGradientName("关于鱼群喜好"),getGradientName("喜好只是这种鱼更喜欢这种鱼饵"),getGradientName("其他鱼饵也有一定概率钓到这种鱼"),getGradientName("当然也有可能根本钓不到")));
-                items.add(FishManager.getFishItemWithLore(BaseFish.FoamCrystalFish,"",getGradientName("咬钩喜好：基础魔法饵料"),getGradientName("青睐：更强大的魔法鱼竿")));
-                items.add(FishManager.getFishItemWithLore(BaseFish.BlackDiamondFish,"",getGradientName("咬钩喜好：基础魔法饵料"),getGradientName("青睐：更强大的魔法鱼竿")));
-                items.add(FishManager.getFishItemWithLore(BaseFish.EnchantedBottleFish,"",getGradientName("咬钩喜好：基础魔法饵料"),getGradientName("青睐：更强大的魔法鱼竿")));
-                items.add(FishManager.getFishItemWithLore(BaseFish.MYSTIC_EEL,"",getGradientName("咬钩喜好：任意鱼饵"),getGradientName("青睐：更强大的魔法鱼竿")));
+                items.add(new CustomItemStack(Material.COD,getGradientName("About Fish Preferences"),getGradientName("A preference means this fish is more attracted to that bait."),getGradientName("Other bait can still catch this fish at a lower chance."),getGradientName("Some bait may not be able to catch it at all.")));
+                items.add(FishManager.getFishItemWithLore(BaseFish.FoamCrystalFish,"",getGradientName("Preferred Bait: Basic Magic Bait"),getGradientName("Favors more powerful magic fishing rods.")));
+                items.add(FishManager.getFishItemWithLore(BaseFish.BlackDiamondFish,"",getGradientName("Preferred Bait: Basic Magic Bait"),getGradientName("Favors more powerful magic fishing rods.")));
+                items.add(FishManager.getFishItemWithLore(BaseFish.EnchantedBottleFish,"",getGradientName("Preferred Bait: Basic Magic Bait"),getGradientName("Favors more powerful magic fishing rods.")));
+                items.add(FishManager.getFishItemWithLore(BaseFish.MYSTIC_EEL,"",getGradientName("Preferred Bait: Any Bait"),getGradientName("Favors more powerful magic fishing rods.")));
                 //合金锭鱼
-                items.add(FishManager.getFishItemWithLore(BaseFish.ReinforcedAlloyFish,"",getGradientName("专属钓饵：魔法鱼饵·混合合金泥"),getGradientName("青睐：更强大的魔法鱼竿")));
-                items.add(FishManager.getFishItemWithLore(BaseFish.HardenedMetalFish, "", getGradientName("专属钓饵：魔法鱼饵·混合合金泥"), getGradientName("青睐：更强大的魔法鱼竿")));
-                items.add(FishManager.getFishItemWithLore(BaseFish.DamascusSoulFish, "", getGradientName("专属钓饵：魔法鱼饵·混合合金泥"), getGradientName("青睐：更强大的魔法鱼竿")));
-                items.add(FishManager.getFishItemWithLore(BaseFish.SteelSoulFish, "", getGradientName("专属钓饵：魔法鱼饵·混合合金泥"), getGradientName("青睐：更强大的魔法鱼竿")));
-                items.add(FishManager.getFishItemWithLore(BaseFish.BronzeAncientFish, "", getGradientName("专属钓饵：魔法鱼饵·混合合金泥"), getGradientName("青睐：更强大的魔法鱼竿")));
-                items.add(FishManager.getFishItemWithLore(BaseFish.HardlightAluFish, "", getGradientName("专属钓饵：魔法鱼饵·混合合金泥"), getGradientName("青睐：更强大的魔法鱼竿")));
-                items.add(FishManager.getFishItemWithLore(BaseFish.SilverCopperFish, "", getGradientName("专属钓饵：魔法鱼饵·混合合金泥"), getGradientName("青睐：更强大的魔法鱼竿")));
-                items.add(FishManager.getFishItemWithLore(BaseFish.BrassResonanceFish, "", getGradientName("专属钓饵：魔法鱼饵·混合合金泥"), getGradientName("青睐：更强大的魔法鱼竿")));
-                items.add(FishManager.getFishItemWithLore(BaseFish.AluminumBrassFish, "", getGradientName("专属钓饵：魔法鱼饵·混合合金泥"), getGradientName("青睐：更强大的魔法鱼竿")));
-                items.add(FishManager.getFishItemWithLore(BaseFish.AluminumBronzeFish, "", getGradientName("专属钓饵：魔法鱼饵·混合合金泥"), getGradientName("青睐：更强大的魔法鱼竿")));
-                items.add(FishManager.getFishItemWithLore(BaseFish.CorinthianBronzeFish, "", getGradientName("专属钓饵：魔法鱼饵·混合合金泥"), getGradientName("青睐：更强大的魔法鱼竿")));
-                items.add(FishManager.getFishItemWithLore(BaseFish.SolderFlowFish, "", getGradientName("专属钓饵：魔法鱼饵·混合合金泥"), getGradientName("青睐：更强大的魔法鱼竿")));
-                items.add(FishManager.getFishItemWithLore(BaseFish.NickelSpiritFish, "", getGradientName("专属钓饵：魔法鱼饵·混合合金泥"), getGradientName("青睐：更强大的魔法鱼竿")));
-                items.add(FishManager.getFishItemWithLore(BaseFish.CobaltFlameFish, "", getGradientName("专属钓饵：魔法鱼饵·混合合金泥"), getGradientName("青睐：更强大的魔法鱼竿")));
-                items.add(FishManager.getFishItemWithLore(BaseFish.SiliconIronFish, "", getGradientName("专属钓饵：魔法鱼饵·混合合金泥"), getGradientName("青睐：更强大的魔法鱼竿")));
-                items.add(FishManager.getFishItemWithLore(BaseFish.CarbonSoulFish, "", getGradientName("专属钓饵：魔法鱼饵·混合合金泥"), getGradientName("青睐：更强大的魔法鱼竿")));
-                items.add(FishManager.getFishItemWithLore(BaseFish.GildedIronFish, "", getGradientName("专属钓饵：魔法鱼饵·混合合金泥"), getGradientName("青睐：更强大的魔法鱼竿")));
-                items.add(FishManager.getFishItemWithLore(BaseFish.RedstoneAlloyFish, "", getGradientName("专属钓饵：魔法鱼饵·混合合金泥"), getGradientName("青睐：更强大的魔法鱼竿")));
-                items.add(FishManager.getFishItemWithLore(BaseFish.NeptuniumShadowFish, "", getGradientName("专属钓饵：魔法鱼饵·混合合金泥"), getGradientName("青睐：更强大的魔法鱼竿")));
-                items.add(FishManager.getFishItemWithLore(BaseFish.PlutoniumCoreFish, "", getGradientName("专属钓饵：魔法鱼饵·混合合金泥"), getGradientName("青睐：更强大的魔法鱼竿")));
+                items.add(FishManager.getFishItemWithLore(BaseFish.ReinforcedAlloyFish,"",getGradientName("Exclusive Bait: Mixed Alloy Slurry"),getGradientName("Favors more powerful magic fishing rods.")));
+                items.add(FishManager.getFishItemWithLore(BaseFish.HardenedMetalFish, "", getGradientName("Exclusive Bait: Mixed Alloy Slurry"), getGradientName("Favors more powerful magic fishing rods.")));
+                items.add(FishManager.getFishItemWithLore(BaseFish.DamascusSoulFish, "", getGradientName("Exclusive Bait: Mixed Alloy Slurry"), getGradientName("Favors more powerful magic fishing rods.")));
+                items.add(FishManager.getFishItemWithLore(BaseFish.SteelSoulFish, "", getGradientName("Exclusive Bait: Mixed Alloy Slurry"), getGradientName("Favors more powerful magic fishing rods.")));
+                items.add(FishManager.getFishItemWithLore(BaseFish.BronzeAncientFish, "", getGradientName("Exclusive Bait: Mixed Alloy Slurry"), getGradientName("Favors more powerful magic fishing rods.")));
+                items.add(FishManager.getFishItemWithLore(BaseFish.HardlightAluFish, "", getGradientName("Exclusive Bait: Mixed Alloy Slurry"), getGradientName("Favors more powerful magic fishing rods.")));
+                items.add(FishManager.getFishItemWithLore(BaseFish.SilverCopperFish, "", getGradientName("Exclusive Bait: Mixed Alloy Slurry"), getGradientName("Favors more powerful magic fishing rods.")));
+                items.add(FishManager.getFishItemWithLore(BaseFish.BrassResonanceFish, "", getGradientName("Exclusive Bait: Mixed Alloy Slurry"), getGradientName("Favors more powerful magic fishing rods.")));
+                items.add(FishManager.getFishItemWithLore(BaseFish.AluminumBrassFish, "", getGradientName("Exclusive Bait: Mixed Alloy Slurry"), getGradientName("Favors more powerful magic fishing rods.")));
+                items.add(FishManager.getFishItemWithLore(BaseFish.AluminumBronzeFish, "", getGradientName("Exclusive Bait: Mixed Alloy Slurry"), getGradientName("Favors more powerful magic fishing rods.")));
+                items.add(FishManager.getFishItemWithLore(BaseFish.CorinthianBronzeFish, "", getGradientName("Exclusive Bait: Mixed Alloy Slurry"), getGradientName("Favors more powerful magic fishing rods.")));
+                items.add(FishManager.getFishItemWithLore(BaseFish.SolderFlowFish, "", getGradientName("Exclusive Bait: Mixed Alloy Slurry"), getGradientName("Favors more powerful magic fishing rods.")));
+                items.add(FishManager.getFishItemWithLore(BaseFish.NickelSpiritFish, "", getGradientName("Exclusive Bait: Mixed Alloy Slurry"), getGradientName("Favors more powerful magic fishing rods.")));
+                items.add(FishManager.getFishItemWithLore(BaseFish.CobaltFlameFish, "", getGradientName("Exclusive Bait: Mixed Alloy Slurry"), getGradientName("Favors more powerful magic fishing rods.")));
+                items.add(FishManager.getFishItemWithLore(BaseFish.SiliconIronFish, "", getGradientName("Exclusive Bait: Mixed Alloy Slurry"), getGradientName("Favors more powerful magic fishing rods.")));
+                items.add(FishManager.getFishItemWithLore(BaseFish.CarbonSoulFish, "", getGradientName("Exclusive Bait: Mixed Alloy Slurry"), getGradientName("Favors more powerful magic fishing rods.")));
+                items.add(FishManager.getFishItemWithLore(BaseFish.GildedIronFish, "", getGradientName("Exclusive Bait: Mixed Alloy Slurry"), getGradientName("Favors more powerful magic fishing rods.")));
+                items.add(FishManager.getFishItemWithLore(BaseFish.RedstoneAlloyFish, "", getGradientName("Exclusive Bait: Mixed Alloy Slurry"), getGradientName("Favors more powerful magic fishing rods.")));
+                items.add(FishManager.getFishItemWithLore(BaseFish.NeptuniumShadowFish, "", getGradientName("Exclusive Bait: Mixed Alloy Slurry"), getGradientName("Favors more powerful magic fishing rods.")));
+                items.add(FishManager.getFishItemWithLore(BaseFish.PlutoniumCoreFish, "", getGradientName("Exclusive Bait: Mixed Alloy Slurry"), getGradientName("Favors more powerful magic fishing rods.")));
                 break;
             case "legendary_fish":
-                items.add(new CustomItemStack(Material.COD,getGradientName("关于鱼群喜好"),getGradientName("喜好只是这种鱼更喜欢这种鱼饵"),getGradientName("其他鱼饵也有一定概率钓到这种鱼"),getGradientName("当然也有可能根本钓不到")));
-                items.add(FishManager.getFishItemWithLore(BaseFish.LegendaryLuFish,"",getGradientName("喜好：纠缠之节：终焉之丝·悖论为钩")));
-                items.add(FishManager.getFishItemWithLore(BaseFish.LegendaryEelFish,"",getGradientName("专属钓饵：魔法糖")));
+                items.add(new CustomItemStack(Material.COD,getGradientName("About Fish Preferences"),getGradientName("A preference means this fish is more attracted to that bait."),getGradientName("Other bait can still catch this fish at a lower chance."),getGradientName("Some bait may not be able to catch it at all.")));
+                items.add(FishManager.getFishItemWithLore(BaseFish.LegendaryLuFish,"",getGradientName("Preference: Entangled Knot — Thread of the End, Paradox Hook")));
+                items.add(FishManager.getFishItemWithLore(BaseFish.LegendaryEelFish,"",getGradientName("Exclusive Bait: Magic Sugar")));
                 break;
             case "mythical_fish":
-                items.add(new CustomItemStack(Material.COD,getGradientName("关于鱼群喜好"),getGradientName("喜好只是这种鱼更喜欢这种鱼饵"),getGradientName("其他鱼饵也有一定概率钓到这种鱼"),getGradientName("当然也有可能根本钓不到")));
+                items.add(new CustomItemStack(Material.COD,getGradientName("About Fish Preferences"),getGradientName("A preference means this fish is more attracted to that bait."),getGradientName("Other bait can still catch this fish at a lower chance."),getGradientName("Some bait may not be able to catch it at all.")));
                 break;
             case "junk":
-                items.add(new CustomItemStack(Material.COD,getGradientName("关于鱼群喜好"),getGradientName("喜好只是这种鱼更喜欢这种鱼饵"),getGradientName("其他鱼饵也有一定概率钓到这种鱼"),getGradientName("当然也有可能根本钓不到")));
-                items.add(new CustomItemStack(new ItemStack(Material.PRISMARINE_SHARD,1),getGradientNameVer2("鱼饵·记忆碎片"),
-                        ("§f这个鱼饵可以钓到任何物品"),("§f他存在于过去或者是未来"),("§f你现在看到的他并非真正的他"),
-                        "",getGradientName("专属钓竿: 原木鱼竿"),getGradientName("专属钓竿: 风语者之杆"),getGradientName("专属钓竿: 纠缠之节：终焉之丝·悖论为钩")));
-                items.add(new CustomItemStack(new ItemStack(Material.COD),"§b迷路的生鳕鱼",getGradientName("这是谁家的鳕鱼？"),
-                        "",getGradientName("专属钓饵: 面包")));
-                items.add(new CustomItemStack(new ItemStack(Material.SALMON),"§b晕头转向的生鲑鱼",getGradientName("有没有听过洄鲑阵法？"),
-                        "",getGradientName("专属钓饵: 面包")));
-                items.add(new CustomItemStack(new ItemStack(Material.TROPICAL_FISH),"§b有1.4的热带鱼",getGradientName("热带鱼是怎么跑到中远河里的？"),
-                        "",getGradientName("专属钓饵: 面包")));
-                items.add(new CustomItemStack(new ItemStack(Material.PUFFERFISH),"§b发绿的河豚",getGradientName("这东西可不能乱吃哦~"),
-                        "",getGradientName("专属钓饵: 面包")));
-                items.add(new CustomItemStack(new ItemStack(Material.POTION),"§b神秘的药剂",getGradientName("也许能喝吧？"),
-                        "",getGradientName("专属钓饵: 面包")));
-                items.add(new CustomItemStack(new ItemStack(Material.HONEY_BOTTLE,15),"§e蜂蜜瓶",getGradientName("这是15个原版蜂蜜瓶"),
-                        "",getGradientName("专属钓饵: 面包")));
+                items.add(new CustomItemStack(Material.COD,getGradientName("About Fish Preferences"),getGradientName("A preference means this fish is more attracted to that bait."),getGradientName("Other bait can still catch this fish at a lower chance."),getGradientName("Some bait may not be able to catch it at all.")));
+                items.add(new CustomItemStack(new ItemStack(Material.PRISMARINE_SHARD,1),getGradientNameVer2("Bait: Memory Fragment"),
+                        ("§fThis bait can catch almost anything."),("§fIt exists somewhere in the past—or the future."),("§fWhat you see now may not be its true form."),
+                        "",getGradientName("Exclusive Rod: Log Fishing Rod"),getGradientName("Exclusive Rod: Windwhisper Rod"),getGradientName("Exclusive Rod: Entangled Knot — Thread of the End, Paradox Hook")));
+                items.add(new CustomItemStack(new ItemStack(Material.COD),"§bLost Raw Cod",getGradientName("Whose cod is this?"),
+                        "",getGradientName("Exclusive Bait: Bread")));
+                items.add(new CustomItemStack(new ItemStack(Material.SALMON),"§bDizzy Raw Salmon",getGradientName("Have you heard of the Salmon Return Formation?"),
+                        "",getGradientName("Exclusive Bait: Bread")));
+                items.add(new CustomItemStack(new ItemStack(Material.TROPICAL_FISH),"§bA 1.4 Tropical Fish",getGradientName("How did a tropical fish reach a midstream river?"),
+                        "",getGradientName("Exclusive Bait: Bread")));
+                items.add(new CustomItemStack(new ItemStack(Material.PUFFERFISH),"§bGreenish Pufferfish",getGradientName("You really should not eat this carelessly."),
+                        "",getGradientName("Exclusive Bait: Bread")));
+                items.add(new CustomItemStack(new ItemStack(Material.POTION),"§bMysterious Potion",getGradientName("Maybe it is safe to drink?"),
+                        "",getGradientName("Exclusive Bait: Bread")));
+                items.add(new CustomItemStack(new ItemStack(Material.HONEY_BOTTLE,15),"§eHoney Bottles",getGradientName("This represents 15 vanilla Honey Bottles."),
+                        "",getGradientName("Exclusive Bait: Bread")));
 
-                items.add(new CustomItemStack(Material.GLOW_BERRIES, "§a萤火草穗", getGradientName("夜间会发出微光，传说能引诱好奇的鱼"),
-                        "",getGradientName("专属钓饵: 基础魔法饵料")));
-                items.add(new CustomItemStack(Material.MOSS_CARPET, "§a水苔绒", getGradientName("柔软湿润，是小鱼最爱藏身之处"),
-                        "",getGradientName("专属钓饵: 基础魔法饵料")));
-                items.add(new CustomItemStack(Material.SLIME_BALL, "§a蛙鸣壳", getGradientName("轻轻一捏就会发出‘咕呱’声，鱼儿以为是同类"),
-                        "",getGradientName("专属钓饵: 基础魔法饵料")));
-                items.add(new CustomItemStack(Material.POPPY, "§a露珠莲瓣", getGradientName("带着晨露的清香，能净化水域的浊气"),
-                        "",getGradientName("专属钓饵: 基础魔法饵料")));
-                items.add(new CustomItemStack(Material.PRISMARINE_SHARD, "§a鱼鳞尘", ("§f在阳光下闪烁微光，是鱼群身份的信号"),
-                        "",getGradientName("专属钓饵: 基础魔法饵料")));
+                items.add(new CustomItemStack(Material.GLOW_BERRIES, "§aFirefly Grass Spike", getGradientName("It glows faintly at night and is said to lure curious fish."),
+                        "",getGradientName("Exclusive Bait: Basic Magic Bait")));
+                items.add(new CustomItemStack(Material.MOSS_CARPET, "§aWater Moss Tuft", getGradientName("Soft and damp, a favorite hiding place for small fish."),
+                        "",getGradientName("Exclusive Bait: Basic Magic Bait")));
+                items.add(new CustomItemStack(Material.SLIME_BALL, "§aCroaking Shell", getGradientName("A gentle squeeze makes it croak, fooling fish into hearing one of their own."),
+                        "",getGradientName("Exclusive Bait: Basic Magic Bait")));
+                items.add(new CustomItemStack(Material.POPPY, "§aDewdrop Lotus Petal", getGradientName("Its fresh morning scent is said to cleanse murky water."),
+                        "",getGradientName("Exclusive Bait: Basic Magic Bait")));
+                items.add(new CustomItemStack(Material.PRISMARINE_SHARD, "§aFish Scale Dust", ("§fIt glimmers in sunlight as a recognition signal among schools of fish."),
+                        "",getGradientName("Exclusive Bait: Basic Magic Bait")));
 
-                items.add(new CustomItemStack(Material.RED_SAND, "§6磨碎的铜砂", getGradientName("带有微弱金属光泽，是铜脉鱼的气息信标"),
-                        "",getGradientName("专属钓饵: 魔法鱼饵·混合矿粉")));
-                items.add(new CustomItemStack(Material.RED_DYE, "§6铁锈粉末", getGradientName("从废弃矿械上刮下的锈尘，鱼儿能感知到‘同类’的存在"),
-                        "",getGradientName("专属钓饵: 魔法鱼饵·混合矿粉")));
-                items.add(new CustomItemStack(Material.GLOW_INK_SAC, "§6金粉残渣", getGradientName("淘金后的尾料，仍残留着‘富矿区’的魔力波动"),
-                        "",getGradientName("专属钓饵: 魔法鱼饵·混合矿粉")));
-                items.add(new CustomItemStack(Material.QUARTZ, "§6石英碎屑", getGradientName("来自下界矿脉的晶体碎片，能稳定矿粉的能量场"),
-                        "",getGradientName("专属钓饵: 魔法鱼饵·混合矿粉")));
-                items.add(new CustomItemStack(Material.COAL, "§6碳晶颗粒", getGradientName("深埋地壳的古老植物遗骸，为矿粉提供能量基底"),
-                        "",getGradientName("专属钓饵: 魔法鱼饵·混合矿粉")));
-                items.add(new CustomItemStack(Material.NETHER_STAR, "§d星辰铁微尘", ("§f极其稀有，传说来自陨星核心，能大幅提升引诱力"),
-                        "",getGradientName("专属钓饵: 魔法鱼饵·混合矿粉")));
+                items.add(new CustomItemStack(Material.RED_SAND, "§6Ground Copper Sand", getGradientName("Its faint metallic sheen acts as a beacon for Copper Vein Fish."),
+                        "",getGradientName("Exclusive Bait: Mixed Mineral Dust")));
+                items.add(new CustomItemStack(Material.RED_DYE, "§6Rust Powder", getGradientName("Rust scraped from abandoned machinery; mineral fish sense it as one of their own."),
+                        "",getGradientName("Exclusive Bait: Mixed Mineral Dust")));
+                items.add(new CustomItemStack(Material.GLOW_INK_SAC, "§6Gold Dust Residue", getGradientName("Tailings left after panning, still carrying the magic of a rich ore deposit."),
+                        "",getGradientName("Exclusive Bait: Mixed Mineral Dust")));
+                items.add(new CustomItemStack(Material.QUARTZ, "§6Quartz Shards", getGradientName("Crystal fragments from Nether veins that stabilize the bait's energy field."),
+                        "",getGradientName("Exclusive Bait: Mixed Mineral Dust")));
+                items.add(new CustomItemStack(Material.COAL, "§6Carbon Crystal Granules", getGradientName("Ancient plant remains from deep underground that provide an energetic base."),
+                        "",getGradientName("Exclusive Bait: Mixed Mineral Dust")));
+                items.add(new CustomItemStack(Material.NETHER_STAR, "§dStellar Iron Dust", ("§fExtremely rare dust said to come from meteor cores and greatly improve attraction."),
+                        "",getGradientName("Exclusive Bait: Mixed Mineral Dust")));
 
-                items.add(new CustomItemStack(Material.COPPER_INGOT, "§b原生铜脉碎片", getGradientName("并非冶炼所得，而是从岩层中直接剥离的天然导电矿络"),
-                        "",getGradientName("专属钓饵: 魔法鱼饵·混合矿物质")));
-                items.add(new CustomItemStack(Material.IRON_INGOT, "§b赤铁矿核", ("§f保留了完整晶体结构的高纯度铁核，能散发‘金属心跳’般的信号"),
-                        "",getGradientName("专属钓饵: 魔法鱼饵·混合矿物质")));
-                items.add(new CustomItemStack(Material.GOLD_INGOT, "§b金脉结晶", getGradientName("在高压下自然形成的网状金晶，是‘富矿区’的活体信标"),
-                        "",getGradientName("专属钓饵: 魔法鱼饵·混合矿物质")));
-                items.add(new CustomItemStack(Material.AMETHYST_SHARD, "§b深岩晶核", getGradientName("来自地壳深处的共振晶体，能放大矿石信号的传播范围"),
-                        "",getGradientName("专属钓饵: 魔法鱼饵·混合矿物质")));
-                items.add(new CustomItemStack(Material.COAL_BLOCK, "§b熔岩碳心", getGradientName("在岩浆旁碳化千年的木心，蕴含地热能量，稳定矿核活性"),
-                        "",getGradientName("专属钓饵: 魔法鱼饵·混合矿物质")));
-                items.add(new CustomItemStack(Material.NETHER_STAR, "§5星核残片", getGradientName("传说来自坠落恒星的核心碎片，能模拟‘地核级’矿脉信号"),
-                        "",getGradientName("专属钓饵: 魔法鱼饵·混合矿物质")));
+                items.add(new CustomItemStack(Material.COPPER_INGOT, "§bNative Copper Vein Fragment", getGradientName("A naturally conductive ore network stripped directly from rock rather than smelted."),
+                        "",getGradientName("Exclusive Bait: Mixed Minerals")));
+                items.add(new CustomItemStack(Material.IRON_INGOT, "§bHematite Core", ("§fA high-purity iron core whose intact crystal lattice emits a metallic heartbeat."),
+                        "",getGradientName("Exclusive Bait: Mixed Minerals")));
+                items.add(new CustomItemStack(Material.GOLD_INGOT, "§bGold Vein Crystal", getGradientName("A web-like gold crystal formed under pressure, serving as a living beacon of rich ore."),
+                        "",getGradientName("Exclusive Bait: Mixed Minerals")));
+                items.add(new CustomItemStack(Material.AMETHYST_SHARD, "§bDeep Rock Crystal Core", getGradientName("A resonant deep-earth crystal that amplifies the range of ore signals."),
+                        "",getGradientName("Exclusive Bait: Mixed Minerals")));
+                items.add(new CustomItemStack(Material.COAL_BLOCK, "§bLava Carbon Heart", getGradientName("A wood core carbonized beside lava for centuries, stabilizing ore-core activity with geothermal energy."),
+                        "",getGradientName("Exclusive Bait: Mixed Minerals")));
+                items.add(new CustomItemStack(Material.NETHER_STAR, "§5Star Core Fragment", getGradientName("A fragment said to come from a fallen star, able to imitate core-level ore signals."),
+                        "",getGradientName("Exclusive Bait: Mixed Minerals")));
 
-                items.add(new CustomItemStack(new ItemStack(Material.SUGAR_CANE,2),"§b腐烂的甘蔗",getGradientName("河里怎么会有甘蔗呢？"),
-                        "",getGradientName("专属钓饵: 姜太公钓鱼")));
-                items.add(new CustomItemStack(new ItemStack(Material.STICK,2),"§b锟斤拷",getGradientName("这是什么东西呢？"),
-                        "",getGradientName("专属钓饵: 姜太公钓鱼")));
-                items.add(new CustomItemStack(new ItemStack(Material.INK_SAC,2),"§b新鲜的墨囊",getGradientName("谁家好人把墨囊丢在河里啊？"),
-                        "",getGradientName("专属钓饵: 姜太公钓鱼")));
-                items.add(new CustomItemStack(new ItemStack(Material.CAKE,2),"§b隔夜的蛋糕",getGradientName("蛋糕吃不完了？"),
-                        "",getGradientName("专属钓饵: 姜太公钓鱼")));
-                items.add(new CustomItemStack(new ItemStack(Material.REDSTONE,8),"§b8-bit 红石",getGradientName("一把刚好8个？"),
-                        "",getGradientName("专属钓饵: 姜太公钓鱼")));
-                items.add(new CustomItemStack(new ItemStack(Material.DISPENSER,2),"§b粘液科技要用到的发射器",getGradientName("放地上就好了？"),
-                        "",getGradientName("专属钓饵: 姜太公钓鱼")));
+                items.add(new CustomItemStack(new ItemStack(Material.SUGAR_CANE,2),"§bRotten Sugar Cane",getGradientName("How did sugar cane end up in the river?"),
+                        "",getGradientName("Exclusive Bait: Jiang Taigong's Fishing")));
+                items.add(new CustomItemStack(new ItemStack(Material.STICK,2),"§bMojibake",getGradientName("What even is this thing?"),
+                        "",getGradientName("Exclusive Bait: Jiang Taigong's Fishing")));
+                items.add(new CustomItemStack(new ItemStack(Material.INK_SAC,2),"§bFresh Ink Sac",getGradientName("Who throws a perfectly good ink sac into a river?"),
+                        "",getGradientName("Exclusive Bait: Jiang Taigong's Fishing")));
+                items.add(new CustomItemStack(new ItemStack(Material.CAKE,2),"§bDay-Old Cake",getGradientName("Could not finish the cake?"),
+                        "",getGradientName("Exclusive Bait: Jiang Taigong's Fishing")));
+                items.add(new CustomItemStack(new ItemStack(Material.REDSTONE,8),"§b8-bit Redstone",getGradientName("Exactly eight in one handful?"),
+                        "",getGradientName("Exclusive Bait: Jiang Taigong's Fishing")));
+                items.add(new CustomItemStack(new ItemStack(Material.DISPENSER,2),"§bA Dispenser Slimefun Needs",getGradientName("Should you just place it on the ground?"),
+                        "",getGradientName("Exclusive Bait: Jiang Taigong's Fishing")));
 
 
-                items.add(new CustomItemStack(new ItemStack(Material.BOWL),"§6马桶盖",getGradientName("远古净秽仪式的圣环，开启则通幽界，闭合即封污浊。"), getGradientName("凡人不知，它曾是神明如厕时的结界之门。")
-                        ,"",getGradientName("专属钓饵: 魔法鱼饵·混合合金泥")));
-                items.add(new CustomItemStack(new ItemStack(Material.YELLOW_DYE),"§e香蕉皮",getGradientName("滑倒过三位国王、两只独角兽和一个自诩永不跌倒的冒险者。"),getGradientName("传说它来自月光下微笑的黄金树，专为命运的踉跄而生。")
-                        ,"",getGradientName("专属钓饵: 魔法鱼饵·混合合金泥")));
-                items.add(new CustomItemStack(new ItemStack(Material.IRON_SHOVEL),"§a马桶搋子",getGradientName("深渊吸魂者的仿造品，每一次下压都在封印来自下水道的低语。"),getGradientName("真正的强者，用它不止通管道，更通灵界。"),getGradientName("ber~ber~ber~")
-                        ,"",getGradientName("专属钓饵: 魔法鱼饵·混合合金泥")));
-                items.add(new CustomItemStack(CustomHead.getHead("1421f1514da756c8c6c7c0b83a79265c26c9ece66b3bad8fbd94bd96d7040d7e"),"§b海鳗",getGradientName("深海裂隙中游动的活电鞭，脊髓里流淌着远古雷神的残魂。"),getGradientName("渔民称它“黑潮之怒”，碰触者浑身抽搐，口吐电文。")
-                        ,"",getGradientName("专属钓饵: 魔法鱼饵·混合合金泥")));
-                items.add(new CustomItemStack(CustomHead.getHead("a1f71182915f5f862189a81f690acde4f671075db267eb6128fd1b4a84da8d7c"),"§c冷殇的轮椅",getGradientName("传说中专为“挂机玩家”打造的神装，装上它，连睡觉都能通关最终Boss。"),getGradientName("——不是你太强，是轮椅替你扛下了所有的难度。")
-                        ,"",getGradientName("专属钓饵: 魔法鱼饵·混合合金泥")));
-                items.add(new CustomItemStack(new ItemStack(Material.COCOA_BEANS),"§c屎"
-                        ,"",getGradientName("专属钓饵: 魔法鱼饵·混合合金泥")));
-                items.add(new CustomItemStack(CustomHead.MAGICSOLO.getItem(),getGradientName("magicsolo"),getGradientName("南柯一梦终须醒，浮生若梦皆是空~"),getGradientName("南柯一梦若浮生，不梦前世不梦今~")
-                        ,"",getGradientName("专属钓饵: 魔法鱼饵·混合合金泥")));
-                items.add(new CustomItemStack(new ItemStack(Material.GOLDEN_SHOVEL),"§e金铲铲",getGradientName("你是想要人口呢？"),getGradientName("还是想要纹章呢？")
-                        ,"",getGradientName("专属钓饵: 魔法鱼饵·混合合金泥")));
+                items.add(new CustomItemStack(new ItemStack(Material.BOWL),"§6Toilet Seat",getGradientName("A sacred ring from an ancient cleansing rite: open to the spirit realm, closed against filth."), getGradientName("Mortals do not know it once guarded a god's most private moments.")
+                        ,"",getGradientName("Exclusive Bait: Mixed Alloy Slurry")));
+                items.add(new CustomItemStack(new ItemStack(Material.YELLOW_DYE),"§eBanana Peel",getGradientName("It has toppled three kings, two unicorns, and one adventurer who claimed never to fall."),getGradientName("Legend says it came from a golden tree smiling under moonlight, born for fate's stumbles.")
+                        ,"",getGradientName("Exclusive Bait: Mixed Alloy Slurry")));
+                items.add(new CustomItemStack(new ItemStack(Material.IRON_SHOVEL),"§aPlunger",getGradientName("A copy of the Abyssal Soul-Sucker; every plunge seals whispers from the sewer below."),getGradientName("The truly strong use it not only on pipes, but on the spirit realm."),getGradientName("ber~ber~ber~")
+                        ,"",getGradientName("Exclusive Bait: Mixed Alloy Slurry")));
+                items.add(new CustomItemStack(CustomHead.getHead("1421f1514da756c8c6c7c0b83a79265c26c9ece66b3bad8fbd94bd96d7040d7e"),"§bMoray Eel",getGradientName("A living electric whip from deep-sea rifts, carrying the remnant of an ancient thunder god."),getGradientName("Fishers call it \"Wrath of the Black Tide\"; touching it causes convulsions and sparks.")
+                        ,"",getGradientName("Exclusive Bait: Mixed Alloy Slurry")));
+                items.add(new CustomItemStack(CustomHead.getHead("a1f71182915f5f862189a81f690acde4f671075db267eb6128fd1b4a84da8d7c"),"§cLengshang's Wheelchair",getGradientName("Legendary gear made for idle players; equip it and even sleep through the final boss."),getGradientName("— You are not overpowered; the wheelchair carried every difficulty for you.")
+                        ,"",getGradientName("Exclusive Bait: Mixed Alloy Slurry")));
+                items.add(new CustomItemStack(new ItemStack(Material.COCOA_BEANS),"§cPoop"
+                        ,"",getGradientName("Exclusive Bait: Mixed Alloy Slurry")));
+                items.add(new CustomItemStack(CustomHead.MAGICSOLO.getItem(),getGradientName("magicsolo"),getGradientName("Every dream must end; this fleeting life is empty as a dream."),getGradientName("A fleeting dream of life, dreaming neither the past nor the present.")
+                        ,"",getGradientName("Exclusive Bait: Mixed Alloy Slurry")));
+                items.add(new CustomItemStack(new ItemStack(Material.GOLDEN_SHOVEL),"§eGolden Spatula",getGradientName("Were you hoping for another unit?"),getGradientName("Or perhaps an emblem?")
+                        ,"",getGradientName("Exclusive Bait: Mixed Alloy Slurry")));
 
 
 
 
                 break;
             case "magic_sugar":
-                items.add(new CustomItemStack(Material.SUGAR,("§6魔法糖")," ",("§a§o感受赫尔墨斯的力量！")));
+                items.add(new CustomItemStack(Material.SUGAR,("§6Magic Sugar")," ",("§a§oFeel the power of Hermes!")));
                 items.add(MagicExpansionItems.MAGIC_EXPANSION_MAGIC_SUGAR_1);
                 items.add(SlimefunItems.MAGIC_LUMP_1);
                 items.add(SlimefunItems.MAGIC_LUMP_2);
@@ -669,22 +669,22 @@ public class FishingGuideMenu {
                 items.add(MagicExpansionItems.RANDOM_FISH_RARE_POOL_INDUSTRY);
                 items.add(MagicExpansionItems.RANDOM_FISH_EPIC_POOL_INDUSTRY);
                 items.add(MagicExpansionItems.RANDOM_FISH_EPIC);
-                items.add(FishManager.getFishItemWithLore(BaseFish.LegendaryEelFish,"",getGradientName("专属钓饵：魔法糖")));
+                items.add(FishManager.getFishItemWithLore(BaseFish.LegendaryEelFish,"",getGradientName("Exclusive Bait: Magic Sugar")));
                 items.add(new CustomItemStack(
                         new ItemStack(Material.PRISMARINE_SHARD, 1),
-                        getGradientNameVer2("鱼饵·记忆碎片"),
-                        ("§f这个鱼饵可以钓到任何物品"),
-                        ("§f他存在于过去或者是未来"),
-                        ("§f你现在看到的他并非真正的他")
+                        getGradientNameVer2("Bait: Memory Fragment"),
+                        ("§fThis bait can catch almost anything."),
+                        ("§fIt exists somewhere in the past—or the future."),
+                        ("§fWhat you see now may not be its true form.")
                 ));
                 break;
             case "bread":
-                items.add(new CustomItemStack(Material.BREAD,("§b面包")," ",getGradientName("这只是一块普普通通的面包")));
-                items.add(new CustomItemStack(new ItemStack(Material.COD, 3), "§b迷路的生鳕鱼", getGradientName("这是谁家的鳕鱼？")));
-                items.add(new CustomItemStack(new ItemStack(Material.SALMON, 3), "§b晕头转向的生鲑鱼", getGradientName("有没有听过洄鲑阵法？")));
-                items.add(new CustomItemStack(new ItemStack(Material.TROPICAL_FISH, 3), "§b有1.4的热带鱼", getGradientName("热带鱼是怎么跑到中远河里的？")));
-                items.add(new CustomItemStack(new ItemStack(Material.PUFFERFISH, 3), "§b发绿的河豚", getGradientName("这东西可不能乱吃哦~")));
-                items.add(new CustomItemStack(new ItemStack(Material.POTION, 3), "§b神秘的药剂", getGradientName("也许能喝吧？")));
+                items.add(new CustomItemStack(Material.BREAD,("§bBread")," ",getGradientName("This is just an ordinary piece of bread.")));
+                items.add(new CustomItemStack(new ItemStack(Material.COD, 3), "§bLost Raw Cod", getGradientName("Whose cod is this?")));
+                items.add(new CustomItemStack(new ItemStack(Material.SALMON, 3), "§bDizzy Raw Salmon", getGradientName("Have you heard of the Salmon Return Formation?")));
+                items.add(new CustomItemStack(new ItemStack(Material.TROPICAL_FISH, 3), "§bA 1.4 Tropical Fish", getGradientName("How did a tropical fish reach a midstream river?")));
+                items.add(new CustomItemStack(new ItemStack(Material.PUFFERFISH, 3), "§bGreenish Pufferfish", getGradientName("You really should not eat this carelessly.")));
+                items.add(new CustomItemStack(new ItemStack(Material.POTION, 3), "§bMysterious Potion", getGradientName("Maybe it is safe to drink?")));
                 items.add(new ItemStack(Material.HONEY_BOTTLE, 256));
                 items.add(MagicExpansionItems.RANDOM_FISH_COMMON);
                 items.add(MagicExpansionItems.RANDOM_FISH_UNCOMMON);
@@ -695,10 +695,10 @@ public class FishingGuideMenu {
                 items.add(MagicExpansionItems.RANDOM_FISH_RARE_POOL_INDUSTRY);
                 items.add(new CustomItemStack(
                         new ItemStack(Material.PRISMARINE_SHARD, 1),
-                        getGradientNameVer2("鱼饵·记忆碎片"),
-                        ("§f这个鱼饵可以钓到任何物品"),
-                        ("§f他存在于过去或者是未来"),
-                        ("§f你现在看到的他并非真正的他")
+                        getGradientNameVer2("Bait: Memory Fragment"),
+                        ("§fThis bait can catch almost anything."),
+                        ("§fIt exists somewhere in the past—or the future."),
+                        ("§fWhat you see now may not be its true form.")
                 ));
                 break;
             default:

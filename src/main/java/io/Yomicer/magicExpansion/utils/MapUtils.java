@@ -1,5 +1,7 @@
 package io.Yomicer.magicExpansion.utils;
 
+import io.Yomicer.magicExpansion.MagicExpansion;
+
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import io.Yomicer.magicExpansion.Listener.worldListener.Events;
@@ -33,7 +35,7 @@ public class MapUtils {
 
         List<BlockData> blocks = getBlocksInRegion(p1, p2);
         String fileName = "map_" + System.currentTimeMillis() + ".json";
-        File file = new File(player.getServer().getPluginManager().getPlugin("MagicExpansion").getDataFolder(), "maps/" + fileName);
+        File file = new File(MagicExpansion.getInstance().getDataFolder(), "maps/" + fileName);
 
         try (FileWriter writer = new FileWriter(file)) {
             gson.toJson(blocks, writer);
@@ -45,7 +47,7 @@ public class MapUtils {
     }
 
     public static void pasteMap(Player player, String fileName) {
-        File file = new File(player.getServer().getPluginManager().getPlugin("MagicExpansion").getDataFolder(), "maps/" + fileName + ".json");
+        File file = new File(MagicExpansion.getInstance().getDataFolder(), "maps/" + fileName + ".json");
 
         if (!file.exists()) {
             player.sendMessage(ChatColor.RED + "File not found!");

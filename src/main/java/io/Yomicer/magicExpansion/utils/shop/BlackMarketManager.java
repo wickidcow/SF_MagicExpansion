@@ -25,7 +25,7 @@ public class BlackMarketManager {
     // 困难奖励池及权重 (20%概率)
     private static Map<ItemStack, Integer> hardRewardPool = new LinkedHashMap<>();
 
-    // 全局概率定义 (简单0.8，困难0.2)
+    // 全局概率定义 (简单0.8,困难0.2)
     public static final double SIMPLE_CHANCE = 0.80;
     public static final double HARD_CHANCE = 0.20;
 
@@ -48,7 +48,7 @@ public class BlackMarketManager {
         hardRewardPool.clear();
         costItemPool.clear();
 
-        MagicExpansion.getInstance().getLogger().info("正在初始化黑市物品池...");
+        MagicExpansion.getInstance().getLogger().info("Loading Black Market item pool...");
 
         simpleRewardPool.add(new ItemStack(Material.IRON_BLOCK));
         simpleRewardPool.add(new ItemStack(Material.GOLD_BLOCK));
@@ -221,7 +221,7 @@ public class BlackMarketManager {
 
 
         } catch (Throwable e) {
-            MagicExpansion.getInstance().getLogger().warning("黑市物品池加载自定义物品时发生严重错误，仅加载原版兜底物品: ");
+            MagicExpansion.getInstance().getLogger().warning("Failed to load a Black Market item: ");
             e.printStackTrace();
         }
 
@@ -230,7 +230,7 @@ public class BlackMarketManager {
         if (hardRewardPool.isEmpty()) hardRewardPool.put(new ItemStack(Material.BEDROCK), 1);
         if (costItemPool.isEmpty()) costItemPool.add(new ItemStack(Material.STONE));
 
-        MagicExpansion.getInstance().getLogger().info("黑市物品池初始化完成。简单物品: " + simpleRewardPool.size() + " 困难物品: " + hardRewardPool.size());
+        MagicExpansion.getInstance().getLogger().info("Black Market item pool initialized. Standard items: " + simpleRewardPool.size() + " Difficult items: " + hardRewardPool.size());
 
         if (lastRefreshTime == 0) {
             lastRefreshTime = System.currentTimeMillis();
@@ -267,11 +267,11 @@ public class BlackMarketManager {
         long minutes = (remaining % (60 * 60 * 1000)) / (60 * 1000);
         long seconds = (remaining % (60 * 1000)) / 1000;
 
-        return hours + "小时" + minutes + "分" + seconds + "秒";
+        return hours + "h " + minutes + "m " + seconds + "s";
     }
 
     private static List<BlackMarketTrade> generateTradesForPlayer() {
-        // 每次生成前检查，确保池子绝对不为空
+        // 每次生成前检查,确保池子绝对不为空
         if (simpleRewardPool.isEmpty()) simpleRewardPool.add(new ItemStack(Material.DIRT));
         if (hardRewardPool.isEmpty()) hardRewardPool.put(new ItemStack(Material.BEDROCK), 1);
         if (costItemPool.isEmpty()) costItemPool.add(new ItemStack(Material.STONE));
@@ -370,7 +370,7 @@ public class BlackMarketManager {
 
     public static List<BlackMarketTrade> getTodayTrades(Player player) {
         checkAndRefresh();
-        // 如果该玩家没有生成过，则为他单独生成一份
+        // 如果该玩家没有生成过,则为他单独生成一份
         return playerTrades.computeIfAbsent(player.getUniqueId(), k -> generateTradesForPlayer());
     }
 

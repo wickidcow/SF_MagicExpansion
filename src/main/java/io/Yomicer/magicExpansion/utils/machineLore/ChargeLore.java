@@ -18,7 +18,7 @@ public class ChargeLore {
 
     @Nonnull
     public static String energyBuffer(int energy) {
-        return "⇨ ⚡ " + format((double)energy) + " J 可储存";
+        return "⇨ ⚡ " + format((double)energy) + "J";
     }
 
     @Nonnull
@@ -28,7 +28,7 @@ public class ChargeLore {
 
     @Nonnull
     public static String speed(int speed) {
-        return "⇨ ⚡ 速度: " + speed + 'x';
+        return "⇨ ⚡ Speed: " + speed + 'x';
     }
 
 

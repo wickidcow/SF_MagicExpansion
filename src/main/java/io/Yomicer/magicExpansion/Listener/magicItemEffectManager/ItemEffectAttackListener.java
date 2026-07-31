@@ -74,7 +74,7 @@ public class ItemEffectAttackListener implements Listener {
             case "MagicExpansion.Slowness": // 减速效果
                 if (value instanceof Integer slownessLevel) {
 
-                    // 施加减速效果（减速等级为 50%，持续 2 秒）
+                    // 施加减速效果(减速等级为 50%,持续 2 秒)
 //                    SlownessManager.applySlowness(livingTarget, slownessLevel, slownessLevel); // 40 ticks = 2 秒
                     livingTarget.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, slownessLevel*3, slownessLevel));
 
@@ -112,7 +112,7 @@ public class ItemEffectAttackListener implements Listener {
 
     private Vector calculateKnockbackVelocity(LivingEntity target, double strength) {
         Random random = new Random();
-        // 示例：根据目标的方向计算击退速度
+        // 示例:根据目标的方向计算击退速度
         Vector direction = target.getLocation().getDirection();
         double speedX = direction.getX() * strength * 0.1;
         double speedY = Math.max(0.1, strength*1.2); // 确保 Y 分量非负
@@ -131,7 +131,7 @@ public class ItemEffectAttackListener implements Listener {
         Location playerLocation = player.getLocation();
         Location targetLocation = target.getLocation();
 
-        // 保存玩家和目标的朝向（Yaw 和 Pitch）
+        // 保存玩家和目标的朝向(Yaw 和 Pitch)
         float playerYaw = playerLocation.getYaw();
         float playerPitch = playerLocation.getPitch();
         float targetYaw = targetLocation.getYaw();
@@ -147,19 +147,19 @@ public class ItemEffectAttackListener implements Listener {
         newTargetLocation.setYaw(playerYaw);
         newTargetLocation.setPitch(playerPitch);
 
-        // 将玩家传送到目标的位置，并更新朝向
+        // 将玩家传送到目标的位置,并更新朝向
         player.teleport(newPlayerLocation);
 
-        // 将目标传送到玩家的位置，并更新朝向
+        // 将目标传送到玩家的位置,并更新朝向
         if (target instanceof LivingEntity) {
             ((LivingEntity) target).teleport(newTargetLocation);
         } else {
-            // 如果目标不是 LivingEntity，则仅传送位置
+            // 如果目标不是 LivingEntity,则仅传送位置
             target.teleport(newTargetLocation);
         }
 
         // 发送消息给玩家
-        player.sendMessage("§b你与目标的位置已互换！");
+        player.sendMessage("§byou target Location!");
     }
 
 }

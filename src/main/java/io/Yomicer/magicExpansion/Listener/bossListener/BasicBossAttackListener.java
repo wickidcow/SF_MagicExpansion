@@ -51,7 +51,7 @@ public class BasicBossAttackListener implements Listener {
 
         Location mobLocation = e.getEntity().getLocation();
         World world = mobLocation.getWorld();
-        double radius = 20.0; // 范围：20 方块
+        double radius = 20.0; // 范围:20 方块
         double radiusSquared = radius * radius;
         int playerCount = 0;
         for (Player player : world.getPlayers()) {

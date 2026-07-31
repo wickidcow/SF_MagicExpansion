@@ -23,21 +23,21 @@ import java.util.List;
 
 public class MagicFishCommand implements CommandExecutor, TabCompleter {
 
-    /** 配置文件中的重量上限键，默认 100000.0 */
+    /** 配置文件中的重量上限键,默认 100000.0 */
     private static final String CFG_MAX_WEIGHT = "Fish.admin-give.max-weight";
     private static final double DEFAULT_MAX_WEIGHT = 100000.0;
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!(sender instanceof Player)) {
-            sender.sendMessage("§c只有玩家才能使用这个命令！");
+            sender.sendMessage("§cOnly players can use this command.");
             return true;
         }
 
         Player player = (Player) sender;
 
         if (!player.isOp()) {
-            player.sendMessage("§c只有管理员才能执行此指令！");
+            player.sendMessage("§cYou do not have permission to use this command.");
             return true;
         }
 
@@ -62,65 +62,65 @@ public class MagicFishCommand implements CommandExecutor, TabCompleter {
 
     private void handleGive(Player player, String[] args) {
         if (args.length < 2) {
-            player.sendMessage("§c用法: /magicfish give <鱼种> [重量] [数量]");
+            player.sendMessage("§cUsage: /magicfish give <type> [weight] [amount]");
             return;
         }
 
         String typeArg = args[1];
         Fish fish = Fish.fromString(typeArg);
         if (fish == null) {
-            player.sendMessage("§c未知的鱼种: " + typeArg);
-            player.sendMessage("§7使用 /magicfish list 查看所有可用鱼种。");
+            player.sendMessage("§cUnknown fish type: " + typeArg);
+            player.sendMessage("§7Use /magicfish list to view all fish types.");
             return;
         }
 
-        // 解析重量（可选，默认取该鱼种的 maxWeight）
+        // 解析重量(可选,默认取该鱼种的 maxWeight)
         double weight = fish.getMaxWeight();
         if (args.length >= 3) {
             try {
                 weight = Double.parseDouble(args[2]);
             } catch (NumberFormatException e) {
-                player.sendMessage("§c重量必须为数字！你输入的是: " + args[2]);
+                player.sendMessage("§cWeight must be a number. You entered: " + args[2]);
                 return;
             }
         }
 
-        // 解析数量（可选，默认1）
+        // 解析数量(可选,默认1)
         int amount = 1;
         if (args.length >= 4) {
             try {
                 amount = Integer.parseInt(args[3]);
             } catch (NumberFormatException e) {
-                player.sendMessage("§c数量必须为整数！你输入的是: " + args[3]);
+                player.sendMessage("§cAmount must be a whole number. You entered: " + args[3]);
                 return;
             }
         }
         if (amount <= 0 || amount > 64) {
-            player.sendMessage("§c数量必须在 1-64 之间！");
+            player.sendMessage("§cAmount must be between 1 and 64!");
             return;
         }
 
         // === 重量上限校验 ===
         double configMax = getConfigMaxWeight();
         if (weight > configMax) {
-            player.sendMessage("§c重量 " + weight + " 超过配置上限 " + configMax + "！");
-            player.sendMessage("§7请在 config.yml 的 fish.admin-give.max-weight 中调整上限。");
+            player.sendMessage("§cWeight " + weight + " exceeds the configured maximum of " + configMax + "!");
+            player.sendMessage("§7Adjust Fish.admin-give.max-weight in config.yml.");
             return;
         }
-        // 同时不允许超过该鱼种自身设定的 maxWeight（防止产出"超规格"鱼）
+        // 同时不允许超过该鱼种自身设定的 maxWeight(防止产出"超规格"鱼)
         if (weight > fish.getMaxWeight()) {
-            player.sendMessage("§c重量 " + weight + " 超过该鱼种最大重量 " + fish.getMaxWeight() + "！");
+            player.sendMessage("§cWeight " + weight + " exceeds this fish's maximum weight of " + fish.getMaxWeight() + "!");
             return;
         }
         if (weight < fish.getMinWeight()) {
-            player.sendMessage("§c重量 " + weight + " 低于该鱼种最小重量 " + fish.getMinWeight() + "！");
+            player.sendMessage("§cWeight " + weight + " is below this fish's minimum weight of " + fish.getMinWeight() + "!");
             return;
         }
 
         // 构造鱼物品
         ItemStack fishItem = buildFishItem(fish, weight);
         if (fishItem == null) {
-            player.sendMessage("§c物品构造失败，请检查控制台日志。");
+            player.sendMessage("§cCould not create the fish item. Check the console for details.");
             return;
         }
         fishItem.setAmount(amount);
@@ -128,32 +128,32 @@ public class MagicFishCommand implements CommandExecutor, TabCompleter {
         // 发放
         if (player.getInventory().firstEmpty() == -1) {
             player.getWorld().dropItemNaturally(player.getLocation(), fishItem);
-            player.sendMessage("§e你的背包已满，鱼已掉落在地上！");
+            player.sendMessage("§eYour inventory was full, so the fish was dropped at your feet.");
         } else {
             player.getInventory().addItem(fishItem);
         }
 
         Fish.WeightRarity wr = fish.getWeightRarity(weight);
-        player.sendMessage("§a已获得: §f" + fish.getDisplayName()
-                + " §a重量: §f" + String.format("%.3f", weight)
-                + " §a稀有度: §f" + wr.getDisplayName()
-                + " §a数量: §f" + amount);
+        player.sendMessage("§aReceived: §f" + fish.getDisplayName()
+                + " §aWeight: §f" + String.format("%.3f", weight)
+                + " §aRarity: §f" + wr.getDisplayName()
+                + " §aAmount: §f" + amount);
     }
 
     private void handleList(Player player) {
-        player.sendMessage("§6=== 可用鱼种列表 ===");
+        player.sendMessage("§6=== Available Fish Types ===");
         for (Fish f : Fish.values()) {
             player.sendMessage("§e" + f.name()
                     + " §7| §f" + f.getDisplayName()
-                    + " §7| 重量范围: §a" + f.getMinWeight() + " ~ " + f.getMaxWeight()
-                    + " §7| 稀有度: §b" + f.getRarity().getDisplayName());
+                    + " §7| Weight Range: §a" + f.getMinWeight() + " ~ " + f.getMaxWeight()
+                    + " §7| Rarity: §b" + f.getRarity().getDisplayName());
         }
         player.sendMessage("§6===================");
     }
 
     /**
-     * 以与 FishKeys.enchantDropWithFishData 一致的方式构造鱼物品。
-     * 基础物品按稀有度选取对应的 RANDOM_FISH_* 物品，无法匹配时回退到 Material.COD。
+     * 以与 FishKeys.enchantDropWithFishData 一致的方式构造鱼物品.
+     * 基础物品按稀有度选取对应的 RANDOM_FISH_* 物品,无法匹配时回退到 Material.COD.
      */
     private ItemStack buildFishItem(Fish fish, double weight) {
         ItemStack base = getBaseItemByRarity(fish.getRarity());
@@ -172,7 +172,7 @@ public class MagicFishCommand implements CommandExecutor, TabCompleter {
         Fish.WeightRarity weightRarity = fish.getWeightRarity(weight);
         pdc.set(FishKeys.FISH_WEIGHT_RARITY, PersistentDataType.STRING, weightRarity.name());
 
-        // 重量稀有度标记符号（与原钓鱼逻辑保持一致）
+        // 重量稀有度标记符号(与原钓鱼逻辑保持一致)
         String weightRareThis = "";
         if (weightRarity == Fish.WeightRarity.RARE_FISH) {
             weightRareThis = "§e§l⭐";
@@ -186,9 +186,9 @@ public class MagicFishCommand implements CommandExecutor, TabCompleter {
 
         List<String> lore = new ArrayList<>();
         lore.add("");
-        lore.add("§d鱼种稀有度: §r§f" + fish.getRarity().getDisplayName());
-        lore.add("§a重量: §r§f" + String.format("%.3f", weight) + " kg");
-        lore.add("§e稀有度: §r" + weightRarity.getDisplayName() + " " + weightRareThis);
+        lore.add("§dFish Rarity: §r§f" + fish.getRarity().getDisplayName());
+        lore.add("§aWeight: §r§f" + String.format("%.3f", weight) + " kg");
+        lore.add("§eWeight Rarity: §r" + weightRarity.getDisplayName() + " " + weightRareThis);
         if (fish.getLoreLines() != null && fish.getLoreLines().length > 0) {
             lore.add("");
             lore.addAll(Arrays.asList(fish.getLoreLines()));
@@ -199,8 +199,8 @@ public class MagicFishCommand implements CommandExecutor, TabCompleter {
     }
 
     /**
-     * 稀有度 → 基础物品的反向映射。
-     * 与 FishKeys.RARITY_ITEM_MAP 保持一致，用于让产出的鱼在视觉与钓鱼系统上对齐。
+     * 稀有度 → 基础物品的反向映射.
+     * 与 FishKeys.RARITY_ITEM_MAP 保持一致,用于让产出的鱼在视觉与钓鱼系统上对齐.
      */
     private ItemStack getBaseItemByRarity(Fish.Rarity rarity) {
         switch (rarity) {
@@ -237,10 +237,10 @@ public class MagicFishCommand implements CommandExecutor, TabCompleter {
     }
 
     private void sendUsage(Player player) {
-        player.sendMessage("§6=== 魔法鱼管理员指令 ===");
-        player.sendMessage("§a/magicfish give <鱼种> [重量] [数量] §7- 获取指定鱼");
-        player.sendMessage("§a/magicfish list §7- 列出所有可用鱼种");
-        player.sendMessage("§7重量上限由 config.yml 的 Fish.admin-give.max-weight 控制");
+        player.sendMessage("§6=== Magic Fish Administration ===");
+        player.sendMessage("§a/magicfish give <type> [weight] [amount] §7- Give a fish");
+        player.sendMessage("§a/magicfish list §7- List all fish types");
+        player.sendMessage("§7Maximum admin weight: Fish.admin-give.max-weight in config.yml");
         player.sendMessage("§6=========================");
     }
 

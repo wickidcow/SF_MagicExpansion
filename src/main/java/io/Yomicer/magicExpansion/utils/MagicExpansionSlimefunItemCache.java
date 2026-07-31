@@ -11,7 +11,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class MagicExpansionSlimefunItemCache {
-    // 静态缓存：存储所有 Slimefun 物品
+    // 静态缓存:存储所有 Slimefun 物品
     private static final List<SlimefunItem> SFITEMCACHE = new ArrayList<>();
     private static final Random RANDOM = new Random(); // 避免重复创建 Random
 

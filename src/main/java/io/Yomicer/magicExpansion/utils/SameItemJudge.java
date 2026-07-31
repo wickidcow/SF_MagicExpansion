@@ -20,7 +20,7 @@ public class SameItemJudge {
 
     /**
      * ✅ 将 ItemStack 完整序列化为 Base64 字符串
-     * 支持：PDC、附魔、lore、自定义模型、Slimefun物品、NBT等所有数据
+     * 支持:PDC、附魔、lore、自定义模型、Slimefun物品、NBT等所有数据
      */
     @Nullable
     public static String itemToBase64(ItemStack item) {
@@ -39,7 +39,7 @@ public class SameItemJudge {
             return Base64Coder.encodeLines(serializedBytes);
 
         } catch (IOException e) {
-            Debug.logWarn("物品序列化失败: " + item.getType());
+            Debug.logWarn("Item serialization failed: " + item.getType());
             e.printStackTrace();
             return null;
         }
@@ -47,7 +47,7 @@ public class SameItemJudge {
 
     /**
      * ✅ 将 Base64 字符串反序列化为 ItemStack
-     * 完全还原原始物品（包括 PDC、附魔、数量、NBT 等）
+     * 完全还原原始物品(包括 PDC、附魔、数量、NBT 等)
      */
     @Nullable
     public static ItemStack itemFromBase64(String data) {
@@ -59,23 +59,23 @@ public class SameItemJudge {
              BukkitObjectInputStream dataInput = new BukkitObjectInputStream(inputStream)) {
 
             ItemStack item = (ItemStack) dataInput.readObject();
-            // 重要：强制刷新 ItemMeta 引用，防止 PDC 缓存问题
+            // 重要:强制刷新 ItemMeta 引用,防止 PDC 缓存问题
             if (item.hasItemMeta()) {
                 ItemMeta meta = item.getItemMeta();
-                item.setItemMeta(meta); // 重新设置，确保一致性
+                item.setItemMeta(meta); // 重新设置,确保一致性
             }
             return item;
 
         } catch (IOException | ClassNotFoundException e) {
-            Debug.logWarn("物品反序列化失败");
+            Debug.logWarn("Item deserialization failed.");
             e.printStackTrace();
             return null;
         }
     }
 
     /**
-     * ✅ 安全判断两个 ItemStack 是否“相同”（可用于堆叠判断）
-     * 使用 Bukkit 内建的 isSimilar 方法，并兼容 Slimefun 物品
+     * ✅ 安全判断两个 ItemStack 是否"相同"(可用于堆叠判断)
+     * 使用 Bukkit 内建的 isSimilar 方法,并兼容 Slimefun 物品
      */
     public static boolean isSimilarSafe(ItemStack item1, ItemStack item2) {
         if (item1 == item2) return true;
@@ -86,12 +86,12 @@ public class SameItemJudge {
             return item1.getType() == item2.getType();
         }
 
-        // 非 Slimefun 物品：使用 Bukkit 的 isSimilar（忽略数量）
+        // 非 Slimefun 物品:使用 Bukkit 的 isSimilar(忽略数量)
         return item1.isSimilar(item2);
     }
 
     /**
-     * ✅ 判断两个 Base64 字符串对应的物品是否“相同”
+     * ✅ 判断两个 Base64 字符串对应的物品是否"相同"
      */
     public static boolean isSameBase64Item(String data1, String data2) {
         if (data1 == null && data2 == null) return true;

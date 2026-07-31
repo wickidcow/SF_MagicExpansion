@@ -2,7 +2,7 @@ package io.Yomicer.magicExpansion.Listener.magicItemEffectManager;
 
 import io.Yomicer.magicExpansion.utils.GiveItem;
 import io.Yomicer.magicExpansion.utils.entity.EntityEgg;
-import net.guizhanss.guizhanlib.minecraft.helper.entity.EntityHelper;
+import io.Yomicer.magicExpansion.utils.compat.EntityHelper;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -28,7 +28,7 @@ public class ArrowHitLocationListener implements Listener {
         if (event.getEntity().getType() == EntityType.ARROW) {
             Arrow arrow = (Arrow) event.getEntity();
 
-            // 获取射出箭的玩家（如果有的话）
+            // 获取射出箭的玩家(如果有的话)
             if (arrow.getShooter() instanceof Player player) {
 
                 ItemStack item = player.getInventory().getItemInMainHand().clone();
@@ -74,7 +74,7 @@ public class ArrowHitLocationListener implements Listener {
                         hitLocation = event.getHitEntity().getLocation();
                     }
 
-                    // 如果既没有击中方块也没有击中实体，可能是射到了空气
+                    // 如果既没有击中方块也没有击中实体,可能是射到了空气
                     if (hitLocation == null) {
                         hitLocation = arrow.getLocation(); // 获取箭的最终位置
                     }
@@ -83,7 +83,7 @@ public class ArrowHitLocationListener implements Listener {
                     if (hitLocation != null) {
                         hitLocation.add(0,1,0);
                         player.teleport(hitLocation);
-                        player.sendMessage("§b你传送到了箭的落点位置");
+                        player.sendMessage("§byou to Location");
                     }
 
 

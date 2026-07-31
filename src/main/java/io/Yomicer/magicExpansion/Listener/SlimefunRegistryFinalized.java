@@ -17,7 +17,7 @@ public class SlimefunRegistryFinalized implements Listener {
 
 
 
-    // 预加载的 磨石 配方列表（静态常量）
+    // 预加载的 磨石 配方列表(静态常量)
     public static final List<Map<String, Integer>> SMELTERY_RECIPES = new ArrayList<>();
 
     public static final List<Map<String, Integer>> GRIND_STONE_RECIPES = new ArrayList<>();
@@ -69,21 +69,21 @@ public class SlimefunRegistryFinalized implements Listener {
         loadGrindStoneRecipes(ID6,PRESSURE_CHAMBER_RECIPES);
 //        loadGrindStoneRecipes(ID7,MAGIC_WORKBENCH_RECIPES);
 
-        Debug.logInfo("加载 recipes 完成");
-//        Debug.logError("磨石配方list："+ GRIND_STONE_RECIPES);
+        Debug.logInfo("load recipes");
+//        Debug.logError("磨石配方list:"+ GRIND_STONE_RECIPES);
     }
 
 
     /**
-     * 获取 GrindStone 实例（或其他 MultiBlockMachine 实例）
+     * 获取 GrindStone 实例(或其他 MultiBlockMachine 实例)
      *
-     * @return MultiBlockMachine 实例，如果找不到则返回 null
+     * @return MultiBlockMachine 实例,如果找不到则返回 null
      */
     private static MultiBlockMachine getGrindStoneMachine(String id) {
         try {
             return (MultiBlockMachine) SlimefunItem.getById(id);
         } catch (Exception e) {
-            Debug.logInfo("获取 GRIND_STONE 实例时出错: " + e.getMessage());
+            Debug.logInfo("GRIND_STONE:" + e.getMessage());
             return null;
         }
     }
@@ -95,7 +95,7 @@ public class SlimefunRegistryFinalized implements Listener {
         // 获取 GRIND_STONE 实例
         MultiBlockMachine machine = getGrindStoneMachine(id);
         if (machine == null) {
-            Debug.logInfo("无法找到 GRIND_STONE 或它不是一个 MultiBlockMachine.");
+            Debug.logInfo("GRIND_STONE is not registered as a MultiBlockMachine.");
             return;
         }
 
@@ -105,7 +105,7 @@ public class SlimefunRegistryFinalized implements Listener {
 
         if (inputList == null || inputList.isEmpty() || outputList == null || outputList.isEmpty()) {
 //            Debug.logInfo("未能加载任何有效的输入或输出物品列表.");
-//            System.out.println("配方类型为："+machine);
+//            System.out.println("配方类型为:"+machine);
             return;
         }
 
@@ -165,7 +165,7 @@ public class SlimefunRegistryFinalized implements Listener {
      * 获取机器的所有输入物品列表
      *
      * @param machine MultiBlockMachine 实例
-     * @return 所有输入物品的列表（每个元素是一个 ItemStack 数组）
+     * @return 所有输入物品的列表(每个元素是一个 ItemStack 数组)
      */
     public static List<ItemStack[]> getRecipeInputList(MultiBlockMachine machine) {
         if (machine == null) {
@@ -176,8 +176,8 @@ public class SlimefunRegistryFinalized implements Listener {
         List<ItemStack[]> recipes = machine.getRecipes();
         List<ItemStack[]> inputs = new ArrayList<>();
 
-        // 遍历配方列表，提取输入物品（偶数索引位置）
-        for (int i = 0; i < recipes.size(); i += 2) { // 每两个一组，第一个是输入
+        // 遍历配方列表,提取输入物品(偶数索引位置)
+        for (int i = 0; i < recipes.size(); i += 2) { // 每两个一组,第一个是输入
             inputs.add(recipes.get(i));
         }
 
@@ -199,8 +199,8 @@ public class SlimefunRegistryFinalized implements Listener {
         List<ItemStack[]> recipes = machine.getRecipes();
         List<ItemStack> outputs = new ArrayList<>();
 
-        // 遍历配方列表，提取输出物品（奇数索引位置）
-        for (int i = 1; i < recipes.size(); i += 2) { // 每两个一组，第二个是输出
+        // 遍历配方列表,提取输出物品(奇数索引位置)
+        for (int i = 1; i < recipes.size(); i += 2) { // 每两个一组,第二个是输出
             ItemStack[] outputArray = recipes.get(i);
             if (outputArray != null && outputArray.length > 0) {
                 outputs.add(outputArray[0]); // 取第一个作为输出物品
@@ -211,10 +211,10 @@ public class SlimefunRegistryFinalized implements Listener {
     }
 
     /**
-     * 获取物品的唯一键（Slimefun ID 或 Minecraft 材质名称）
+     * 获取物品的唯一键(Slimefun ID 或 Minecraft 材质名称)
      *
      * @param item 物品
-     * @return 唯一键（"sf:<ID>" 或 "mc:<Material>"），如果无法识别则返回 null
+     * @return 唯一键("sf:<ID>" 或 "mc:<Material>"),如果无法识别则返回 null
      */
     public static String getUniqueItemKey(ItemStack item) {
         if (item == null || item.getType() == Material.AIR) {

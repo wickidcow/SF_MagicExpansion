@@ -41,7 +41,7 @@ public class RecipePreLoader implements Listener {
         loadRecipes(ORE_CRUSHER_RECIPES, RecipeType.ORE_CRUSHER);
 
         long time = System.currentTimeMillis() - start;
-        Debug.logInfo("✅ 配方预加载完成，耗时 " + time + "ms");
+        Debug.logInfo("✅ Recipe preload completed in " + time + "ms");
     }
 
     /**
@@ -50,7 +50,7 @@ public class RecipePreLoader implements Listener {
     private void loadRecipes(List<Map<ItemStack, Integer>> recipeList, RecipeType type) {
         if (recipeList == null || type == null) return;
 
-        // ✅ 最兼容方式获取所有物品：通过 SlimefunRegistry
+        // ✅ 最兼容方式获取所有物品:通过 SlimefunRegistry
         Map<?, SlimefunItem> items = Slimefun.getRegistry().getSlimefunItemIds();
 
         int count = 0;
@@ -104,30 +104,30 @@ public class RecipePreLoader implements Listener {
             }
         }
 
-        // ✅ 显示机器名称（fallback 到 toString）
+        // ✅ 显示机器名称(fallback 到 toString)
         String typeName = getRecipeTypeName(type);
-        Debug.logInfo("📊 已加载 [" + typeName + "] 类型配方: " + count + " 个");
+        Debug.logInfo("Loaded [" + typeName + "] recipe type: " + count + " items");
     }
     /**
-     * 获取 RecipeType 的显示名称（尽可能友好）
+     * 获取 RecipeType 的显示名称(尽可能友好)
      */
     private String getRecipeTypeName(RecipeType type) {
-        // 如果你有自定义名称映射，可以在这里加
+        // 如果你有自定义名称映射,可以在这里加
         Map<RecipeType, String> NAMES = new HashMap<>();
-        NAMES.put(RecipeType.ENHANCED_CRAFTING_TABLE, "增强型合成台");
-        NAMES.put(RecipeType.ARMOR_FORGE, "盔甲锻造台");
-        NAMES.put(RecipeType.ANCIENT_ALTAR, "远古祭坛");
-        NAMES.put(RecipeType.GOLD_PAN, "淘金盘");
-        NAMES.put(RecipeType.HEATED_PRESSURE_CHAMBER, "加热压力室");
-        NAMES.put(RecipeType.MAGIC_WORKBENCH, "魔法工作台");
-        NAMES.put(RecipeType.ORE_CRUSHER, "矿物粉碎机");
+        NAMES.put(RecipeType.ENHANCED_CRAFTING_TABLE, "Enhanced Crafting Table");
+        NAMES.put(RecipeType.ARMOR_FORGE, "Armor Forge");
+        NAMES.put(RecipeType.ANCIENT_ALTAR, "Ancient Altar");
+        NAMES.put(RecipeType.GOLD_PAN, "Gold Pan");
+        NAMES.put(RecipeType.HEATED_PRESSURE_CHAMBER, "Heated Pressure Chamber");
+        NAMES.put(RecipeType.MAGIC_WORKBENCH, "Magic Workbench");
+        NAMES.put(RecipeType.ORE_CRUSHER, "Ore Crusher");
 
         return NAMES.getOrDefault(type, type.toString());
     }
 
 
     /**
-     * 判断两个 ItemStack 是否相似（类型相同即可，或可扩展 NBT 比较）
+     * 判断两个 ItemStack 是否相似(类型相同即可,或可扩展 NBT 比较)
      */
     private boolean isSimilar(ItemStack a, ItemStack b) {
         if (a == null || b == null) return false;

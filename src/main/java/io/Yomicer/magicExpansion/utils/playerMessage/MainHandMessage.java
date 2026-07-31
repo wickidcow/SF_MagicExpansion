@@ -5,6 +5,6 @@ import org.bukkit.entity.Player;
 
 public class MainHandMessage {
     public static void sendMainHandMessage(Player p){
-        p.sendMessage(ColorGradient.getGradientNameVer2("请放在主手使用！"));
+        p.sendMessage(ColorGradient.getGradientNameVer2("Hold this item in your main hand to use it."));
     }
 }

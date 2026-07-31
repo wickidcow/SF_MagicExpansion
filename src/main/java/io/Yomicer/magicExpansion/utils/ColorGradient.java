@@ -11,8 +11,8 @@ public class ColorGradient {
     /**
      * 将 RGB 值转换为 Minecraft 颜色代码字符
      *
-     * @param value RGB 分量值（0-255）
-     * @return 十六进制字符（0-9 或 A-F）
+     * @param value RGB 分量值(0-255)
+     * @return 十六进制字符(0-9 或 A-F)
      */
     public static char codeColor(int value) {
         if (value < 0 || value > 15) {
@@ -22,21 +22,21 @@ public class ColorGradient {
     }
 
     /**
-     * 生成带有渐变色的字符串（Minecraft §x 格式）
+     * 生成带有渐变色的字符串(Minecraft §x 格式)
      *
      * @param text       输入的字符串
      * @param colorList  渐变色列表
      * @return 带有渐变色的字符串
      */
     public static String getGradientName(String text, List<Color> colorList) {
-        // 如果未提供颜色列表，使用默认颜色列表
+        // 如果未提供颜色列表,使用默认颜色列表
         if (colorList == null || colorList.isEmpty()) {
             colorList = createColorList();
         }
 
         StringBuilder stringBuilder = new StringBuilder();
 
-        // 如果文本为空或长度不足，补全空格
+        // 如果文本为空或长度不足,补全空格
         if (text.length() == 0) {
             text += " ";
         }
@@ -72,21 +72,21 @@ public class ColorGradient {
     }
 
     /**
-     * 生成带有渐变色的字符串（Minecraft §x 格式）
+     * 生成带有渐变色的字符串(Minecraft §x 格式)
      *
      * @param text       输入的字符串
      * @param colorList  渐变色列表
      * @return 带有渐变色的字符串
      */
     public static String getGradientNameVer2(String text, List<Color> colorList) {
-        // 如果未提供颜色列表，使用默认颜色列表
+        // 如果未提供颜色列表,使用默认颜色列表
         if (colorList == null || colorList.isEmpty()) {
             colorList = createCustomColorListV2();
         }
 
         StringBuilder stringBuilder = new StringBuilder();
 
-        // 如果文本为空或长度不足，补全空格
+        // 如果文本为空或长度不足,补全空格
         if (text.length() == 0) {
             text += " ";
         }
@@ -126,7 +126,7 @@ public class ColorGradient {
      * 生成纵向渐变的 Lore 列表
      * - 自动计算总行数
      * - 自动使用默认颜色列表
-     * - 行内颜色统一，行与行之间渐变
+     * - 行内颜色统一,行与行之间渐变
      *
      * @param lore 原始文本列表
      * @return 处理后的带颜色文本列表
@@ -223,17 +223,17 @@ public class ColorGradient {
 
 
     /**
-     * 生成带有渐变色的字符串（Minecraft § 格式）
+     * 生成带有渐变色的字符串(Minecraft § 格式)
      *
      * @param text 输入的字符串
      * @return 带有渐变色的字符串
      */
     public static String getGradientName(String text) {
-        return getGradientName(text, null); // 调用原始方法，使用默认颜色列表
+        return getGradientName(text, null); // 调用原始方法,使用默认颜色列表
     }
 
     public static String getGradientNameVer2(String text) {
-        return getGradientNameVer2(text, null); // 调用原始方法，使用默认颜色列表
+        return getGradientNameVer2(text, null); // 调用原始方法,使用默认颜色列表
     }
 
 
@@ -280,7 +280,7 @@ public class ColorGradient {
     }
 
     /**
-     * 生成带有随机渐变色的字符串（Minecraft §x 格式）
+     * 生成带有随机渐变色的字符串(Minecraft §x 格式)
      *
      * @param text  输入的字符串
      * @param count 渐变色数量
@@ -294,7 +294,7 @@ public class ColorGradient {
         return getGradientName(text, randomColorList);
     }
 
-    // 如果需要直接调用，不指定颜色数量，默认使用3种颜色进行渐变
+    // 如果需要直接调用,不指定颜色数量,默认使用3种颜色进行渐变
     public static String getRandomGradientName(String text) {
         return getRandomGradientName(text, 3); // 默认三种颜色渐变
     }

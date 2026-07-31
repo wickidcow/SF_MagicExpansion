@@ -21,12 +21,12 @@ public class BasicBossDropListener implements Listener {
     public void onEntityDeath(EntityDeathEvent event) {
         LivingEntity entity = event.getEntity();
 
-        // 获取怪物的类型标识（从元数据中读取）
+        // 获取怪物的类型标识(从元数据中读取)
         String mobType = "";
         if (entity.hasMetadata("magicMobType")) {
             mobType = entity.getMetadata("magicMobType").get(0).asString();
         } else {
-            return; // 如果没有 mobType 元数据，直接返回
+            return; // 如果没有 mobType 元数据,直接返回
         }
 
         // 清除默认掉落物
@@ -52,7 +52,7 @@ public class BasicBossDropListener implements Listener {
      * @param entity 死亡的实体
      */
     private void dropWindElfLoot(LivingEntity entity) {
-        // 清除默认掉落物（可选）
+        // 清除默认掉落物(可选)
         entity.getWorld().getEntitiesByClass(Item.class).forEach(Entity::remove);
 
         // 获取死亡位置
@@ -67,7 +67,7 @@ public class BasicBossDropListener implements Listener {
         // 掉落物品到世界中
         dropLocation.getWorld().dropItemNaturally(dropLocation, DropItem);
         dropLocation.getWorld().dropItemNaturally(dropLocation, DropItem2);
-        // 示例：掉落一些经验值
+        // 示例:掉落一些经验值
         entity.getWorld().spawnEntity(dropLocation, EntityType.EXPERIENCE_ORB);
 
 
@@ -80,7 +80,7 @@ public class BasicBossDropListener implements Listener {
      * @param entity 死亡的实体
      */
     private void dropFireZombieLoot(LivingEntity entity) {
-        // 清除默认掉落物（可选）
+        // 清除默认掉落物(可选)
         entity.getWorld().getEntitiesByClass(Item.class).forEach(Entity::remove);
 
         // 获取死亡位置
@@ -96,7 +96,7 @@ public class BasicBossDropListener implements Listener {
         dropLocation.getWorld().dropItemNaturally(dropLocation, DropItem);
         dropLocation.getWorld().dropItemNaturally(dropLocation, DropItem2);
 
-        // 示例：掉落一些经验值
+        // 示例:掉落一些经验值
         entity.getWorld().spawnEntity(dropLocation, EntityType.EXPERIENCE_ORB);
 
 

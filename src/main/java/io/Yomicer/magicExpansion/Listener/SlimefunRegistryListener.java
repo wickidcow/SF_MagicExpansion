@@ -18,7 +18,7 @@ import java.util.Map;
 public class SlimefunRegistryListener implements Listener {
 
 
-    // 预加载的 增强型合成台 配方列表（静态常量）
+    // 预加载的 增强型合成台 配方列表(静态常量)
     public static final List<Map<String, Integer>> ENHANCED_CRAFTING_TABLE_RECIPES = new ArrayList<>();
 
     public static final List<Map<String, Integer>> ARMOR_FORGE_RECIPES = new ArrayList<>();
@@ -69,10 +69,10 @@ public class SlimefunRegistryListener implements Listener {
                 String itemKey;
                 SlimefunItem slimefunItem = SlimefunItem.getByItem(requiredItem);
                 if (slimefunItem != null) {
-                    // 如果是 SlimefunItem，使用其 ID 作为键
+                    // 如果是 SlimefunItem,使用其 ID 作为键
                     itemKey = "sf:" + slimefunItem.getId();
                 } else {
-                    // 如果不是 SlimefunItem，则默认为原版物品
+                    // 如果不是 SlimefunItem,则默认为原版物品
                     itemKey = "mc:" + requiredItem.getType().name();
                 }
 

@@ -2,7 +2,7 @@ package io.Yomicer.magicExpansion.utils.networksUtils;
 
 import lombok.Getter;
 import lombok.Setter;
-import net.guizhanss.guizhanlib.minecraft.helper.inventory.ItemStackHelper;
+import io.Yomicer.magicExpansion.utils.compat.ItemStackHelper;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
@@ -132,17 +132,17 @@ public class QuantumCache extends ItemStackCache {
     public void addMetaLore(@NotNull ItemMeta itemMeta) {
         List<String> old = itemMeta.getLore();
         final List<String> lore = old != null ? new ArrayList<>(old) : new ArrayList<>();
-        String itemName = "空";
+        String itemName = "Empty";
         if (getItemStack() != null) {
             itemName = ItemStackHelper.getDisplayName(this.getItemStack());
         }
         lore.add("");
-        lore.add(String.format("§e物品: %s", itemName));
+        lore.add(String.format("§eItem: %s", itemName));
         lore.add(String.format(
-                "§e数量: §f%s", this.getAmount()));
+                "§eAmount: §f%s", this.getAmount()));
         if (this.supportsCustomMaxAmount) {
             lore.add(String.format(
-                    "§e当前容量限制: §c%s", this.getLimit()));
+                    "§eCurrent Capacity Limit: §c%s", this.getLimit()));
         }
 
         itemMeta.setLore(lore);
@@ -153,23 +153,23 @@ public class QuantumCache extends ItemStackCache {
         if (lore == null) {
             lore = new ArrayList<>();
         }
-        String itemName = "空";
+        String itemName = "Empty";
         if (getItemStack() != null) {
             itemName = ItemStackHelper.getDisplayName(this.getItemStack());
         }
         final int loreIndexModifier = this.supportsCustomMaxAmount ? 1 : 0;
         lore.set(
                 lore.size() - 2 - loreIndexModifier,
-                String.format("§e物品: %s", itemName));
+                String.format("§eItem: %s", itemName));
         lore.set(
                 lore.size() - 1 - loreIndexModifier,
                 String.format(
-                        "§e数量: §f%s", this.getAmount()));
+                        "§eAmount: §f%s", this.getAmount()));
         if (this.supportsCustomMaxAmount) {
             lore.set(
                     lore.size() - loreIndexModifier,
                     String.format(
-                            "§e当前容量限制: §c%s",
+                            "§eCurrent Capacity Limit: §c%s",
                             this.getLimit()));
         }
 

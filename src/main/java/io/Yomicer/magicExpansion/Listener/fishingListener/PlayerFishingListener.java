@@ -14,7 +14,7 @@ import io.github.thebusybiscuit.slimefun4.implementation.SlimefunItems;
 import io.github.thebusybiscuit.slimefun4.libraries.dough.config.Config;
 import io.github.thebusybiscuit.slimefun4.libraries.dough.items.CustomItemStack;
 import io.github.thebusybiscuit.slimefun4.utils.SlimefunUtils;
-import net.guizhanss.guizhanlib.minecraft.helper.inventory.ItemStackHelper;
+import io.Yomicer.magicExpansion.utils.compat.ItemStackHelper;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
@@ -42,7 +42,7 @@ import static io.Yomicer.magicExpansion.utils.MagicExpansionSlimefunItemCache.ge
 public class PlayerFishingListener implements Listener {
 
     Config cfg = new Config(MagicExpansion.getInstance());
-    // 所有鱼饵类型（优先级顺序）
+    // 所有鱼饵类型(优先级顺序)
     private static final List<Lure> LURES = List.of(
             new MoreLure(SlimefunItems.MAGIC_SUGAR,"magic_sugar"),
             new MoreLure(new ItemStack(Material.BREAD),"bread"),
@@ -50,10 +50,10 @@ public class PlayerFishingListener implements Listener {
             new MoreLure(MagicExpansionItems.FISH_LURE_DUST,"fishLureDust"),
             new MoreLure(MagicExpansionItems.FISH_LURE_ORE,"fishLureOre"),
             new MoreLure(MagicExpansionItems.FISH_LURE_ALLOY_INGOT,"fishLureAlloyIngot"),
-            new MoreLure(new CustomItemStack(new ItemStack(Material.PRISMARINE_SHARD),getGradientNameVer2("鱼饵·记忆碎片"),
-                    ("§f这个鱼饵可以钓到任何物品"),
-                    ("§f他存在于过去或者是未来"),
-                    ("§f你现在看到的他并非真正的他")),
+            new MoreLure(new CustomItemStack(new ItemStack(Material.PRISMARINE_SHARD),getGradientNameVer2("Bait: Memory Fragment"),
+                    ("§fThis bait can catch almost anything."),
+                    ("§fIt exists somewhere in the past—or the future."),
+                    ("§fWhat you see now may not be its true form.")),
                     "fishLureFinal")
     );
 
@@ -110,10 +110,10 @@ public class PlayerFishingListener implements Listener {
         ItemStack drop = getSmartLoot(player, fishingRod).clone();
         Boolean FinalLureEnable = cfg.getBoolean("Fish.FishingRod.FISHING_ROD_FINAL_STICK.Enable.FinalLure_Obtain");
         if (!FinalLureEnable) {
-            while (drop.isSimilar(new CustomItemStack(new ItemStack(Material.PRISMARINE_SHARD), getGradientNameVer2("鱼饵·记忆碎片"),
-                    ("§f这个鱼饵可以钓到任何物品"),
-                    ("§f他存在于过去或者是未来"),
-                    ("§f你现在看到的他并非真正的他")))) {
+            while (drop.isSimilar(new CustomItemStack(new ItemStack(Material.PRISMARINE_SHARD), getGradientNameVer2("Bait: Memory Fragment"),
+                    ("§fThis bait can catch almost anything."),
+                    ("§fIt exists somewhere in the past—or the future."),
+                    ("§fWhat you see now may not be its true form.")))) {
                 drop = getSmartLoot(player, fishingRod).clone();
             }
         }
@@ -141,7 +141,7 @@ public class PlayerFishingListener implements Listener {
         if (isTNTItem(drop)){
             TNTPrimed tnt = player.getWorld().spawn(hookLocation.add(0,2,0), TNTPrimed.class);
             tnt.setFuseTicks(600);
-            tnt.setCustomName(getGradientName("这是一颗威力非常大的TNT"));
+            tnt.setCustomName(getGradientName("is TNT"));
             tnt.setCustomNameVisible(true);
             tnt.setFireTicks(400);
             Vector direction = player.getLocation().add(0,2,0).toVector()
@@ -152,7 +152,7 @@ public class PlayerFishingListener implements Listener {
             tnt.setGlowing(true);
             String itemName = ItemStackHelper.getDisplayName(drop);
             String message = phrases.get(new Random().nextInt(phrases.size()));
-            player.sendMessage((ColorGradient.getRandomGradientName(message))+" §r"+itemName+ColorGradient.getRandomGradientName(" ！！"));
+            player.sendMessage((ColorGradient.getRandomGradientName(message))+" §r"+itemName+ColorGradient.getRandomGradientName(" !!"));
             return;
         }
 
@@ -170,22 +170,22 @@ public class PlayerFishingListener implements Listener {
         }
         String itemName = ItemStackHelper.getDisplayName(drop);
         String message = phrases.get(new Random().nextInt(phrases.size()));
-        player.sendMessage((ColorGradient.getRandomGradientName(message))+" §r"+itemName+ColorGradient.getRandomGradientName(" ！！"));
+        player.sendMessage((ColorGradient.getRandomGradientName(message))+" §r"+itemName+ColorGradient.getRandomGradientName(" !!"));
     }
 
     List<String> phrases = List.of(
-            "💨 水面泛起漩涡，你钓上了：",
-            "⚡ 鱼竿一颤，你拉到了：",
-            "❄ 寒光一闪，你捞起：",
-            "★ 欧气爆发！你钓到了：",
-            "☆ 闪光！你钓上了：",
-            "♪ 听，BGM响了：",
-            "♫ 恭喜！你钓到了：",
-            "∞ 钓鱼佬永不空军！：",
-            "✓ 成功捕获：",
-            "✗ 又是垃圾：",
-            "☀ 今日晴，适合欧：",
-            "☁ 今天非酋附体："
+            "💨, you:",
+            "⚡ Your rod jerks—you pulled up: ",
+            "❄, you:",
+            "★ Incredible luck! You caught: ",
+            "☆!you:",
+            "♪, BGM:",
+            "♫ Congratulations! You caught: ",
+            "Used by the MagicExpansion fishing system.",
+            "✓ successfully:",
+            "✗ More junk: ",
+            "☀ Clear skies—good luck incoming: ",
+            "☁ Bad luck has found you today: "
     );
 
     private boolean isRandomFish(ItemStack item) {
@@ -204,7 +204,7 @@ public class PlayerFishingListener implements Listener {
 
     private boolean isTNTItem(ItemStack item) {
         if (item == null || item.getType().isAir()) return false;
-        return SlimefunUtils.isItemSimilar(item, new CustomItemStack(new ItemStack(Material.COCOA_BEANS),getGradientName("一个TNT")), true);
+        return SlimefunUtils.isItemSimilar(item, new CustomItemStack(new ItemStack(Material.COCOA_BEANS),getGradientName("TNT")), true);
     }
 
 
@@ -254,10 +254,10 @@ public class PlayerFishingListener implements Listener {
                     SlimefunUtils.isItemSimilar(item, requiredItem, true)) {
                 if (item.getAmount() > 1) {
                     item.setAmount(item.getAmount() - 1);
-                    player.sendMessage((ColorGradient.getRandomGradientName("钓鱼佬，你消耗了 1 个"))+" §r"+ItemStackHelper.getDisplayName(item)+ ColorGradient.getRandomGradientName(" ！"));
+                    player.sendMessage((ColorGradient.getRandomGradientName("Angler, you used 1 "))+" §r"+ItemStackHelper.getDisplayName(item)+ ColorGradient.getRandomGradientName(" !"));
                 } else {
                     inv.setItem(i, null);
-                    player.sendMessage(ItemStackHelper.getDisplayName(item)+ColorGradient.getRandomGradientName(" 是刚才那一组的最后 1 个！"));
+                    player.sendMessage(ItemStackHelper.getDisplayName(item)+ColorGradient.getRandomGradientName("; it was the last one in that stack!"));
                 }
                 player.updateInventory();
                 break;

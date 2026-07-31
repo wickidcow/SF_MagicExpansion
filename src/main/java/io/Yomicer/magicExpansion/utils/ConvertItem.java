@@ -14,7 +14,7 @@ public class ConvertItem {
 
         // 检查是否成功获取到 Slimefun 物品
         if (slimefunItem == null) {
-            Debug.logInfo("检测到未安装魔法1.0,已为您替换为等价值材料。此物品在魔法1.0的ID为: "+ selectedItem);
+            Debug.logInfo("Magic 1.0 is not installed; substituted an equivalent material. Original Magic 1.0 ID: "+ selectedItem);
             return MagicExpansionItems.MAGIC_EXPANSION_TO_MAGIC_ITEM_BASIC; // 返回一个初级
         }
 
@@ -29,7 +29,7 @@ public class ConvertItem {
         SlimefunItem slimefunItem = SlimefunItem.getById(selectedItem);
 
         if (slimefunItem == null) {
-            Debug.logInfo("无法找到 ID 为 " + selectedItem + " 的 Slimefun 物品！");
+            Debug.logInfo("Could not find a Slimefun item with ID " + selectedItem + "!");
             return MagicExpansionItems.MAGIC_EXPANSION_TO_MAGIC_ITEM_BASIC; // 返回默认物品
         }
 
@@ -47,7 +47,7 @@ public class ConvertItem {
 
         // 检查是否成功获取到 Slimefun 物品
         if (slimefunItem == null) {
-            Debug.logInfo("检测到未安装魔法1.0,已为您替换为等价值材料。此物品在魔法1.0的ID为: "+ selectedItem);
+            Debug.logInfo("Magic 1.0 is not installed; substituted an equivalent material. Original Magic 1.0 ID: "+ selectedItem);
             return MagicExpansionItems.MAGIC_EXPANSION_TO_MAGIC_ITEM_ADVANCED; // 返回一个进阶
         }
 
@@ -63,8 +63,8 @@ public class ConvertItem {
 
         // 检查是否成功获取到 Slimefun 物品
         if (slimefunItem == null) {
-            Debug.logInfo("无法找到 ID 为 " + selectedItem + " 的 Slimefun 物品！");
-            Debug.logInfo("已经为你更新为石头");
+            Debug.logInfo("Could not find a Slimefun item with ID " + selectedItem + "!");
+            Debug.logInfo("Using vanilla stone as a fallback.");
             return new ItemStack(Material.STONE); // 返回一个进阶
         }
 
@@ -79,7 +79,7 @@ public class ConvertItem {
         SlimefunItem slimefunItem = SlimefunItem.getById(i);
         // 检查是否成功获取到 Slimefun 物品
         if (slimefunItem == null) {
-            Debug.logInfo("无法找到 ID 为 " + i + " 的 Slimefun 物品！,跳过注册");
+            Debug.logInfo("Could not find a Slimefun item with ID " + i + "; skipping registration.");
             return false;
         }
         return true;

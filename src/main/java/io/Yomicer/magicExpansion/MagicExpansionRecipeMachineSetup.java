@@ -401,7 +401,7 @@ public class MagicExpansionRecipeMachineSetup {
                 .setConsumption(260)
                 .setProcessingSpeed(1)
                 .addRecipe(1, new ItemStack[] {new ItemStack(Material.PAPER),new ItemStack(Material.BAMBOO),new ItemStack(Material.FEATHER),new ItemStack(Material.INK_SAC)},
-                        new ItemStack[] {new CustomItemStack(Material.SUGAR, ColorGradient.getGradientNameVer2("符号"), "&f梦", ColorGradient.getGradientNameVer2("凭空制造物质的基础"))})
+                        new ItemStack[] {new CustomItemStack(Material.SUGAR, ColorGradient.getGradientNameVer2("Symbol"), "&fDream", ColorGradient.getGradientNameVer2("The foundation of creating matter from nothing."))})
                 .register(plugin);
 
 
@@ -461,8 +461,8 @@ public class MagicExpansionRecipeMachineSetup {
                 .setCapacity(2147483647)
                 .setConsumption(2147483646)
                 .setProcessingSpeed(1)
-                .addRecipe(5,new ItemStack[] {new CustomItemStack(doGlow(Material.LIGHT), ColorGradient.getGradientName("放入任意粘液物品"),ColorGradient.getGradientName("即可对物品配方进行溯源"))},
-                        new ItemStack[] {new CustomItemStack(doGlow(Material.NETHER_STAR), ColorGradient.getGradientName("在等待一定时间后，机器会产出源材料"))})
+                .addRecipe(5,new ItemStack[] {new CustomItemStack(doGlow(Material.LIGHT), ColorGradient.getGradientName("Insert any Slimefun item."),ColorGradient.getGradientName("The machine will trace the item back to its source recipe."))},
+                        new ItemStack[] {new CustomItemStack(doGlow(Material.NETHER_STAR), ColorGradient.getGradientName("After processing, the machine outputs the original recipe materials."))})
                 .register(plugin);
 
 

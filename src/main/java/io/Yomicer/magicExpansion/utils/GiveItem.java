@@ -16,7 +16,7 @@ public class GiveItem {
         // 尝试将物品放入玩家背包
         Map<Integer, ItemStack> remainingItems = inventory.addItem(item1);
 
-        // 如果背包已满，掉落剩余的物品到地上
+        // 如果背包已满,掉落剩余的物品到地上
         if (!remainingItems.isEmpty()) {
             for (ItemStack remaining : remainingItems.values()) {
                 dropItemInBatches(player, location, remaining);
@@ -25,7 +25,7 @@ public class GiveItem {
     }
 
     /**
-     * 分批掉落物品（单次最大处理 127 个）
+     * 分批掉落物品(单次最大处理 127 个)
      *
      * @param player   玩家
      * @param location 掉落位置
@@ -36,7 +36,7 @@ public class GiveItem {
         int maxDropSize = 64; // 单次最大掉落数量
 
         while (totalAmount > 0) {
-            // 创建一个新的物品副本，设置当前批次的数量
+            // 创建一个新的物品副本,设置当前批次的数量
             ItemStack dropItem = item.clone();
             int currentBatchSize = Math.min(totalAmount, maxDropSize);
             dropItem.setAmount(currentBatchSize);

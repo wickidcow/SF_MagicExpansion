@@ -13,7 +13,7 @@ public class Language {
 
 
 
-    public static final String LANGUAGE_NAMESPACE = "zh_CN";
+    public static final String LANGUAGE_NAMESPACE = "en_US";
     public static final HashMap<String, Object> LANGUAGE = new HashMap<>() {{
     }};
 
@@ -34,14 +34,14 @@ public class Language {
     public static boolean loadConfig(Config cfg) {
         // 加载语言数据
         Set<String> keys = cfg.getKeys(LANGUAGE_NAMESPACE);
-        if (keys.isEmpty()) return false; // 如果没有语言数据，返回 false
+        if (keys.isEmpty()) return false; // 如果没有语言数据,返回 false
 
         for (String ns : keys) {
             loadRecursively(cfg, ns); // 递归加载语言数据
         }
 
         // 打印日志并返回 true
-        Logger.getLogger("MagicExpansion语言配置加载完毕~");
+        Logger.getLogger("MagicExpansionload~");
         return true;
     }
 

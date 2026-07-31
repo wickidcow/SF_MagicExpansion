@@ -28,15 +28,15 @@ public class PreBuildingsTreeUtils {
         InputStream inputStream = PreBuildingsTreeUtils.class.getClassLoader().getResourceAsStream("buildings/" + fileName + ".json");
 
         if (inputStream == null) {
-            player.sendMessage("§c路径错误，请不要随意修改插件设置!");
-            return false; // 文件不存在，返回 false
+            player.sendMessage("§cThis prefabricated structure is not configured correctly!");
+            return false; // 文件不存在,返回 false
         }
 
         // 获取玩家注视的目标方块
         Block targetBlock = getTargetBlock(player);
         if (targetBlock == null) {
-            player.sendMessage("§c你需要看向一个方块!");
-            return false; // 没有目标方块，返回 false
+            player.sendMessage("§cyou requires!");
+            return false; // 没有目标方块,返回 false
         }
 
         // 粘贴位置为目标方块上方 1 格
@@ -57,17 +57,17 @@ public class PreBuildingsTreeUtils {
 
             // 检查预期空间是否有权限冲突&&空间是否充足
             if (hasPermissionConflicts(blocks, pasteLocation, player.getWorld(),player)) {
-                player.sendMessage("§c有部分区域没有权限或者是空间大小不足，请选择其他地方放置。");
-                return false; // 存在冲突，返回 false
+                player.sendMessage("§cPart of the area is protected or too small. Choose another location.");
+                return false; // 存在冲突,返回 false
             }
 
 //            // 检查是否有冲突
 //            if (hasConflicts(blocks, pasteLocation, player.getWorld())) {
-//                player.sendMessage("§c当前空间大小不足，请选择其他地方放置。");
-//                return false; // 存在冲突，返回 false
+//                player.sendMessage("§c当前空间大小不足,请选择其他地方放置.");
+//                return false; // 存在冲突,返回 false
 //            }
 
-            // 如果没有冲突，则开始粘贴
+            // 如果没有冲突,则开始粘贴
             for (BlockData blockData : blocks) {
                 Location location = new Location(
                         player.getWorld(),
@@ -88,12 +88,12 @@ public class PreBuildingsTreeUtils {
             }
 
 
-            player.sendMessage("§a预制菜启动！");
-            return true; // 成功粘贴，返回 true
+            player.sendMessage("§aPrefabricated structure placement started!");
+            return true; // 成功粘贴,返回 true
         } catch (IOException e) {
             player.sendMessage("§cFailed to create: " + e.getMessage());
             e.printStackTrace();
-            return false; // 发生异常，返回 false
+            return false; // 发生异常,返回 false
         }
     }
 
@@ -155,23 +155,23 @@ public class PreBuildingsTreeUtils {
                 return block;
             }
         }
-        return null; // 如果没有找到非空气方块，返回 null
+        return null; // 如果没有找到非空气方块,返回 null
     }
 
     /**
-     * 内部类：存储单个方块的数据
+     * 内部类:存储单个方块的数据
      */
     private static class BlockData {
         public int x;
         public int y;
         public int z;
         public String type;
-        public String blockState; // 新增字段，用于保存方块状态
+        public String blockState; // 新增字段,用于保存方块状态
 
         // 默认构造函数
         public BlockData() {}
 
-        // 如果需要的话，可以添加带参数的构造函数
+        // 如果需要的话,可以添加带参数的构造函数
         public BlockData(int x, int y, int z, String type, String blockState) {
             this.x = x;
             this.y = y;
@@ -185,7 +185,7 @@ public class PreBuildingsTreeUtils {
     /**
      * 获取建筑的尺寸 (X, Y, Z)
      * @param fileName 文件名 (不带 .json)
-     * @return int[]{xSize, ySize, zSize}，如果文件不存在或出错返回 null
+     * @return int[]{xSize, ySize, zSize},如果文件不存在或出错返回 null
      */
     public static int[] getBuildingDimensions(String fileName) {
         InputStream inputStream = PreBuildingsTreeUtils.class.getClassLoader().getResourceAsStream("buildings/" + fileName + ".json");
