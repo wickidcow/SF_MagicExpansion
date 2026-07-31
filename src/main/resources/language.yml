@@ -1,4481 +1,2328 @@
-zh_CN:
+en_US:
   Items:
     QUICK_MACHINE_BV_INFO:
-      Name: '快捷机器[放置版]使用说明'
+      Name: Quick Machine BV Information
       Lore:
-        - '支持几乎所有的配方'
-        - '对原版配方进行了合理化修改'
-        - '修改后的配方将作为机器彩蛋呈现'
-        - '为了尽可能的降低资源损耗'
-        - '并且做好动态刷新'
-        - '目前暂不支持shift移入物品来刷新产物列表'
-        - '但是会识别shift移出物品来刷新产物列表'
-        - '可以手动放置最后一个物品到机器中'
-        - '或者是点击一下输入槽内的任何物品'
-        - '这样就会刷新产物列表了'
-        - '也可以点击下方下界之星'
-        - '该按钮也会将产物列表刷新'
+      - Information and instructions for Quick Machine BV Information.
+      - Use the Slimefun guide for recipes and details.
     QUICK_ENHANCED_CRAFTING_TABLE_BV:
-      Name: '魔法工作台·增强型[放置版]'
+      Name: Magic Enhanced Crafting Table [Block Version]
       Lore:
-        - '将材料放入魔法工作内'
-        - '可以直接呈现出可制作的最终产物列表'
-        - '可以对其进行快速制作'
+      - A magical item from MagicExpansion.
+      - Used for Quick Enhanced Crafting Table BV.
     QUICK_SMELTERY_BV:
-      Name: '魔法冶炼炉[放置版]'
+      Name: Magic Smeltery [Block Version]
       Lore:
-        - '将材料放入魔法冶炼炉内'
-        - '可以直接呈现出可制作的最终产物列表'
-        - '可以对其进行快速冶炼'
+      - A magical item from MagicExpansion.
+      - Used for Quick Smeltery BV.
     QUICK_GRIND_STONE_BV:
-      Name: '魔法磨石[放置版]'
+      Name: Magic Grind Stone [Block Version]
       Lore:
-        - '将材料放入魔法磨石内'
-        - '可以直接呈现出可制作的最终产物列表'
-        - '可以对其进行快速研磨'
+      - A magical item from MagicExpansion.
+      - Used for Quick Grind Stone BV.
     QUICK_ORE_CRUSHER_BV:
-      Name: '魔法粉碎机[放置版]'
+      Name: Magic Ore Crusher [Block Version]
       Lore:
-        - '将材料放入魔法粉碎机内'
-        - '可以直接呈现出可制作的最终产物列表'
-        - '可以对其进行快速粉碎'
+      - A magical item from MagicExpansion.
+      - Used for Quick Ore Crusher BV.
     QUICK_ARMOR_FORGE_BV:
-      Name: '魔法锻造台[放置版]'
+      Name: Magic Armor Forge [Block Version]
       Lore:
-        - '将材料放入魔法压缩机内'
-        - '可以直接呈现出可制作的最终产物列表'
-        - '可以对其进行快速锻造'
+      - A magical item from MagicExpansion.
+      - Used for Quick Armor Forge BV.
     QUICK_COMPRESSOR_BV:
-      Name: '魔法压缩机[放置版]'
+      Name: Magic Compressor [Block Version]
       Lore:
-        - '将材料放入魔法压缩机内'
-        - '可以直接呈现出可制作的最终产物列表'
-        - '可以对其进行快速压缩'
+      - A magical item from MagicExpansion.
+      - Used for Quick Compressor BV.
     QUICK_PRESSURE_CHAMBER_BV:
-      Name: '魔法压力机[放置版]'
+      Name: Magic Pressure Chamber [Block Version]
       Lore:
-        - '将材料放入魔法压力机内'
-        - '可以直接呈现出可制作的最终产物列表'
-        - '可以对其进行快速压缩'
+      - A magical item from MagicExpansion.
+      - Used for Quick Pressure Chamber BV.
     QUICK_MAGIC_WORKBENCH_BV:
-      Name: '魔法工作台·魔法[放置版]'
+      Name: Magic Workbench [Block Version]
       Lore:
-        - '将材料放入魔法工作台内'
-        - '可以直接呈现出可制作的最终产物列表'
-        - '可以对其进行快速制作'
+      - A magical item from MagicExpansion.
+      - Used for Quick Magic Workbench BV.
     QUICK_AUTOMATED_PANNING_MACHINE_BV:
-      Name: '魔法淘金机[放置版]'
+      Name: Magic Automated Panning Machine [Block Version]
       Lore:
-        - '将材料放入魔法淘金机内'
-        - '可以直接呈现出可制作的最终产物列表'
-        - '可以对其进行快速淘金'
+      - A MagicExpansion processing machine.
+      - Processes materials for Quick Automated Panning Machine BV.
     QUICK_AUTOMATED_ANCIENT_ALTAR_BV:
-      Name: '魔法远古祭坛[放置版]'
+      Name: Magic Ancient Altar [Block Version]
       Lore:
-        - '将材料放入魔法远古祭坛内'
-        - '可以直接呈现出可制作的最终产物列表'
-        - '可以对其进行快速制作'
+      - A magical item from MagicExpansion.
+      - Used for Quick Automated Ancient Altar BV.
     QUICK_ELECTRIC_ORE_GRINDER_BV:
-      Name: '破损的魔法碎矿机[放置版]'
+      Name: Damaged Magic Electric Ore Grinder [Block Version]
       Lore:
-        - '将材料放入破损的魔法碎矿机内'
-        - '可以直接呈现出可制作的最终产物列表'
-        - '可以对其进行快速制作'
-        - '目前支持的配方：铁矿，金矿，下界岩，筛矿，已粉碎的矿石，纯矿簇，煤'
+      - A magical item from MagicExpansion.
+      - Used for Quick Electric Ore Grinder BV.
     QUICK_HEATED_PRESSURE_CHAMBER_BV:
-      Name: '魔法压力舱[放置版]'
+      Name: Magic Heated Pressure Chamber [Block Version]
       Lore:
-        - '将材料放入魔法压力舱'
-        - '可以直接呈现出可制作的最终产物列表'
-        - '可以对其进行快速制作'
+      - A magical item from MagicExpansion.
+      - Used for Quick Heated Pressure Chamber BV.
     ENCHANTING_TABLE:
-      Name: '魔法赋能台'
+      Name: Magic Empowerment Table
       Lore:
-        - '一套独立的增益属性'
-        - '需要消耗强化材料和电力'
-        - '⇨ ⚡ 10,000 J/per'
-        - '⇨ ⚡ 8,888,888 J 可存储'
+      - A magical item from MagicExpansion.
+      - Used for Enchanting Table.
+      - ⇨ ⚡ 10,000 J per operation
     BASIC_ENCHANT_STONE:
-      Name: '星辰铁'
+      Name: Stellar Iron
       Lore:
-        - '星辰铁是一种神秘而稀有的金属'
-        - '这种金属并非源自凡间'
-        - '而是由坠落于世间的陨石中提炼而出'
+      - A magical item from MagicExpansion.
+      - Used for Basic Enchant Stone.
     WIND_SPIRIT:
-      Name: '风灵之息'
+      Name: Breath of the Wind Spirit
       Lore:
-        - '风之精灵消散时留下的最后一缕纯净气息'
-        - '它无形无相，却承载着风暴与自由的意志'
-        - '触摸时，指尖会掠过一阵微不可察的轻吟'
-        - '仿佛远方山巅的呼啸，或云层间的低语'
-        - '是激活浮空、迅捷与御风类魔法的核心引信'
-        - ''
-        - '「真正的风，从不归属于任何人'
-        - '   它只是短暂地，借你之手重临世间。」'
+      - A magical item from MagicExpansion.
+      - Used for Wind Spirit.
     WIND_SPIRIT_DROP:
-      Name: '风灵'
+      Name: Wind Spirit
       Lore:
-        - '击杀风灵时掉落'
-        - '概率：91.888%'
-        - '风之精灵消散时留下的最后一缕纯净气息'
-        - '「真正的风，从不归属于任何人'
-        - '   它只是短暂地，借你之手重临世间。」'
+      - A magical item from MagicExpansion.
+      - Used for Wind Spirit Drop.
     BASIC_ENCHANT_STONE_DROP:
-      Name: '烈焰僵尸'
+      Name: Flame Zombie
       Lore:
-        - '击杀烈焰僵尸时掉落'
-        - '概率：91.888%'
-        - '不可思议的是'
-        - '星辰铁也能从烈焰僵尸——一种罕见的、在燃烧与毁灭中重生的不死生物身上获取'
-        - '其主要通过精炼特定陨石获得'
-        - '但也有极大概率从烈焰僵尸身上掉落'
-        - '这些僵尸似乎因为某种古老的诅咒'
-        - '体内融合了微量的星辰铁'
+      - A magical item from MagicExpansion.
+      - Used for Basic Enchant Stone Drop.
     ENCHANTING_TABLE_INFO:
-      Name: '魔法赋能说明'
+      Name: Enchanting Table Information
       Lore:
-        - '你需要有星辰铁之类的材料'
-        - '并且将武器放入对应的槽位'
-        - '将赋能材料放到对应的槽位'
-        - '手动选择你想要的增益属性'
-        - '有1-3级的区分'
-        - '1-3级分别会消耗1-3个材料'
-        - '最后出现的强化属性数量也会不同'
-        - '材料数量决定强化属性数量'
-        - '材料品质决定强化属性品质'
+      - Information and instructions for Enchanting Table Information.
+      - Use the Slimefun guide for recipes and details.
     ENCHANTING_TABLE_LIST:
-      Name: '魔法赋能列表'
+      Name: Enchanting Table List
       Lore:
-        - '击飞'
-        - '吸引'
-        - '火焰'
-        - '减速'
-        - '雷击'
-        - '创生之力'
-        - '末影珍珠箭矢'
-        - '攻击换位'
-        - '敬请期待'
+      - Information and instructions for Enchanting Table List.
+      - Use the Slimefun guide for recipes and details.
     FIREZOMBIE_HEAD:
-      Name: '烈焰僵尸头颅'
+      Name: Flame Zombie Head
       Lore:
-        - '蕴含着丰富的魔法元素'
-        - '蕴含着丰富的末影元素'
-        - '他能够施展魔法攻击'
-        - '还能够施展末影瞬移'
-        - '会使用精神类攻击'
-        - '还会使用本命火元素攻击'
+      - A magical item from MagicExpansion.
+      - Used for Flame Zombie Head.
     FIREZOMBIE_BODY:
-      Name: '僵尸BOSS躯干'
+      Name: Flame Zombie Body
       Lore:
-        - '是腐朽也是新生'
-
+      - A magical item from MagicExpansion.
+      - Used for Flame Zombie Body.
     WIND_ELF_SPAWN:
-      Name: '风灵'
+      Name: Wind Spirit Summoner
       Lore:
-        - ' '
-        - '右键召唤风灵'
-
+      - A MagicExpansion boss or summoning item.
+      - Right-click to use where permitted.
     WIND_ELF_HEAD:
-      Name: '风灵头颅'
+      Name: Wind Elf Head
       Lore:
-        - '蕴含着丰富的魔法元素'
-        - '蕴含着丰富的末影元素'
-        - '他能够施展双子风攻击'
-        - '还能够施展末影瞬移'
-        - '会使用精神类攻击'
-        - '还会使用本命风元素攻击'
+      - A magical item from MagicExpansion.
+      - Used for Wind Elf Head.
     WIND_ELF_BODY:
-      Name: '风灵躯干'
+      Name: Wind Elf Body
       Lore:
-        - '水元素凝聚的风灵躯干'
-
+      - A magical item from MagicExpansion.
+      - Used for Wind Elf Body.
     WIND_ELF_SKILL:
-      Name: '风灵技能介绍'
+      Name: Wind Elf Skill
       Lore:
-        - '技能使用：4-6秒随机释放一个技能'
-        - '1：魔法攻击'
-        - '对目标造成10点魔法伤害'
-        - '特殊提示：不无视护甲'
-        - '2：乂爻风'
-        - '随机选取周围2个玩家并对其分别造成68，136点伤害'
-        - '特殊提示：不无视护甲，并且可能锁定同一个玩家'
-        - '3：絮风攻击'
-        - '对水平范围15格内，垂直范围8格内的玩家造成群体伤害'
-        - '并给予群体负面效果'
+      - Information and instructions for Wind Elf Skill.
+      - Use the Slimefun guide for recipes and details.
     WIND_ELF_DEFENSE:
-      Name: '风灵防御介绍'
+      Name: Wind Elf Defense
       Lore:
-        - '回血：每秒恢复2点生命值'
-        - ''
-        - '风灵惧怕剑类武器'
-        - '风灵对其他武器的攻击有着100%的免伤'
-        - ''
-        - '周围需要一定的阳气来压制风灵'
-        - '需要2~5人才能对风灵造成伤害'
-        - ''
-        - '风灵在每次使用技能后，会有2~4秒的虚弱期'
-        - '此时风灵的免伤将会大幅降低，风灵每次受到的伤害不会超过33%'
-        - ''
-        - '风灵有极快的移动速度'
-        - '每2秒会发动一次快速移动'
-
-
+      - Information and instructions for Wind Elf Defense.
+      - Use the Slimefun guide for recipes and details.
     PRE_BUILDING_TREE_INFO:
-      Name: '预制菜·信息'
+      Name: Prefab Tree Information
       Lore:
-        - '可以把他当成一个道具'
-        - '也可以当成一个生成器'
-        - '每棵树的数据都是固定的'
-        - '只有树是从中心下方生成'
-        - '其他建筑都是从相对零点(0,0,0)生成到(+x,+y,+z)'
-        - '右键放置预制建筑'
-        - 'shift+右键查看建筑占地信息'
+      - Information and instructions for Prefab Tree Information.
+      - Use the Slimefun guide for recipes and details.
     PRE_BUILDING_OAK_TREE:
-      Name: '预制树·橡木树'
+      Name: Prefab Oak Tree
       Lore:
-        - '这是一颗封印于魔法空间中的橡木树种子，蕴含着古老森林的生命之力'
-        - '一旦释放，它将迅速成长为一棵壮观的橡木树'
-        - '为你周围的环境带来勃勃生机'
-        - '手持这枚神奇的种子，找到你心仪的地点，对准任意方块右键点击'
-        - '瞬间，你会看到土地上破土而出一株嫩绿的新芽'
-        - '并以惊人的速度成长为一棵枝繁叶茂的橡木树'
-        - '无论是装饰你的建筑还是扩展你的家园'
-        - '只需轻轻一点，即可省去种植与等待成长的时间'
+      - Places or operates Prefab Oak Tree.
+      - Right-click to use. Sneak-right-click for more information.
     PRE_BUILDING_SPRUCE_TREE:
-      Name: '预制树·云杉树'
+      Name: Prefab Spruce Tree
       Lore:
-        - '这是一颗封印于魔法空间中的云杉树种子，蕴含着古老森林的生命之力'
-        - '一旦释放，它将迅速成长为一棵壮观的云杉树'
-        - '为你周围的环境带来勃勃生机'
-        - '手持这枚神奇的种子，找到你心仪的地点，对准任意方块右键点击'
-        - '瞬间，你会看到土地上破土而出一株嫩绿的新芽'
-        - '并以惊人的速度成长为一棵枝繁叶茂的云杉树'
-        - '无论是装饰你的建筑还是扩展你的家园'
-        - '只需轻轻一点，即可省去种植与等待成长的时间'
+      - Places or operates Prefab Spruce Tree.
+      - Right-click to use. Sneak-right-click for more information.
     PRE_BUILDING_BIRCH_TREE:
-      Name: '预制树·白桦树'
+      Name: Prefab Birch Tree
       Lore:
-        - '这是一颗封印于魔法空间中的白桦树种子，蕴含着古老森林的生命之力'
-        - '一旦释放，它将迅速成长为一棵壮观的白桦树'
-        - '为你周围的环境带来勃勃生机'
-        - '手持这枚神奇的种子，找到你心仪的地点，对准任意方块右键点击'
-        - '瞬间，你会看到土地上破土而出一株嫩绿的新芽'
-        - '并以惊人的速度成长为一棵枝繁叶茂的白桦树'
-        - '无论是装饰你的建筑还是扩展你的家园'
-        - '只需轻轻一点，即可省去种植与等待成长的时间'
+      - Places or operates Prefab Birch Tree.
+      - Right-click to use. Sneak-right-click for more information.
     PRE_BUILDING_JUNGLE_TREE:
-      Name: '预制树·丛林树'
+      Name: Prefab Jungle Tree
       Lore:
-        - '这是一颗封印于魔法空间中的丛林树种子，蕴含着古老森林的生命之力'
-        - '一旦释放，它将迅速成长为一棵壮观的丛林树'
-        - '为你周围的环境带来勃勃生机'
-        - '手持这枚神奇的种子，找到你心仪的地点，对准任意方块右键点击'
-        - '瞬间，你会看到土地上破土而出一株嫩绿的新芽'
-        - '并以惊人的速度成长为一棵枝繁叶茂的丛林树'
-        - '无论是装饰你的建筑还是扩展你的家园'
-        - '只需轻轻一点，即可省去种植与等待成长的时间'
+      - Places or operates Prefab Jungle Tree.
+      - Right-click to use. Sneak-right-click for more information.
     PRE_BUILDING_ACACIA_TREE:
-      Name: '预制树·金合欢树'
+      Name: Prefab Acacia Tree
       Lore:
-        - '这是一颗封印于魔法空间中的金合欢树种子，蕴含着古老森林的生命之力'
-        - '一旦释放，它将迅速成长为一棵壮观的金合欢树'
-        - '为你周围的环境带来勃勃生机'
-        - '手持这枚神奇的种子，找到你心仪的地点，对准任意方块右键点击'
-        - '瞬间，你会看到土地上破土而出一株嫩绿的新芽'
-        - '并以惊人的速度成长为一棵枝繁叶茂的金合欢树'
-        - '无论是装饰你的建筑还是扩展你的家园'
-        - '只需轻轻一点，即可省去种植与等待成长的时间'
+      - Places or operates Prefab Acacia Tree.
+      - Right-click to use. Sneak-right-click for more information.
     PRE_BUILDING_DARK_OAK_TREE:
-      Name: '预制树·深色橡木树'
+      Name: Prefab Dark Oak Tree
       Lore:
-        - '这是一颗封印于魔法空间中的深色橡木树种子，蕴含着古老森林的生命之力'
-        - '一旦释放，它将迅速成长为一棵壮观的深色橡木树'
-        - '为你周围的环境带来勃勃生机'
-        - '手持这枚神奇的种子，找到你心仪的地点，对准任意方块右键点击'
-        - '瞬间，你会看到土地上破土而出一株嫩绿的新芽'
-        - '并以惊人的速度成长为一棵枝繁叶茂的深色橡木树'
-        - '无论是装饰你的建筑还是扩展你的家园'
-        - '只需轻轻一点，即可省去种植与等待成长的时间'
+      - Places or operates Prefab Dark Oak Tree.
+      - Right-click to use. Sneak-right-click for more information.
     PRE_BUILDING_MANGROVE_TREE:
-      Name: '预制树·红树'
+      Name: Prefab Mangrove Tree
       Lore:
-        - '这是一颗封印于魔法空间中的红树种子，蕴含着古老森林的生命之力'
-        - '一旦释放，它将迅速成长为一棵壮观的红树'
-        - '为你周围的环境带来勃勃生机'
-        - '手持这枚神奇的种子，找到你心仪的地点，对准任意方块右键点击'
-        - '瞬间，你会看到土地上破土而出一株嫩绿的新芽'
-        - '并以惊人的速度成长为一棵枝繁叶茂的红树'
-        - '无论是装饰你的建筑还是扩展你的家园'
-        - '只需轻轻一点，即可省去种植与等待成长的时间'
+      - Places or operates Prefab Mangrove Tree.
+      - Right-click to use. Sneak-right-click for more information.
     PRE_BUILDING_CHERRY_TREE:
-      Name: '预制树·樱花树'
+      Name: Prefab Cherry Tree
       Lore:
-        - '这是一颗封印于魔法空间中的樱花树种子，蕴含着古老森林的生命之力'
-        - '一旦释放，它将迅速成长为一棵壮观的橡樱花树'
-        - '为你周围的环境带来勃勃生机'
-        - '手持这枚神奇的种子，找到你心仪的地点，对准任意方块右键点击'
-        - '瞬间，你会看到土地上破土而出一株嫩绿的新芽'
-        - '并以惊人的速度成长为一棵枝繁叶茂的樱花树'
-        - '无论是装饰你的建筑还是扩展你的家园'
-        - '只需轻轻一点，即可省去种植与等待成长的时间'
+      - Places or operates Prefab Cherry Tree.
+      - Right-click to use. Sneak-right-click for more information.
     PRE_BUILDING_TAFEI:
-      Name: '预制雕像·糖厂塔菲'
+      Name: Prefab Tafei
       Lore:
-        - '这是一座封印于魔法空间中的糖厂塔菲建筑'
-        - '选择一处桃源，将他放置下来'
-        - '糖厂塔菲在这里生产糖'
-        - '塔菲永远朝向日落的地方'
+      - Places or operates Prefab Tafei.
+      - Right-click to use. Sneak-right-click for more information.
     PRE_BUILDING_WISH_DALE:
-      Name: '预制雕像·维什戴尔'
+      Name: Prefab Wish Dale
       Lore:
-        - '雕像表面残留着硝烟与火药的气息，仿佛刚从一场爆炸中被抢救出来。'
-        - '她单膝立于碎石之上，肩炮微扬，嘴角挂着那抹标志性的、令人不安的笑。'
-        - '据说只要靠近三米，就能听见她低语：“嘿，想不想看烟花？”'
-        - '将雕像安放于战场边缘或基地高处——'
-        - '也许她不会守护你，但敌人一定会记得，这里有人“不好惹”。'
+      - Places or operates Prefab Wish Dale.
+      - Right-click to use. Sneak-right-click for more information.
     PRE_BUILDING_ANON:
-      Name: '预制雕像·千早爱音'
+      Name: Prefab Anon
       Lore:
-        - '雕像表面泛着微弱的粉蓝色光晕，仿佛有电流在发丝与裙摆间悄然流动。'
-        - '她踮脚跃起，吉他斜挎身后，双眸望向远方，像是下一秒就要奔向舞台的聚光灯。'
-        - '若在夜深人静时靠近，隐约能听见一段未完成的旋律在风中轻轻回响。'
-        - '将她安放在生活区或瞭望台旁——'
-        - '也许不会驱散黑暗，但至少，有人记得：这里也曾有人，为梦想高歌。'
-
+      - Places or operates Prefab Anon.
+      - Right-click to use. Sneak-right-click for more information.
     PRE_BUILDING_VILLAGE_LOVE_AND_TRADE_HOUSE:
-      Name: '预制生电·村民-爱与交易所'
+      Name: Prefab Village Love And Trade House
       Lore:
-        - '这是一座封印于魔法空间中的村民-爱与交易所建筑'
-        - '选择一处桃源，将他放置下来'
-        - '村民繁殖与交易一体化场所'
-        - '采用船吸固定村民'
-        - '请自助在需要的点位放置船只'
-        - '左下角为村民繁殖场所'
-        - '中间与右边为两处村民交易聚集地'
-        - '周围配备了完善的铁路设施运输村民'
+      - Places or operates Prefab Village Love And Trade House.
+      - Right-click to use. Sneak-right-click for more information.
     PRE_BUILDING_SHULKER_FARM:
-      Name: '预制生电·潜影贝农场'
+      Name: Prefab Shulker Farm
       Lore:
-        - '这是一座封印于魔法空间中的潜影贝农场'
-        - '选择一处空旷的地方，将他放置下来'
-        - '潜影贝在这里分裂出大量潜影贝'
-        - '请自助吸引潜影贝'
-        - '请自助放置雪傀儡'
-        - '中心为农场'
-        - '下方为收集装置'
+      - Places or operates Prefab Shulker Farm.
+      - Right-click to use. Sneak-right-click for more information.
     PRE_BUILDING_MCDONALDS:
-      Name: '预制建筑·麦当劳'
+      Name: Prefab Mcdonalds
       Lore:
-        - '这是一座封印于魔法空间中的麦当劳建筑'
-        - '选择一处空旷的地方，将他放置下来'
-        - '建筑内包含了诸多精妙的元素'
-        - '每个人都有属于自己的麦当劳'
-        - '麦当劳带来的简单快乐'
-        - '更多美味,更多惊喜,尽在麦当劳麦当劳'
-        - '麦当劳让你快乐一整天'
-
-
+      - Places or operates Prefab Mcdonalds.
+      - Right-click to use. Sneak-right-click for more information.
     PRE_BUILDING_HOUSE_OAK:
-      Name: '预制房·橡木小屋'
+      Name: Prefab House Oak
       Lore:
-        - '一缕古老的橡木香气从这块橡木中悄然溢出，'
-        - '仿佛诉说着被封印在魔法空间中的宁静小屋。'
-        - '它静候于咒文之间，只待归人择地而现。'
-        - '寻一片林间空地，轻启封印——'
-        - '炉火将再度燃起，屋檐下，便是家园。'
+      - Places or operates Prefab House Oak.
+      - Right-click to use. Sneak-right-click for more information.
     PRE_BUILDING_HOUSE_SPRUCE:
-      Name: '预制房·云杉小屋'
+      Name: Prefab House Spruce
       Lore:
-        - '寒雾缭绕的山巅松香，凝于云杉木之间，'
-        - '这座云杉小屋沉眠于折叠的风雪与晨曦之中。'
-        - '它曾伫立在云海之畔，听松涛低语，观星河流转。'
-        - '择一处高地，解开咒印——'
-        - '门扉轻启时，山风入怀，便是你隐世的开始。'
+      - Places or operates Prefab House Spruce.
+      - Right-click to use. Sneak-right-click for more information.
     PRE_BUILDING_HOUSE_CHERRY:
-      Name: '预制房·樱花小屋'
+      Name: Prefab House Cherry
       Lore:
-        - '一缕春风裹挟着粉白花瓣，从樱花木深处轻轻飘出，'
-        - '这座樱花小屋沉眠于时光的缝隙，静候花开之刻。'
-        - '它曾伫立在山樱林畔，年年见证落英如雪，月光如纱。'
-        - '择一处向阳坡地，轻诵解封之语——'
-        - '当门扉开启，春风拂面，仿佛整个春天都住进了屋檐下。'
+      - Places or operates Prefab House Cherry.
+      - Right-click to use. Sneak-right-click for more information.
     PRE_BUILDING_HOUSE_MANGROVE:
-      Name: '预制房·红树小屋'
+      Name: Prefab House Mangrove
       Lore:
-        - '咸湿的海风夹杂着潮汐低语，从红树木中悄然渗出，'
-        - '这座红树小屋沉眠于涨落之间，根系缠绕着月光与雾霭。'
-        - '它曾伫立在幽静的 mangrove 湾，听夜鹭轻啼，看萤火在气根间游荡。'
-        - '择一片临水滩涂，解开海之封印——'
-        - '当藤门轻启，浪声入梦，你便成了潮汐的守屋人。'
+      - Places or operates Prefab House Mangrove.
+      - Right-click to use. Sneak-right-click for more information.
     PRE_BUILDING_HOUSE_MOSS:
-      Name: '预制房·苔藓小屋'
+      Name: Prefab House Moss
       Lore:
-        - '一缕湿润的泥土气息从苔藓中弥漫开来，'
-        - '仿佛整座幽林的呼吸都藏在这片柔软的绿绒之中。'
-        - '这座小屋沉眠于古老符文下，屋顶覆满绒苔，墙垣与菌丝共生。'
-        - '它曾静卧在千年古木的臂弯里，听落叶轻叩门扉，看萤光在叶隙游荡。'
-        - '寻一片静谧林地，轻触大地之语——'
-        - '当苔门缓缓开启，你便踏入了森林不愿醒来的梦。'
-
+      - Places or operates Prefab House Moss.
+      - Right-click to use. Sneak-right-click for more information.
     PRE_BUILDING_HOUSE_WIND_CAR:
-      Name: '预制房·风车小屋'
+      Name: Prefab House Wind Car
       Lore:
-        - '一阵清风从卷轴中旋出，带着麦穗的清香与齿轮轻转的低鸣，'
-        - '这座风车小屋沉眠于静止的时光之风中，叶片凝滞如未展之翼。'
-        - '它曾伫立在起伏的丘陵之巅，日日挽风为力，磨谷为粮，点亮长夜孤灯。'
-        - '择一处向风高地，唤醒风之符文——'
-        - '当叶片重新旋转，灯火亮起时，风便为你带来了家的声音。'
-
+      - Places or operates Prefab House Wind Car.
+      - Right-click to use. Sneak-right-click for more information.
     PRE_BUILDING_DORA_PICTURE:
-      Name: '预制画·DORO像素画'
+      Name: Prefab Dora Picture
       Lore:
-        - '8-bit 的星光在画框中微微闪烁，'
-        - '仿佛一段被封存的旧日数据悄然苏醒。'
-        - '憨憨的粉狗'
-
-
-
+      - Places or operates Prefab Dora Picture.
+      - Right-click to use. Sneak-right-click for more information.
     PRE_BUILDING_WINE_BAR:
-      Name: '预制建筑·酒吧'
+      Name: Prefab Wine Bar
       Lore:
-        - '这是一座封印于魔法空间中的酒馆建筑'
-        - '选择一处空旷的地方，将它召唤而出'
-        - '建筑内流淌着醇香的美酒与悠扬的乐章'
-        - '每个人心中都有一座属于自己的酒馆'
-        - '酒馆点亮夜晚，慰藉旅人的心灵'
-        - '更多欢笑，更多故事，尽在酒馆与烛火之间'
-        - '酒馆让你温暖一整夜'
-
+      - Places or operates Prefab Wine Bar.
+      - Right-click to use. Sneak-right-click for more information.
     PRE_BUILDING_MOON_RABBIT_SHOP:
-      Name: '预制建筑·月兔商店'
+      Name: Prefab Moon Rabbit Shop
       Lore:
-        - '这是一座来自月宫深处的神秘商店'
-        - '选择一处空旷之地，轻念咒语将它唤出'
-        - '商店中陈列着月华凝成的奇珍异宝'
-        - '每一只月兔都守护着凡间的愿望'
-        - '在静谧的夜里，听见玉兔捣药的轻响'
-        - '更多奇遇，更多灵韵，尽在月兔商店'
-        - '月光所照之处，心愿悄然成真'
-
+      - Places or operates Prefab Moon Rabbit Shop.
+      - Right-click to use. Sneak-right-click for more information.
     PRE_BUILDING_MIDDLE_HORSE_HOUSE:
-      Name: '预制建筑·中型马厩'
+      Name: Prefab Middle Horse House
       Lore:
-        - '这是一座封印于魔法空间中的中型马厩'
-        - '选择一处平坦之地，将它安稳放置'
-        - '马厩内设有舒适的草垫与洁净的饮水槽'
-        - '每匹骏马都值得拥有安心休憩的港湾'
-        - '马蹄轻响，是旅途中最忠诚的陪伴'
-        - '更多庇护，更多安心，尽在中型马厩'
-        - '马厩在，伙伴就在'
-
+      - Places or operates Prefab Middle Horse House.
+      - Right-click to use. Sneak-right-click for more information.
     PRE_BUILDING_FISHING_PORT:
-      Name: '预制建筑·钓鱼港口'
+      Name: Prefab Fishing Port
       Lore:
-        - '这是一座封印于魔法空间中的钓鱼港口'
-        - '选择一处水边空地，将它轻轻展开'
-        - '港口停靠着小船，浮标在波光中轻晃'
-        - '每位钓者都梦想着属于自己的宁静港湾'
-        - '晨雾中抛竿，夕阳下收线，时光缓缓流淌'
-        - '更多收获，更多安宁，尽在钓鱼港口'
-        - '一竿一线一世界，静享渔趣好时光'
-
+      - Places or operates Prefab Fishing Port.
+      - Right-click to use. Sneak-right-click for more information.
     PRE_BUILDING_SI_HE_YUAN:
-      Name: '预制建筑·四合院'
+      Name: Prefab Si He Yuan
       Lore:
-        - '建议先打4格深的地基'
-        - '该建筑自带地基，向上第五格为建筑本体'
-        - '这是一座封印于时光之匣中的传统四合院'
-        - '选择一处平坦之地，将它悄然唤醒'
-        - '院中青砖黛瓦，种花养鱼，岁月静好'
-        - '每个家庭都向往一方团圆安宁的居所'
-        - '门环轻响，炊烟升起，是家的声音'
-        - '更多温情，更多回忆，尽在四合院中'
-        - '一院一世界，一家一春秋'
-
+      - Places or operates Prefab Si He Yuan.
+      - Right-click to use. Sneak-right-click for more information.
     PRE_BUILDING_BAKERY:
-      Name: '预制建筑·烘焙房'
+      Name: Prefab Bakery
       Lore:
-        - '这是一座封印于香气之中的温暖烘焙房'
-        - '选择一处街角空地，将它轻轻开启'
-        - '店内飘散着刚出炉的面包与甜点芬芳'
-        - '每个人心中都有一块属于甜味的角落'
-        - '烤箱微光闪烁，暖意从指尖蔓延到心底'
-        - '更多香气，更多幸福，尽在烘焙店时光'
-        - '一口温暖，一日晴好'
-
+      - Places or operates Prefab Bakery.
+      - Right-click to use. Sneak-right-click for more information.
     PRE_BUILDING_KFC_MIDDLE:
-      Name: '预制建筑·KFC·M'
+      Name: Prefab KFC Middle
       Lore:
-        - '这是一座封印于魔法空间中的KFC中型门店'
-        - '选择一处空旷之地，将它完整展开'
-        - '红白相间的招牌在微风中静静闪耀'
-        - '每一份炸鸡都承载着熟悉的味道与回忆'
-        - '指尖酥脆，唇齿留香，快乐即刻送达'
-        - '更多美味，更多欢聚，尽在KFC之中'
-        - '开启一刻，满足一整天'
-
+      - Places or operates Prefab KFC Middle.
+      - Right-click to use. Sneak-right-click for more information.
     PRE_BUILDING_KFC_SMALL:
-      Name: '预制建筑·KFC·S'
+      Name: Prefab KFC Small
       Lore:
-        - '这是一座封印于魔法空间中的KFC迷你门店'
-        - '选择一处角落空地，将它轻巧安置'
-        - '小巧却齐全，香气从窗边悄悄溢出'
-        - '即使匆匆路过，也值得一份热腾腾的慰藉'
-        - '一盒炸鸡，一杯可乐，点亮平凡时刻'
-        - '更多便捷，更多惊喜，尽在KFC·S'
-        - '小身材，大满足'
-
+      - Places or operates Prefab KFC Small.
+      - Right-click to use. Sneak-right-click for more information.
     PRE_BUILDING_LARGE_SNOW_KING:
-      Name: '预制建筑·大雪王'
+      Name: Prefab Large Snow King
       Lore:
-        - '这是一座封印于极寒魔力中的冰雪城堡'
-        - '选择一片开阔雪地，将它缓缓降临'
-        - '晶莹的冰砖堆砌出梦幻般的童话王国'
-        - '每个孩子心中都住着一位冰雪之王'
-        - '雪花旋转，铃声轻响，冬日奇迹正在上演'
-        - '更多奇遇，更多欢笑，尽在大雪王的世界'
-        - '一城冰雪，一梦童话'
-
+      - Places or operates Prefab Large Snow King.
+      - Right-click to use. Sneak-right-click for more information.
     PRE_BUILDING_MIDDLE_VILLA:
-      Name: '预制建筑·中型别墅·α'
+      Name: Prefab Middle Villa
       Lore:
-        - '这是一座封印于魔法空间中的中型别墅·α'
-        - '选择一处向阳坡地，将它悄然展开'
-        - '白墙灰顶，庭院错落，光影静静流淌'
-        - '每个人心中都有一处理想居所的蓝图'
-        - '晨光洒在露台，晚风穿过半开的窗'
-        - '在主客厅的桌子上还摆放着一颗龙蛋'
-        - '更多空间，更多自由，尽在中型别墅'
-        - '一宅一世界，安住即心安'
-
+      - Places or operates Prefab Middle Villa.
+      - Right-click to use. Sneak-right-click for more information.
     PRE_BUILDING_LITTLE_MI_XUE:
-      Name: '预制建筑·蜜雪冰城·S'
+      Name: Prefab Little Mi Xue
       Lore:
-        - '这是一座封印于清凉魔力中的蜜雪冰城迷你门店'
-        - '选择一处街边空地，将它欢快开启'
-        - '熟悉的旋律在风中轻轻响起，甜香四溢'
-        - '每杯饮品都承载着学生时代的青春记忆'
-        - '雪王微笑，气泡跳跃，快乐如此简单'
-        - '更多冰爽，更多欢笑，尽在蜜雪冰城'
-        - '甜蜜平价，快乐无价'
-
+      - Places or operates Prefab Little Mi Xue.
+      - Right-click to use. Sneak-right-click for more information.
     PRE_BUILDING_JAPAN_HOUSE:
-      Name: '预制建筑·日式町屋'
+      Name: Prefab Japan House
       Lore:
-        - '这是一座封印于和风结界中的日式町屋'
-        - '选择一处静谧街巷，将它徐徐展开'
-        - '木格纸门轻启，庭院苔痕斑驳，茶香氤氲'
-        - '每一间町屋都藏着一段京都的旧时光'
-        - '雨打屋檐，风拂竹帘，心也随之沉静'
-        - '更多禅意，更多安宁，尽在日式町屋'
-        - '一席一隅，皆是岁月静好'
-
+      - Places or operates Prefab Japan House.
+      - Right-click to use. Sneak-right-click for more information.
     PRE_BUILDING_FARM_BARN:
-      Name: '预制建筑·农场谷仓'
+      Name: Prefab Farm Barn
       Lore:
-        - '这是一座封印于丰收魔力中的农场谷仓'
-        - '选择一片开阔农田，将它稳稳落成'
-        - '红漆木墙，干草堆满，鸡鸭在旁嬉戏'
-        - '每一位农夫都梦想着这样一座丰饶之家'
-        - '晨露未散时喂食，夕阳西下时归仓'
-        - '更多收获，更多希望，尽在农场谷仓'
-        - '一仓一岁，仓满心安'
-
+      - Places or operates Prefab Farm Barn.
+      - Right-click to use. Sneak-right-click for more information.
     PRE_BUILDING_SAKURA_SHOP:
-      Name: '预制建筑·樱花商店'
+      Name: Prefab Sakura Shop
       Lore:
-        - '这是一座封印于春风结界中的樱花商店'
-        - '选择一处花下空地，将它轻轻唤醒'
-        - '粉白花瓣纷飞，店内陈列着春日限定好物'
-        - '每个人心中都有一场不期而遇的樱花之约'
-        - '风铃轻响，香气浮动，时光也为之驻足'
-        - '更多浪漫，更多惊喜，尽在樱花商店'
-        - '一店一春，花开即相见'
-
+      - Places or operates Prefab Sakura Shop.
+      - Right-click to use. Sneak-right-click for more information.
     PRE_BUILDING_FRUIT_SHOP:
-      Name: '预制建筑·水果店'
+      Name: Prefab Fruit Shop
       Lore:
-        - '这是一座封印于阳光魔力中的水果店'
-        - '选择一处街边空地，将它清新开启'
-        - '各色鲜果堆叠如山，散发着自然的香甜'
-        - '每一颗果实都承载着阳光雨露的馈赠'
-        - '清晨的露珠还在叶上，舌尖的清甜已绽放'
-        - '更多新鲜，更多活力，尽在水果店之中'
-        - '一口果香，一日晴朗'
-
+      - Places or operates Prefab Fruit Shop.
+      - Right-click to use. Sneak-right-click for more information.
     PRE_BUILDING_KRUSTY_KRAB:
-      Name: '预制建筑·蟹堡王'
+      Name: Prefab Krusty Krab
       Lore:
-        - '这是一座封印于海底结界中的蟹堡王餐厅'
-        - '选择一处开阔空地，将它轰隆开启'
-        - '红色屋顶，油锅滋响，蟹黄堡香气四溢'
-        - '每个海底居民都为这一口美味疯狂'
-        - '海绵宝宝在煎肉，章鱼哥吹着忧郁的泡泡'
-        - '更多美味，更多欢乐，尽在蟹堡王诞生'
-        - '今日菜单：快乐满分，外加一份热闹'
-
-
-
-
-
-
-
+      - Places or operates Prefab Krusty Krab.
+      - Right-click to use. Sneak-right-click for more information.
     UI_3:
-      Name: ''
+      Name: Ui 3
       Lore:
-        - ''
+      - A magical item from MagicExpansion.
+      - Used for Ui 3.
     UI_4:
-      Name: ''
+      Name: Ui 4
       Lore:
-        - ''
+      - A magical item from MagicExpansion.
+      - Used for Ui 4.
     UI_5:
-      Name: ''
+      Name: Ui 5
       Lore:
-        - ''
+      - A magical item from MagicExpansion.
+      - Used for Ui 5.
     UI_6:
-      Name: ''
+      Name: Ui 6
       Lore:
-        - ''
+      - A magical item from MagicExpansion.
+      - Used for Ui 6.
     UI_7:
-      Name: ''
+      Name: Ui 7
       Lore:
-        - ''
+      - A magical item from MagicExpansion.
+      - Used for Ui 7.
     UI_8:
-      Name: ''
+      Name: Ui 8
       Lore:
-        - ''
+      - A magical item from MagicExpansion.
+      - Used for Ui 8.
     UI_9:
-      Name: ''
+      Name: Ui 9
       Lore:
-        - ''
-
-
+      - A magical item from MagicExpansion.
+      - Used for Ui 9.
     UI_THX:
-      Name: '特别鸣谢'
+      Name: Ui Thx
       Lore:
-        - ''
-        - '不分先后'
-
-
-
+      - A magical item from MagicExpansion.
+      - Used for Ui Thx.
     NAZUKICYL_TEST:
-      Name: 'Nazukicyl'
+      Name: Nazukicyl Test
       Lore:
-        - ''
-        - '测试'
-        - '粘液大蛇'
+      - A magical item from MagicExpansion.
+      - Used for Nazukicyl Test.
     HAIMAN_TEST:
-      Name: 'haiman'
+      Name: Haiman Test
       Lore:
-        - ''
-        - '测试'
-        - '代表作：海曼科技院'
-        - '诸多粘液附属的汉化者'
-        - '为粘液科技做出了重大贡献'
+      - A magical item from MagicExpansion.
+      - Used for Haiman Test.
     QIZHIYI_TEST:
-      Name: 'qizhiyi'
+      Name: Qizhiyi Test
       Lore:
-        - ''
-        - '测试&wiki'
-        - '粘液大蛇'
-        - '对于魔法了解颇深'
-        - '有什么不懂的都可以问他'
+      - A magical item from MagicExpansion.
+      - Used for Qizhiyi Test.
     KOMU_A:
-      Name: 'Komu_A'
+      Name: Komu A
       Lore:
-        - ''
-        - '测试'
-        - '对于魔法了解颇深'
-        - '有什么不懂的都可以问他'
-        - '粘液大蛇'
-        - '口木科技作者'
+      - A magical item from MagicExpansion.
+      - Used for Komu A.
     LENGSHANG_TEST:
-      Name: 'lengshang'
+      Name: Lengshang Test
       Lore:
-        - ''
-        - '测试'
-        - '刷物大蛇'
-        - '冷殇科技作者'
-        - '企鹅群985241606'
-        - '下载粘液科技整合包'
-        - '曾发布过令mtl等人都叹为观止的性感粘液科技整合包'
-
-
-
-
-
-
+      - A magical item from MagicExpansion.
+      - Used for Lengshang Test.
     VOID_TOUCH:
-      Name: '虚空之触'
+      Name: Void Touch
       Lore:
-        - ' '
-        - '不可以跨越维度对方块进行交互'
-        - '这个操作并不能强制加载区块'
-        - '此物品只能对100坤格内的区域进行操作'
-        - 'Tips:只能对粘液机器或功能方块进行操作哦'
-        - 'Tips:无法对没有权限的区域进行操作'
-        - ' '
-        - "Shift+右键方块绑定位置"
-        - "右键任意位置触发远程交互"
+      - A magical item from MagicExpansion.
+      - Used for Void Touch.
     VOID_TOUCH_SCRIPT:
-      Name: '虚空之触-自定义脚本专用'
+      Name: Void Touch Script
       Lore:
-        - ' '
-        - '不可以跨越维度对方块进行交互'
-        - '这个操作并不能强制加载区块'
-        - '此物品只能对100坤格内的区域进行操作'
-        - 'Tips:只能对粘液机器或功能方块进行操作哦'
-        - ' '
-        - "Shift+右键方块绑定位置"
-        - "右键任意位置触发远程交互"
+      - A magical item from MagicExpansion.
+      - Used for Void Touch Script.
     FIVE_ELEMENT_TOUCH:
-      Name: '五行之触'
+      Name: Five Element Touch
       Lore:
-        - ' '
-        - '可以跨越维度对方块进行交互'
-        - '这个操作并不能强制加载区块'
-        - '此物品无视维度，无视距离'
-        - 'Tips:打开容器操作只对粘液机器或功能方块有效哦'
-        - ' '
-        - "Shift+右键方块绑定位置"
-        - "右键任意位置触发远程交互"
+      - A magical item from MagicExpansion.
+      - Used for Five Element Touch.
     FIVE_ELEMENT_TOUCH_RIGHT_CLICK:
-      Name: '五行之触·逆'
+      Name: Five Element Touch Right Click
       Lore:
-        - ' '
-        - '可以跨越维度对方块进行进行交互'
-        - '这个操作并不能强制加载区块'
-        - '此物品无视维度，无视距离'
-        - 'Tips:原理为对着坐标处进行左键'
-        - ' '
-        - "Shift+右键方块绑定位置"
-        - "右键任意位置触发远程交互"
+      - A magical item from MagicExpansion.
+      - Used for Five Element Touch Right Click.
     RIGHT_CLICK_MAN:
-      Name: '模拟交互机器人'
+      Name: Right Click Man
       Lore:
-        - ' '
-        - '可以模拟玩家交互方块'
-        - '此机器人无需耗电'
-        - '但是需要在一定范围内存在玩家'
-        - '推荐用于多方块结构机器自动化'
-        - 'Tips:不会触发原版容器打开事件'
-
-
-
+      - A magical item from MagicExpansion.
+      - Used for Right Click Man.
     DEATH_LIFE_BOOK:
-      Name: '生死簿[序列号：111]'
+      Name: Death Life Book
       Lore:
-        - ' '
-        - '对范围内的生物进行生死审判'
-        - '也可以直接tp到对应生物位置'
-        - '可以查看血量，坐标，名称'
-        - '审判'
-        - '精神系道具'
-
-
+      - A magical item from MagicExpansion.
+      - Used for Death Life Book.
     DRAW_MACHINE:
-      Name: '一个普普通通的抽奖机'
+      Name: Draw Machine
       Lore:
-        - ' '
-        - '基础民用抽奖机'
-        - '所有槽位平摊概率'
-        - '概率：1/使用槽位数量'
-        - '支持连抽'
-        - '实验性物品'
-
+      - A MagicExpansion processing machine.
+      - Processes materials for Draw Machine.
     MAGIC_WAND:
-      Name: '魔法祭坛法杖'
+      Name: Magic Wand
       Lore:
-        - ' '
-        - '右键祭坛发射器来激活合成'
-        - '需要正确的方块布局和物品配方'
-
-
-
-
-
+      - A magical item from MagicExpansion.
+      - Used for Magic Wand.
     UPDATE_LOG_2025_06_23:
-      Name: 'Date: 2025-06-23'
+      Name: Update Log 2025 06 23
       Lore:
-        - ' '
-        - '1. 添加了魔法泥土园'
-        - '功能：可以快速地对泥土进行转换'
-        - '2. 添加了魔法捕鱼场'
-        - '功能：可以实现捕鱼自动化'
-        - '3. 修复了有关预制菜的权限问题'
-        - '功能: 很难再出现越权问题'
+      - A magical item from MagicExpansion.
+      - Used for Update Log 2025 06 23.
     UPDATE_LOG_2025_06_29:
-      Name: 'Date: 2025-06-29'
+      Name: Update Log 2025 06 29
       Lore:
-        - ' '
-        - '1. 添加了崩铁角色以及盲盒'
-        - '功能：可以通过盲盒开出各种角色'
-        - '2. 添加了星光扫描仪'
-        - '功能：可以实现盲盒的自动拆解'
+      - A magical item from MagicExpansion.
+      - Used for Update Log 2025 06 29.
     UPDATE_LOG_2025_07_12:
-      Name: 'Date: 2025-07-12'
+      Name: Update Log 2025 07 12
       Lore:
-        - ' '
-        - '1. 开始对1.20的rsc版本魔法进行1.21的兼容优化'
-        - '效果：新机器同样可以对低版本兼容，并且有更好的性能'
-        - '2. 修复优化了魔法资源开采机'
-        - '功能：能够正常使用，并且可以定向采集'
+      - A magical item from MagicExpansion.
+      - Used for Update Log 2025 07 12.
     UPDATE_LOG_2025_07_23:
-      Name: 'Date: 2025-07-23'
+      Name: Update Log 2025 07 23
       Lore:
-        - ' '
-        - '1. 新增单方块-矿脉（需要使用特定工具挖掘）'
-        - '功能：能从这个方块中挖掘各种矿物原矿'
-        - '2. 修正了相关物品描述'
-        - '效果：更详细的描述'
-        - '3. 添加了一体化机器-矿粉产线'
-        - '功能：包含矿粉产线相关配方'
+      - A magical item from MagicExpansion.
+      - Used for Update Log 2025 07 23.
     UPDATE_LOG_2025_07_25:
-      Name: 'Date: 2025-07-25'
+      Name: Update Log 2025 07 25
       Lore:
-        - ' '
-        - '1. 新增一些基础材料'
-        - '功能：完善基础材料'
-        - '2. 新增稳定的火力发电机'
-        - '功能：更稳定，更强的发电'
-        - '3. 新增彩蛋发电机'
-        - '功能：每个版本使用不同的密码，用于发电（发电量很大的哦~）'
-        - '用法：需要在输入槽放入正确数量物品就能解锁使用'
-        - '4. 对原有的部分机器增加了升级路线'
-        - '功能: 更快的效率！更多的耗电！'
-        - '5. 新增刷线机（黏液版）'
-        - '功能: 将这优秀的游戏机制延续到1.145.14版本'
-        - '6. 新增矿脉机器人'
-        - '功能: 自动生产原矿'
+      - A magical item from MagicExpansion.
+      - Used for Update Log 2025 07 25.
     UPDATE_LOG_2025_07_26:
-      Name: 'Date: 2025-07-26'
+      Name: Update Log 2025 07 26
       Lore:
-        - ' '
-        - '1. 新增虚空/五行之触'
-        - '功能：可以远距离交互机器'
-        - '2. 新增自动交互机器人'
-        - '功能: 模拟玩家点击机器'
+      - A magical item from MagicExpansion.
+      - Used for Update Log 2025 07 26.
     UPDATE_LOG_2025_08_01:
-      Name: 'Date: 2025-08-01'
+      Name: Update Log 2025 08 01
       Lore:
-        - ' '
-        - '1. 新增BOSS：风灵'
-        - 'Tips：技能介绍及攻略见魔法·BOSS'
-        - '2. 完善技能介绍及攻略'
-        - '作用: 方便攻略'
-        - '3. 修复了魔法赋能越权问题'
-        - '效果：更安全'
+      - A magical item from MagicExpansion.
+      - Used for Update Log 2025 08 01.
     UPDATE_LOG_2025_08_27:
-      Name: 'Date: 2025-08-27'
+      Name: Update Log 2025 08 27
       Lore:
-        - ' '
-        - '1. 新增8种预制建筑'
-        - '①：6种不同风格木质小屋'
-        - '②：维什戴尔雕像'
-        - '③：DORA像素画'
+      - A magical item from MagicExpansion.
+      - Used for Update Log 2025 08 27.
     UPDATE_LOG_2025_08_29:
-      Name: 'Date: 2025-08-29'
+      Name: Update Log 2025 08 29
       Lore:
-        - ' '
-        - '1. 新增18个预制建筑'
-        - '①：麦当劳餐厅'
-        - '②：千早爱音'
-        - '③：懒得写名字了'
-        - '④：中间省略'
-        - '······'
-        - '①⑥：蟹堡王'
-        - '2. 魔法拓展更名为魔法2.0'
-        - '并且增添了一些颜色上面的彩蛋'
-        - '3. 优化快捷机器⑩山代码'
-        - '4. 增加了无厘头分类'
-        - '打发时间用的合成配方'
-        - '我不信有人能做出最终产物！'
+      - A magical item from MagicExpansion.
+      - Used for Update Log 2025 08 29.
     UPDATE_LOG_2025_08_30:
-      Name: 'Date: 2025-08-30'
+      Name: Update Log 2025 08 30
       Lore:
-        - ' '
-        - '1. 更新彩蛋发电机'
-        - '①：数字1：110011111'
-        - '②：数字2：111011011'
-        - '③：彩蛋方块: 萤石'
-        - '2. 新增钓鱼佬分支'
-        - '新增2根鱼杆'
-        - '原木鱼杆&萌新鱼杆'
-        - '具体作用见物品描述'
-        - '新增7种鱼类'
-        - '特殊鱼类：'
-        - '鳗鱼和鳕鱼可用作发电'
-        - '铜粉鱼等可用作生产材料'
-        - '3. 新增机器'
-        - '生物发电机'
-        - '利用鱼的特性来发电'
-        - '生态缸'
-        - '特殊鱼种可在其中进行生产'
+      - A magical item from MagicExpansion.
+      - Used for Update Log 2025 08 30.
     UPDATE_LOG_2025_09_02:
-      Name: 'Date: 2025-09-02'
+      Name: Update Log 2025 09 02
       Lore:
-        - ' '
-        - '1. 新增特殊鱼群'
-        - '①：矿粉鱼（修改部分机制）'
-        - '②：矿物鱼（11种）'
-        - '2： 更新鱼群习性'
-        - '鱼有不同喜好的鱼饵'
-        - '3. 多用途鱼种'
-        - '灯笼鱼可用于发电&生产'
-        - '新增特殊用途描述'
-        - '4. 优化鱼杆描述'
-        - '可用鱼饵转至合成表下方'
-        - '5. 优化鱼类描述'
-        - '6. 修正部分错误描述'
-        - '7. 修复部分错误配方'
-        - '8. 新增鱼杆 风语者之竿'
-
+      - A magical item from MagicExpansion.
+      - Used for Update Log 2025 09 02.
     UPDATE_LOG_2025_09_05:
-      Name: 'Date: 2025-09-02'
+      Name: Update Log 2025 09 05
       Lore:
-        - ' '
-        - '1. 优化鱼获重量算法'
-        - '2. 新增一款终极毕业鱼杆'
-        - '纠缠之节：终焉之丝·悖论为钩'
-        - '制作难度：极高'
-        - '作用: 使用特殊鱼饵钓取任意粘液物品'
-
+      - A magical item from MagicExpansion.
+      - Used for Update Log 2025 09 05.
     UPDATE_LOG_2025_09_09:
-      Name: 'Date: 2025-09-09'
+      Name: Update Log 2025 09 09
       Lore:
-        - ' '
-        - '1. 修复魔法赋能台刷取武器'
-        - '2. 修复魔法赋能台刷取材料'
-
+      - A magical item from MagicExpansion.
+      - Used for Update Log 2025 09 09.
     UPDATE_LOG_2025_09_13:
-      Name: 'Date: 2025-09-13'
+      Name: Update Log 2025 09 13
       Lore:
-        - ' '
-        - '1. 优化魔法单方块的方块变换范围'
-        - '2. 新增工业材料鱼群'
-        - '具体内容见生态缸'
-        - '3. 优化生态缸产物排列顺序'
+      - A magical item from MagicExpansion.
+      - Used for Update Log 2025 09 13.
     UPDATE_LOG_2025_09_14:
-      Name: 'Date: 2025-09-14'
+      Name: Update Log 2025 09 14
       Lore:
-        - ' '
-        - '1. 优化生态缸代码'
-        - '2. 新增红石鱼,附魔瓶鱼'
-        - '3. 修复部分文本描述错误'
+      - A magical item from MagicExpansion.
+      - Used for Update Log 2025 09 14.
     UPDATE_LOG_2025_09_18:
-      Name: 'Date: 2025-09-18'
+      Name: Update Log 2025 09 18
       Lore:
-        - ' '
-        - '1. 修复部分配方错误'
-        - '2. 优化魔法材料工坊配方'
-        - '将材料逆向合成独立出来'
-        - '3. 优化快捷工作台[放置版]'
-        - '所有槽位均改为双向，输入输出槽'
-        - '若合成出原版物品，则会提示物品名称会变为英文'
-        - '上面这个英文是小彩蛋'
-        - '4. wiki正在编写的路上'
-        - 'wiki网址: https://github.com/Yomicer/MagicExpansion/wiki'
-        - '5. 修复彩蛋发电机异常发电量 2 ~ 2 Billion'
+      - A magical item from MagicExpansion.
+      - Used for Update Log 2025 09 18.
     UPDATE_LOG_2025_09_20:
-      Name: 'Date: 2025-09-20'
+      Name: Update Log 2025 09 20
       Lore:
-        - ' '
-        - '1. 修复虚空之触错误的计算'
-        - '2. rsc魔法1.21优化机器 取消条件注册'
-        - '修改rsc优化机器的物品产出，改为产出媒介物品，最后可进行转换'
-        - '3. 优化模拟右键机器人的使用方式'
+      - A magical item from MagicExpansion.
+      - Used for Update Log 2025 09 20.
     UPDATE_LOG_2025_09_27:
-      Name: 'Date: 2025-09-27'
+      Name: Update Log 2025 09 27
       Lore:
-        - ' '
-        - '1. 修复部分错误描述'
-        - '2. 优化随机资源生成器配方注册'
-        - '3. 新增了粘液性能检测器'
-        - '4. 新增测试存储元件'
-        - '5. 完成魔法存储的编写'
-        - '魔法存储进入测试阶段'
-        - '测试阶段彩蛋'
-        - '20格以内的传输会有粒子线连接的效果'
-        - '6. 修复部分鱼类体重异常'
-        - '7. 修复优化版rsc魔法资源采集器配方异常'
+      - A magical item from MagicExpansion.
+      - Used for Update Log 2025 09 27.
     UPDATE_LOG_2025_09_29:
-      Name: 'Date: 2025-09-29'
+      Name: Update Log 2025 09 29
       Lore:
-        - ' '
-        - '1. 修复魔法存储终端异常报错情况'
-        - '2. 正式开放魔法存储的合成'
-        - '3. 取消魔法存储终端在传输时会发出b动静的特性'
+      - A magical item from MagicExpansion.
+      - Used for Update Log 2025 09 29.
     UPDATE_LOG_2025_10_06:
-      Name: 'Date: 2025-10-06'
+      Name: Update Log 2025 10 06
       Lore:
-        - ' '
-        - '1. 优化以太秘匣文本描述'
-        - '2. 优化单方块显示代码'
-        - '3. 大幅减少预制建筑的冷却时间/OP无冷却'
-        - '4. 新增一体化矿粉线(输入输出槽分离版)'
-        - '5. 新增双面胶，可以将物品贴在方块手上'
-        - '6. 新增薛定谔的相框'
-        - '7. 新增了鱼获图鉴'
+      - A magical item from MagicExpansion.
+      - Used for Update Log 2025 10 06.
     UPDATE_LOG_2025_10_07:
-      Name: 'Date: 2025-10-07'
+      Name: Update Log 2025 10 07
       Lore:
-        - ' '
-        - '1. 新增 魔法存储终端·重构版'
-        - '对其第一代功能进行了筛减以及优化'
-        - '支持自定义最大上限'
-        - '当设置最大上限后，物品会处于锁定状态'
-        - '可以理解为网络抽屉的内容锁定'
-        - '但是这里的锁定仅仅是1对1的'
-        - '远程传输·输出 支持对原版容器输出'
-        - '优化了魔法存储终端的物品掉落机制'
-        - '单物品最多掉落2.14B*2048'
+      - A magical item from MagicExpansion.
+      - Used for Update Log 2025 10 07.
     UPDATE_LOG_2025_10_14:
-      Name: 'Date: 2025-10-14'
+      Name: Update Log 2025 10 14
       Lore:
-        - ' '
-        - '1. 限制薛定谔的相框仅能与原版物品交互'
-        - 'Tips: 不包含任何NBT数据的物品'
-        - '2. 上调终焉鱼竿钓万物的概率, 57%->67%'
-        - '3. 新增合金锭鱼群/部分辐射物鱼群'
-        - '新增碳块鱼种'
-        - '本次共新增20种鱼种'
-        - '4. 新增鱼饵，混合合金泥 萌新鱼竿鱼获概率约为44.2%'
-        - '风语者之杆使用上述鱼饵鱼获概率越为51%'
-        - 'Tips: 不同鱼饵在不同鱼竿的鱼获率均不同'
-        - '终焉钓竿采用所有鱼群捕获池平摊概率'
-        - '5. 萌新钓竿未配备鱼饵状态钓鱼'
-        - '有概率钓起一颗威力看似非常大的tnt'
-        - '6. 优化钓鱼指南内鱼种文本描述'
+      - A magical item from MagicExpansion.
+      - Used for Update Log 2025 10 14.
     UPDATE_LOG_2025_10_23:
-      Name: 'Date: 2025-10-23'
+      Name: Update Log 2025 10 23
       Lore:
-        - ' '
-        - '1. 新增1种传说鱼'
-        - '可用于电力传输，单次输入输出为20亿'
-        - '2. 电力中转站'
-        - '可用于电力载体输入或输出电力'
-        - '3. 新增幸运电容'
-        - '每刻都会为电网产生电力'
-        - '4. 修复传输类相关不兼容问题'
-        - '5. 新增终焉电卡'
-        - '效果等同电卡鱼（新增的那种传说鱼）'
+      - A magical item from MagicExpansion.
+      - Used for Update Log 2025 10 23.
     UPDATE_LOG_2025_10_25:
-      Name: 'Date: 2025-10-25'
+      Name: Update Log 2025 10 25
       Lore:
-        - ' '
-        - '1. 增加AI对话功能'
-        - '需要对配置文件进行配置'
-        - '默认阿里云qwen-plus-2025-09-11模型'
-        - '可以白嫖阿里云token创建api-key'
+      - A magical item from MagicExpansion.
+      - Used for Update Log 2025 10 25.
     UPDATE_LOG_2025_10_26:
-      Name: 'Date: 2025-10-26'
+      Name: Update Log 2025 10 26
       Lore:
-        - ' '
-        - '1. 优化AI对话功能'
-        - '个人默认回答100字左右，可使用柔性手段解除'
-        - '公共ai锁定100字上限，无法修改'
+      - A magical item from MagicExpansion.
+      - Used for Update Log 2025 10 26.
     UPDATE_LOG_2025_11_02:
-      Name: 'Date: 2025-11-02'
+      Name: Update Log 2025 11 02
       Lore:
-        - ' '
-        - '1. 优化了鱼体重范围判定'
-        - '现在可以钓起满重量鱼'
-        - '2. 提高了超级稀有鱼的概率'
-        - '3. 新增了序列化脚本工具'
-        - '玩家可自定义编写一些玩家行为脚本'
-        - '4. 新增以太秘匣传输器'
-        - '可以将以太秘匣内保存的物品快速传入玩家背包'
-        - '5. 优化序列化脚本工具'
+      - A magical item from MagicExpansion.
+      - Used for Update Log 2025 11 02.
     UPDATE_LOG_2025_11_05:
-      Name: 'Date: 2025-11-05'
+      Name: Update Log 2025 11 05
       Lore:
-        - ' '
-        - '1. 大幅降低魔法机器运行延迟'
-        - '2. 优化魔法存储终端显示功能'
-        - '3. 完善电容分支'
-        - '增加初级、中级、毕业电容'
-        - '增加魔法电容特性-保留当前电力'
-        - '不要快速放置破坏电容，这样会使电容电力丢失'
-        - '4. 新增生死簿'
-        - '5. 新增抽奖机'
+      - A magical item from MagicExpansion.
+      - Used for Update Log 2025 11 05.
     UPDATE_LOG_2025_11_07:
-      Name: 'Date: 2025-11-07'
+      Name: Update Log 2025 11 07
       Lore:
-        - ' '
-        - '1. 修复了以太秘匣传输器吞物品的bug'
-        - '以太秘匣传输器需要在每次服务器重启后重新放置'
-        - '该机器采用放置开始tick，破坏停止tick，重启停止tick'
-        - '优化推送逻辑'
+      - A magical item from MagicExpansion.
+      - Used for Update Log 2025 11 07.
     UPDATE_LOG_2025_11_08:
-      Name: 'Date: 2025-11-08'
+      Name: Update Log 2025 11 08
       Lore:
-        - ' '
-        - '1. 修复了抽奖机刷物的bug'
-        - '2. 风语者钓竿可以使用魔法糖直接钓起高阶魔法糖'
-        - '29~37阶魔法糖概率极低'
-        - '3. 新增魔法祭坛分支'
-        - '输入/mxalter 可以查询更多指令'
-        - '目前仅只有烈焰弹与附魔金苹果2个配方'
+      - A magical item from MagicExpansion.
+      - Used for Update Log 2025 11 08.
     UPDATE_LOG_2025_11_12:
-      Name: 'Date: 2025-11-12'
+      Name: Update Log 2025 11 12
       Lore:
-        - ' '
-        - '1. 新增鱼类体重稀有度：鱼皇'
-        - '更高的材料产量'
-        - '2. 新增魔法祭坛配方：锋利255附魔书'
-        - '3. 优化抽奖机tick相关项'
+      - A magical item from MagicExpansion.
+      - Used for Update Log 2025 11 12.
     UPDATE_LOG_2025_11_21:
-      Name: 'Date: 2025-11-21'
+      Name: Update Log 2025 11 21
       Lore:
-        - ' '
-        - '1. 修复钓鱼指南刷物bug'
-        - '2. 完善onEnable条件'
-        - '3. 新增抢夺255附魔书的合成配方'
+      - A magical item from MagicExpansion.
+      - Used for Update Log 2025 11 21.
     UPDATE_LOG_2025_11_22:
-      Name: 'Date: 2025-11-22'
+      Name: Update Log 2025 11 22
       Lore:
-        - ' '
-        - '1. 新增以太秘匣传输器（粘液刻版）'
-        - '2. 削弱风灵的瞬移速率'
-        - '0.5s -> 2s'
-        - '3. 新增35种玻璃相关形态的能源连接器'
+      - A magical item from MagicExpansion.
+      - Used for Update Log 2025 11 22.
+      - 0.5s -> 2s
     UPDATE_LOG_2025_11_23:
-      Name: 'Date: 2025-11-23'
+      Name: Update Log 2025 11 23
       Lore:
-        - ' '
-        - '1. 修改终焉鱼竿粘液ID'
-        - '2. 服主可对通过常规途径（非ID台获取）的玩家给予相应补偿'
-        - '3. 服主可对通过ID台获取的玩家给予一定补偿'
-        - '4. 原终焉鱼竿现已无作用'
+      - A magical item from MagicExpansion.
+      - Used for Update Log 2025 11 23.
     UPDATE_LOG_2025_12_01:
-      Name: 'Date: 2025-12-01'
+      Name: Update Log 2025 12 01
       Lore:
-        - ' '
-        - '1. 新增小毕业武器：星韵裁决'
-        - '2. 优化魔法祭坛配方书显示'
+      - A magical item from MagicExpansion.
+      - Used for Update Log 2025 12 01.
     UPDATE_LOG_2025_12_06:
-      Name: 'Date: 2025-12-06'
+      Name: Update Log 2025 12 06
       Lore:
-        - ' '
-        - '1. 修复部分文本描述错误'
-        - '2. 新增毕业机器-魔法溯源机'
-        - '根据成品的源材料生产材料'
-        - '3. 由于魔法2.0游玩难度较高'
-        - '建议服主根据自认难度使用NPC兑换部分材料'
+      - A magical item from MagicExpansion.
+      - Used for Update Log 2025 12 06.
     UPDATE_LOG_2025_12_13:
-      Name: 'Date: 2025-12-13'
+      Name: Update Log 2025 12 13
       Lore:
-        - ' '
-        - '1. 新增以太秘匣提取器'
-        - '2. 修复魔法祭坛缺失配方'
+      - A magical item from MagicExpansion.
+      - Used for Update Log 2025 12 13.
     UPDATE_LOG_2025_12_16:
-      Name: 'Date: 2025-12-16'
+      Name: Update Log 2025 12 16
       Lore:
-        - ' '
-        - '1. 修复了魔法存储终端无权限取物的特性'
-        - '2. 新增了脚本专用虚空之触'
-        - '3. 修改虚空之触制作配方'
-        - '4. 新增简易的生态缸'
-        - '速率为: 1/3/8/888'
-        - '原生态缸提高制作难度'
-        - '生产速率略微提升'
+      - A magical item from MagicExpansion.
+      - Used for Update Log 2025 12 16.
     UPDATE_LOG_2025_12_19:
-      Name: 'Date: 2025-12-19'
+      Name: Update Log 2025 12 19
       Lore:
-        - ' '
-        - '1. 新增以太生态阵列-可堆叠生态缸'
-        - '2. 生态缸可直接对魔法存储终端进行产物输出'
-        - '需提前设置对应存储物'
-        - '3. 删减魔法存储终端·重构版 对原版容器的交互功能'
-        - '4. 对于推送原版容器这里有个建议'
-        - '魔法存储直接对对应量子存储推送物品'
-        - '使用网络的原版推送接口进行推送'
+      - A magical item from MagicExpansion.
+      - Used for Update Log 2025 12 19.
     UPDATE_LOG_2025_12_20:
-      Name: 'Date: 2025-12-20'
+      Name: Update Log 2025 12 20
       Lore:
-        - ' '
-        - '1. 新增53格空白容器'
-        - '可用于魔法存储与其他存储传输的中间容器'
-        - '2. 以太秘匣新增物品转移功能'
-        - '通过主手以太秘匣，副手设置了存储物的量子存储'
-        - '输入数量即可进行物品转移'
-        - '3. 新增以太秘匣转换器'
-        - '可直接从量子存储中提取物品转换为以太秘匣'
+      - A magical item from MagicExpansion.
+      - Used for Update Log 2025 12 20.
     UPDATE_LOG_2025_12_31:
-      Name: 'Date: 2025-12-31'
+      Name: Update Log 2025 12 31
       Lore:
-        - ' '
-        - '1. 新增新年烟花'
-        - '2. 2025年的最后一次更新'
-
+      - A magical item from MagicExpansion.
+      - Used for Update Log 2025 12 31.
     UPDATE_LOG_2026_01_02:
-      Name: 'Date: 2026-01-02'
+      Name: Update Log 2026 01 02
       Lore:
-        - ' '
-        - '1. 修复抽奖机刷物bug'
-        - '优化抽奖机模板物品名称显示'
-        - '2. 修复魔法存储终端刷物bug'
-        - '3. 不要将多次嵌套的物品存入魔法存储终端'
-        - '这样只会被服务器强制提出游戏'
-        - '大概率造成存储停止tick'
-        - '当然，这个时候已存入的东西大概并不会丢失'
-        - '注意是大概'
-        - '最后，不要将量子套量子套量子存入存储'
-        - '这个bug已经修了，此后这样会导致被踢出服务器'
-        - '原因: 粘液sql存入字符上限'
-        - '- 2026.01.03合并更新日志'
-
+      - A magical item from MagicExpansion.
+      - Used for Update Log 2026 01 02.
     UPDATE_LOG_2026_01_23:
-      Name: 'Date: 2026-01-23'
+      Name: Update Log 2026 01 23
       Lore:
-        - ' '
-        - '1. 新增魔法-共创组别'
-
+      - A magical item from MagicExpansion.
+      - Used for Update Log 2026 01 23.
     UPDATE_LOG_2026_01_27:
-      Name: 'Date: 2026-01-27'
+      Name: Update Log 2026 01 27
       Lore:
-        - ' '
-        - '1. 优化初级魔法补丁材料配方'
-        - '2. 对2款魔法资源开采机的全息投影进行优化'
-        - '可在机器内设置显示或隐藏全息投影'
-        - '3. 新增二代渐变色'
-        - '4. 此更新后的新内容，颜色均采用二代渐变色'
-        - '5. 新增便携式物品命名牌'
-        - '6. 新增魔法2.0ToRSC魔法资源强制转换器'
-        - '可转换资源参考魔法资源开采机采集物（媒介产物）'
-        - '7. 新增食物以及食材原料组别'
-        - '8. 优化纪念品 烟花 的合成配方'
-        - '9. 大幅削弱boss的瞬移频率'
-        - '10. 新增测试员Komu_A'
+      - A magical item from MagicExpansion.
+      - Used for Update Log 2026 01 27.
     UPDATE_LOG_2026_01_28:
-      Name: 'Date: 2026-01-28'
+      Name: Update Log 2026 01 28
       Lore:
-        - ' '
-        - '1. 新增测试员lengshang'
-        - '2. 新增了以太秘匣distinctive的属性'
-        - '3. 2026.1.31合并更新日志'
-        - '新增魔法赋能擦拭巾'
-        - '可以擦除魔法赋能效果'
-
+      - A magical item from MagicExpansion.
+      - Used for Update Log 2026 01 28.
     UPDATE_LOG_2026_02_19:
-      Name: 'Date: 2026-02-19'
+      Name: Update Log 2026 02 19
       Lore:
-        - ' '
-        - '1. 修复最新版网拓量子存储兼容性问题'
-        - '2. 新增随机知识解锁卡'
-        - '3. 新增五行资源生成器'
-        - '4. 新增星陨裁决配置文件'
-        - '5. 修复魔法存储终端可能崩服的bug'
-        - '6. 新增测试项 - extraUtils'
-
+      - A magical item from MagicExpansion.
+      - Used for Update Log 2026 02 19.
     UPDATE_LOG_2026_03_10:
-      Name: 'Date: 2026-03-10'
+      Name: Update Log 2026 03 10
       Lore:
-        - ' '
-        - '1. 新增汉字刻印工坊'
-        - '可生产乱码科技ID卡所需中文字符'
-        - '2. 后续更新日志内容较少可能会直接合并到最新一条更新日志中'
-        - '不单独再写一个新的日期'
-
+      - A magical item from MagicExpansion.
+      - Used for Update Log 2026 03 10.
     UPDATE_LOG_2026_03_13:
-      Name: 'Date: 2026-03-13'
+      Name: Update Log 2026 03 13
       Lore:
-        - ' '
-        - '1. 新增农作物'
-        - '- 糖心麦种'
-        - '- 高纤土豆'
-        - '2. 近期即将更新的内容：'
-        - '大量特殊农作物'
-        - '3. 未来更新计划：'
-        - '特殊效果的美食'
-
+      - A magical item from MagicExpansion.
+      - Used for Update Log 2026 03 13.
     UPDATE_LOG_2026_03_17:
-      Name: 'Date: 2026-03-17'
+      Name: Update Log 2026 03 17
       Lore:
-        - ' '
-        - '1. 新增2种农作物'
-        - '2. 降低魔法2.0所有物品的NBT长度'
-        - '摒弃原先的横向渐变色字体'
-        - '改为纵向渐变色字体'
-        - '这将导致原先很多物品产线需要重新设置'
-        - '对此很抱歉'
-        - '3. 新增2种魔法食品'
-        - '原先的一种魔法食品效果已实装'
-        - '4. 增强星陨裁决的护盾持续时间'
-        - '修复了原先可以被kill强行击杀的bug'
-        - '5. 修复了预制建筑·大雪王的异常合成'
-        - '6. 新增了预制建筑预览信息查询'
-        - 'shift+右键可查看占地面积以及体积'
+      - A magical item from MagicExpansion.
+      - Used for Update Log 2026 03 17.
     UPDATE_LOG_2026_03_22:
-      Name: 'Date: 2026-03-22'
+      Name: Update Log 2026 03 22
       Lore:
-        - ' '
-        - '1. 新增20种植物'
-        - '9矿粉农作物 9矿锭农作物 2合金锭农作物'
-        - '2. 新增终焉鱼饵相关配置'
-        - '可自定义是否启用终焉鱼饵作为钓饵'
-        - '可自定义是否允许终焉鱼饵被魔法鱼竿钓取'
-        - '3. 优化魔法植物不同产物掉落概率及果实数量'
-        - '4. 新增星陨裁决额外配置项'
+      - A magical item from MagicExpansion.
+      - Used for Update Log 2026 03 22.
     UPDATE_LOG_2026_04_18:
-      Name: 'Date: 2026-04-18'
+      Name: Update Log 2026 04 18
       Lore:
-        - ' '
-        - '1. 修复抽奖机异常复制UI的bug'
-        - '2. 新增全系文字清理器'
-        - '3. 修复鱼饵异常判定的bug'
-        - '4. 新增魔力印刷厂'
-        - '2026.5.17 小更新'
+      - A magical item from MagicExpansion.
+      - Used for Update Log 2026 04 18.
     UPDATE_LOG_2026_05_21:
-      Name: 'Date: 2026-05-21'
+      Name: Update Log 2026 05 21
       Lore:
-        - ' '
-        - '1. 新增万物演化台及其相关前置工作台'
-        - '2. 优化部分文本描述'
+      - A magical item from MagicExpansion.
+      - Used for Update Log 2026 05 21.
     UPDATE_LOG_2026_06_24:
-      Name: 'Date: 2026-06-24'
+      Name: Update Log 2026 06 24
       Lore:
-        - ' '
-        - '1. 星陨裁决属性调整'
-        - '新增固定百分比伤害'
-        - '新增流血效果(叠加独立生效)'
-        - '流血：每秒流失固定百分比血量'
-        - '2. 新增极道演化台'
-        - '可以生成任意物品'
-        - '这是一个简单的资源生成器'
+      - A magical item from MagicExpansion.
+      - Used for Update Log 2026 06 24.
     UPDATE_LOG_2026_07_03:
-      Name: 'Date: 2026-07-03'
+      Name: Update Log 2026 07 03
       Lore:
-        - ' '
-        - '1. 修改终极魔法祭坛底座'
-        - '更容易分辨发射器对应位置是否正确'
-        - '2. 新增管理员指令'
-        - '/magicfish list/give [重量] [数量]'
-        - '3. 新增魔法鱼增重饲料'
-        - '可以使用饲料喂养魔法鱼'
-        - '让任何一条小的可怜的鱼都有可能成长为鱼皇'
-        - '4. 新增实验性机器-简陋的机器'
-        - '5. 优化生态缸制作配方'
-        - '6. 生态缸阵列支持量子存储'
-        - '7. 修复生态缸阵列刷物bug'
+      - A magical item from MagicExpansion.
+      - Used for Update Log 2026 07 03.
     UPDATE_LOG_2026_07_12:
-      Name: 'Date: 2026-07-12'
+      Name: Update Log 2026 07 12
       Lore:
-        - ' '
-        - '1. 新增魔法集市'
-        - '服主可自行设定兑换内容'
-        - '兑换次数上限等'
-        - '2. 新增魔法黑市'
-        - '可以兑换到几乎所有魔法的物品'
-        - '包括但不限于 魔法溯源机 星陨裁决 极道演化台 等'
-        - '制作工艺越难，概率越低'
-        - '商店新增物品概率公示'
-        - '商店新增非线性补偿机制'
+      - A magical item from MagicExpansion.
+      - Used for Update Log 2026 07 12.
     UPDATE_LOG_2026_07_30:
-      Name: 'Date: 2026-07-30'
+      Name: Update Log 2026 07 30
       Lore:
-        - ' '
-        - '1. 新增万物演化台·源起'
-        - '万物演化台·疾 削弱版'
-        - '2. 对演化台系列所有机器'
-        - '进行重命名以及描述重构'
-        - '3. 新增万物演化台·源起 堆叠装置'
-        - '4. 对基础鱼饵新增一下鱼获'
-        - '所有原版合金矿锭，一些自然资源,以及2大魔法boss掉落物'
-        - '留个悬念，具体哪些你们探索吧'
-
+      - A magical item from MagicExpansion.
+      - Used for Update Log 2026 07 30.
     COOPERATE_CREATION_INFO:
-      Name: '魔法共创说明'
+      Name: Cooperative Creation Information
       Lore:
-        - ''
-        - '与玩家共同创作的内容'
-        - '任何人都可以参与进来'
-        - '最终成品具有一定的合理性'
-
-
-
+      - Information and instructions for Cooperative Creation Information.
+      - Use the Slimefun guide for recipes and details.
     FISHING_INFO:
-      Name: '魔法钓鱼说明'
+      Name: Fishing Information
       Lore:
-        - ''
-        - '鱼饵优先级问题：'
-        - '越先出的鱼饵，优先级越高'
-        - '强优先级：'
-        - '首先判定副手的鱼饵'
-        - '关于鱼杆&鱼饵问题：'
-        - '仅魔法2.0系列鱼杆会触发特殊钓鱼'
-        - '有饵和没饵都会触发不同的鱼获'
-        - '鱼杆会影响鱼获，鱼饵也会影响鱼获'
-        - '鱼杆品阶影响鱼的重量以及稀有度'
-        - '鱼饵种类影响鱼获种类'
-        - '有关鱼饵和鱼杆机制，慢慢探索吧'
-        - '关于风语者之竿的材料'
-        - '星辰铁微尘/鱼鳞尘/赤铁矿核皆为特殊鱼饵产物'
-        - '慢慢探索其中的乐趣吧'
-        - '剩下说明等有需要再补充，暂时想不到了'
+      - Information and instructions for Fishing Information.
+      - Use the Slimefun guide for recipes and details.
     FISH_CATEGORY_INFO:
-      Name: '鱼类信息汇总'
+      Name: Fish Category Information
       Lore:
-        - ''
-        - '鱼类分类：'
-        - '1. 常见鱼类: 2 种'
-        - '2. 不常见鱼类: 1 种'
-        - '3. 稀有鱼类: 21 种'
-        - '4. 史诗鱼类: 21 种'
-        - '5. 传说鱼类: 1 种'
-        - '6. 神话鱼类: 0 种'
-
+      - Information and instructions for Fish Category Information.
+      - Use the Slimefun guide for recipes and details.
     RANDOM_FISH_COMMON:
-      Name: '常见鱼类'
+      Name: Random Fish Common
       Lore:
-        - ''
-        - '它们成群结队，几乎在任何水域都能见到'
-        - '岸边、浅滩、河口，到处都是它们的身影'
-        - '数量极多，是钓鱼最基础的收获'
-        - '只要你抛下鱼钩，几乎总能钓到几条'
-
+      - A fishing item from MagicExpansion.
+      - Used for Random Fish Common.
     RANDOM_FISH_UNCOMMON:
-      Name: '罕见鱼类'
+      Name: Random Fish Uncommon
       Lore:
-        - ''
-        - '它们不会出现在普通水域，只栖息在特定环境'
-        - '需要特定的天气或时间才会上钩'
-        - '虽非稀世之物，但也绝非随处可见'
-        - '只有留意时机的人，才有机会遇见'
-
+      - A fishing item from MagicExpansion.
+      - Used for Random Fish Uncommon.
     RANDOM_FISH_RARE:
-      Name: '稀有鱼类'
+      Name: Random Fish Rare
       Lore:
-        - ''
-        - '只在极端天气或特殊月相时现身'
-        - '出没地点隐秘，且停留时间极短'
-        - '许多钓鱼人终其一生也未曾得见'
-        - '它的存在本身，就是一种严苛的考验'
-
+      - A fishing item from MagicExpansion.
+      - Used for Random Fish Rare.
     RANDOM_FISH_RARE_POOL_DUST:
-      Name: '稀有鱼类-矿粉'
+      Name: Random Fish Rare Pool Dust
       Lore:
-        - ''
-        - '只在极端天气或特殊月相时现身'
-        - '出没地点隐秘，且停留时间极短'
-        - '许多钓鱼人终其一生也未曾得见'
-        - '它的存在本身，就是一种严苛的考验'
+      - A fishing item from MagicExpansion.
+      - Used for Random Fish Rare Pool Dust.
     RANDOM_FISH_RARE_POOL_ORE:
-      Name: '稀有鱼类-矿物'
+      Name: Random Fish Rare Pool Ore
       Lore:
-        - ''
-        - '只在极端天气或特殊月相时现身'
-        - '出没地点隐秘，且停留时间极短'
-        - '许多钓鱼人终其一生也未曾得见'
-        - '它的存在本身，就是一种严苛的考验'
+      - A fishing item from MagicExpansion.
+      - Used for Random Fish Rare Pool Ore.
     RANDOM_FISH_RARE_POOL_INDUSTRY:
-      Name: '稀有鱼类-工业材料'
+      Name: Random Fish Rare Pool Industry
       Lore:
-        - ''
-        - '只在极端天气或特殊月相时现身'
-        - '出没地点隐秘，且停留时间极短'
-        - '许多钓鱼人终其一生也未曾得见'
-        - '它的存在本身，就是一种严苛的考验'
+      - A fishing item from MagicExpansion.
+      - Used for Random Fish Rare Pool Industry.
     RANDOM_FISH_EPIC_POOL_INDUSTRY:
-      Name: '史诗鱼类-工业材料'
+      Name: Random Fish Epic Pool Industry
       Lore:
-        - ''
-        - '极少有人能证明它真的存在'
-        - '目击记录寥寥无几，大多被认为是误传'
-        - '据说只有在命运交汇的瞬间才可能钓到'
-        - '获取它的条件近乎不可能，几乎被视为虚构'
+      - A fishing item from MagicExpansion.
+      - Used for Random Fish Epic Pool Industry.
     RANDOM_FISH_EPIC_POOL_ALLOY_INGOT:
-      Name: '史诗鱼类-合金锭'
+      Name: Random Fish Epic Pool Alloy Ingot
       Lore:
-        - ''
-        - '极少有人能证明它真的存在'
-        - '目击记录寥寥无几，大多被认为是误传'
-        - '据说只有在命运交汇的瞬间才可能钓到'
-        - '获取它的条件近乎不可能，几乎被视为虚构'
-
+      - A fishing item from MagicExpansion.
+      - Used for Random Fish Epic Pool Alloy Ingot.
     RANDOM_FISH_EPIC:
-      Name: '史诗鱼类'
+      Name: Random Fish Epic
       Lore:
-        - ''
-        - '极少有人能证明它真的存在'
-        - '目击记录寥寥无几，大多被认为是误传'
-        - '据说只有在命运交汇的瞬间才可能钓到'
-        - '获取它的条件近乎不可能，几乎被视为虚构'
-
+      - A fishing item from MagicExpansion.
+      - Used for Random Fish Epic.
     RANDOM_FISH_LEGENDARY:
-      Name: '传奇鱼类'
+      Name: Random Fish Legendary
       Lore:
-        - ''
-        - '只存在于古老传说中，现实是否存疑'
-        - '千百年来，仅有模糊的记载与残缺的画像'
-        - '有人说它早已灭绝，也有人说它从未诞生'
-        - '若你真的钓到它，或许将改写整个钓鱼史'
-
+      - An automated MagicExpansion energy or resource machine.
+      - Produces or processes resources related to Random Fish Legendary.
     FISH_LEGENDARY_EEL_POWER:
-      Name: '以太·虚灵电鳗'
+      Name: Fish Legendary Eel Power
       Lore:
-        - ''
-        - '可作为电力的载体'
-
-
+      - An automated MagicExpansion energy or resource machine.
+      - Produces or processes resources related to Fish Legendary Eel Power.
     FISH_LURE_BASIC:
-      Name: '基础魔法饵料'
+      Name: Fish Lure Basic
       Lore:
-        - ''
-        - '以基础魔法溶液浸泡过的虫饵与谷物混合制成'
-        - '散发着淡淡的魔力波动，能轻微吸引水中的生灵'
-        - ''
-        - '虽无特殊引诱力场，却是每一位魔法钓手的起点'
-        - ''
-        - '平凡之中蕴藏无限可能'
-        - '——毕竟，奇迹也始于一次普通的抛竿'
+      - A fishing item from MagicExpansion.
+      - Used for Fish Lure Basic.
     FISH_LURE_DUST:
-      Name: '魔法鱼饵·混合矿粉'
+      Name: Fish Lure Dust
       Lore:
-        - ''
-        - '由多种金属粉末与基础魔法饵料混合而成'
-        - '撒入水中时，会散发出微弱的矿物共鸣'
-        - '仿佛地下深处的金属之歌被悄然唤醒'
-        - ''
-        - '相传，某些金属感知到同类的气息'
-        - '便会从河流或冰川中游出，趋之若鹜'
-        - ''
-        - '是钓取「矿粉鱼种」的必备引信'
-        - '——铜、铁、银、甚至金的活体源头'
+      - A fishing item from MagicExpansion.
+      - Used for Fish Lure Dust.
     FISH_LURE_ORE:
-      Name: '魔法鱼饵·混合矿物质'
+      Name: Fish Lure Ore
       Lore:
-        - ''
-        - '由多种矿物与基础魔法饵料混合而成'
-        - '撒入水中时，会散发出微弱的矿物共鸣'
-        - '仿佛地下深处的金属之歌被悄然唤醒'
-        - ''
-        - '相传，某些金属感知到同类的气息'
-        - '便会从河流或冰川中游出，趋之若鹜'
-        - ''
-        - '是钓取「矿物鱼种」的必备引信'
-        - '——青金石、绿宝石、钻石、甚至下界合金锭的活体源头'
+      - A fishing item from MagicExpansion.
+      - Used for Fish Lure Ore.
     FISH_LURE_ALLOY_INGOT:
-      Name: '魔法鱼饵·混合合金泥'
+      Name: Fish Lure Alloy Ingot
       Lore:
-        - ''
-        - '以熔融的远古合金为核心，封印着锻冶之火的余烬'
-        - '表面流转着金属冷却后特有的幽蓝纹路'
-        - '仿佛能听见锤击铁砧的回响在灵魂深处震荡'
-        - ''
-        - '传说当沉眠于地脉的合金之灵'
-        - '感知到这缕熟悉的锻造韵律'
-        - '便会挣脱岩层的束缚，循声而来'
-        - ''
-        - '是引诱「高阶合金鱼种」的至臻诱饵'
-        - '——铁锭、金锭、下界合金，乃至失落文明的星陨钢之化身'
-
-
+      - A fishing item from MagicExpansion.
+      - Used for Fish Lure Alloy Ingot.
     FISHING_ROD_LOG:
-      Name: '原木鱼杆'
+      Name: Fishing Rod Log
       Lore:
-        - ' '
-        - '可以从河里钓起各种原木'
-        - '使用方法：使用此鱼杆钓水'
-        - '不消耗任何鱼饵'
-
-
+      - A fishing item from MagicExpansion.
+      - Used for Fishing Rod Log.
     FISHING_ROD_NEW_PLAYER:
-      Name: '萌新鱼杆'
+      Name: Fishing Rod New Player
       Lore:
-        - ' '
-        - '用河边最柔韧的柳枝和蜘蛛丝缠成'
-        - '轻巧顺手，是开始钓鱼的好伙伴'
-        - ''
-        - '抛出第一竿时'
-        - '水面荡开的涟漪，就像在说：欢迎来到这里'
-        - ''
-        - '「别担心钓不到鱼'
-        - '   重要的是，你已经坐在水边了。」'
-
+      - A fishing item from MagicExpansion.
+      - Used for Fishing Rod New Player.
     FISHING_STICK_STAR_IRON:
-      Name: '星辰木'
+      Name: Fishing Stick Star Iron
       Lore:
-        - ''
-        - '微光在纹理间缓缓流动'
-        - '仿佛整片银河被封存在一节枝干之中'
-        - ''
-        - '经「星坠仪式」注入星辰铁微尘的活化木心'
-        - '其共振频率与稀有水生生物的感知波段完全契合'
-        - ''
-        - '在木棒中，星辰铁微尘闪烁着耀眼的蓝光'
-        - '「有些鱼，只回应星光的低语。」'
-
+      - A fishing item from MagicExpansion.
+      - Used for Fishing Stick Star Iron.
     FISHING_ROD_WIND_SPEAKER:
-      Name: '风语者之竿'
+      Name: Fishing Rod Wind Speaker
       Lore:
-        - ' '
-        - '竿身由千年风蚀的云杉木雕琢而成'
-        - '线轮缠绕着风灵羽翼间凝结的气流之丝'
-        - ''
-        - '持之静立，耳畔似有风吟低语'
-        - '抛竿如引雷，收线若驭风'
-        - ''
-        - '传说唯有真正理解“等待”的人'
-        - '才能听见风告诉他的鱼群轨迹'
-        - ''
-        - '「风从不指引方向'
-        - '   它只是拂过那些已准备好出发的人。」'
-
+      - A fishing item from MagicExpansion.
+      - Used for Fishing Rod Wind Speaker.
     南柯一梦终须醒_浮生若梦皆是空:
-      Name: '纠缠之节：终焉之丝·悖论为钩'
+      Name: Dreams Must End
       Lore:
-        - ' '
-        - '一截来自平行宇宙交界处的甘蔗'
-        - '其节节皆处于量子纠缠态'
-        - '一动，则万界同步'
-        - ''
-        - '鱼线由“终焉之丝”纺成'
-        - '它不连向深海，而连向时间的尽头'
-        - ''
-        - '鱼钩名为“悖论”'
-        - '因它能钓起“从未存在”之物'
-        - ''
-        - '当竿尖轻颤——'
-        - '无数现实中的“已钓起”瞬间'
-        - '同时发生。'
-        - ''
-        - '「你问它为何无所不钓？」'
-        - '「因为它钓的，是“钓起”本身。」'
-
+      - Even the most beautiful dream must eventually end.
+      - A legendary final fishing rod.
     FISHING_ROD_FINAL_STRING:
-      Name: '终焉之丝'
+      Name: Fishing Rod Final String
       Lore:
-        - ' '
-        - '并非丝线，而是时间尽头'
-        - '断裂的一缕因果残响'
-        - ''
-        - '它不连向深海，也不连向星空'
-        - '而是垂入“终结之后”的寂静'
-        - ''
-        - '当竿尖轻颤，万界终末的回音'
-        - '便顺着丝线，逆流而上'
-        - ''
-        - '于是——'
-        - '未死之物显露终局'
-        - '未生之物预见归宿'
-        - ''
-        - '「它不钓鱼」'
-        - '「它钓的是万物注定沉没的倒影。」'
+      - A fishing item from MagicExpansion.
+      - Used for Fishing Rod Final String.
     FISHING_ROD_FINAL_HOOK:
-      Name: '悖论鱼钩'
+      Name: Fishing Rod Final Hook
       Lore:
-        - ' '
-        - '此钩从未被铸造'
-        - '因为它存在于“被铸造之前”'
-        - ''
-        - '它同时是：'
-        - '  ——已锈蚀的终末之钩'
-        - '  ——尚未诞生的初生之尖'
-        - ''
-        - '观测它的人，会看见自己'
-        - '正在抛竿的未来'
-        - '与已被钓起的过去'
-        - '同时发生'
-        - ''
-        - '「它不违反规则」'
-        - '「它只是证明：规则，不自洽。」'
-
-
+      - A fishing item from MagicExpansion.
+      - Used for Fishing Rod Final Hook.
     FISHING_ROD_FISH_ANYTHING:
-      Name: '鱼获：任何物品'
+      Name: Fishing Rod Fish Anything
       Lore:
-        - ' '
-        - '该物品仅供参考'
-        - '没有实际作用'
-
+      - A fishing item from MagicExpansion.
+      - Used for Fishing Rod Fish Anything.
     DOUBLE_SIDED_TAPE:
-      Name: '双面胶'
+      Name: Double Sided Tape
       Lore:
-        - ''
-        - '可以将物品贴到方块上面'
-        - '- 消耗品'
-
+      - A magical item from MagicExpansion.
+      - Used for Double Sided Tape.
     SCHRODINGER_FRAME_ONE:
-      Name: '薛定谔的相框[显性]'
+      Name: Schrodinger Frame One
       Lore:
-        - ''
-        - '相框上的物品真的存在吗？'
-        - '将物品放置上去'
-        - '目前仅支持没有NBT的原版物品'
-        - '有50%的概率消失'
-        - '有50%的概率双倍掉落'
-        - '打破相框后'
-        - '可能会掉落双倍物品'
-        - '也可能什么也不会掉落'
-        - '一次性消耗品'
-
-
+      - A magical item from MagicExpansion.
+      - Used for Schrodinger Frame One.
     SCHRODINGER_FRAME_INFINITE:
-      Name: '薛定谔的相框[隐性]'
+      Name: Schrodinger Frame Infinite
       Lore:
-        - ''
-        - '相框上的物品真的存在吗？'
-        - '将物品放置上去'
-        - '目前仅支持没有NBT的原版物品'
-        - '有50%的概率消失'
-        - '有50%的概率双倍掉落'
-        - '打破相框后'
-        - '可能会掉落双倍物品'
-        - '也可能什么也不会掉落'
-        - '必须在没有物品的情况下才可以打碎相框'
-        - '并且只会有概率掉落普通相框'
-
-
+      - A magical item from MagicExpansion.
+      - Used for Schrodinger Frame Infinite.
     ITEM_NAME_TAG:
-      Name: '便携式命名牌'
+      Name: Item Name Tag
       Lore:
-        - ''
-        - 'shift+右键 修改便携式物品命名牌名称'
-        - '右键 消耗便携式物品命名牌'
-        - '将物品命名牌的名字刻在物品上'
-        - '也可以对生物进行命名'
-        - '利用一点小技巧还可以消耗1个命名牌进行2次命名'
-
-
+      - A magical item from MagicExpansion.
+      - Used for Item Name Tag.
     FISHING_BOOK:
-      Name: '钓鱼指南'
+      Name: Fishing Book
       Lore:
-          - '介绍了各种鱼的喜好'
-          - '以及某些特殊鱼获的方式'
-
+      - A fishing item from MagicExpansion.
+      - Used for Fishing Book.
     MAGIC_CROP_INFO:
-      Name: "魔法作物信息"
+      Name: Magic Crop Information
       Lore:
-        - ' '
-        - '请确认你是否安装了SlimeGlue(粘液胶)'
-        - '他可以保证你的魔法作物在重启后数据不丢失'
-        - '若未安装，服务器重启后将丢失魔法作物的粘液数据'
-        - '关于魔法作物相关信息'
-        - '请不要使用水流冲击农作物'
-        - '这样会使农作物丢失粘液数据'
-        - '你可以采用活塞推送耕地的方式'
-        - '来实现魔法作物的高效收割'
-        - '未来将会添加更多关于魔法作物的内容以及相关一体化生产工序'
-    
-
+      - Information and instructions for Magic Crop Information.
+      - Use the Slimefun guide for recipes and details.
     WHEAT_SEEDS:
-      Name: "糖心麦种(Sugar-Heart Wheat Seeds)"
+      Name: Wheat Seeds
       Lore:
-        - '一种对生长环境极其敏感的变异作物。'
-        - ''
-        - '特性：'
-        - '- 成熟后产量远超普通小麦'
-        - '- 在麦芒末梢会凝聚出少量魔法糖'
-        - '- 依赖下方耕地的完整性'
-        - ''
-        - '警告：'
-        - '一旦下方泥土变为空气，或遭遇水流冲击'
-        - '作物将立即枯萎并失去所有魔法属性'
-        - '变为普通作物种子'
-        - ''
-        - '请确保种植在稳固的耕地上。'
-
+      - A magical item from MagicExpansion.
+      - Used for Wheat Seeds.
     POTATO:
-      Name: "高纤土豆(High-Fiber Potato)"
+      Name: Potato
       Lore:
-        - '一种根系极度发达且富含魔力的变异块茎。'
-        - ''
-        - '特性：'
-        - '- 成熟后产量远超普通土豆'
-        - '- 块茎内部交织着高浓度的魔力纤维'
-        - '- 依赖下方耕地的完整性'
-        - ''
-        - '警告：'
-        - '一旦下方泥土变为空气，或遭遇水流冲刷'
-        - '根系将瞬间断裂并失去所有魔力活性'
-        - '退化为普通土豆种子'
-        - ''
-        - '请确保种植在稳固的耕地上。'
-
+      - A magical item from MagicExpansion.
+      - Used for Potato.
     HYBRID_RICE_SEEDS:
-      Name: "杂交水稻种子 (Hybrid Rice)"
+      Name: Hybrid Rice Seeds
       Lore:
-        - ' '
-        - '“我做过一个梦，梦中我和大家一起'
-        - ' 在稻田里散步，在水稻下面乘凉。”'
-        - '“那个梦真是太美了...”'
-        - '—— 袁隆平'
-        - ' '
-        - '✨ 这是承载着“禾下乘凉梦”的神奇种子。'
-        - ' '
-        - '特性：'
-        - '• 极高产量：成熟后收获大量稻谷'
-        - '• 巨型植株：成熟后稻穗高大，可遮挡阳光'
-        - '• 坚韧根系：需要种植在湿润的耕地上'
-        - ' '
-        - '⚠ 注意：'
-        - '若耕地被破坏或遭遇洪水冲刷，'
-        - '它将突变为普通的小麦种子。'
-        - ' '
-        - '右键种植在湿润的耕地上'
-
-
+      - A magical item from MagicExpansion.
+      - Used for Hybrid Rice Seeds.
     ORE_DUST_CRYSTAL:
-      Name: "✨ 矿粉结晶 (Ore Dust Crystal)"
+      Name: Ore Dust Crystal
       Lore:
-        - '一种在采集成熟魔法矿粉农作物时，低概率掉落的稀有副产物。'
-        - ''
-        - '描述：'
-        - '- 它是魔力在收割瞬间被强行压缩并固化的微小晶体'
-        - '- 并非植物退化后的残渣，而是丰收时溢出的精华凝结'
-        - '- 散发着微弱但稳定的对应金属魔力光辉'
-        - ''
-        - '注意：'
-        - '只有完美成熟的作物在特定条件下收割才会显现。'
-
+      - A magical item from MagicExpansion.
+      - Used for Ore Dust Crystal.
     ORE_INGOT_CRYSTAL:
-      Name: "✨ 矿锭结晶 (Ore Ingot Crystal)"
+      Name: Ore Ingot Crystal
       Lore:
-        - '一种在采集成熟魔法矿锭农作物时，低概率掉落的稀有副产物。'
-        - ''
-        - '描述：'
-        - '- 它是魔力在收割瞬间被强行压缩并固化的微小晶体'
-        - '- 并非植物退化后的残渣，而是丰收时溢出的精华凝结'
-        - '- 散发着微弱但稳定的对应金属魔力光辉'
-        - ''
-        - '注意：'
-        - '只有完美成熟的作物在特定条件下收割才会显现。'
-
+      - A magical item from MagicExpansion.
+      - Used for Ore Ingot Crystal.
     ORE_MIX_CRYSTAL:
-      Name: "✨ 复合矿物结晶 (Ore Mix Crystal)"
+      Name: Ore Mix Crystal
       Lore:
-        - '一种在采集成熟魔法合金锭农作物时，低概率掉落的稀有副产物。'
-        - ''
-        - '描述：'
-        - '- 它是魔力在收割瞬间被强行压缩并固化的微小晶体'
-        - '- 并非植物退化后的残渣，而是丰收时溢出的精华凝结'
-        - '- 散发着微弱但稳定的对应金属魔力光辉'
-        - ''
-        - '注意：'
-        - '只有完美成熟的作物在特定条件下收割才会显现。'
-
-
-    ##矿粉相关魔法植物
+      - A magical item from MagicExpansion.
+      - Used for Ore Mix Crystal.
     WHEAT_COPPER:
-      Name: "赤锈铜麦(Red-Rust Copper Wheat)"
+      Name: Wheat Copper
       Lore:
-        - '一种麦穗呈现红褐色且能自发产生电流的变异谷物。'
-        - ''
-        - '特性：'
-        - '- 成熟后麦芒尖锐如针，能引导雷电魔力'
-        - '- 秸秆内部交织着高纯度的导电纤维'
-        - '- 依赖下方耕地的完整性'
-        - ''
-        - '警告：'
-        - '一旦下方泥土变为空气，或遭遇水流冲刷'
-        - '根系将瞬间断裂并失去所有魔力活性'
-        - '退化为普通小麦种子'
-        - ''
-        - '请确保种植在稳固的耕地上。'
-
+      - A magical item from MagicExpansion.
+      - Used for Wheat Copper.
     RADISH_IRON:
-      Name: "磁吸铁萝(Magnetic Iron Radish)"
+      Name: Radish Iron
       Lore:
-        - '一种表皮深黑沉重且对磁场极度敏感的变异根茎。'
-        - ''
-        - '特性：'
-        - '- 成熟后根部能自动吸附周围的金属碎片'
-        - '- 肉质内部蕴含着强烈的磁力共鸣'
-        - '- 依赖下方耕地的完整性'
-        - ''
-        - '警告：'
-        - '一旦下方泥土变为空气，或遭遇水流冲刷'
-        - '根系将瞬间断裂并失去所有魔力活性'
-        - '退化为普通萝卜种子'
-        - ''
-        - '请确保种植在稳固的耕地上。'
-
+      - A magical item from MagicExpansion.
+      - Used for Radish Iron.
     BEET_GOLD:
-      Name: "惰性金甜(Inert Gold Beet)"
+      Name: Beet Gold
       Lore:
-        - '一种块根金黄璀璨且拒绝与任何物质反应的变异甜菜。'
-        - ''
-        - '特性：'
-        - '- 成熟后汁液永不腐坏，能中和大部分毒性魔法'
-        - '- 根系内部交织着高密度的稳定魔力'
-        - '- 依赖下方耕地的完整性'
-        - ''
-        - '警告：'
-        - '一旦下方泥土变为空气，或遭遇水流冲刷'
-        - '根系将瞬间断裂并失去所有魔力活性'
-        - '退化为普通甜菜种子'
-        - ''
-        - '请确保种植在稳固的耕地上。'
-
+      - A magical item from MagicExpansion.
+      - Used for Beet Gold.
     RADISH_SILVER:
-      Name: "感光银芜(Photosensitive Silver Turnip)"
+      Name: Radish Silver
       Lore:
-        - '一种表皮银白闪亮但对光线极度敏感的变异块根。'
-        - ''
-        - '特性：'
-        - '- 成熟后能记录周围的光影魔力流动，制成显影药剂'
-        - '- 肉质表面具有极高的反光率和抗菌性'
-        - '- 依赖下方耕地的完整性'
-        - ''
-        - '警告：'
-        - '一旦下方泥土变为空气，或遭遇水流冲刷'
-        - '根系将瞬间断裂并失去所有魔力活性'
-        - '退化为普通萝卜种子'
-        - ''
-        - '请确保种植在稳固的耕地上。'
-
+      - A magical item from MagicExpansion.
+      - Used for Radish Silver.
     WHEAT_ZINC:
-      Name: "激燃锌麦(Combustible Zinc Wheat)"
+      Name: Wheat Zinc
       Lore:
-        - '一种麦粒呈蓝灰色且隐藏着狂暴化学能的变异谷物。'
-        - ''
-        - '特性：'
-        - '- 成熟后麦粒具有极强的还原魔力，可作强力燃料'
-        - '- 谷壳内部压缩着不稳定的高能电子'
-        - '- 依赖下方耕地的完整性'
-        - ''
-        - '警告：'
-        - '一旦下方泥土变为空气，或遭遇水流冲刷'
-        - '根系将瞬间断裂并失去所有魔力活性'
-        - '退化为普通小麦种子'
-        - ''
-        - '请确保种植在稳固的耕地上。'
-
+      - A magical item from MagicExpansion.
+      - Used for Wheat Zinc.
     BEET_MAGNESIUM:
-      Name: "炫光镁甜(Blinding Magnesium Beet)"
+      Name: Beet Magnesium
       Lore:
-        - '一种叶片轻盈且块根燃烧时能发出刺眼白光的变异甜菜。'
-        - ''
-        - '特性：'
-        - '- 成熟后极其活泼，能与多种元素发生剧烈反应'
-        - '- 块根内部储存着耀眼的闪光魔力'
-        - '- 依赖下方耕地的完整性'
-        - ''
-        - '警告：'
-        - '一旦下方泥土变为空气，或遭遇水流冲刷'
-        - '根系将瞬间断裂并失去所有魔力活性'
-        - '退化为普通甜菜种子'
-        - ''
-        - '请确保种植在稳固的耕地上。'
-
+      - A magical item from MagicExpansion.
+      - Used for Beet Magnesium.
     POTATO_TIN:
-      Name: "低温锡薯(Low-Temp Tin Potato)"
+      Name: Potato Tin
       Lore:
-        - '一种在极寒环境下会发生晶体变异的柔软块茎。'
-        - ''
-        - '特性：'
-        - '- 成熟后质地柔软如蜡，具有良好的延展魔力'
-        - '- 内部结构在常温下保持稳定的银白色光泽'
-        - '- 依赖下方耕地的完整性'
-        - ''
-        - '警告：'
-        - '一旦下方泥土变为空气，或遭遇水流冲刷'
-        - '根系将瞬间断裂并失去所有魔力活性'
-        - '退化为普通土豆种子'
-        - ''
-        - '请确保种植在稳固的耕地上。'
-
+      - A magical item from MagicExpansion.
+      - Used for Potato Tin.
     BEET_LEAD:
-      Name: "重滞铅甜(Heavy Lead Beet)"
+      Name: Beet Lead
       Lore:
-        - '一种密度极大且能吸收魔力辐射的暗沉块根。'
-        - ''
-        - '特性：'
-        - '- 成熟后沉重无比，单颗需两人抬运，能压制魔法波动'
-        - '- 肉质内部蕴含着迟缓与封印的魔力'
-        - '- 依赖下方耕地的完整性'
-        - ''
-        - '警告：'
-        - '一旦下方泥土变为空气，或遭遇水流冲刷'
-        - '根系将瞬间断裂并失去所有魔力活性'
-        - '退化为普通甜菜种子'
-        - ''
-        - '请确保种植在稳固的耕地上。'
-
+      - A magical item from MagicExpansion.
+      - Used for Beet Lead.
     WHEAT_ALUMINUM:
-      Name: "浮空铝麦(Floating Aluminum Wheat)"
+      Name: Wheat Aluminum
       Lore:
-        - '一种麦秆表面覆盖氧化膜但内心极度活跃的轻质谷物。'
-        - ''
-        - '特性：'
-        - '- 成熟后极轻，麦穗能在微风中悬浮并传导魔力'
-        - '- 谷粒内部潜藏着遇水即燃的爆发潜能'
-        - '- 依赖下方耕地的完整性'
-        - ''
-        - '警告：'
-        - '一旦下方泥土变为空气，或遭遇水流冲刷'
-        - '根系将瞬间断裂并失去所有魔力活性'
-        - '退化为普通小麦种子'
-        - ''
-        - '请确保种植在稳固的耕地上。'
-
-    ##矿锭相关魔法植物
+      - A magical item from MagicExpansion.
+      - Used for Wheat Aluminum.
     WHEAT_COPPER_INGOT:
-      Name: "铸雷铜麦 (Thunder-Cast Copper Wheat)"
+      Name: Wheat Copper Ingot
       Lore:
-        - '一种麦穗呈现赤红且能自发汇聚雷电魔力的变异谷物。'
-        - ''
-        - '特性：'
-        - '- 成熟后麦芒如避雷针，将雷电魔力压缩进麦粒'
-        - '- 秸秆内部交织着高纯度导电纤维，收割后可提炼出铜锭'
-        - '- 依赖下方耕地的完整性'
-        - ''
-        - '警告：'
-        - '一旦下方泥土变为空气，或遭遇水流冲刷'
-        - '根系将瞬间断裂并失去所有魔力活性'
-        - '退化为普通小麦种子'
-        - ''
-        - '请确保种植在稳固的耕地上。'
-
+      - A magical item from MagicExpansion.
+      - Used for Wheat Copper Ingot.
     RADISH_IRON_INGOT:
-      Name: "聚磁铁萝 (Flux-Iron Radish)"
+      Name: Radish Iron Ingot
       Lore:
-        - '一种表皮深黑沉重且对磁场极度敏感的变异根茎。'
-        - ''
-        - '特性：'
-        - '- 成熟后根部能自动吸附周围铁元素并压缩成块'
-        - '- 肉质内部蕴含着强烈的磁力共鸣，收割后可获得铁锭'
-        - '- 依赖下方耕地的完整性'
-        - ''
-        - '警告：'
-        - '一旦下方泥土变为空气，或遭遇水流冲刷'
-        - '根系将瞬间断裂并失去所有魔力活性'
-        - '退化为普通萝卜种子'
-        - ''
-        - '请确保种植在稳固的耕地上。'
-
+      - A magical item from MagicExpansion.
+      - Used for Radish Iron Ingot.
     BEET_GOLD_INGOT:
-      Name: "纯金甜菜 (Pure-Gold Beet)"
+      Name: Beet Gold Ingot
       Lore:
-        - '一种块根金黄璀璨且拒绝与任何物质反应的变异甜菜。'
-        - ''
-        - '特性：'
-        - '- 成熟后汁液永不腐坏，能将杂质排斥出体外形成纯金'
-        - '- 根系内部交织着高密度的稳定魔力，收割后可凝结为金锭'
-        - '- 依赖下方耕地的完整性'
-        - ''
-        - '警告：'
-        - '一旦下方泥土变为空气，或遭遇水流冲刷'
-        - '根系将瞬间断裂并失去所有魔力活性'
-        - '退化为普通甜菜种子'
-        - ''
-        - '请确保种植在稳固的耕地上。'
-
+      - A magical item from MagicExpansion.
+      - Used for Beet Gold Ingot.
     RADISH_SILVER_INGOT:
-      Name: "映月银芜 (Moon-Reflect Silver Turnip)"
+      Name: Radish Silver Ingot
       Lore:
-        - '一种表皮银白闪亮且能吸收月光凝结银质的变异块根。'
-        - ''
-        - '特性：'
-        - '- 成熟后能记录光影魔力，将月光固化为实体银质'
-        - '- 肉质表面具有极高的反光率和抗菌性，收割后可获得银锭'
-        - '- 依赖下方耕地的完整性'
-        - ''
-        - '警告：'
-        - '一旦下方泥土变为空气，或遭遇水流冲刷'
-        - '根系将瞬间断裂并失去所有魔力活性'
-        - '退化为普通萝卜种子'
-        - ''
-        - '请确保种植在稳固的耕地上。'
-
+      - A magical item from MagicExpansion.
+      - Used for Radish Silver Ingot.
     WHEAT_ZINC_INGOT:
-      Name: "燃能锌麦 (Energy-Zinc Wheat)"
+      Name: Wheat Zinc Ingot
       Lore:
-        - '一种麦粒呈蓝灰色且隐藏着狂暴化学能的变异谷物。'
-        - ''
-        - '特性：'
-        - '- 成熟后麦粒具有极强的还原魔力，直接压缩为锌质'
-        - '- 谷壳内部压缩着不稳定的高能电子，收割后可获得锌锭'
-        - '- 依赖下方耕地的完整性'
-        - ''
-        - '警告：'
-        - '一旦下方泥土变为空气，或遭遇水流冲刷'
-        - '根系将瞬间断裂并失去所有魔力活性'
-        - '退化为普通小麦种子'
-        - ''
-        - '请确保种植在稳固的耕地上。'
-
+      - A magical item from MagicExpansion.
+      - Used for Wheat Zinc Ingot.
     BEET_MAGNESIUM_INGOT:
-      Name: "耀光镁甜 (Glow-Magnesium Beet)"
+      Name: Beet Magnesium Ingot
       Lore:
-        - '一种叶片轻盈且块根燃烧时能发出刺眼白光的变异甜菜。'
-        - ''
-        - '特性：'
-        - '- 成熟后极其活泼，能将光能转化为实体镁质'
-        - '- 块根内部储存着耀眼的闪光魔力，收割后可获得镁锭'
-        - '- 依赖下方耕地的完整性'
-        - ''
-        - '警告：'
-        - '一旦下方泥土变为空气，或遭遇水流冲刷'
-        - '根系将瞬间断裂并失去所有魔力活性'
-        - '退化为普通甜菜种子'
-        - ''
-        - '请确保种植在稳固的耕地上。'
-
+      - A magical item from MagicExpansion.
+      - Used for Beet Magnesium Ingot.
     POTATO_TIN_INGOT:
-      Name: "寒晶锡薯 (Frost-Tin Potato)"
+      Name: Potato Tin Ingot
       Lore:
-        - '一种在极寒环境下会发生晶体变异并凝结锡质的柔软块茎。'
-        - ''
-        - '特性：'
-        - '- 成熟后质地柔软如蜡，低温下直接析出锡质'
-        - '- 内部结构在常温下保持稳定的银白色光泽，收割后可获得锡锭'
-        - '- 依赖下方耕地的完整性'
-        - ''
-        - '警告：'
-        - '一旦下方泥土变为空气，或遭遇水流冲刷'
-        - '根系将瞬间断裂并失去所有魔力活性'
-        - '退化为普通土豆种子'
-        - ''
-        - '请确保种植在稳固的耕地上。'
-
+      - A magical item from MagicExpansion.
+      - Used for Potato Tin Ingot.
     BEET_LEAD_INGOT:
-      Name: "重压铅甜 (Heavy-Lead Beet)"
+      Name: Beet Lead Ingot
       Lore:
-        - '一种密度极大且能吸收魔力辐射并沉淀为铅的暗沉块根。'
-        - ''
-        - '特性：'
-        - '- 成熟后沉重无比，单颗需两人抬运，直接生成铅质'
-        - '- 肉质内部蕴含着迟缓与封印的魔力，收割后可获得铅锭'
-        - '- 依赖下方耕地的完整性'
-        - ''
-        - '警告：'
-        - '一旦下方泥土变为空气，或遭遇水流冲刷'
-        - '根系将瞬间断裂并失去所有魔力活性'
-        - '退化为普通甜菜种子'
-        - ''
-        - '请确保种植在稳固的耕地上。'
-
+      - A magical item from MagicExpansion.
+      - Used for Beet Lead Ingot.
     WHEAT_ALUMINUM_INGOT:
-      Name: "浮空铝麦 (Floating Aluminum Wheat)"
+      Name: Wheat Aluminum Ingot
       Lore:
-        - '一种麦秆表面覆盖氧化膜但内心极度活跃并能凝结铝质的轻质谷物。'
-        - ''
-        - '特性：'
-        - '- 成熟后极轻，麦穗能在微风中悬浮并析出铝质'
-        - '- 谷粒内部潜藏着遇水即燃的爆发潜能，收割后可获得铝锭'
-        - '- 依赖下方耕地的完整性'
-        - ''
-        - '警告：'
-        - '一旦下方泥土变为空气，或遭遇水流冲刷'
-        - '根系将瞬间断裂并失去所有魔力活性'
-        - '退化为普通小麦种子'
-        - ''
-        - '请确保种植在稳固的耕地上。'
-
-    #合金锭魔法植物
+      - A magical item from MagicExpansion.
+      - Used for Wheat Aluminum Ingot.
     WHEAT_BRONZE_INGOT:
-      Name: "青晶铜锡麦 (Bronze-Crystal Copper-Tin Wheat)"
+      Name: Wheat Bronze Ingot
       Lore:
-        - '一种麦穗呈现独特青绿色且融合了铜之导电与锡之结晶的变异农作物。'
-        - '小麦中的甜菜隐性基因杂交后占主导，外观突变为甜菜，'
-        - ''
-        - '特性：'
-        - '- 成熟后麦粒内部自发进行魔力合金化，将铜锡元素完美融合'
-        - '- 秸秆坚硬如古兵器材质，收割后可直接获得青铜锭'
-        - '- 依赖下方耕地的完整性'
-        - ''
-        - '警告：'
-        - '一旦下方泥土变为空气，或遭遇水流冲刷'
-        - '根系将瞬间断裂并失去所有魔力活性'
-        - '退化为普通小麦种子'
-        - ''
-        - '请确保种植在稳固的耕地上。'
-
+      - A magical item from MagicExpansion.
+      - Used for Wheat Bronze Ingot.
     BEET_BRASS_INGOT:
-      Name: "辉光铜锌甜 (Brass-Glow Copper-Zinc Beet)"
+      Name: Beet Brass Ingot
       Lore:
-        - '一种块根呈现明亮金黄色且融合了铜之稳定与锌之活性的变异甜菜。'
-        - ''
-        - '特性：'
-        - '- 成熟后肉质发生魔力共熔反应，将铜锌元素转化为致密合金'
-        - '- 表皮闪烁着类似黄金但更具延展性的金属光泽，收割后可获得黄铜锭'
-        - '- 依赖下方耕地的完整性'
-        - ''
-        - '警告：'
-        - '一旦下方泥土变为空气，或遭遇水流冲刷'
-        - '根系将瞬间断裂并失去所有魔力活性'
-        - '退化为普通甜菜种子'
-        - ''
-        - '请确保种植在稳固的耕地上。'
-
-
+      - A magical item from MagicExpansion.
+      - Used for Beet Brass Ingot.
     ENCHANTMENT_ERASER:
-      Name: '魔法赋能擦拭巾'
+      Name: Enchantment Eraser
       Lore:
-        - ' '
-        - '主手持此物品，副手放需要清除的物品'
-        - '右键使用清除魔法赋能属性'
-        - '小心使用，无法撤销！'
-
+      - A magical item from MagicExpansion.
+      - Used for Enchantment Eraser.
     FISH_WEIGHT_ENHANCER:
-      Name: '魔法鱼增重饲料-(非直接鱼饵)'
+      Name: Fish Weight Enhancer
       Lore:
-        - ' '
-        - '主手持此物品，副手放持需要增重的魔法鱼'
-        - '右键使用增重饲料，即可增长鱼的体重'
-        - '鱼的体重到达某个阈值会改变某些数值'
-
+      - A fishing item from MagicExpansion.
+      - Used for Fish Weight Enhancer.
     RESEARCH_UNLOCKER_PAPER:
-      Name: '✨ 奥秘启示录 (残页)'
+      Name: Research Unlocker Paper
       Lore:
-        - '▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬'
-        - ' 一张泛黄的古老羊皮纸'
-        - ' 上面记载着失传的知识碎片'
-        - '▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬'
-        - ' 使用方法：'
-        - ' 主手持此物品 →  右键点击'
-        - ' 效果： 随机解锁一个未知神秘知识点'
-        - '▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬'
-        - '✦  知识就是力量 ✦'
-
+      - A magical item from MagicExpansion.
+      - Used for Research Unlocker Paper.
     WORD_CLEAR:
-      Name: '✨ 全息文字清理器'
+      Name: Word Clear
       Lore:
-        - ' '
-        - '主手持此物品 →  右键点击'
-        - '效果： 删除所有文字'
-        - ' '
-        - '需谨慎使用，不可逆'
-
-
+      - A magical item from MagicExpansion.
+      - Used for Word Clear.
     PORTABLE_SHOP:
-      Name: '奇迹·市集'
+      Name: Portable Shop
       Lore:
-        - ' '
-        - '右键打开 市集'
-        - '在这里你甚至能白嫖？'
-        - '充满奇迹的地方'
-        - '充满了惊喜'
-        - '------------------------'
-        - 'shift + 右键 打开管理员配置菜单'
-
-
-##下面是有关于美食的翻译
+      - A magical item from MagicExpansion.
+      - Used for Portable Shop.
     FARM_HARVEST_BREAD:
-      Name: '「丰收祝福面包」'
+      Name: Farm Harvest Bread
       Lore:
-        - ' '
-        - '✨由村庄老 baker 用秘法烘烤的神奇面包'
-        - '✨融入了阳光、麦浪与丰收女神的低语'
-        - ' '
-        - '食用效果：'
-        - '• 立即恢复 4 颗心（8点生命值）'
-        - '• 获得 “饱食感 III” 15 秒（大幅减缓饥饿消耗）'
-        - '• 获得 “再生 I” 8 秒（缓慢回血）'
-        - '• 有小概率掉落 糖心麦种 （鼓励耕种！）'
-        - ''
-        - '右键食用 · 最高可堆叠至64'
-
+      - A magical food item.
+      - Enjoy the effects of Farm Harvest Bread.
     HOLY_PIE:
-      Name: '✨ 神圣派 (Holy π)'
+      Name: Holy Pie
       Lore:
-        - ' '
-        - '🥧 由「精制小麦粉」与南瓜烘烤而成'
-        - '🥧 派皮上刻着古老的守护符文'
-        - ' '
-        - '食用效果：'
-        - '• 立即恢复 6 颗心 (12点生命值)'
-        - '• 获得 "绝对守护" 1.5 秒 (免疫所有物理/魔法伤害)'
-        - '• 清除所有负面状态 (解毒、祛火、消除虚弱)'
-        - ' '
-        - '⚠ 守护时间极短，请在危急时刻食用！'
-        - '右键食用 · 最高可堆叠至 64'
-
+      - A magical food item.
+      - Enjoy the effects of Holy Pie.
     CLOUD_BREAD:
-      Name: '☁ 云朵面包 (Cloud Bread)'
+      Name: Cloud Bread
       Lore:
-        - ' '
-        - '🌤 采集清晨第一缕阳光下的积雨云'
-        - '🌤 混合「风之精华」与「精制小麦粉」烘烤'
-        - '🌤 拿在手里感觉轻飘飘的，仿佛没有重量'
-        - ' '
-        - '食用效果：'
-        - '• 获得 "轻盈之身" 15 秒 (跳跃提升 III)'
-        - '• 获得 "云端漫步" 15 秒 (缓降效果，免疫跌落伤害)'
-        - '• 若正在下落，立即抵消所有坠落动能'
-        - '• 恢复 4 颗心 (8点生命值)'
-        - ' '
-        - '💨 咬一口，感觉身体要飞起来了！'
-        - '右键食用 · 最高可堆叠至 64'
-
+      - A magical food item.
+      - Enjoy the effects of Cloud Bread.
     HARVEST_WHEAT:
-      Name: '✨ 金黄璀璨的小麦'
+      Name: Harvest Wheat
       Lore:
-        - "在丰收之季收割的小麦，"
-        - "麦穗闪烁着阳光与大地的祝福。"
-        - ""
-        - "• 可用于制作高级面包与仪式糕点"
-        - "• 是「丰收祝福食品」的核心材料"
-        - ""
-        - "右键无法食用 · 仅作合成材料"
-
+      - A magical item from MagicExpansion.
+      - Used for Harvest Wheat.
     WHEAT_FLOUR:
-      Name: '✨ 精制小麦粉'
+      Name: Wheat Flour
       Lore:
-        - ' '
-        - '由「金黄璀璨的小麦」细细研磨而成'
-        - '粉末如雪般洁白，散发着浓郁的麦香'
-        - ' '
-        - '• 质地细腻，是制作高级糕点的灵魂'
-        - '• 可用于合成：云朵面包、神圣派等魔法食物'
-        - ' '
-        - '右键无法食用 · 仅作合成材料'
-
+      - A magical item from MagicExpansion.
+      - Used for Wheat Flour.
     HARVEST_RICE:
-      Name: '✨ 盈满灵韵的稻谷'
+      Name: Harvest Rice
       Lore:
-        - "汲取了晨露与清泉精华的稻穗，"
-        - "颗粒饱满，低垂着头颅向大地致意。"
-        - ""
-        - "• 散发着湿润泥土与清新草木的香气"
-        - "• 谷壳内蕴藏着蓬勃的生命力"
-        - "• 是东方农耕文明的灵魂结晶"
-        - ""
-        - "✨ 握在手中，仿佛能听见风吹稻浪的声音"
-        - ""
-        - "右键无法食用 · 仅作合成材料"
-
+      - A magical item from MagicExpansion.
+      - Used for Harvest Rice.
     DREAM_KERNEL:
-      Name: "✨ 禾下梦核 (Dream Kernel)"
+      Name: Dream Kernel
       Lore:
-        - ' '
-        - '§7“人就像种子，要做一粒好种子。”'
-        - ' '
-        - '这不仅仅是一颗种子，'
-        - '它是袁隆平院士毕生心血的凝结，'
-        - '是那个“禾下乘凉”梦境在现实中的投影。'
-        - ' '
-        - '在那片金色的稻浪深处，'
-        - '曾有一位老人，头顶草帽，脚踩泥泞，'
-        - '用一生的坚守，让无数人远离了饥饿。'
-        - ' '
-        - '握紧它，你感受到的不仅是沉甸甸的重量，'
-        - '更是一份跨越时空的嘱托与希望。'
-        - '每一道流光，都诉说着对大地最深沉的爱；'
-        - '每一丝温热，都传承着那份“敢为人先”的勇气。'
-        - ' '
-        - '愿这粒种子，'
-        - '在你手中生根发芽，'
-        - '让丰收的喜悦，继续在这片土地上流淌。'
-        - ' '
-        - '§6§l致敬 · 永远的耕耘者'
-
-
-
+      - A magical item from MagicExpansion.
+      - Used for Dream Kernel.
     PRESS_CORE_ALPHA:
-      Name: '工业空间核心'
+      Name: Press Core Alpha
       Lore:
-        - '?'
-        - '原为消费级物品材料'
-        - '!!'
-        - '现被魔改为工业材料'
-
-
-
-
-
-
-
-
-
-
+      - A magical item from MagicExpansion.
+      - Used for Press Core Alpha.
     ENERGY_CONNECTOR_GLASS:
-      Name: '能量连接器'
+      Name: Energy Connector Glass
       Lore:
-        - '范围: 6 格'
-        - ''
-        - '用于连接机器和发电机'
-        - '可以连接到附近的能源网络'
+      - A magical item from MagicExpansion.
+      - Used for Energy Connector Glass.
     ENERGY_CONNECTOR_GLASS_INFO:
-      Name: '能量连接器'
+      Name: Energy Connector Glass Information
       Lore:
-        - '范围: 6 格'
-        - ''
-        - '用于连接机器和发电机'
-        - '可以连接到附近的能源网络'
-        - ''
-        - '可以使用任意原版玻璃或玻璃板进行合成'
-
-
-
-
-
-
-
-
-
-
-
-
+      - Information and instructions for Energy Connector Glass Information.
+      - Use the Slimefun guide for recipes and details.
     WEAPON_STAR_SHARDS_SWORD:
-      Name: '§x§E§8§4§2§3§D星§x§D§A§5§5§6§B隕§x§C§C§6§8§9§9裁§x§B§E§7§B§C§7決'
+      Name: Weapon Star Shards Sword
       Lore:
-        - ''
-        - '§x§D§9§4§2§F§5傳說中斬落星辰的神兵，'
-        - '§x§A§3§5§7§B§9劍鋒所指，虛空為之顫慄。'
-        - '§x§6§A§8§C§E§F蘊含奧術本源與天火之力，'
-        - '§x§F§2§5§4§5§9唯有被命運選中者方可喚醒其真名。'
-        - ''
-        - '§x§A§3§5§7§B§9稀有度: §c神話'
-        - '§x§A§3§5§7§B§9傷害倍率: §c61.8x'
-        - ''
-        - '§f• 左鍵§7：熾焰斬（冷卻: 1秒）'
-        - '§7揮出燃燒劍氣，對目標造成額外火焰傷害。'
-        - '§7擊中時產生小型爆炸，擊退周圍敵人。'
-        - ''
-        - '§f• 蹲下 + 左鍵§7：奧爆衝擊（冷卻: 3秒）'
-        - '§7蓄力釋放錐形奧術脈衝，貫穿前方區域。'
-        - '§7命中敵人附加虛弱與緩速，持續4秒。'
-        - ''
-        - '§f• 右鍵§7：星界護盾（冷卻: 5秒）'
-        - '§7展開魔法屏障，5秒內免疫所有傷害。'
-        - '§7期間受到遠程攻擊將自動反彈至來源方向。'
-        - ''
-        - '§f• 蹲下 + 右鍵§7：瞬影躍遷（冷卻: 5秒）'
-        - '§7瞬間傳送至準星所指地面（最遠15格）。'
-        - '§7落地時釋放衝擊波，短暫眩暈附近敵人。'
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+      - A specialized MagicExpansion tool.
+      - Use Weapon Star Shards Sword carefully.
     SF_TIMINGS_HOLOGRAM:
-      Name: '粘液性能检测器'
+      Name: SF Timings Hologram
       Lore:
-        - ''
-        - '获取每次粘液科技Tick所需要的总时间'
-        - '获取当前区块Tick所需要的总时间'
-        - '这可能对某些高丸有些许用处'
-
+      - A magical item from MagicExpansion.
+      - Used for SF Timings Hologram.
     MUSIC_TEST:
-      Name: '音乐·测试'
+      Name: Music Test
       Lore:
-        - ''
-        - '叮叮叮~'
-
-
-
+      - A magical item from MagicExpansion.
+      - Used for Music Test.
     CARGO_FRAGMENT:
-      Name: '「以太秘匣」'
+      Name: Cargo Fragment
       Lore:
-        - ''
-        - '魔法存储爆炸后'
-        - '里面的存储物将以「以太秘匣」的形式掉落'
-        - '把「以太秘匣」放回去可重新识别'
-        - '「以太秘匣」最多承载2.1B个物品'
-
-
+      - A magical item from MagicExpansion.
+      - Used for Cargo Fragment.
     CARGO_TERMINAL:
-      Name: '魔法存储终端'
+      Name: Cargo Terminal
       Lore:
-        - ''
-        - '「物品种类上限: 1145」'
-        - '「单个物品数量上限: 未知」'
-        - '「支持传统货运/网络推送抓取」'
-        - '「支持无线远程传输[可跨域]」'
-        - '「对外推送上限: 256」'
-        - '「对外抓取上限: 512」'
-        - '「存储/传输」'
-        - ' '
-        - '- 支持对原版容器输出'
-        - '- 不支持原版容器抓取'
-        - '注意: 破坏存储后，存储的物品会以为碎片形式掉落'
-        - '注意: 碎片最多只能承载2.1B个物品'
-        - '注意: 单种物品最多掉落2048个碎片'
-
+      - A magical item from MagicExpansion.
+      - Used for Cargo Terminal.
     CARGO_TERMINAL_RENEW:
-      Name: '魔法存储终端·重构版 '
+      Name: Cargo Terminal Renew
       Lore:
-        - ''
-        - '「物品种类上限: 1145」'
-        - '「单个物品数量上限: 自定义」'
-        - '「支持传统货运/网络推送抓取」'
-        - '「支持无线远程传输[可跨域]」'
-        - '「对外推送上限: 256」'
-        - '「对外抓取上限: 512」'
-        - '「存储/传输」'
-        - ' '
-        - '- 仅支持粘液机器/容器之间的传输'
-        - '- 若设置的数量限制小于当前存储数量,则自动清除超出部分'
-
-
+      - A magical item from MagicExpansion.
+      - Used for Cargo Terminal Renew.
     CHINESE_CHARACTER_CONSTRUCTOR:
-      Name: '汉字刻印工坊'
+      Name: Chinese Character Constructor
       Lore:
-        - "一座微缩的古老雕版作坊。"
-        - "在此将无形的文气，雕刻成实体的方块字。"
-        - ""
-        - "方寸之间，可纳中华万千气象。"
-        - ""
-        - "'匠心独运，字字珠玑。'"
-
-
-
+      - A magical item from MagicExpansion.
+      - Used for Chinese Character Constructor.
     SEND_ITEMS_TO_PLAYER_MACHINE:
-      Name: '以太秘匣传输器'
+      Name: Send Items To Player Machine
       Lore:
-        - '物品传输器'
-        - '将物品发送给其他玩家'
-        - '将以太秘匣内的物品传入到指定玩家背包中'
-        - '请不要堆叠以太秘匣，这样只会让机器停止工作'
-        - '极致的速率'
-        - '传输器将在每次服务器重启后失效'
-        - '请重新放置以正常使用'
-        - '主要为了防止大懒狗'
+      - A MagicExpansion processing machine.
+      - Processes materials for Send Items To Player Machine.
     SEND_ITEMS_TO_PLAYER_MACHINE_SF:
-      Name: '以太秘匣传输器（粘液刻版）'
+      Name: Send Items To Player Machine SF
       Lore:
-        - '物品传输器'
-        - '将物品发送给其他玩家'
-        - '将以太秘匣内的物品传入到指定玩家背包中'
-        - '请不要堆叠以太秘匣，这样只会让机器停止工作'
-        - '每粘液刻运行一次'
-
+      - A MagicExpansion processing machine.
+      - Processes materials for Send Items To Player Machine SF.
     PORTABLE_CARGO_TRANSPORTER:
-      Name: '便携式以太秘匣提取器'
+      Name: Portable Cargo Transporter
       Lore:
-        - ' '
-        - '将以太秘匣内的物品传入到玩家背包中'
-        - '- 魔法工具'
-
-
+      - A magical item from MagicExpansion.
+      - Used for Portable Cargo Transporter.
     CUSTOM_SEQUENCE_TOOL:
-      Name: '自定义脚本序列工具'
+      Name: Custom Sequence Tool
       Lore:
-        - ' '
-        - '将脚本序列保存为物品数据'
-        - '支持: '
-        - '- 传送'
-        - '- 交互'
-        - '- 步骤延迟'
-        - '- 执行指令(例如 /tpa)'
-        - '- 发送消息(例如 你好！)'
-
+      - A specialized MagicExpansion tool.
+      - Use Custom Sequence Tool carefully.
     TWO_TO_MAGIC_GEO_MACHINE_FORCE:
-      Name: '魔法2.0->rsc魔法 geo资源转换器[强转换]'
+      Name: Two To Magic GEO Machine Force
       Lore:
-        - ' '
-        - '若未安装rsc魔法，则自动转换为石头'
-        - '将魔法资源转换为资源'
-        - '需要魔法资源'
-        - ' '
-        - '功能: 自动转换'
-        - '能源需求: 每秒钟消耗微量电力'
-        - ' '
-        - '“大自然的秘密，尽在掌握。”'
-        - '⇨ ⚙ ？ s'
-        - '⇨ ⚡ 52 J/s'
-        - '⇨ ⚡ 1314 J 可存储'
-
-
+      - A MagicExpansion processing machine.
+      - Processes materials for Two To Magic GEO Machine Force.
+      - ⇨ ⚡ 52 J/s
     WORLD_CORE:
-      Name: '创世核心'
+      Name: World Core
       Lore:
-        - ''
-        - '他的作用一直是一个谜'
-
+      - A magical item from MagicExpansion.
+      - Used for World Core.
     ITEM_ORIGIN_BACK_TRACK:
-      Name: '魔法溯源机'
+      Name: Item Origin Back Track
       Lore:
-        - ' '
-        - '使用巨量电力来溯源物品材料'
-        - '不消耗源材料'
-        - ''
-        - '⇨ ⚙ 运行时间: 5 s'
-        - '⇨ ⚡ 2147483646 J/tick'
-        - '⇨ ⚡ 2147483647 J 可存储'
-        - ' '
-        - '使用方法: '
-        - '- 放入粘液物品'
-        - '- 等待片刻即可产出源材料'
-        - '- 该机器只能产出粘液书中所展示配方的材料'
-
-
-
+      - A magical item from MagicExpansion.
+      - Used for Item Origin Back Track.
+      - ⇨ ⚡ 2147483646 J/tick
     NEW_YEARS_DAY_FIREWORK_YUAN_DAN:
-      Name: '§x§F§F§D§7§0§0圓形集群煙花·元旦'
+      Name: New Years Day Firework New Year
       Lore:
-        - ''
-        - '§x§8§A§C§4§E§7§l✨ §x§F§F§F§F§F§F傳說中於歲末綻放的奇蹟之焰，'
-        - '§x§6§A§D§3§F§F§l🎇 §x§E§0§E§0§E§0於午夜天際綻開千重星環。'
-        - ''
-        - '§x§5§5§A§A§F§F§l📅 §x§C§C§E§6§F§F2025年12月31日 · 時光之門即將開啟'
-        - '§x§4§C§C§9§F§F§l🌌 §x§B§3§E§0§F§F新的一年，星辰為你重排命運軌跡'
-        - '§x§3§A§B§8§7§D§l🌱 §x§A§8§E§6§C§C新的開始，萬物蘊藏無限可能'
-        - ''
-        - '§x§D§4§A§F§5§2§l🔮 §x§F§F§D§1§6§62026 魔法紀念品 · 僅此一夜'
-        - '§x§B§B§6§6§C§C§o§l「願這束光，照亮你通往奇蹟的道路。」'
-
+      - A magical item from MagicExpansion.
+      - Used for New Years Day Firework New Year.
     NEW_YEARS_DAY_FIREWORK_YUAN_DAN_2:
-      Name: '§x§F§F§D§7§0§0飛餅煙花·元旦'
+      Name: New Years Day Firework New Year 2
       Lore:
-        - ''
-        - '§x§C§A§5§3§0§0§l✨ §x§F§F§F§F§F§F傳說中帶來無限歡樂與驚喜的節慶之光，'
-        - '§x§8§9§4§2§1§0§l🎇 §x§F§E§D§C§B§A如飛餅般旋轉升空，劃破夜幕。'
-        - '§x§6§A§D§3§F§F§l🌌 §x§E§0§E§0§E§0讓每一個瞬間都成為記憶中的珍貴畫面。'
-        - ''
-        - '§x§5§5§A§A§F§F§l📅 §x§C§C§E§6§F§F2025年12月31日 · 迎接新年的第一道曙光'
-        - '§x§4§C§C§9§F§F§l🎆 §x§B§3§E§0§F§F新的一年，願幸福如同煙花綻放不息'
-        - '§x§3§A§B§8§7§D§l🌱 §x§A§8§E§6§C§C新的開始，夢想隨煙火升騰而起'
-        - ''
-        - '§x§D§4§A§F§5§2§l🔮 §x§F§F§D§1§6§62026 魔法紀念品 · 獨一無二的祝福'
-        - '§x§B§B§6§6§C§C§o§l「願這份光芒，帶給你滿滿的希望與快樂。」'
-
-
-
+      - A magical item from MagicExpansion.
+      - Used for New Years Day Firework New Year 2.
   Resource:
     IRON_INGOT:
-      Name: '魔法铁锭'
+      Name: Iron Ingot
       Lore:
-        - '被魔法结晶包裹的铁锭'
-        - '似乎比普通铁锭更硬一些？'
+      - A magical item from MagicExpansion.
+      - Used for Iron Ingot.
     GOLD_INGOT:
-      Name: '魔法金锭'
+      Name: Gold Ingot
       Lore:
-        - '被魔法结晶包裹的金锭'
-        - '似乎比普通金锭更闪一些？'
+      - A magical item from MagicExpansion.
+      - Used for Gold Ingot.
     COPPER_INGOT:
-      Name: '魔法铜锭'
+      Name: Copper Ingot
       Lore:
-        - '被魔法结晶包裹的铜锭'
-        - '似乎比普通铜锭更暗一些？'
+      - A magical item from MagicExpansion.
+      - Used for Copper Ingot.
     TIN_INGOT:
-      Name: '魔法锡锭'
+      Name: Tin Ingot
       Lore:
-        - '被魔法结晶包裹的锡锭'
-        - '似乎比普通锡锭更柔一些？'
+      - A magical item from MagicExpansion.
+      - Used for Tin Ingot.
     SILVER_INGOT:
-      Name: '魔法银锭'
+      Name: Silver Ingot
       Lore:
-        - '被魔法结晶包裹的银锭'
-        - '似乎比普通银锭更亮一些？'
+      - A magical item from MagicExpansion.
+      - Used for Silver Ingot.
     LEAD_INGOT:
-      Name: '魔法铅锭'
+      Name: Lead Ingot
       Lore:
-        - '被魔法结晶包裹的铅锭'
-        - '似乎比普通铅锭更重一些？'
+      - A magical item from MagicExpansion.
+      - Used for Lead Ingot.
     ALUMINUM_INGOT:
-      Name: '魔法铝锭'
+      Name: Aluminum Ingot
       Lore:
-        - '被魔法结晶包裹的铝锭'
-        - '似乎比普通铝锭更轻一些？'
+      - A magical item from MagicExpansion.
+      - Used for Aluminum Ingot.
     ZINC_INGOT:
-      Name: '魔法锌锭'
+      Name: Zinc Ingot
       Lore:
-        - '被魔法结晶包裹的锌锭'
-        - '似乎比普通锌锭更润一些？'
+      - A magical item from MagicExpansion.
+      - Used for Zinc Ingot.
     MAGNESIUM_INGOT:
-      Name: '魔法镁锭'
+      Name: Magnesium Ingot
       Lore:
-        - '被魔法结晶包裹的镁锭'
-        - '似乎比普通镁锭更耀一些？'
+      - A magical item from MagicExpansion.
+      - Used for Magnesium Ingot.
     ELEMENT_INGOT:
-      Name: '元素锭'
+      Name: Element Ingot
       Lore:
-        - '融合了九种魔法元素锭'
-        - '有限的可能？无限的可能？'
-
+      - A magical item from MagicExpansion.
+      - Used for Element Ingot.
     REDSTONE:
-      Name: '魔法红石'
+      Name: Redstone
       Lore:
-        - '被魔法结晶包裹的红石'
-        - '似乎比普通红石更红一些？'
+      - A magical item from MagicExpansion.
+      - Used for Redstone.
     DIAMOND:
-      Name: '魔法钻石'
+      Name: Diamond
       Lore:
-        - '被魔法结晶包裹的钻石'
-        - '似乎比普通钻石更透一些？'
+      - A magical item from MagicExpansion.
+      - Used for Diamond.
     LAPIS_LAZULI:
-      Name: '魔法青金石'
+      Name: Lapis Lazuli
       Lore:
-        - '被魔法结晶包裹的青金石'
-        - '似乎比普通青金石更蓝一些？'
+      - A magical item from MagicExpansion.
+      - Used for Lapis Lazuli.
     EMERALD:
-      Name: '魔法绿宝石'
+      Name: Emerald
       Lore:
-        - '被魔法结晶包裹的绿宝石'
-        - '似乎比普通绿宝石更绿一些？'
+      - A magical item from MagicExpansion.
+      - Used for Emerald.
     COAL:
-      Name: '魔法煤炭'
+      Name: Coal
       Lore:
-        - '被魔法结晶包裹的煤炭'
-        - '似乎比普通煤炭更黑一些？'
+      - A magical item from MagicExpansion.
+      - Used for Coal.
     QUARTZ:
-      Name: '魔法石英'
+      Name: Quartz
       Lore:
-        - '被魔法结晶包裹的石英'
-        - '似乎比普通石英更锐一些？'
+      - A magical item from MagicExpansion.
+      - Used for Quartz.
     AMETHYST_SHARD:
-      Name: '魔法紫水晶'
+      Name: Amethyst Shard
       Lore:
-        - '被魔法结晶包裹的紫水晶'
-        - '似乎比普通紫水晶更紫一些？'
+      - A magical item from MagicExpansion.
+      - Used for Amethyst Shard.
     NETHERITE_INGOT:
-      Name: '魔法下界合金锭'
+      Name: Netherite Ingot
       Lore:
-        - '被魔法结晶包裹的下界合金锭'
-        - '似乎比普通下界合金锭更沉一些？'
+      - A magical item from MagicExpansion.
+      - Used for Netherite Ingot.
     BONE:
-      Name: '魔法骨头'
+      Name: Bone
       Lore:
-        - '被魔法结晶包裹的骨头'
-        - '似乎比普通骨块更硬一些？'
+      - A magical item from MagicExpansion.
+      - Used for Bone.
     BONE_MEAL:
-      Name: '魔法骨粉'
+      Name: Bone Meal
       Lore:
-        - '被魔法结晶包裹的骨头粉'
-        - '似乎比普通骨粉更精一些？'
-
+      - A magical item from MagicExpansion.
+      - Used for Bone Meal.
     REDSTONE_TORCH:
-      Name: '魔法红石火把'
+      Name: Redstone Torch
       Lore:
-        - '被魔法结晶包裹的红石火把'
-        - '似乎比普通红石火把更热一些？'
+      - A magical item from MagicExpansion.
+      - Used for Redstone Torch.
     STICK:
-      Name: '魔法木棍'
+      Name: Stick
       Lore:
-        - '被魔法结晶包裹的木棍'
-        - '似乎比普通木棍更软一些？'
+      - A magical item from MagicExpansion.
+      - Used for Stick.
     COBBLESTONE:
-      Name: '魔法圆石'
+      Name: Cobblestone
       Lore:
-        - '被魔法结晶包裹的石块'
-        - '似乎比普通石块更滑一些？'
+      - A magical item from MagicExpansion.
+      - Used for Cobblestone.
     DIRT:
-      Name: '魔法泥土'
+      Name: Dirt
       Lore:
-        - '被魔法结晶包裹的泥土'
-        - '似乎比普通泥土更松一些？'
+      - A magical item from MagicExpansion.
+      - Used for Dirt.
     GLOWSTONE_DUST:
-      Name: '魔法荧石粉'
+      Name: Glowstone Dust
       Lore:
-        - '被魔法结晶包裹的荧石粉'
-        - '似乎比普通荧石粉更亮一些？'
+      - A magical item from MagicExpansion.
+      - Used for Glowstone Dust.
     LEVER:
-      Name: '魔法拉杆'
+      Name: Lever
       Lore:
-        - '被魔法结晶包裹的拉杆'
-        - '似乎比普通拉杆更活一些？'
+      - A magical item from MagicExpansion.
+      - Used for Lever.
     BUTTON:
-      Name: '魔法按钮'
+      Name: Button
       Lore:
-        - '被魔法结晶包裹的按钮'
-        - '似乎比普通按钮更灵一些？'
+      - A magical item from MagicExpansion.
+      - Used for Button.
     OAK_PLANKS:
-      Name: '魔法橡木板'
+      Name: Oak Planks
       Lore:
-        - '被魔法结晶包裹的橡木板'
-        - '似乎比普通橡木板更牢一些？'
+      - A magical item from MagicExpansion.
+      - Used for Oak Planks.
     CORE_ORIGIN:
-      Name: '原版机器核心'
+      Name: Core Origin
       Lore:
-        - '用于制作一些原版机器'
+      - A magical item from MagicExpansion.
+      - Used for Core Origin.
     REDSTONE_EXECUTE_ELEMENT:
-      Name: '红石处理元件'
+      Name: Redstone Execute Element
       Lore:
-        - '用魔法材料制作的红石处理元件'
+      - A magical item from MagicExpansion.
+      - Used for Redstone Execute Element.
     LOG_MIX:
-      Name: '翠木核心'
+      Name: Log Mix
       Lore:
-        - '蕴含着8种原木精华'
+      - A magical item from MagicExpansion.
+      - Used for Log Mix.
     LIGHT_CORE:
-      Name: '光之核心'
+      Name: Light Core
       Lore:
-        - '蕴含着8种金属元素的光核'
+      - A magical item from MagicExpansion.
+      - Used for Light Core.
     QUARTZ_CORE:
-      Name: '石英核心'
+      Name: Quartz Core
       Lore:
-        - '拥有改变原子内部结构的能力'
-        - '通过精密地增减质子、中子和电子的数量'
-        - '将任何普通元素神奇地转化为纯净的硅元素'
+      - A magical item from MagicExpansion.
+      - Used for Quartz Core.
     LIGHT_ENERGY_ALPHA:
-      Name: '光能α'
+      Name: Light Energy Alpha
       Lore:
-        - '一次性能源'
-        - '⇨ ⚡ 131452.0 J 存储'
-
-
+      - A magical item from MagicExpansion.
+      - Used for Light Energy Alpha.
     JIN_KE_LA:
-      Name: '金坷垃'
+      Name: Jin Ke La
       Lore:
-        - '阿美丽卡·圣地亚戈”研发、中国生产的肥料'
-        - '据说能让小麦亩产一万八千斤！'
-        - '牛吃了都得直呼内行'
-
-
+      - A magical item from MagicExpansion.
+      - Used for Jin Ke La.
     POWER_CORE:
-      Name: '紊乱的发电机核心'
+      Name: Power Core
       Lore:
-          - '无法稳定控制发电功率'
-          - '可当做普通电容使用'
-          - '不会爆炸的，请放心使用'
-          - '范围: 6 格'
-          - '⇨ ⚡ 1314520 J 可存储'
-
-
-
+      - An automated MagicExpansion energy or resource machine.
+      - Produces or processes resources related to Power Core.
     PURE_INGOT_POWER_CORE:
-      Name: '幸运电容'
+      Name: Pure Ingot Power Core
       Lore:
-        - '一个电网建议不要超过1个'
-        - '每刻自动为电网产生 1~1314520 J 电力'
-        - '范围: 6 格'
-        - '⇨ ⚡ 2147483647 J 可存储'
-        - '被破坏后仍会保留所剩余的电力'
+      - An automated MagicExpansion energy or resource machine.
+      - Produces or processes resources related to Pure Ingot Power Core.
     BAD_LUCK_CAPACITY:
-      Name: '厄运电容'
+      Name: Bad Luck Capacity
       Lore:
-        - '一个电网建议不要超过1个'
-        - '每刻都会随机减少 1~1314520 J 电力'
-        - '范围: 6 格'
-        - '⇨ ⚡ 2147483647 J 可存储'
-        - '被破坏后仍会保留所剩余的电力'
+      - A magical item from MagicExpansion.
+      - Used for Bad Luck Capacity.
     PANDORA_CAPACITY:
-      Name: '潘多拉的电容'
+      Name: Pandora Capacity
       Lore:
-        - '一个电网建议不要超过1个'
-        - '每刻都会随机增加或减少 1~1314520 J 电力'
-        - '范围: 6 格'
-        - '⇨ ⚡ 2147483647 J 可存储'
-        - '被破坏后仍会保留所剩余的电力'
+      - A magical item from MagicExpansion.
+      - Used for Pandora Capacity.
     MAGIC_CAPACITY_BASIC:
-      Name: '基础魔法电容'
+      Name: Magic Capacity Basic
       Lore:
-        - '一个电网建议不要超过1个'
-        - '每刻都会随机增加 1145141919 ~ 2147483646 J 电力'
-        - '范围: 6 格'
-        - '⇨ ⚡ 2147483647 J 可存储'
-        - '被破坏后仍会保留所剩余的电力'
+      - A magical item from MagicExpansion.
+      - Used for Magic Capacity Basic.
     MAGIC_CAPACITY_ULTRA:
-      Name: '终极魔法电容'
+      Name: Magic Capacity Ultra
       Lore:
-        - '一个电网建议不要超过1个'
-        - '每刻都会随机增加 2147483647 ~ 2147483647 J 电力'
-        - '范围: 6 格'
-        - '⇨ ⚡ 2147483647 J 可存储'
-        - '被破坏后仍会保留所剩余的电力'
-
-
+      - A magical item from MagicExpansion.
+      - Used for Magic Capacity Ultra.
     POWER_CARD:
-      Name: '终焉电卡'
+      Name: Power Card
       Lore:
-        - '可以被用作工业电力传输的载体！'
-        - '可以存储近乎无限电力'
-        - 'shift + 右键 设置储电上限'
-        - '当前储电量: 未初始化'
-
-
-
-
-
+      - An automated MagicExpansion energy or resource machine.
+      - Produces or processes resources related to Power Card.
     INFINITY_FLINT_AND_STEEL:
-      Name: '无尽打火石'
+      Name: Infinity Flint And Steel
       Lore:
-        - '这究竟是怎样的玩意？'
-        - '用不完，根本用不完'
-
+      - A magical item from MagicExpansion.
+      - Used for Infinity Flint And Steel.
     SPACE_INFINITY_MAGIC:
-      Name: '无尽空间魔法'
+      Name: Space Infinity Magic
       Lore:
-          - '存储大型预制建筑的容器'
-          - '什么都能装下'
-
-
-
-
-
+      - A magical item from MagicExpansion.
+      - Used for Space Infinity Magic.
     COBBLESTONE_1:
-      Name: '封印·圆石x64'
+      Name: Cobblestone 1
       Lore:
-          - '64个圆石'
+      - A magical item from MagicExpansion.
+      - Used for Cobblestone 1.
     COBBLESTONE_2:
-      Name: '封印·圆石x4096'
+      Name: Cobblestone 2
       Lore:
-          - '4096个圆石'
+      - A magical item from MagicExpansion.
+      - Used for Cobblestone 2.
     STONE_1:
-      Name: '封印·石头x64'
+      Name: Stone 1
       Lore:
-          - '64个石头'
+      - A magical item from MagicExpansion.
+      - Used for Stone 1.
     STONE_2:
-      Name: '封印·石头x4096'
+      Name: Stone 2
       Lore:
-          - '4096个石头'
+      - A magical item from MagicExpansion.
+      - Used for Stone 2.
     OAK_LOG_1:
-      Name: '封印·橡木x64'
+      Name: Oak Log 1
       Lore:
-          - '64个橡木'
+      - A magical item from MagicExpansion.
+      - Used for Oak Log 1.
     OAK_LOG_2:
-      Name: '封印·橡木x4096'
+      Name: Oak Log 2
       Lore:
-          - '4096个橡木'
+      - A magical item from MagicExpansion.
+      - Used for Oak Log 2.
     STONE_BRICKS_1:
-      Name: '封印·石砖x64'
+      Name: Stone Bricks 1
       Lore:
-          - '64个石砖'
+      - A magical item from MagicExpansion.
+      - Used for Stone Bricks 1.
     STONE_BRICKS_2:
-      Name: '封印·石砖x4096'
+      Name: Stone Bricks 2
       Lore:
-          - '4096个石砖'
+      - A magical item from MagicExpansion.
+      - Used for Stone Bricks 2.
     BRICKS_1:
-      Name: '封印·红砖块x64'
+      Name: Bricks 1
       Lore:
-          - '64个红砖块'
+      - A magical item from MagicExpansion.
+      - Used for Bricks 1.
     BRICKS_2:
-      Name: '封印·红砖块x4096'
+      Name: Bricks 2
       Lore:
-          - '4096个红砖块'
+      - A magical item from MagicExpansion.
+      - Used for Bricks 2.
     REDSTONE_1:
-      Name: '封印·红石x64'
+      Name: Redstone 1
       Lore:
-          - '64个红石'
+      - A magical item from MagicExpansion.
+      - Used for Redstone 1.
     REDSTONE_2:
-      Name: '封印·红石x4096'
+      Name: Redstone 2
       Lore:
-          - '4096个红石'
+      - A magical item from MagicExpansion.
+      - Used for Redstone 2.
     REDSTONE_TORCH_1:
-      Name: '封印·红石火把x64'
+      Name: Redstone Torch 1
       Lore:
-          - '64个红石火把'
+      - A magical item from MagicExpansion.
+      - Used for Redstone Torch 1.
     REDSTONE_TORCH_2:
-      Name: '封印·红石火把x4096'
+      Name: Redstone Torch 2
       Lore:
-          - '4096个红石火把'
+      - A magical item from MagicExpansion.
+      - Used for Redstone Torch 2.
     REPEATER_1:
-      Name: '封印·红石中继器x64'
+      Name: Repeater 1
       Lore:
-          - '64个红石中继器'
+      - A magical item from MagicExpansion.
+      - Used for Repeater 1.
     REPEATER_2:
-      Name: '封印·红石中继器x4096'
+      Name: Repeater 2
       Lore:
-        - '4096个红石中继器'
+      - A magical item from MagicExpansion.
+      - Used for Repeater 2.
     COMPARATOR_1:
-      Name: '封印·红石比较器x64'
+      Name: Comparator 1
       Lore:
-          - '64个红石比较器'
+      - A magical item from MagicExpansion.
+      - Used for Comparator 1.
     COMPARATOR_2:
-      Name: '封印·红石比较器x4096'
+      Name: Comparator 2
       Lore:
-          - '4096个红石比较器'
+      - A magical item from MagicExpansion.
+      - Used for Comparator 2.
     HOPPER_1:
-      Name: '封印·漏斗x64'
+      Name: Hopper 1
       Lore:
-          - '64个漏斗'
+      - A magical item from MagicExpansion.
+      - Used for Hopper 1.
     HOPPER_2:
-      Name: '封印·漏斗x4096'
+      Name: Hopper 2
       Lore:
-          - '4096个漏斗'
+      - A magical item from MagicExpansion.
+      - Used for Hopper 2.
     STRING_1:
-      Name: '封印·线x64'
+      Name: String 1
       Lore:
-          - '64条线'
+      - A magical item from MagicExpansion.
+      - Used for String 1.
     STRING_2:
-      Name: '封印·线x4096'
+      Name: String 2
       Lore:
-          - '4096条线'
+      - A magical item from MagicExpansion.
+      - Used for String 2.
     TRIPWIRE_HOOK_1:
-      Name: '封印·绊线钩x64'
+      Name: Tripwire Hook 1
       Lore:
-          - '64个绊线钩'
+      - A magical item from MagicExpansion.
+      - Used for Tripwire Hook 1.
     TRIPWIRE_HOOK_2:
-      Name: '封印·绊线钩x4096'
+      Name: Tripwire Hook 2
       Lore:
-          - '4096个绊线钩'
+      - A magical item from MagicExpansion.
+      - Used for Tripwire Hook 2.
     FURNACE_1:
-      Name: '封印·熔炉x64'
+      Name: Furnace 1
       Lore:
-          - '64个熔炉'
+      - A magical item from MagicExpansion.
+      - Used for Furnace 1.
     FURNACE_2:
-      Name: '封印·熔炉x4096'
+      Name: Furnace 2
       Lore:
-          - '4096个熔炉'
+      - A magical item from MagicExpansion.
+      - Used for Furnace 2.
     IRON_INGOT_1:
-      Name: '封印·铁锭x64'
+      Name: Iron Ingot 1
       Lore:
-          - '64个铁锭'
+      - A magical item from MagicExpansion.
+      - Used for Iron Ingot 1.
     IRON_INGOT_2:
-      Name: '封印·铁锭x4096'
+      Name: Iron Ingot 2
       Lore:
-          - '4096个铁锭'
+      - A magical item from MagicExpansion.
+      - Used for Iron Ingot 2.
     IRON_INGOT_3:
-      Name: '封印·铁锭x262144'
+      Name: Iron Ingot 3
       Lore:
-          - '262144个铁锭'
+      - A magical item from MagicExpansion.
+      - Used for Iron Ingot 3.
     GLASS_1:
-      Name: '封印·玻璃x64'
+      Name: Glass 1
       Lore:
-          - '64个玻璃'
+      - A magical item from MagicExpansion.
+      - Used for Glass 1.
     GLASS_2:
-      Name: '封印·玻璃x4096'
+      Name: Glass 2
       Lore:
-          - '4096个玻璃'
+      - A magical item from MagicExpansion.
+      - Used for Glass 2.
     LIGHT_1:
-      Name: '封印·光x64'
+      Name: Light 1
       Lore:
-          - '64个光'
+      - A magical item from MagicExpansion.
+      - Used for Light 1.
     LIGHT_2:
-      Name: '封印·光x4096'
+      Name: Light 2
       Lore:
-          - '4096个光'
+      - A magical item from MagicExpansion.
+      - Used for Light 2.
     QUARTZ_BLOCK_1:
-      Name: '封印·石英块x64'
+      Name: Quartz Block 1
       Lore:
-        - '64个石英块'
+      - A magical item from MagicExpansion.
+      - Used for Quartz Block 1.
     QUARTZ_BLOCK_2:
-      Name: '封印·石英块x4096'
+      Name: Quartz Block 2
       Lore:
-        - '4096个石英块'
+      - A magical item from MagicExpansion.
+      - Used for Quartz Block 2.
     COLOR_WOOL_1:
-      Name: '封印·彩色羊毛x64'
+      Name: Color Wool 1
       Lore:
-        - '64个彩色羊毛'
+      - A magical item from MagicExpansion.
+      - Used for Color Wool 1.
     COLOR_WOOL_2:
-      Name: '封印·彩色羊毛x4096'
+      Name: Color Wool 2
       Lore:
-        - '4096个彩色羊毛'
+      - A magical item from MagicExpansion.
+      - Used for Color Wool 2.
     COLOR_TERRACOTTA_1:
-      Name: '封印·彩色陶瓦x64'
+      Name: Color Terracotta 1
       Lore:
-        - '64个彩色陶瓦'
+      - A magical item from MagicExpansion.
+      - Used for Color Terracotta 1.
     COLOR_TERRACOTTA_2:
-      Name: '封印·彩色陶瓦x4096'
+      Name: Color Terracotta 2
       Lore:
-        - '4096个彩色陶瓦'
+      - A magical item from MagicExpansion.
+      - Used for Color Terracotta 2.
     COLOR_CONCRETE_1:
-      Name: '封印·彩色混凝土x64'
+      Name: Color Concrete 1
       Lore:
-        - '64个彩色混凝土'
+      - A magical item from MagicExpansion.
+      - Used for Color Concrete 1.
     COLOR_CONCRETE_2:
-      Name: '封印·彩色混凝土x4096'
+      Name: Color Concrete 2
       Lore:
-        - '4096个彩色混凝土'
+      - A magical item from MagicExpansion.
+      - Used for Color Concrete 2.
     COLOR_GLAZED_TERRACOTTA_1:
-      Name: '封印·彩色带釉陶瓦x64'
+      Name: Color Glazed Terracotta 1
       Lore:
-        - '64个彩色带釉陶瓦'
+      - A magical item from MagicExpansion.
+      - Used for Color Glazed Terracotta 1.
     COLOR_GLAZED_TERRACOTTA_2:
-      Name: '封印·彩色带釉陶瓦x4096'
+      Name: Color Glazed Terracotta 2
       Lore:
-        - '4096个彩色带釉陶瓦'
+      - A magical item from MagicExpansion.
+      - Used for Color Glazed Terracotta 2.
     COLOR_LEAVES_1:
-      Name: '封印·彩色树叶x64'
+      Name: Color Leaves 1
       Lore:
-        - '64个彩色树叶'
+      - A magical item from MagicExpansion.
+      - Used for Color Leaves 1.
     COLOR_LEAVES_2:
-      Name: '封印·彩色树叶x4096'
+      Name: Color Leaves 2
       Lore:
-        - '4096个彩色树叶'
+      - A magical item from MagicExpansion.
+      - Used for Color Leaves 2.
     COLOR_LOG_1:
-      Name: '封印·彩色原木x64'
+      Name: Color Log 1
       Lore:
-        - '64个彩色原木'
+      - A magical item from MagicExpansion.
+      - Used for Color Log 1.
     COLOR_LOG_2:
-      Name: '封印·彩色原木x4096'
+      Name: Color Log 2
       Lore:
-        - '4096个彩色原木'
-
-
+      - A magical item from MagicExpansion.
+      - Used for Color Log 2.
     PURE_GOLD:
-      Name: '纯净金'
+      Name: Pure Gold
       Lore:
-        - '无比纯净的元素'
+      - A magical item from MagicExpansion.
+      - Used for Pure Gold.
     PURE_IRON:
-      Name: '纯净铁'
+      Name: Pure Iron
       Lore:
-        - '无比纯净的元素'
+      - A magical item from MagicExpansion.
+      - Used for Pure Iron.
     PURE_COPPER:
-      Name: '纯净铜'
+      Name: Pure Copper
       Lore:
-        - '无比纯净的元素'
+      - A magical item from MagicExpansion.
+      - Used for Pure Copper.
     PURE_MAGNESIUM:
-      Name: '纯净镁'
+      Name: Pure Magnesium
       Lore:
-        - '无比纯净的元素'
+      - A magical item from MagicExpansion.
+      - Used for Pure Magnesium.
     PURE_TIN:
-      Name: '纯净锡'
+      Name: Pure Tin
       Lore:
-        - '无比纯净的元素'
+      - A magical item from MagicExpansion.
+      - Used for Pure Tin.
     PURE_SILVER:
-      Name: '纯净银'
+      Name: Pure Silver
       Lore:
-        - '无比纯净的元素'
+      - A magical item from MagicExpansion.
+      - Used for Pure Silver.
     PURE_LEAD:
-      Name: '纯净铅'
+      Name: Pure Lead
       Lore:
-        - '无比纯净的元素'
+      - A magical item from MagicExpansion.
+      - Used for Pure Lead.
     PURE_ALUMINUM:
-      Name: '纯净铝'
+      Name: Pure Aluminum
       Lore:
-        - '无比纯净的元素'
+      - A magical item from MagicExpansion.
+      - Used for Pure Aluminum.
     PURE_ZINC:
-      Name: '纯净锌'
+      Name: Pure Zinc
       Lore:
-        - '无比纯净的元素'
-
+      - A magical item from MagicExpansion.
+      - Used for Pure Zinc.
     PURE_ELEMENT_INGOT:
-      Name: '纯净元素锭'
+      Name: Pure Element Ingot
       Lore:
-        - '无比纯净'
-
+      - A magical item from MagicExpansion.
+      - Used for Pure Element Ingot.
     PURE_ELEMENT_GOLD:
-      Name: '金元素·无暇'
+      Name: Pure Element Gold
       Lore:
-        - '- 五行元素'
+      - A magical item from MagicExpansion.
+      - Used for Pure Element Gold.
     PURE_ELEMENT_WOOD:
-      Name: '木元素·无暇'
+      Name: Pure Element Wood
       Lore:
-        - '- 五行元素'
+      - A magical item from MagicExpansion.
+      - Used for Pure Element Wood.
     PURE_ELEMENT_WATER:
-      Name: '水元素·无暇'
+      Name: Pure Element Water
       Lore:
-        - '- 五行元素'
+      - A magical item from MagicExpansion.
+      - Used for Pure Element Water.
     PURE_ELEMENT_FIRE:
-      Name: '火元素·无暇'
+      Name: Pure Element Fire
       Lore:
-        - '- 五行元素'
+      - A magical item from MagicExpansion.
+      - Used for Pure Element Fire.
     PURE_ELEMENT_EARTH:
-      Name: '土元素·无暇'
+      Name: Pure Element Earth
       Lore:
-        - '- 五行元素'
+      - A magical item from MagicExpansion.
+      - Used for Pure Element Earth.
     PURE_FIVE_ELEMENT:
-      Name: '五行元素·无暇'
+      Name: Pure Five Element
       Lore:
-        - '- 五行元素'
-
+      - A magical item from MagicExpansion.
+      - Used for Pure Five Element.
     SPEED_ELEMENT_64:
-      Name: '元素加速核心·五行'
+      Name: Speed Element 64
       Lore:
-          - '- 64倍速'
-          - '这是一个机器零件'
-
-
+      - A magical item from MagicExpansion.
+      - Used for Speed Element 64.
   GEO:
     GEO_MINER_PLUS:
-      Name: '自然资源开采机-PLUS'
+      Name: GEO Miner Plus
       Lore:
-        - ' '
-        - '更强大的自然资源开采机'
-        - '从区块中开采出资源'
-        - '可以开采出不能被矿镐挖出的资源'
-        - ' '
-        - '速度: 1314x'
-        - '⇨ ⚡ 520 J/s'
-        - '⇨ ⚡ 1314 J 可存储'
-        - ' '
-        - '确保你已经进行了 GEO 地形扫描'
+      - A GEO resource or mining component.
+      - Used to obtain or process GEO Miner Plus.
+      - ⇨ ⚡ 520 J/s
     FIVE_ELEMENT_MINER:
-      Name: '五行元素资源开采机'
+      Name: Five Element Miner
       Lore:
-        - ''
-        - '一种特殊的资源开采机'
-        - '从区块中开采出五行资源'
-        - '可以开采出不能被矿镐挖出的资源'
-        - ''
-        - '速度: 1x'
-        - '⇨ ⚡ 520 J/s'
-        - '⇨ ⚡ 1314 J 可存储'
-        - ''
-        - '确保你已经进行了 GEO 地形扫描'
-
-
+      - A GEO resource or mining component.
+      - Used to obtain or process Five Element Miner.
+      - ⇨ ⚡ 520 J/s
     RSC_MAGIC_MINER:
-      Name: '魔法资源开采机'
+      Name: RSC Magic Miner
       Lore:
-        - ""
-        - "从区块深处开采出魔法资源"
-        - "可以开采出一些神秘的魔法资源"
-        - "该机器会在工作时消耗中量电力"
-        - '⇨ ⚡ 520 J/s'
-        - '⇨ ⚡ 1314 J 可存储'
-        - "使用方法与原版粘液原油开采机类似"
-        - "放入同源物品，可对指定资源进行挖掘"
-        - "请先对所在区块进行地形扫描！"
-        - ""
-        - "魔法-1.21修复/优化~物品/机器"
-
-
-
-
+      - A GEO resource or mining component.
+      - Used to obtain or process RSC Magic Miner.
+      - ⇨ ⚡ 520 J/s
     WOOD_ELEMENT:
-      Name: '木元素'
+      Name: Wood Element
       Lore:
-        - '大自然中有五种元素'
-        - '分别为：金、木、水、火、土'
-        - '木元素生机盎然，象征着成长与繁衍'
-        - '它连接天地，是自然生命力的体现'
-        - '古老的森林中流传着木之灵的传说'
-        - '唯有心怀善意与耐心者，方能聆听它的低语'
+      - A GEO resource or mining component.
+      - Used to obtain or process Wood Element.
     GOLD_ELEMENT:
-      Name: '金元素'
+      Name: Gold Element
       Lore:
-        - '大自然中有五种元素'
-        - '分别为：金、木、水、火、土'
-        - '金元素锋锐坚定，象征着刚强与秩序'
-        - '它蕴含大地的精华，凝聚成山川之骨'
-        - '在远古的矿脉深处沉睡着金之灵'
-        - '唯有心志坚定者，方可唤醒它的威能'
+      - A GEO resource or mining component.
+      - Used to obtain or process Gold Element.
     WATER_ELEMENT:
-      Name: '水元素'
+      Name: Water Element
       Lore:
-        - '大自然中有五种元素'
-        - '分别为：金、木、水、火、土'
-        - '水元素柔润灵动，象征着变化与包容'
-        - '它滋养万物，是生命流动的源泉'
-        - '古老的江河湖海中流传着水之灵的传说'
-        - '只有心灵纯净者，才能感应它的律动'
+      - A GEO resource or mining component.
+      - Used to obtain or process Water Element.
     FIRE_ELEMENT:
-      Name: '火元素'
+      Name: Fire Element
       Lore:
-        - '大自然中有五种元素'
-        - '分别为：金、木、水、火、土'
-        - '火元素炽烈活跃，象征着变革与热情'
-        - '它带来温暖和光明，也能造成毁灭'
-        - '在古老的火山深处沉睡着火之灵'
-        - '唯有心中燃烧着强烈意志之人，才能驾驭它的力量'
+      - A GEO resource or mining component.
+      - Used to obtain or process Fire Element.
     EARTH_ELEMENT:
-      Name: '土元素'
+      Name: Earth Element
       Lore:
-        - '大自然中有五种元素'
-        - '分别为：金、木、水、火、土'
-        - '土元素沉稳厚重，象征着坚韧与承载'
-        - '它孕育万物，是生命的根基'
-        - '在古老的传说中，土之灵守护着大地的秘密'
-        - '只有心怀敬畏之人，才能感受到它的力量'
-
+      - A GEO resource or mining component.
+      - Used to obtain or process Earth Element.
     FIVE_ELEMENT:
-      Name: '五行元素'
+      Name: Five Element
       Lore:
-        - '融合了五种元素'
-        - '它代表着金、木、水、火、土'
-        - '它们是自然界的核心，也是自然界的力量'
-        - '是一种特殊的材料'
-
-
+      - A GEO resource or mining component.
+      - Used to obtain or process Five Element.
     RSC_MAGIC_REDSTONE:
-      Name: '魔法红石-rsc'
+      Name: RSC Magic Redstone
       Lore:
-        - '魔法2.0 -> rsc魔法 媒介'
+      - A GEO resource or mining component.
+      - Used to obtain or process RSC Magic Redstone.
     RSC_MAGIC_COSMIC_DUST:
-      Name: '宇宙尘-rsc'
+      Name: RSC Magic Cosmic Dust
       Lore:
-        - '魔法2.0 -> rsc魔法 媒介'
+      - A GEO resource or mining component.
+      - Used to obtain or process RSC Magic Cosmic Dust.
     RSC_MAGIC_SOUL:
-      Name: '灵魂-rsc'
+      Name: RSC Magic Soul
       Lore:
-        - '魔法2.0 -> rsc魔法 媒介'
-
-
-
-
-
-
-
-
-
+      - A GEO resource or mining component.
+      - Used to obtain or process RSC Magic Soul.
   GENERATOR:
     RESOURCE_MACHINE_WOOD_BASIC:
-      Name: '魔法翠木之源'
+      Name: Resource Machine Wood Basic
       Lore:
-          - '古老的魔法在其中流转...'
-          - '从虚空中召唤出无尽的木材。'
-          - ''
-          - '功能: 自动生成原木和树叶'
-          - '能源需求: 每秒钟消耗中量电力'
-          - ''
-          - '“大自然的秘密，尽在掌握。”'
-          - '⇨ ⚙ 4 s'
-          - '⇨ ⚡ 520 J/s'
-          - '⇨ ⚡ 1314 J 可存储'
+      - An automated MagicExpansion energy or resource machine.
+      - Produces or processes resources related to Resource Machine Wood Basic.
+      - ⇨ ⚙ 4 s
+      - ⇨ ⚡ 520 J/s
     RESOURCE_MACHINE_WOOD_ULTRA:
-      Name: '森语者之触·五行'
+      Name: Resource Machine Wood Ultra
       Lore:
-        - '由翠木之源进阶而来'
-        - '古老的魔法在其中流转...'
-        - '从虚空中召唤出无尽的木材。'
-        - ''
-        - '功能: 自动生成原木和树叶'
-        - '能源需求: 每秒钟消耗巨量电力'
-        - ''
-        - '“大自然的秘密，尽在掌握。”'
-        - '⇨ ⚙ 3 s'
-        - '⇨ ⚡ 5200 J/s'
-        - '⇨ ⚡ 131452.0 J 可存储'
+      - An automated MagicExpansion energy or resource machine.
+      - Produces or processes resources related to Resource Machine Wood Ultra.
+      - ⇨ ⚙ 3 s
+      - ⇨ ⚡ 5200 J/s
     LIGHT_GEN_BASIC:
-      Name: '光源采集器'
+      Name: Light Generator Basic
       Lore:
-          - '从环境中收集无尽的光源。'
-          - ''
-          - '功能: 自动生成光源'
-          - '能源需求: 每秒钟消耗中量电力'
-          - ''
-          - '“无尽光源，在阳光下...”'
-          - '⇨ ⚙ 16s'
-          - '⇨ ⚡ 520 J/s'
-          - '⇨ ⚡ 1314 J 可存储'
-
+      - An automated MagicExpansion energy or resource machine.
+      - Produces or processes resources related to Light Generator Basic.
+      - ⇨ ⚙ 16s
+      - ⇨ ⚡ 520 J/s
     STRING_GEN_BASIC:
-      Name: '刷线机'
+      Name: String Generator Basic
       Lore:
-        - '这是一个1.21版本之前的原版特性'
-        - '特性怎么能叫bug呢？'
-        - ''
-        - '功能: 自动生成线并收集起来'
-        - '能源需求: 每秒钟消耗微量电力'
-        - ''
-        - '“水碰到线，然后就变成两个了...”'
-        - '道生一，一生二，二生三，三生万物'
-        - '⇨ ⚙ 1s'
-        - '⇨ ⚡ 5.2 J/s'
-        - '⇨ ⚡ 1314 J 可存储'
+      - An automated MagicExpansion energy or resource machine.
+      - Produces or processes resources related to String Generator Basic.
+      - ⇨ ⚙ 1s
+      - ⇨ ⚡ 5.2 J/s
     STRING_GEN_ULTRA:
-      Name: '刷线机·五行'
+      Name: String Generator Ultra
       Lore:
-        - '这是一个1.21版本之前的原版特性'
-        - '特性怎么能叫bug呢？'
-        - ''
-        - '功能: 自动生成线并收集起来'
-        - '能源需求: 每秒钟消耗少量电力'
-        - ''
-        - '“水碰到线，然后就变成？个了...”'
-        - '太极生两仪，两仪生四象，四象生八卦'
-        - '⇨ ⚙ 1s'
-        - '⇨ ⚡ 52 J/s'
-        - '⇨ ⚡ 1314 J 可存储'
-
+      - An automated MagicExpansion energy or resource machine.
+      - Produces or processes resources related to String Generator Ultra.
+      - ⇨ ⚙ 1s
+      - ⇨ ⚡ 52 J/s
     MINE_MAN_QUARTZ_BASIC:
-      Name: '电力矿工机器人-石英'
+      Name: Mine Man Quartz Basic
       Lore:
-          - '一个电容，一个魔法矿洞，一个奇迹'
-          - ''
-          - '功能: 自动生成石英'
-          - '能源需求: 每秒钟消耗中量电力'
-          - ''
-          - '“无数岁月，矿工机器人一直陪伴着你...”'
-          - '⇨ ⚙ 2s'
-          - '⇨ ⚡ 520 J/s'
-          - '⇨ ⚡ 1314 J 可存储'
+      - An automated MagicExpansion energy or resource machine.
+      - Produces or processes resources related to Mine Man Quartz Basic.
+      - ⇨ ⚙ 2s
+      - ⇨ ⚡ 520 J/s
     MINE_MAN_AMETHYST_SHARD_BASIC:
-      Name: '电力矿工机器人-紫水晶'
+      Name: Mine Man Amethyst Shard Basic
       Lore:
-        - '一个电容，一个魔法矿洞，一个奇迹'
-        - ''
-        - '功能: 自动生成紫水晶'
-        - '能源需求: 每秒钟消耗中量电力'
-        - ''
-        - '“无数岁月，矿工机器人一直陪伴着你...”'
-        - '⇨ ⚙ 2s'
-        - '⇨ ⚡ 520 J/s'
-        - '⇨ ⚡ 1314 J 可存储'
+      - An automated MagicExpansion energy or resource machine.
+      - Produces or processes resources related to Mine Man Amethyst Shard Basic.
+      - ⇨ ⚙ 2s
+      - ⇨ ⚡ 520 J/s
     MINE_MAN_REDSTONE_BASIC:
-      Name: '电力矿工机器人-红石'
+      Name: Mine Man Redstone Basic
       Lore:
-        - '一个电容，一个魔法矿洞，一个奇迹'
-        - ''
-        - '功能: 自动生成红石'
-        - '能源需求: 每秒钟消耗中量电力'
-        - ''
-        - '“无数岁月，矿工机器人一直陪伴着你...”'
-        - '⇨ ⚙ 2s'
-        - '⇨ ⚡ 520 J/s'
-        - '⇨ ⚡ 1314 J 可存储'
+      - An automated MagicExpansion energy or resource machine.
+      - Produces or processes resources related to Mine Man Redstone Basic.
+      - ⇨ ⚙ 2s
+      - ⇨ ⚡ 520 J/s
     MINE_MAN_DIAMOND_BASIC:
-      Name: '电力矿工机器人-钻石'
+      Name: Mine Man Diamond Basic
       Lore:
-        - '一个电容，一个魔法矿洞，一个奇迹'
-        - ''
-        - '功能: 自动生成钻石'
-        - '能源需求: 每秒钟消耗中量电力'
-        - ''
-        - '“无数岁月，矿工机器人一直陪伴着你...”'
-        - '⇨ ⚙ 2s'
-        - '⇨ ⚡ 520 J/s'
-        - '⇨ ⚡ 1314 J 可存储'
+      - An automated MagicExpansion energy or resource machine.
+      - Produces or processes resources related to Mine Man Diamond Basic.
+      - ⇨ ⚙ 2s
+      - ⇨ ⚡ 520 J/s
     MINE_MAN_LAPIS_LAZULI_BASIC:
-      Name: '电力矿工机器人-青金石'
+      Name: Mine Man Lapis Lazuli Basic
       Lore:
-        - '一个电容，一个魔法矿洞，一个奇迹'
-        - ''
-        - '功能: 自动生成青金石'
-        - '能源需求: 每秒钟消耗中量电力'
-        - ''
-        - '“无数岁月，矿工机器人一直陪伴着你...”'
-        - '⇨ ⚙ 2s'
-        - '⇨ ⚡ 520 J/s'
-        - '⇨ ⚡ 1314 J 可存储'
+      - An automated MagicExpansion energy or resource machine.
+      - Produces or processes resources related to Mine Man Lapis Lazuli Basic.
+      - ⇨ ⚙ 2s
+      - ⇨ ⚡ 520 J/s
     MINE_MAN_EMERALD_BASIC:
-      Name: '电力矿工机器人-绿宝石'
+      Name: Mine Man Emerald Basic
       Lore:
-        - '一个电容，一个魔法矿洞，一个奇迹'
-        - ''
-        - '功能: 自动生成绿宝石'
-        - '能源需求: 每秒钟消耗中量电力'
-        - ''
-        - '“无数岁月，矿工机器人一直陪伴着你...”'
-        - '⇨ ⚙ 2s'
-        - '⇨ ⚡ 520 J/s'
-        - '⇨ ⚡ 1314 J 可存储'
+      - An automated MagicExpansion energy or resource machine.
+      - Produces or processes resources related to Mine Man Emerald Basic.
+      - ⇨ ⚙ 2s
+      - ⇨ ⚡ 520 J/s
     MINE_MAN_COAL_BASIC:
-      Name: '电力矿工机器人-煤炭'
+      Name: Mine Man Coal Basic
       Lore:
-        - '一个电容，一个魔法矿洞，一个奇迹'
-        - ''
-        - '功能: 自动生成煤炭'
-        - '能源需求: 每秒钟消耗中量电力'
-        - ''
-        - '“无数岁月，矿工机器人一直陪伴着你...”'
-        - '⇨ ⚙ 2s'
-        - '⇨ ⚡ 520 J/s'
-        - '⇨ ⚡ 1314 J 可存储'
+      - An automated MagicExpansion energy or resource machine.
+      - Produces or processes resources related to Mine Man Coal Basic.
+      - ⇨ ⚙ 2s
+      - ⇨ ⚡ 520 J/s
     MINE_MAN_NETHERITE_SCRAP_BASIC:
-      Name: '电力矿工机器人-下界合金碎片'
+      Name: Mine Man Netherite Scrap Basic
       Lore:
-        - '一个电容，一个魔法矿洞，一个奇迹'
-        - ''
-        - '功能: 自动生成下界合金碎片'
-        - '能源需求: 每秒钟消耗中量电力'
-        - ''
-        - '“无数岁月，矿工机器人一直陪伴着你...”'
-        - '⇨ ⚙ 2s'
-        - '⇨ ⚡ 520 J/s'
-        - '⇨ ⚡ 1314 J 可存储'
+      - An automated MagicExpansion energy or resource machine.
+      - Produces or processes resources related to Mine Man Netherite Scrap Basic.
+      - ⇨ ⚙ 2s
+      - ⇨ ⚡ 520 J/s
     MINE_MAN_IRON_DUST_BASIC:
-      Name: '电力矿工机器人-铁粉'
+      Name: Mine Man Iron Dust Basic
       Lore:
-        - '一个电容，一个魔法矿洞，一个奇迹'
-        - ''
-        - '功能: 自动生成铁粉'
-        - '能源需求: 每秒钟消耗中量电力'
-        - ''
-        - '“无数岁月，矿工机器人一直陪伴着你...”'
-        - '⇨ ⚙ 2s'
-        - '⇨ ⚡ 520 J/s'
-        - '⇨ ⚡ 1314 J 可存储'
+      - An automated MagicExpansion energy or resource machine.
+      - Produces or processes resources related to Mine Man Iron Dust Basic.
+      - ⇨ ⚙ 2s
+      - ⇨ ⚡ 520 J/s
     MINE_MAN_GOLD_DUST_BASIC:
-      Name: '电力矿工机器人-金粉'
+      Name: Mine Man Gold Dust Basic
       Lore:
-        - '一个电容，一个魔法矿洞，一个奇迹'
-        - ''
-        - '功能: 自动生成金粉'
-        - '能源需求: 每秒钟消耗中量电力'
-        - ''
-        - '“无数岁月，矿工机器人一直陪伴着你...”'
-        - '⇨ ⚙ 2s'
-        - '⇨ ⚡ 520 J/s'
-        - '⇨ ⚡ 1314 J 可存储'
+      - An automated MagicExpansion energy or resource machine.
+      - Produces or processes resources related to Mine Man Gold Dust Basic.
+      - ⇨ ⚙ 2s
+      - ⇨ ⚡ 520 J/s
     MINE_MAN_COPPER_DUST_BASIC:
-      Name: '电力矿工机器人-铜粉'
+      Name: Mine Man Copper Dust Basic
       Lore:
-        - '一个电容，一个魔法矿洞，一个奇迹'
-        - ''
-        - '功能: 自动生成铜粉'
-        - '能源需求: 每秒钟消耗中量电力'
-        - ''
-        - '“无数岁月，矿工机器人一直陪伴着你...”'
-        - '⇨ ⚙ 2s'
-        - '⇨ ⚡ 520 J/s'
-        - '⇨ ⚡ 1314 J 可存储'
+      - An automated MagicExpansion energy or resource machine.
+      - Produces or processes resources related to Mine Man Copper Dust Basic.
+      - ⇨ ⚙ 2s
+      - ⇨ ⚡ 520 J/s
     MINE_MAN_TIN_DUST_BASIC:
-      Name: '电力矿工机器人-锡粉'
+      Name: Mine Man Tin Dust Basic
       Lore:
-        - '一个电容，一个魔法矿洞，一个奇迹'
-        - ''
-        - '功能: 自动生成锡粉'
-        - '能源需求: 每秒钟消耗中量电力'
-        - ''
-        - '“无数岁月，矿工机器人一直陪伴着你...”'
-        - '⇨ ⚙ 2s'
-        - '⇨ ⚡ 520 J/s'
-        - '⇨ ⚡ 1314 J 可存储'
+      - An automated MagicExpansion energy or resource machine.
+      - Produces or processes resources related to Mine Man Tin Dust Basic.
+      - ⇨ ⚙ 2s
+      - ⇨ ⚡ 520 J/s
     MINE_MAN_SILVER_DUST_BASIC:
-      Name: '电力矿工机器人-银粉'
+      Name: Mine Man Silver Dust Basic
       Lore:
-        - '一个电容，一个魔法矿洞，一个奇迹'
-        - ''
-        - '功能: 自动生成银粉'
-        - '能源需求: 每秒钟消耗中量电力'
-        - ''
-        - '“无数岁月，矿工机器人一直陪伴着你...”'
-        - '⇨ ⚙ 2s'
-        - '⇨ ⚡ 520 J/s'
-        - '⇨ ⚡ 1314 J 可存储'
+      - An automated MagicExpansion energy or resource machine.
+      - Produces or processes resources related to Mine Man Silver Dust Basic.
+      - ⇨ ⚙ 2s
+      - ⇨ ⚡ 520 J/s
     MINE_MAN_LEAD_DUST_BASIC:
-      Name: '电力矿工机器人-铅粉'
+      Name: Mine Man Lead Dust Basic
       Lore:
-        - '一个电容，一个魔法矿洞，一个奇迹'
-        - ''
-        - '功能: 自动生成铅粉'
-        - '能源需求: 每秒钟消耗中量电力'
-        - ''
-        - '“无数岁月，矿工机器人一直陪伴着你...”'
-        - '⇨ ⚙ 2s'
-        - '⇨ ⚡ 520 J/s'
-        - '⇨ ⚡ 1314 J 可存储'
+      - An automated MagicExpansion energy or resource machine.
+      - Produces or processes resources related to Mine Man Lead Dust Basic.
+      - ⇨ ⚙ 2s
+      - ⇨ ⚡ 520 J/s
     MINE_MAN_ALUMINUM_DUST_BASIC:
-      Name: '电力矿工机器人-铝粉'
+      Name: Mine Man Aluminum Dust Basic
       Lore:
-        - '一个电容，一个魔法矿洞，一个奇迹'
-        - ''
-        - '功能: 自动生成铝粉'
-        - '能源需求: 每秒钟消耗中量电力'
-        - ''
-        - '“无数岁月，矿工机器人一直陪伴着你...”'
-        - '⇨ ⚙ 2s'
-        - '⇨ ⚡ 520 J/s'
-        - '⇨ ⚡ 1314 J 可存储'
+      - An automated MagicExpansion energy or resource machine.
+      - Produces or processes resources related to Mine Man Aluminum Dust Basic.
+      - ⇨ ⚙ 2s
+      - ⇨ ⚡ 520 J/s
     MINE_MAN_ZINC_DUST_BASIC:
-      Name: '电力矿工机器人-锌粉'
+      Name: Mine Man Zinc Dust Basic
       Lore:
-        - '一个电容，一个魔法矿洞，一个奇迹'
-        - ''
-        - '功能: 自动生成锌粉'
-        - '能源需求: 每秒钟消耗中量电力'
-        - ''
-        - '“无数岁月，矿工机器人一直陪伴着你..”'
-        - '⇨ ⚙ 2s'
-        - '⇨ ⚡ 520 J/s'
-        - '⇨ ⚡ 1314 J 可存储'
+      - An automated MagicExpansion energy or resource machine.
+      - Produces or processes resources related to Mine Man Zinc Dust Basic.
+      - ⇨ ⚙ 2s
+      - ⇨ ⚡ 520 J/s
     MINE_MAN_MAGNESIUM_DUST_BASIC:
-      Name: '电力矿工机器人-镁粉'
+      Name: Mine Man Magnesium Dust Basic
       Lore:
-        - '一个电容，一个魔法矿洞，一个奇迹'
-        - ''
-        - '功能: 自动生成镁粉'
-        - '能源需求: 每秒钟消耗中量电力'
-        - ''
-        - '“无数岁月，矿工机器人一直陪伴着你...”'
-        - '⇨ ⚙ 2s'
-        - '⇨ ⚡ 520 J/s'
-        - '⇨ ⚡ 1314 J 可存储'
+      - An automated MagicExpansion energy or resource machine.
+      - Produces or processes resources related to Mine Man Magnesium Dust Basic.
+      - ⇨ ⚙ 2s
+      - ⇨ ⚡ 520 J/s
     MINE_MAN_IRON_INGOT_BASIC:
-      Name: '电力冶炼矿工机器人-铁锭'
+      Name: Mine Man Iron Ingot Basic
       Lore:
-        - '一个电容，一个魔法矿洞，一个奇迹'
-        - ''
-        - '功能: 自动生成铁锭'
-        - '能源需求: 每秒钟消耗中量电力'
-        - ''
-        - '“无数岁月，矿工机器人一直陪伴着你...”'
-        - '⇨ ⚙ 2s'
-        - '⇨ ⚡ 520 J/s'
-        - '⇨ ⚡ 1314 J 可存储'
+      - An automated MagicExpansion energy or resource machine.
+      - Produces or processes resources related to Mine Man Iron Ingot Basic.
+      - ⇨ ⚙ 2s
+      - ⇨ ⚡ 520 J/s
     MINE_MAN_GOLD_INGOT_BASIC:
-      Name: '电力冶炼矿工机器人-金锭'
+      Name: Mine Man Gold Ingot Basic
       Lore:
-        - '一个电容，一个魔法矿洞，一个奇迹'
-        - ''
-        - '功能: 自动生成金锭'
-        - '能源需求: 每秒钟消耗中量电力'
-        - ''
-        - '“无数岁月，矿工机器人一直陪伴着你...”'
-        - '⇨ ⚙ 2s'
-        - '⇨ ⚡ 520 J/s'
-        - '⇨ ⚡ 1314 J 可存储'
+      - An automated MagicExpansion energy or resource machine.
+      - Produces or processes resources related to Mine Man Gold Ingot Basic.
+      - ⇨ ⚙ 2s
+      - ⇨ ⚡ 520 J/s
     MINE_MAN_COPPER_INGOT_BASIC:
-      Name: '电力冶炼矿工机器人-铜锭'
+      Name: Mine Man Copper Ingot Basic
       Lore:
-        - '一个电容，一个魔法矿洞，一个奇迹'
-        - ''
-        - '功能: 自动生成铜锭'
-        - '能源需求: 每秒钟消耗中量电力'
-        - ''
-        - '“无数岁月，矿工机器人一直陪伴着你...”'
-        - '⇨ ⚙ 2s'
-        - '⇨ ⚡ 520 J/s'
-        - '⇨ ⚡ 1314 J 可存储'
+      - An automated MagicExpansion energy or resource machine.
+      - Produces or processes resources related to Mine Man Copper Ingot Basic.
+      - ⇨ ⚙ 2s
+      - ⇨ ⚡ 520 J/s
     MINE_MAN_TIN_INGOT_BASIC:
-      Name: '电力冶炼矿工机器人-锡锭'
+      Name: Mine Man Tin Ingot Basic
       Lore:
-        - '一个电容，一个魔法矿洞，一个奇迹'
-        - ''
-        - '功能: 自动生成锡锭'
-        - '能源需求: 每秒钟消耗中量电力'
-        - ''
-        - '“无数岁月，矿工机器人一直陪伴着你...”'
-        - '⇨ ⚙ 2s'
-        - '⇨ ⚡ 520 J/s'
-        - '⇨ ⚡ 1314 J 可存储'
+      - An automated MagicExpansion energy or resource machine.
+      - Produces or processes resources related to Mine Man Tin Ingot Basic.
+      - ⇨ ⚙ 2s
+      - ⇨ ⚡ 520 J/s
     MINE_MAN_SILVER_INGOT_BASIC:
-      Name: '电力冶炼矿工机器人-银锭'
+      Name: Mine Man Silver Ingot Basic
       Lore:
-        - '一个电容，一个魔法矿洞，一个奇迹'
-        - ''
-        - '功能: 自动生成银锭'
-        - '能源需求: 每秒钟消耗中量电力'
-        - ''
-        - '“无数岁月，矿工机器人一直陪伴着你...”'
-        - '⇨ ⚙ 2s'
-        - '⇨ ⚡ 520 J/s'
-        - '⇨ ⚡ 1314 J 可存储'
+      - An automated MagicExpansion energy or resource machine.
+      - Produces or processes resources related to Mine Man Silver Ingot Basic.
+      - ⇨ ⚙ 2s
+      - ⇨ ⚡ 520 J/s
     MINE_MAN_LEAD_INGOT_BASIC:
-      Name: '电力冶炼矿工机器人-铅锭'
+      Name: Mine Man Lead Ingot Basic
       Lore:
-        - '一个电容，一个魔法矿洞，一个奇迹'
-        - ''
-        - '功能: 自动生成铅锭'
-        - '能源需求: 每秒钟消耗中量电力'
-        - ''
-        - '“无数岁月，矿工机器人一直陪伴着你...”'
-        - '⇨ ⚙ 2s'
-        - '⇨ ⚡ 520 J/s'
-        - '⇨ ⚡ 1314 J 可存储'
+      - An automated MagicExpansion energy or resource machine.
+      - Produces or processes resources related to Mine Man Lead Ingot Basic.
+      - ⇨ ⚙ 2s
+      - ⇨ ⚡ 520 J/s
     MINE_MAN_ALUMINUM_INGOT_BASIC:
-      Name: '电力冶炼矿工机器人-铝锭'
+      Name: Mine Man Aluminum Ingot Basic
       Lore:
-        - '一个电容，一个魔法矿洞，一个奇迹'
-        - ''
-        - '功能: 自动生成铝锭'
-        - '能源需求: 每秒钟消耗中量电力'
-        - ''
-        - '“无数岁月，矿工机器人一直陪伴着你...”'
-        - '⇨ ⚙ 2s'
-        - '⇨ ⚡ 520 J/s'
-        - '⇨ ⚡ 1314 J 可存储'
+      - An automated MagicExpansion energy or resource machine.
+      - Produces or processes resources related to Mine Man Aluminum Ingot Basic.
+      - ⇨ ⚙ 2s
+      - ⇨ ⚡ 520 J/s
     MINE_MAN_ZINC_INGOT_BASIC:
-      Name: '电力冶炼矿工机器人-锌锭'
+      Name: Mine Man Zinc Ingot Basic
       Lore:
-        - '一个电容，一个魔法矿洞，一个奇迹'
-        - ''
-        - '功能: 自动生成锌锭'
-        - '能源需求: 每秒钟消耗中量电力'
-        - ''
-        - '“无数岁月，矿工机器人一直陪伴着你...”'
-        - '⇨ ⚙ 2s'
-        - '⇨ ⚡ 520 J/s'
-        - '⇨ ⚡ 1314 J 可存储'
+      - An automated MagicExpansion energy or resource machine.
+      - Produces or processes resources related to Mine Man Zinc Ingot Basic.
+      - ⇨ ⚙ 2s
+      - ⇨ ⚡ 520 J/s
     MINE_MAN_MAGNESIUM_INGOT_BASIC:
-      Name: '电力冶炼矿工机器人-镁锭'
+      Name: Mine Man Magnesium Ingot Basic
       Lore:
-        - '一个电容，一个魔法矿洞，一个奇迹'
-        - ''
-        - '功能: 自动生成镁锭'
-        - '能源需求: 每秒钟消耗中量电力'
-        - ''
-        - '“无数岁月，矿工机器人一直陪伴着你...”'
-        - '⇨ ⚙ 2s'
-        - '⇨ ⚡ 520 J/s'
-        - '⇨ ⚡ 1314 J 可存储'
+      - An automated MagicExpansion energy or resource machine.
+      - Produces or processes resources related to Mine Man Magnesium Ingot Basic.
+      - ⇨ ⚙ 2s
+      - ⇨ ⚡ 520 J/s
     MINE_MAN_NETHERITE_INGOT_BASIC:
-      Name: '电力矿工机器人-下界合金锭'
+      Name: Mine Man Netherite Ingot Basic
       Lore:
-        - '一个电容，一个魔法矿洞，一个奇迹'
-        - ''
-        - '功能: 自动生成下界合金锭'
-        - '能源需求: 每秒钟消耗中量电力'
-        - ''
-        - '“无数岁月，矿工机器人一直陪伴着你...”'
-        - '⇨ ⚙ 2s'
-        - '⇨ ⚡ 520 J/s'
-        - '⇨ ⚡ 1314 J 可存储'
+      - An automated MagicExpansion energy or resource machine.
+      - Produces or processes resources related to Mine Man Netherite Ingot Basic.
+      - ⇨ ⚙ 2s
+      - ⇨ ⚡ 520 J/s
     MINE_MAN_MINERAL_BASIC:
-      Name: '电力矿工机器人-单方块·矿脉'
+      Name: Mine Man Mineral Basic
       Lore:
-        - '把单方块·矿脉交给机器人'
-        - '他就能帮你一直挖掘'
-        - ''
-        - '功能: 自动挖掘原矿'
-        - '能源需求: 每秒钟消耗中量电力'
-        - ''
-        - '“无数岁月，矿工机器人一直陪伴着你...”'
-        - '⇨ ⚙ 2s'
-        - '⇨ ⚡ 520 J/s'
-        - '⇨ ⚡ 1314 J 可存储'
+      - An automated MagicExpansion energy or resource machine.
+      - Produces or processes resources related to Mine Man Mineral Basic.
+      - ⇨ ⚙ 2s
+      - ⇨ ⚡ 520 J/s
     MINE_MAN_MINERAL_ULTRA:
-      Name: '五行矿工机器人-单方块·矿脉'
+      Name: Mine Man Mineral Ultra
       Lore:
-        - '依靠五行的力量'
-        - '他比普通机器人挖掘的更快'
-        - ''
-        - '功能: 自动挖掘原矿'
-        - '能源需求: 每秒钟消耗大量电力'
-        - ''
-        - '“无数岁月，矿工机器人一直陪伴着你...”'
-        - '⇨ ⚙ 1s'
-        - '⇨ ⚡ 5200 J/s'
-        - '⇨ ⚡ 131452.0 J 可存储'
-
-
+      - An automated MagicExpansion energy or resource machine.
+      - Produces or processes resources related to Mine Man Mineral Ultra.
+      - ⇨ ⚙ 1s
+      - ⇨ ⚡ 5200 J/s
     FIVE_ELEMENT_GEN_BASIC:
-      Name: '『五行聚灵阵』[基础]'
+      Name: Five Element Generator Basic
       Lore:
-        - ' '
-        - '▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬'
-        - '一件古老的东方法器'
-        - '蕴含着天地五行的力量'
-        - '▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬'
-        - '可收集元素：'
-        - ' ◉ 金  | ◎ 木  | ● 水  | ◐ 火  | ◑ 土'
-        - '▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬'
-        - '使用方法：'
-        - '  放置于地面 → 自动收集'
-        - '  收集范围：周围 5 格'
-        - '  收集速度：每 3 秒 1 次'
-        - '▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬'
-        - '「五行相生，万物循环」'
-        - ' '
-
+      - An automated MagicExpansion energy or resource machine.
+      - Produces or processes resources related to Five Element Generator Basic.
     ORIGIN_MATERIAL_GEN_MAKER_LITE:
-      Name: '万物基台·源起'
+      Name: Origin Material Generator Maker Lite
       Lore:
-        - '随着炼金术的进步'
-        - '人们逐渐摸到了万物演化的门槛'
-        - '于是，第一台“规则”油然而生'
-        - '虽然这只是“规则”的雏形'
-        - '但他确实炼金文明量变的关键'
-        - '真正定义了序列复制的规则'
-        - '或者这样的规则早已存在'
-        - '只不过一直没有被发现而已'
-        - '又或者是，规则由人类指定？'
-        - '它是因果的起点，也是自由的终点'
-        - ''
-        - '⇨ ⚙ 5s'
-        - '⇨ ⚡ 520 J/s'
-        - '⇨ ⚡ 131452.0 J 可存储'
-        - ' '
-        - '你得到的，从来不是偶然，而是宇宙为你写好的剧本。'
-        - ' '
-
+      - An automated MagicExpansion energy or resource machine.
+      - Produces or processes resources related to Origin Material Generator Maker Lite.
+      - ⇨ ⚙ 5s
+      - ⇨ ⚡ 520 J/s
     ORIGIN_MATERIAL_GEN_MAKER_ALPHA:
-      Name: '原初构装座-α'
+      Name: Origin Material Generator Maker Alpha
       Lore:
-        - '早于“万物演化台”存在的唯一原型机'
-        - '是"创世演化台"的重要参考规则'
-        - '它并非用于锻造物质，而是用于锻造“规则”'
-        - '当创造者试图打造出一台能够演化万物的机器时'
-        - '他们必须先在这里定义何为“万物”'
-        - '构装座-α在启动的瞬间，便穷尽了宇宙所有可能的物质排列组合'
-        - '并将它们坍缩为不可更改的底层代码'
-        - '万物演化台看似拥有无限的创造力'
-        - '实则只是原初构装座-α早已写好的剧本执行者'
-        - '它是因果的起点，也是自由的终点'
-        - ''
-        - '⇨ ⚙ 5s'
-        - '⇨ ⚡ 52000 J/s'
-        - '⇨ ⚡ 131452.0 J 可存储'
-        - ' '
-        - '你得到的，从来不是偶然，而是宇宙为你写好的剧本。'
-        - ' '
-
+      - An automated MagicExpansion energy or resource machine.
+      - Produces or processes resources related to Origin Material Generator Maker Alpha.
+      - ⇨ ⚙ 5s
+      - ⇨ ⚡ 52000 J/s
     ORIGIN_MATERIAL_GEN_MAKER_BETA:
-      Name: '原初构装座-β'
+      Name: Origin Material Generator Maker Beta
       Lore:
-        - '在“原初构装座-α”之后出现的原型机'
-        - '是"创世演化台"的重要参考规则'
-        - '它并非用于锻造物质，而是用于锻造“规则”'
-        - '当创造者试图打造出一台能够演化万物的机器时'
-        - '他们必须先在这里定义何为“万物”'
-        - '构装座-β在启动的瞬间，便穷尽了宇宙所有可能的物质排列组合'
-        - '并将它们坍缩为不可更改的底层代码'
-        - '万物演化台看似拥有无限的创造力'
-        - '实则只是原初构装座-β早已写好的剧本执行者'
-        - '它是因果的起点，也是自由的终点'
-        - ''
-        - '⇨ ⚙ 5s'
-        - '⇨ ⚡ 52000 J/s'
-        - '⇨ ⚡ 131452.0 J 可存储'
-        - ' '
-        - '你得到的，从来不是偶然，而是宇宙为你写好的剧本。'
-        - ' '
-
+      - An automated MagicExpansion energy or resource machine.
+      - Produces or processes resources related to Origin Material Generator Maker Beta.
+      - ⇨ ⚙ 5s
+      - ⇨ ⚡ 52000 J/s
     ORIGIN_MATERIAL_GEN_LITE:
-      Name: '万物演化台·源起'
+      Name: Origin Material Generator Lite
       Lore:
-        - ' '
-        - '万物演化台的原始雏形。'
-        - '能够解析基础物质，并将其推演为现实形态。'
-        - ' '
-        - '警告：受限于能源，仅能进行低阶演化。'
-        - ' '
-        - '万物演化系列·初代'
-        - '功能：物质解析与基础形态重构'
-        - ''
-        - '⇨ ⚙ 1s'
-        - '⇨ ⚡ 52 J/s'
-        - '⇨ ⚡ 131452.0 J 可存储'
-        - ''
-        - '你得到的，从来不是偶然，而是宇宙为你写好的剧本。'
-        - ' '
-
+      - An automated MagicExpansion energy or resource machine.
+      - Produces or processes resources related to Origin Material Generator Lite.
+      - ⇨ ⚙ 1s
+      - ⇨ ⚡ 52 J/s
     ORIGIN_MATERIAL_GEN_LITE_PRESS:
-      Name: '万物演化台·源聚'
+      Name: Origin Material Generator Lite Press
       Lore:
-        - ' '
-        - '万物演化台的异化形态。'
-        - '能控制多个 万物演化台·源起 同时工作。'
-        - ' '
-        - '警告：受限于技术，仅能对 源起 系列 万物演化台进行控制。'
-        - ' '
-        - '万物演化系列·枢纽'
-        - '功能：集中控制 万物演化台 的生产'
-        - ''
-        - '⇨ ⚙ 1s'
-        - '⇨ ⚡ 52 J/s'
-        - '⇨ ⚡ 131452.0 J 可存储'
-        - ''
-        - '你得到的，从来不是偶然，而是宇宙为你写好的剧本。'
-        - ' '
-
+      - An automated MagicExpansion energy or resource machine.
+      - Produces or processes resources related to Origin Material Generator Lite Press.
+      - ⇨ ⚙ 1s
+      - ⇨ ⚡ 52 J/s
     ORIGIN_MATERIAL_GEN:
-      Name: '万物演化台·疾'
+      Name: Origin Material Generator
       Lore:
-        - ' '
-        - '万物演化台的终极形态。'
-        - '能够解析基础物质，并将其推演为现实形态。'
-        - ' '
-        - '警告：受限于技术，仅能进行低阶演化。'
-        - ''
-        - '万物演化系列·极限速率'
-        - '特殊效果：拥有极高的物品产出速率'
-        - '功能：物质解析与基础形态重构'
-        - ''
-        - '⇨ ⚙ 1s'
-        - '⇨ ⚡ 52000 J/s'
-        - '⇨ ⚡ 131452.0 J 可存储'
-        - ''
-        - '你得到的，从来不是偶然，而是宇宙为你写好的剧本。'
-        - ' '
-
+      - An automated MagicExpansion energy or resource machine.
+      - Produces or processes resources related to Origin Material Generator.
+      - ⇨ ⚙ 1s
+      - ⇨ ⚡ 52000 J/s
     ORIGIN_MATERIAL_GEN_ULTRA:
-      Name: '極道演化台'
+      Name: Origin Material Generator Ultra
       Lore:
-        - ' '
-        - '“所谓创造，不过是揭开早已存在的面纱。”'
-        - '此装置能够解析物质的底层信息'
-        - '并将其推演为为现实中的任何形态'
-        - ' '
-        - '但请谨记炼金术的第一铁律'
-        - '等价交换的不仅仅是质量，还有因果'
-        - '或许你可以用它来生产一些美刀？'
-        - '又或者是用于回血回蓝的圣杯？'
-        - ''
-        - '⇨ ⚙ 1s'
-        - '⇨ ⚡ 52000 J/s'
-        - '⇨ ⚡ 131452.0 J 可存储'
-        - ''
-        - '你得到的，从来不是偶然，而是宇宙为你写好的剧本。'
-        - ' '
-
+      - An automated MagicExpansion energy or resource machine.
+      - Produces or processes resources related to Origin Material Generator Ultra.
+      - ⇨ ⚙ 1s
+      - ⇨ ⚡ 52000 J/s
     SLIME_BOOK_GEN_ADVANCE:
-      Name: '魔力印刷厂'
+      Name: Slime Book Generator Advance
       Lore:
-        - '依靠史莱姆核心的力量驱动'
-        - '它比附魔台能更高效地印刷'
-        - ''
-        - '功能: 自动印刷附魔书与知识书'
-        - '能源需求: 每秒钟消耗大量电力'
-        - ''
-        - '“我们不只印刷文字，我们装订灵魂...”'
-        - ''
-        - '⇨ ⚙ 2s'
-        - '⇨ ⚡ 520 J/s'
-        - '⇨ ⚡ 1314 J 可存储'
-
-
+      - An automated MagicExpansion energy or resource machine.
+      - Produces or processes resources related to Slime Book Generator Advance.
+      - ⇨ ⚙ 2s
+      - ⇨ ⚡ 520 J/s
   MACHINE:
     PHANTON_SUPPRESSION:
-      Name: '幻翼抑制器'
+      Name: Phantom Suppression
       Lore:
-        - '幻翼怕光，很合理吧？'
-        - '范围：半径20格'
-        - '一旦出现，就会立即被抹除。'
-        - ''
-        - '⇨ ⚡ 520 J/s'
-        - '⇨ ⚡ 1314 J 可存储'
-
-
-
+      - A MagicExpansion processing machine.
+      - Processes materials for Phantom Suppression.
+      - ⇨ ⚡ 520 J/s
   POWER_MACHINE:
     POWER_FIRE_UNSTABLE:
-      Name: '不稳定的火力发电机'
+      Name: Power Fire Unstable
       Lore:
-        - '一个控制着魔法与科技融合的奇特装置。'
-        - ''
-        - '类型: 不稳定能量'
-        - '发电速度: 2 ~ 52,000 J/s'
-        - '最大储存量: 131,452.0 J 可存储'
-        - ''
-        - '不稳定特性:'
-        - '发电效率随周围温度变化而波动。'
-
+      - An automated MagicExpansion energy or resource machine.
+      - Produces or processes resources related to Power Fire Unstable.
     POWER_FIRE_STABILITY:
-      Name: '终极火力发电机'
+      Name: Power Fire Stability
       Lore:
-        - '依靠下方火力进行发电。'
-        - ''
-        - '类型: 终极发电机'
-        - '发电速度: 520 ~ 1314520 J/s'
-        - '最大储存量: 1,314,520 J 可存储'
-        - ''
-        - '不稳定特性:'
-        - '发电效率随周围温度变化而波动。'
-
+      - An automated MagicExpansion energy or resource machine.
+      - Produces or processes resources related to Power Fire Stability.
     POWER_COLOR_EGG_BLOCK:
-      Name: '方块·彩蛋发电机'
+      Name: Power Color Egg Block
       Lore:
-        - '任何方块放在上方都可进行发电。'
-        - '本期提示: 不再更改'
-        - ''
-        - '类型: 彩蛋发电机'
-        - '发电速度: 2 ~ 131452 J/s'
-        - '最大储存量: 1,314,520 J 可存储'
-        - ''
-        - '彩蛋特性:'
-        - '该发电机采用区间随机值发电。'
+      - An automated MagicExpansion energy or resource machine.
+      - Produces or processes resources related to Power Color Egg Block.
     POWER_COLOR_EGG_KEY:
-      Name: '密钥·彩蛋发电机'
+      Name: Power Color Egg Key
       Lore:
-        - '最上方1-9格放入物品'
-        - '有物品代表1，没有物品代表0'
-        - '例如：1,2,5,6,9格放有物品'
-        - '则对应密钥: 110011001'
-        - '本期密钥1提示：见更新日志'
-        - '本期密钥2提示：见更新日志'
-        - ''
-        - '类型: 彩蛋发电机'
-        - '发电速度: 5200 ~ 131452 J/s'
-        - '最大储存量: 1,314,520 J 可存储'
-        - ''
-        - '彩蛋特性:'
-        - '该发电机采用区间随机值发电。'
-
-
+      - An automated MagicExpansion energy or resource machine.
+      - Produces or processes resources related to Power Color Egg Key.
     POWER_FISH_ELECTRIC:
-      Name: '生物发电机'
+      Name: Power Fish Electric
       Lore:
-        - '一个能产生大量电力的生物发电机。'
-        - '将捕获的电鳗放入其中，就会产生大量电力。'
-        - '这个机器发电的效率会随电鳗的大小而变化。'
-        - '类型: 生物发电机'
-        - '发电速度: 极高 J/s'
-        - '最大储存量: 25,000,000 J 可存储'
-
-
+      - An automated MagicExpansion energy or resource machine.
+      - Produces or processes resources related to Power Fish Electric.
     FISH_VIVARIUM_EASY:
-      Name: '简易生态缸'
+      Name: Fish Vivarium Easy
       Lore:
-        - '一个简易的生态循环系统'
-        - '用于魔法鱼类的生产循环'
-        - '内置矿物质循环与光照调节装置'
-        - '只需放入对应的魔法鱼，即可持续产出物品'
-        - '生命在水中律动，能量在静谧中生成。'
-        - '可直接对魔法存储终端·重构版输出产物'
-        - '需提前设置对应存储物'
-        - '⇨ ⚙ 0 s'
-        - '⇨ ⚡ 520 J/s'
-        - '⇨ ⚡ 131452.0 J 可存储'
-
+      - An automated MagicExpansion energy or resource machine.
+      - Produces or processes resources related to Fish Vivarium Easy.
+      - ⇨ ⚙ 0 s
+      - ⇨ ⚡ 520 J/s
     FISH_VIVARIUM:
-      Name: '生态缸'
+      Name: Fish Vivarium
       Lore:
-        - '一个精密的生态循环系统'
-        - '用于魔法鱼类的生产循环'
-        - '内置矿物质循环与光照调节装置'
-        - '只需放入对应的魔法鱼，即可持续产出物品'
-        - '生命在水中律动，能量在静谧中生成。'
-        - '可直接对魔法存储终端·重构版输出产物'
-        - '需提前设置对应存储物'
-        - '⇨ ⚙ 0 s'
-        - '⇨ ⚡ 520 J/s'
-        - '⇨ ⚡ 131452.0 J 可存储'
-
+      - An automated MagicExpansion energy or resource machine.
+      - Produces or processes resources related to Fish Vivarium.
+      - ⇨ ⚙ 0 s
+      - ⇨ ⚡ 520 J/s
     FISH_VIVARIUM_STACK:
-      Name: '以太生态阵列'
+      Name: Fish Vivarium Stacked
       Lore:
-        - '一个高度集成的生态循环系统'
-        - '用于魔法鱼类的生产循环'
-        - '需要放入生态缸来共同构建生态循环系统'
-        - '放入对应的魔法鱼，即可持续产出物品'
-        - '生命在水中律动，能量在静谧中生成。'
-        - '仅支持直接对魔法存储终端·重构版输出产物'
-        - '需提前设置对应存储物'
-        - '可识别以太秘匣的存储'
-        - '将生态缸存储以太秘匣放入机器中'
-        - '可直接放入量子存储进行产物收集'
-        - '注意: 单次产出物品数量上限为2.1B'
-        - '⇨ ⚙ 0 s'
-        - '⇨ ⚡ 52000 J/s'
-        - '⇨ ⚡ 1314520 J 可存储'
-
-
+      - An automated MagicExpansion energy or resource machine.
+      - Produces or processes resources related to Fish Vivarium Stacked.
+      - ⇨ ⚙ 0 s
+      - ⇨ ⚡ 52000 J/s
     WHITE_SLOTS_CHEST_53:
-      Name: '53格输入输出重叠箱'
+      Name: White Slots Chest 53
       Lore:
-        - '可以当成容器使用'
-        - '可作为不同存储交互的中间站'
+      - An automated MagicExpansion energy or resource machine.
+      - Produces or processes resources related to White Slots Chest 53.
     CARGO_FRAGMENT_EXTRACT:
-      Name: '以太秘匣转换器'
+      Name: Cargo Fragment Extract
       Lore:
-        - '可对量子存储使用'
-        - '将量子存储内的物品提取为以太秘匣'
-
-
+      - An automated MagicExpansion energy or resource machine.
+      - Produces or processes resources related to Cargo Fragment Extract.
     MAGIC_POWER_INPUT_MACHINE:
-      Name: '电力中转站·α'
+      Name: Magic Power Input Machine
       Lore:
-        - '可以将电网中的电力转移到电力载体中'
-        - '例如：以太·虚灵电鳗'
-        - '魔法电卡'
-        - ''
-        - '功能: 构建电力分网架构的重要组成部分'
-        - '能源需求: 极大'
-        - ''
-        - '⇨ ⚙ ? s'
-        - '⇨ ⚡ 0 ~ 2147483647 J/s'
-        - '⇨ ⚡ 2147483647 J 可存储'
+      - An automated MagicExpansion energy or resource machine.
+      - Produces or processes resources related to Magic Power Input Machine.
+      - ⇨ ⚡ 0 ~ 2147483647 J/s
     MAGIC_POWER_OUTPUT_MACHINE:
-      Name: '电力中转站·β'
+      Name: Magic Power Output Machine
       Lore:
-        - '可以将电力载体中的电力转移到电网中'
-        - '例如：以太·虚灵电鳗'
-        - '魔法电卡'
-        - ''
-        - '功能: 构建电力分网架构的重要组成部分'
-        - '发电效率: 极大'
-        - ''
-        - '⇨ ⚙ ? s'
-        - '⇨ ⚡ 0 ~ 2147483647 J/s'
-        - '⇨ ⚡ 2147483647 J 可存储'
-
-
-
-
-
+      - An automated MagicExpansion energy or resource machine.
+      - Produces or processes resources related to Magic Power Output Machine.
+      - ⇨ ⚡ 0 ~ 2147483647 J/s
   RECIPE_MACHINE:
     PRE_BUILDINGS_MACHINE:
-      Name: '魔法建筑工坊'
+      Name: Prefab Structures Machine
       Lore:
-        - '一座神秘的工坊，里面藏有许多图纸。'
-        - '只要你能提供材料，他就能给你建造出来。'
-        - ''
-        - '功能: 制作一些简单的预制建筑'
-        - '能源需求: 每秒钟消耗少量电力'
-        - ''
-        - '是魔法之力？还是远古工匠的智慧结晶？'
-        - '无论如何，这座工坊流传着一些未知的秘密。'
-        - '⇨ ⚙ ？ s'
-        - '⇨ ⚡ 52.0 J/s'
-        - '⇨ ⚡ 1314 J 可存储'
+      - Places or operates Prefab Structures Machine.
+      - Right-click to use. Sneak-right-click for more information.
+      - ⇨ ⚡ 52.0 J/s
     PRE_BUILDINGS_MACHINE_ADVANCED:
-      Name: '终极魔法建筑工坊'
+      Name: Prefab Structures Machine Advanced
       Lore:
-        - '一座神秘的工坊，里面藏有许多图纸。'
-        - '只要你能提供材料，他就能给你建造出来。'
-        - ''
-        - '功能: 制作大型预制建筑'
-        - '能源需求: 每秒钟消耗大量电力'
-        - ''
-        - '是魔法之力？还是远古工匠的智慧结晶？'
-        - '无论如何，这座工坊流传着一些未知的秘密。'
-        - '⇨ ⚙ ？ s'
-        - '⇨ ⚡ 520 J/s'
-        - '⇨ ⚡ 131452.0 J 可存储'
+      - Places or operates Prefab Structures Machine Advanced.
+      - Right-click to use. Sneak-right-click for more information.
+      - ⇨ ⚡ 520 J/s
     PRE_BUILDINGS_MACHINE_RESOURCE_ADVANCED:
-      Name: '魔法材料工坊'
+      Name: Prefab Structures Machine Resource Advanced
       Lore:
-        - '一座神秘的工坊，里面藏有许多高精密仪器。'
-        - '只要你能提供材料，他就能给你压缩材料。'
-        - ''
-        - '功能: 制作预制魔法压缩材料'
-        - '能源需求: 每秒钟消耗大量电力'
-        - ''
-        - '是魔法之力？还是远古工匠的智慧结晶？'
-        - '无论如何，这座工坊流传着一些未知的秘密。'
-        - '⇨ ⚙ ？ s'
-        - '⇨ ⚡ 520 J/s'
-        - '⇨ ⚡ 131452.0 J 可存储'
+      - Places or operates Prefab Structures Machine Resource Advanced.
+      - Right-click to use. Sneak-right-click for more information.
+      - ⇨ ⚡ 520 J/s
     PRE_BUILDINGS_MACHINE_RESOURCE_ADVANCED_REVERSE:
-      Name: '魔法材料工坊'
+      Name: Prefab Structures Machine Resource Advanced Reverse
       Lore:
-        - '一座神秘的工坊，里面藏有许多高精密仪器。'
-        - '只要你能提供材料，他就能给你解压材料。'
-        - ''
-        - '功能: 分解压缩的魔法材料'
-        - '能源需求: 每秒钟消耗大量电力'
-        - ''
-        - '是魔法之力？还是远古工匠的智慧结晶？'
-        - '无论如何，这座工坊流传着一些未知的秘密。'
-        - '⇨ ⚙ ？ s'
-        - '⇨ ⚡ 520 J/s'
-        - '⇨ ⚡ 131452.0 J 可存储'
+      - Places or operates Prefab Structures Machine Resource Advanced Reverse.
+      - Right-click to use. Sneak-right-click for more information.
+      - ⇨ ⚡ 520 J/s
     WOOD_TRANSFORM_BASIC:
-      Name: '翠木转换机'
+      Name: Wood Transform Basic
       Lore:
-          - '一台神秘的机械装置，散发着微弱的翠绿光辉。'
-          - '据说它能读懂树木的灵魂，将一种木材转化为另一种。'
-          - ''
-          - '功能: 自动转换原木或者树叶'
-          - '能源需求: 每秒钟消耗少量电力'
-          - ''
-          - '是自然之力？还是远古工匠的智慧结晶？'
-          - '无论如何，这台机器让森林的秘密触手可及。'
-          - '⇨ ⚙ 4 s'
-          - '⇨ ⚡ 52.0 J/s'
-          - '⇨ ⚡ 1314 J 可存储'
+      - A MagicExpansion processing machine.
+      - Processes materials for Wood Transform Basic.
+      - ⇨ ⚙ 4 s
+      - ⇨ ⚡ 52.0 J/s
     WOOD_TRANSFORM_ULTRA:
-      Name: '终极翠木转换机'
+      Name: Wood Transform Ultra
       Lore:
-        - '一台神秘的机械装置，散发着微弱的翠绿光辉。'
-        - '据说它能读懂树木的灵魂，将一种木材转化为另一种。'
-        - ''
-        - '功能: 自动转换原木或者树叶'
-        - '能源需求: 每秒钟消耗大量电力'
-        - ''
-        - '是自然之力？还是远古工匠的智慧结晶？'
-        - '无论如何，这台机器让森林的秘密触手可及。'
-        - '⇨ ⚙ 1 s'
-        - '⇨ ⚡ 520 J/s'
-        - '⇨ ⚡ 1314 J 可存储'
+      - A MagicExpansion processing machine.
+      - Processes materials for Wood Transform Ultra.
+      - ⇨ ⚙ 1 s
+      - ⇨ ⚡ 520 J/s
     LIGHT_TRANSFORM_BASIC:
-      Name: '光能激发器'
+      Name: Light Transform Basic
       Lore:
-        - '散发着幽异的光芒。'
-        - ''
-        - '功能: 使用电力激发光能'
-        - '能源需求: 每秒钟消耗少量电力从光源中提取光能'
-        - ''
-        - '“有限光源，有限的能源...”'
-        - '⇨ ⚙ ？ s'
-        - '⇨ ⚡ 52.0 J/s'
-        - '⇨ ⚡ 1314 J 可存储'
+      - A MagicExpansion processing machine.
+      - Processes materials for Light Transform Basic.
+      - ⇨ ⚡ 52.0 J/s
     LIGHT_EXTRACT_BASIC:
-      Name: '光源溯源机'
+      Name: Light Extract Basic
       Lore:
-          - '从发光方块中提取出出有限的光源。'
-          - ''
-          - '功能: 自动提取光源'
-          - '能源需求: 每秒钟消耗少量电力'
-          - ''
-          - '“有限光源，在物质中...”'
-          - '⇨ ⚙ ? s'
-          - '⇨ ⚡ 52.0 J/s'
-          - '⇨ ⚡ 1314 J 可存储'
+      - A MagicExpansion processing machine.
+      - Processes materials for Light Extract Basic.
+      - ⇨ ⚡ 52.0 J/s
     QUARTZ_PURE_MACHINE_BAISC:
-      Name: '纯净硅源机'
+      Name: Quartz Pure Machine Basic
       Lore:
-          - '将改变矿锭内部质子结构，让其转变为纯正的硅元素。'
-          - ''
-          - '功能: 自动提取纯净的硅元素'
-          - '能源需求: 每秒钟消耗少量电力提取硅和少量的石英'
-          - ''
-          - '“纯正的硅元素，在任何地方...”'
-          - '⇨ ⚙ ? s'
-          - '⇨ ⚡ 52.0 J/s'
-          - '⇨ ⚡ 1314 J 可存储'
+      - A MagicExpansion processing machine.
+      - Processes materials for Quartz Pure Machine Basic.
+      - ⇨ ⚡ 52.0 J/s
     QUARTZ_PURE_MACHINE_ULTRA:
-      Name: '纯净硅源机·五行'
+      Name: Quartz Pure Machine Ultra
       Lore:
-        - '将改变矿锭内部质子结构，让其转变为纯正的硅元素。'
-        - ''
-        - '功能: 更快速地提取纯净的硅元素'
-        - '能源需求: 每秒钟消耗大量电力提取硅和石英'
-        - ''
-        - '“纯正的硅元素，在任何地方...”'
-        - '⇨ ⚙ ? s'
-        - '⇨ ⚡ 520 J/s'
-        - '⇨ ⚡ 1314 J 可存储'
-
-
+      - A MagicExpansion processing machine.
+      - Processes materials for Quartz Pure Machine Ultra.
+      - ⇨ ⚡ 520 J/s
     INTEGRATION_ORIGIN_SLIME_MINERAL_POWDER_LINE:
-      Name: '一体化·矿粉产线'
+      Name: Integration Origin Slime Mineral Powder Line
       Lore:
-        - '融合了多种原版粘液机器。'
-        - '拥有完善的矿粉产线。'
-        - '舍弃了一些不必要的生产内容。'
-        - ''
-        - '功能: 这是一条矿粉产线'
-        - '能源需求: 每秒钟消耗少量电力与原材料'
-        - ''
-        - '“纯正的硅元素，在任何地方...”'
-        - '⇨ ⚙ ? s'
-        - '⇨ ⚡ 52.0 J/s'
-        - '⇨ ⚡ 1314 J 可存储'
+      - A MagicExpansion processing machine.
+      - Processes materials for Integration Origin Slime Mineral Powder Line.
+      - ⇨ ⚡ 52.0 J/s
     INTEGRATION_ORIGIN_SLIME_MINERAL_POWDER_LINE_ULTRA:
-      Name: '一体化·矿粉产线·ULTRA'
+      Name: Integration Origin Slime Mineral Powder Line Ultra
       Lore:
-        - '融合了多种原版粘液机器。'
-        - '拥有完善的矿粉产线。'
-        - '舍弃了一些不必要的生产内容。'
-        - '更快！更快！更快！'
-        - ''
-        - '功能: 这是一条矿粉产线'
-        - '能源需求: 每秒钟消耗少量电力与原材料'
-        - ''
-        - '“纯正的硅元素，在任何地方...”'
-        - '⇨ ⚙ ? s'
-        - '⇨ ⚡ 520 J/s'
-        - '⇨ ⚡ 1314 J 可存储'
+      - A MagicExpansion processing machine.
+      - Processes materials for Integration Origin Slime Mineral Powder Line Ultra.
+      - ⇨ ⚡ 520 J/s
     INTEGRATION_ORIGIN_SLIME_MINERAL_POWDER_LINE_DEFAULT:
-      Name: '一体化·矿粉产线(输入输出槽分离版)'
+      Name: Integration Origin Slime Mineral Powder Line Standard
       Lore:
-        - '融合了多种原版粘液机器。'
-        - '拥有完善的矿粉产线。'
-        - '舍弃了一些不必要的生产内容。'
-        - ''
-        - '功能: 这是一条矿粉产线'
-        - '能源需求: 每秒钟消耗少量电力与原材料'
-        - ''
-        - '“纯正的硅元素，在任何地方...”'
-        - '⇨ ⚙ ? s'
-        - '⇨ ⚡ 52.0 J/s'
-        - '⇨ ⚡ 1314 J 可存储'
+      - A MagicExpansion processing machine.
+      - Processes materials for Integration Origin Slime Mineral Powder Line Standard.
+      - ⇨ ⚡ 52.0 J/s
     INTEGRATION_ORIGIN_SLIME_MINERAL_POWDER_LINE_ULTRA_DEFAULT:
-      Name: '一体化·矿粉产线·ULTRA(输入输出槽分离版)'
+      Name: Integration Origin Slime Mineral Powder Line Ultra Standard
       Lore:
-        - '融合了多种原版粘液机器。'
-        - '拥有完善的矿粉产线。'
-        - '舍弃了一些不必要的生产内容。'
-        - '更快！更快！更快！'
-        - ''
-        - '功能: 这是一条矿粉产线'
-        - '能源需求: 每秒钟消耗少量电力与原材料'
-        - ''
-        - '“纯正的硅元素，在任何地方...”'
-        - '⇨ ⚙ ? s'
-        - '⇨ ⚡ 520 J/s'
-        - '⇨ ⚡ 1314 J 可存储'
-
-
+      - A MagicExpansion processing machine.
+      - Processes materials for Integration Origin Slime Mineral Powder Line Ultra Standard.
+      - ⇨ ⚡ 520 J/s
     INGOT_PURE_MACHINE:
-      Name: '魔法元素提纯机'
+      Name: Ingot Pure Machine
       Lore:
-        - '去除掉绝大部分杂质以及小部分纯净物质？'
-        - ''
-        - '功能: 将魔法矿锭提纯'
-        - '能源需求: 每秒钟消耗中量电力'
-        - ''
-        - '“追求的是什么呢...”'
-        - '⇨ ⚙ ? s'
-        - '⇨ ⚡ 520 J/s'
-        - '⇨ ⚡ 1314 J 可存储'
-
+      - A MagicExpansion processing machine.
+      - Processes materials for Ingot Pure Machine.
+      - ⇨ ⚡ 520 J/s
     TWO_TO_MAGIC_GEO_MACHINE:
-      Name: '魔法2.0->rsc魔法 geo资源转换器'
+      Name: Two To Magic GEO Machine
       Lore:
-        - ' '
-        - '将魔法资源转换为资源'
-        - '需要魔法资源'
-        - ' '
-        - '功能: 自动转换'
-        - '能源需求: 每秒钟消耗微量电力'
-        - ' '
-        - '“大自然的秘密，尽在掌握。”'
-        - '⇨ ⚙ ？ s'
-        - '⇨ ⚡ 52 J/s'
-        - '⇨ ⚡ 1314 J 可存储'
-
+      - A MagicExpansion processing machine.
+      - Processes materials for Two To Magic GEO Machine.
+      - ⇨ ⚡ 52 J/s
     CRUDE_MACHINE_TEST:
-      Name: '测试简陋机器'
+      Name: Crude Machine Test
       Lore:
-        - ' '
-        - '测试简陋机器'
-
-
-
-
-
-
-
-
-
+      - A MagicExpansion processing machine.
+      - Processes materials for Crude Machine Test.
   TEMPLATE:
     DIRT_MEAL_MACHINE:
-      Name: '魔法泥土园'
+      Name: Dirt Meal Machine
       Lore:
-        - '在这里，你可以将泥土繁殖为特色泥土。'
-        - '同样的，地狱的泥土也算泥土，只不过我们都叫他地狱岩'
-        - '不管你是什么，只要是土结尾的，那都算泥土'
-        - '只不过有些带颜色的不能繁殖哦~'
-        - ''
-        - '功能: 将普通泥土快速繁殖为特色泥土'
-        - '能源需求: 每秒钟消耗少量电力和骨粉'
-        - ''
-        - '“神奇吗，伟大的金坷垃...”'
-        - '⇨ ⚙ ? s'
-        - '⇨ ⚡ 52.0 J/s'
-        - '⇨ ⚡ 1314 J 可存储'
+      - A MagicExpansion processing machine.
+      - Processes materials for Dirt Meal Machine.
+      - ⇨ ⚡ 52.0 J/s
     FISHING_MACHINE:
-      Name: '魔法捕鱼场'
+      Name: Fishing Machine
       Lore:
-        - '在这里，使用电力魔法帮助你钓鱼。'
-        - '鱼杆只是媒介，并不会损耗鱼杆的耐久'
-        - '你只需要把鱼杆和鱼饵交给他，就会自动开始钓鱼。'
-        - ''
-        - '功能: 使用鱼饵进行钓鱼'
-        - '能源需求: 每秒钟消耗少量电力和鱼饵'
-        - ''
-        - '“钓鱼佬，绝不做打龟佬，永不空军...”'
-        - '⇨ ⚙ ? s'
-        - '⇨ ⚡ 52.0 J/s'
-        - '⇨ ⚡ 1314 J 可存储'
-
-
-
-
+      - A MagicExpansion processing machine.
+      - Processes materials for Fishing Machine.
+      - ⇨ ⚡ 52.0 J/s
   SKY_BLOCK:
     SINGLE_CUBE_ORIGIN:
-      Name: '万物生·单方块·起源'
+      Name: Single Cube Origin
       Lore:
-        - '挖掘它。'
-        - '它会消失。'
-        - '所以爱会消失对吗？'
-        - '随即重组。'
-        - '所以爱会回来对吗？'
-        - '它可以是任何方块。'
-        - '但不会变为无法挖掘的方块。'
-        - '时运和精准采集都对他无效哦~'
-        - ''
-        - '功能: 这是一个无尽方块，挖掘之后会重新生成'
-        - '使用方法: 使用特殊的工具来挖掘，否则会掉落本体'
-        - ''
-        - 'Magic · Sky Block'
-
+      - Places or operates Single Cube Origin.
+      - Right-click to use. Sneak-right-click for more information.
     SINGLE_CUBE_ORE:
-      Name: '万物生·单方块·矿脉'
+      Name: Single Cube Ore
       Lore:
-        - '挖掘它。'
-        - '它会消失。'
-        - '所以爱会消失对吗？'
-        - '随即重组。'
-        - '所以爱会回来对吗？'
-        - '它可以是任何矿物块。'
-        - '有时候也会变为矿脉掩体。'
-        - '时运和精准采集都对他无效哦~'
-        - ''
-        - '功能: 这是一个无尽方块，挖掘之后会重新生成'
-        - '使用方法: 使用特殊的工具来挖掘，否则会掉落本体'
-        - ''
-        - 'Magic · Sky Block'
-
-
+      - Places or operates Single Cube Ore.
+      - Right-click to use. Sneak-right-click for more information.
     SINGLE_DIAMOND_PICKAXE:
-      Name: '单方块·钻石镐'
+      Name: Single Diamond Pickaxe
       Lore:
-        - '这是一把神奇的镐子'
-        - '和普通镐子不同的是'
-        - '他可以和单方块产生共鸣'
-        - '用它来挖掘单方块会有意想不到的结果'
-        - ''
-        - '可以用来挖掘单方块的形态。'
-        - '挖掘之后就会掉落对应的物品。'
-        - ''
-        - 'Magic · Sky Block'
+      - Places or operates Single Diamond Pickaxe.
+      - Right-click to use. Sneak-right-click for more information.
     SINGLE_DIAMOND_AXE:
-      Name: '单方块·钻石斧'
+      Name: Single Diamond Axe
       Lore:
-        - '这是一把神奇的斧子'
-        - '和普通斧子不同的是'
-        - '他可以和单方块产生共鸣'
-        - '用它来挖掘单方块会有意想不到的结果'
-        - ''
-        - '可以用来挖掘单方块的形态。'
-        - '挖掘之后就会掉落对应的物品。'
-        - ''
-        - 'Magic · Sky Block'
+      - Places or operates Single Diamond Axe.
+      - Right-click to use. Sneak-right-click for more information.
     SINGLE_DIAMOND_SHOVEL:
-      Name: '单方块·钻石铲'
+      Name: Single Diamond Shovel
       Lore:
-        - '这是一把神奇的铲子'
-        - '和普通铲子不同的是'
-        - '他可以和单方块产生共鸣'
-        - '用它来挖掘单方块会有意想不到的结果'
-        - ''
-        - '可以用来挖掘单方块的形态。'
-        - '挖掘之后就会掉落对应的物品。'
-        - ''
-        - 'Magic · Sky Block'
+      - Places or operates Single Diamond Shovel.
+      - Right-click to use. Sneak-right-click for more information.
     SINGLE_DIAMOND_HOE:
-      Name: '单方块·钻石锄头'
+      Name: Single Diamond Hoe
       Lore:
-        - '这是一把神奇的锄头'
-        - '和普通锄头不同的是'
-        - '他可以和单方块产生共鸣'
-        - '用它来挖掘单方块会有意想不到的结果'
-        - ''
-        - '可以用来挖掘单方块的形态。'
-        - '挖掘之后就会掉落对应的物品。'
-        - ''
-        - 'Magic · Sky Block'
-
-
-
-
-
-
-
+      - Places or operates Single Diamond Hoe.
+      - Right-click to use. Sneak-right-click for more information.
   MIHOYO_ROLE:
     MIHOYO_STAR_RAY_MACHINE:
-      Name: '星光扫描仪'
+      Name: HoYoverse Star Ray Machine
       Lore:
-        - '可以透过盲盒看到里面的物品。'
-        - ''
-        - '功能: 自动打开盲盒'
-        - '能源需求: 星光无处不在'
-        - ''
-        - '“一定是你想要的吧...”'
-        - '⇨ ⚙ 0.5 s'
-        - '⇨ ⚡ 0 J/s'
-        - '⇨ ⚡   J 可存储'
-
+      - A MagicExpansion processing machine.
+      - Processes materials for HoYoverse Star Ray Machine.
+      - ⇨ ⚙ 0.5 s
+      - ⇨ ⚡ 0 J/s
     HONKAI_STAR_RAIL_BOX:
-      Name: '崩坏：星穹铁道角色盲盒'
+      Name: 'Honkai: Star Rail Box'
       Lore:
-        - ""
-        - "右键打开盲盒"
-        - "也可以使用星光扫描仪来打开这个盲盒"
-        - "至于会出什么"
-        - "那就得看运气了"
-        - ""
-        - "神秘盲盒"
+      - A magical item from MagicExpansion.
+      - 'Used for Honkai: Star Rail Box.'
     JING_LIU:
-      Name: '镜流'
+      Name: Jing Liu
       Lore:
-        - ''
-        - '这是镜流'
-        - ''
-        - '崩坏：星穹铁道'
+      - A magical item from MagicExpansion.
+      - Used for Jing Liu.
     SILVER_WOLF:
-      Name: '银狼'
+      Name: Silver Wolf
       Lore:
-        - ''
-        - '这是银狼'
-        - ''
-        - '崩坏：星穹铁道'
+      - A magical item from MagicExpansion.
+      - Used for Silver Wolf.
     KAFKA:
-      Name: '卡芙卡'
+      Name: Kafka
       Lore:
-        - ''
-        - '这是卡芙卡'
-        - ''
-        - '崩坏：星穹铁道'
+      - A magical item from MagicExpansion.
+      - Used for Kafka.
     SUNDAY:
-      Name: '星期日'
+      Name: Sunday
       Lore:
-        - ''
-        - '这是星期日'
-        - ''
-        - '崩坏：星穹铁道'
+      - A magical item from MagicExpansion.
+      - Used for Sunday.
     LUNAE:
-      Name: '丹恒·饮月'
+      Name: Lunae
       Lore:
-        - ''
-        - '这是丹恒·饮月'
-        - ''
-        - '崩坏：星穹铁道'
+      - A magical item from MagicExpansion.
+      - Used for Lunae.
     HUOHUO:
-      Name: '霍霍‌'
+      Name: Huohuo
       Lore:
-        - ''
-        - '这是霍霍‌'
-        - ''
-        - '崩坏：星穹铁道'
+      - A magical item from MagicExpansion.
+      - Used for Huohuo.

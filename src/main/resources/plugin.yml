@@ -1,100 +1,65 @@
 name: magicexpansion
-## CHANGE this to your username.
-author: Yomicer
-version: ${project.version}
 main: io.Yomicer.magicExpansion.MagicExpansion
-api-version: '1.20'
+version: ${project.version}
+author: Yomicer
+api-version: '26.2'
 depend: [Slimefun]
-softdepend:
-  - RykenSlimeCustomizer
-  - GuizhanLibPlugin
-#  - Networks
-## CHANGE this to a meaninful but short description of your plugin.
-description: Have fun
+softdepend: [RykenSlimeCustomizer]
+description: English-first MagicExpansion build maintained for Slimefun Legacy and modern Paper servers.
 
 commands:
   magicexpansion:
-    description: MagicExpansion 插件主指令
-    usage: /magicexpansion <reload slimefun>
+    description: Main MagicExpansion administration command.
+    usage: /magicexpansion <reload|slimefun>
     permission: magicexpansion.command
-    permission-message: &c你没有权限执行此指令！
-
+    permission-message: '&cYou do not have permission to use this command.'
   mxw:
-    description: Main command for map management.
-
+    description: Manage MagicExpansion map worlds.
   mxf:
-    description: 钓鱼图鉴相关命令
+    description: Open or receive the Fishing Guide.
     usage: /<command> <open_guide|guide>
-
-
   mxai:
-    description: AI聊天控制
+    description: Control optional AI chat features.
     usage: /mxai <chaton|chatoff|public|publicmode>
     permission: mxai.use
-    permission-message: 你没有使用AI命令的权限！
-
+    permission-message: '&cYou do not have permission to use AI commands.'
   magicfish:
-    description: 管理员获取指定魔法鱼
-    usage: /magicfish give <鱼种> [重量] [数量]
+    description: Give a configured MagicExpansion fish.
+    usage: /magicfish give <fish> [weight] [amount]
     permission: magicexpansion.admin.fish
-    permission-message: "&c你没有权限执行此指令！"
-
-
-
-#  record:
-#    description: 开始或停止录制玩家行为
-#    usage: /<command> start|stop
-#    permission: magicexpansion.record
-#
-#  playback:
-#    description: 回放之前录制的行为
-#    usage: /<command> [stop]
-#    permission: magicexpansion.playback
-
+    permission-message: '&cYou do not have permission to use this command.'
   mxwand:
-    description: 魔法祭坛相关命令
+    description: Obtain the Magic Altar wand.
     usage: /<command> wand
     permission: mxwand.wand
-
   mxalter:
-    description: 获取配方书命令
+    description: Open or receive the Magic Altar recipe guide.
     usage: /<command> <guide|open_guide>
-    aliases: [ malt ]
-
+    aliases: [malt]
   magicshop:
-    description: 便携商店指令
+    description: Open the portable MagicExpansion shop.
     usage: /magicshop <open|admin>
-    aliases: [ mshop ]
-
+    aliases: [mshop]
 
 permissions:
-  MagicExpansionMachines.use:
-    description: Allows players to use the plugin commands.
+  magicexpansion.command:
+    description: Allows use of the MagicExpansion administration command.
     default: op
-
+  MagicExpansionMachines.use:
+    description: Allows players to use MagicExpansion machines.
+    default: op
   mxai.use:
-    description: 可以使用AI聊天功能
+    description: Allows use of personal AI chat features.
     default: true
   mxai.op:
-    description: 可以控制全服AI模式开关
-    default: op  # 只有OP或有此权限的玩家可用
-
+    description: Allows control of server-wide AI chat modes.
+    default: op
   mxwand.wand:
-    description: 获取魔法祭坛魔杖
+    description: Allows obtaining the Magic Altar wand.
     default: op
-
   magicexpansion.admin.fish:
-    description: 允许使用 /magicfish 管理员鱼指令
+    description: Allows use of the Magic Fish administration command.
     default: op
-
   magicexpansion.shop.admin:
-    description: 允许使用管理员商店菜单
+    description: Allows access to the shop administration menu.
     default: op
-
-#  magicexpansion.record:
-#    description: 可以使用 /record 命令
-#    default: op
-#
-#  magicexpansion.playback:
-#    description: 可以使用 /playback 命令
-#    default: op

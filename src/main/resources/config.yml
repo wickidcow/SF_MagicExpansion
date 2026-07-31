@@ -1,73 +1,73 @@
 options:
-  auto-update: true
+  # The original Guizhan updater has been removed from this English fork.
+  auto-update: false
   ignore-outdated-warning: false
   test: false
   clear-old-config: false
 
 StarShardsSword:
-  help: '#####为星陨裁决配置信息#####'
+  help: 'Star Shards Sword combat configuration.'
   StarShards_Atk_Mix: 3.8
-  #基础攻击倍率 默认:3.8 +280%
+  # Base attack multiplier. Default: 3.8 (+280%).
   StarShards_Atk_Add: 1314.0
-  #基础攻击力加成 默认:1314.0
+  # Flat attack bonus. Default: 1314.0.
   StarShards_Atk_Mult: 6.18
-  #基础攻击力乘区 默认:6.18   +618%
+  # Attack multiplier. Default: 6.18 (+618%).
   StarShards_AtkSpeed: 20.0
-  #攻击速度 默认:20.0 +2000%
+  # Attack speed. Default: 20.0.
   StarShards_Atk_ExtraPercent: 0.08
-  #攻击力加成 默认:0.15 +15% 固定额外百分比伤害
+  # Additional percentage damage. Default: 0.08 (+8%).
   StarShards_Atk_Blood: 0.05
-  #流血效果 默认:0.03 +3% 可叠加，独立生效
+  # Stackable bleeding damage. Default: 0.05 (+5%).
   StarShards_Health_Add: 1314.0
-  #基础生命值加成 默认:1314.0
+  # Flat health bonus. Default: 1314.0.
   StarShards_Health_Mult: 6.18
-  #基础生命值乘区 默认:6.18   +618%
+  # Health multiplier. Default: 6.18 (+618%).
   StarShards_MoveSpeed: 0.618
-  #移动速度 默认:0.618 +61.8%
+  # Movement speed modifier. Default: 0.618.
   StarShards_Armor: 200.0
-  #护甲 默认:200.0
+  # Armor bonus. Default: 200.0.
   StarShards_Toughness: 200.0
-  #护甲韧性 默认:200.0
+  # Armor toughness bonus. Default: 200.0.
   StarShards_FlySpeed: 13.14
-  #飞行速度 默认:13.14 +131.4%
+  # Flight speed modifier. Default: 13.14.
   StarShards_BlazingSlash_CD: 1
-  #左键技能冷却时间 默认:1.0
+  # Left-click skill cooldown in seconds.
   StarShards_ArcaneBlast_CD: 3
-  #shift左键技能冷却时间 默认:3.0
+  # Shift-left-click skill cooldown in seconds.
   StarShards_AstralShield_CD: 5
-  #右键技能冷却时间 默认:5.0
+  # Right-click skill cooldown in seconds.
   StarShards_AstralShield_During: 5
-  #右键技能持续时间 默认:5.0
+  # Right-click skill duration in seconds.
   StarShards_InstantBlink_CD: 3
-  #shift右键技能冷却时间 默认:3.0
+  # Shift-right-click skill cooldown in seconds.
 
 Fish:
   FishingRod:
-    FISHING_ROD_FINAL_STICK: #终焉鱼竿配置
+    FISHING_ROD_FINAL_STICK:
       Enable:
-       FinalLure: true #是否启用终焉鱼饵[鱼饵·记忆碎片]（独立生效）
-       FinalLure_Obtain: true #是否可以从水中钓取终焉鱼饵[鱼饵·记忆碎片]（独立生效）
+        FinalLure: true
+        # Enables the Final Lure (Memory Fragment) effect.
+        FinalLure_Obtain: true
+        # Allows the Final Lure to be caught while fishing.
     admin-give:
       max-weight: 10000.0
 
-
 qwen-help:
-  help: '#####这个qwen-help为配置提示，请勿删除，删除也没啥影响'
-  cooldown: '#####玩家询问ai间隔时间,默认为3秒'
-  api-key: '#####api-key输入阿里云百炼控制台获取的api即可，新用户可白嫖很多额度，基本够用'
-  endpoint: '#####endpoint为端点，默认即可，建议默认，因为阿里云可以白嫖'
-  model: '#####model为自定义模型，可选项有qwen-max、qwen3-max、qwen-plus、qwen-plus-2025-09-11等更多见官网'
-  model-extra: '这里默认是回复最完善的是qwen-plus、qwen-plus-2025-09-11,回复内容也是最多的，第一个max回复内容则最为精简切最为敷衍'
-  model-extra1: '其中qwen-plus为主干版本，qwen-plus-2025-09-11为快照版本，每个快照版本都有独立的免费额度'
-  model-extra2: '3-max则是max的升级版，相对于max回复内容稍微详细一点'
-  model-extra3: '如果想回答的精简一些，建议使用qwen-max'
-  model-extra4: '在build34+版本，对所有模型的回答进行了调整，默认都为精简版本，玩家可自行对话调整字数限制'
-  ai-error: '#####此处为ai回复失败反馈信息'
-
+  help: 'Optional Qwen/DashScope AI chat integration. It is disabled by default.'
+  enabled: 'Set true only after supplying a valid API key.'
+  cooldown: 'Minimum seconds between requests from the same player.'
+  api-key: 'Your private DashScope API key. Never publish or commit a real key.'
+  endpoint: 'DashScope-compatible API endpoint.'
+  model: 'Qwen model identifier.'
+  public-mode: 'Whether public AI chat starts enabled after a restart.'
+  ai-error: 'Message displayed when an AI request fails.'
 
 qwen:
-  api-key: "your_api_key_here"
-  endpoint: "https://dashscope.aliyuncs.com/api/v1/services/aigc/text-generation/generation"
-  model: "qwen-plus-2025-09-11"
-  ai-error: "&c❌ AI响应失败，请稍后再试"
+  enabled: false
+  api-key: 'your_api_key_here'
+  endpoint: 'https://dashscope.aliyuncs.com/api/v1/services/aigc/text-generation/generation'
+  model: 'qwen-plus'
+  public-mode: false
+  ai-error: '&cAI request failed. Please try again later.'
   cooldown: 3
