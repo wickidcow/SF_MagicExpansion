@@ -28,14 +28,14 @@ public class MagicExpansionQuickSmeltery extends SimpleSlimefunItem<ItemUseHandl
     @Override
     public ItemUseHandler getItemHandler() {
         return e->{
-            // 阻止默认行为（放置方块或使用物品）
+            // 阻止默认行为(放置方块或使用物品)
             e.setUseItem(Event.Result.DENY);
             e.setUseBlock(Event.Result.DENY);
 
             // 获取玩家
             Player player = e.getPlayer();
             // 打开菜单并动态加载配方
-            ChestMenu menu = new ChestMenu(getGradientName("魔法冶炼炉"));
+            ChestMenu menu = new ChestMenu(getGradientName("Magic Smeltery"));
             QuickMachineMBUtile.addAvailableRecipesToMenu(player, menu,0, SMELTERY_RECIPES);
 
             // 设置空槽位是否可点击

@@ -57,7 +57,7 @@ public class FiveElementTouch extends SimpleSlimefunItem<ItemUseHandler> impleme
             PersistentDataContainer container = meta.getPersistentDataContainer();
 
             // ========================
-            // 情况1：Shift + 右键方块 → 记录坐标到物品
+            // 情况1:Shift + 右键方块 → 记录坐标到物品
             // ========================
             if (player.isSneaking() && e.getClickedBlock().isPresent()) {
                 Block block = e.getClickedBlock().get();
@@ -72,12 +72,12 @@ public class FiveElementTouch extends SimpleSlimefunItem<ItemUseHandler> impleme
                 updateLore(meta, block.getLocation());
                 item.setItemMeta(meta);
 
-                player.sendMessage("🔗 已绑定到方块: " + formatLocation(block.getLocation()));
+                player.sendMessage("Binding updated: " + formatLocation(block.getLocation()));
                 player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 1.0f, 1.5f);
             }
 
             // ========================
-            // 情况2：右键任意东西 → 优先尝试远程交互
+            // 情况2:右键任意东西 → 优先尝试远程交互
             // ========================
             else {
                 Location targetLoc = null;
@@ -112,7 +112,7 @@ public class FiveElementTouch extends SimpleSlimefunItem<ItemUseHandler> impleme
 
                     Bukkit.getPluginManager().callEvent(interactEvent);
 
-                    player.sendMessage("🔁 五行之触可以遍及任何地方: " + formatLocation(targetLoc));
+                    player.sendMessage("🔁 Five Elements Touch can reach any location: " + formatLocation(targetLoc));
                     player.playSound(player.getLocation(), Sound.BLOCK_ENDER_CHEST_OPEN, 1.0f, 1.0f);
                 }
             }
@@ -129,15 +129,15 @@ public class FiveElementTouch extends SimpleSlimefunItem<ItemUseHandler> impleme
         } else {
             lore = new ArrayList<>();
         }
-        lore.add("§b绑定坐标: §fX:" + loc.getBlockX() + " Y:" + loc.getBlockY() + " Z:" + loc.getBlockZ());
-        lore.add("§b世界: §f" + loc.getWorld().getName());
+        lore.add("§bBound Coordinates: §fX:" + loc.getBlockX() + " Y:" + loc.getBlockY() + " Z:" + loc.getBlockZ());
+        lore.add("§bWorld: §f" + loc.getWorld().getName());
         meta.setLore(lore);
         meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
     }
 
     // 格式化位置显示
     private String formatLocation(Location loc) {
-        return String.format("X:%d Y:%d Z:%d (世界:%s)",
+        return String.format("X:%d Y:%d Z:%d (World: %s)",
                 loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(),
                 loc.getWorld().getName());
     }

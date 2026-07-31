@@ -35,7 +35,7 @@ public class MagicExpansionQuickHeatedPressureChamber extends SimpleSlimefunItem
     }
 
 //
-//    // 预加载的 增强型合成台 配方列表（静态常量）
+//    // 预加载的 增强型合成台 配方列表(静态常量)
 //    public static final List<Map<String, Integer>> HEATED_PRESSURE_CHAMBER_RECIPES = new ArrayList<>();
 //
 //    static {
@@ -60,10 +60,10 @@ public class MagicExpansionQuickHeatedPressureChamber extends SimpleSlimefunItem
 //                String itemKey;
 //                SlimefunItem slimefunItem = SlimefunItem.getByItem(requiredItem);
 //                if (slimefunItem != null) {
-//                    // 如果是 SlimefunItem，使用其 ID 作为键
+//                    // 如果是 SlimefunItem,使用其 ID 作为键
 //                    itemKey = "sf:" + slimefunItem.getId();
 //                } else {
-//                    // 如果不是 SlimefunItem，则默认为原版物品
+//                    // 如果不是 SlimefunItem,则默认为原版物品
 //                    itemKey = "mc:" + requiredItem.getType().name();
 //                }
 //
@@ -74,8 +74,8 @@ public class MagicExpansionQuickHeatedPressureChamber extends SimpleSlimefunItem
 //            // 将整合后的配方存入列表
 //            HEATED_PRESSURE_CHAMBER_RECIPES.add(recipeMap);
 //        }
-////        Debug.logWarn("预加载的配方HEATED_PRESSURE_CHAMBER_RECIPES：" + HEATED_PRESSURE_CHAMBER_RECIPES);
-////        System.out.println("预加载的配方数量ANCIENT_ALTAR_RECIPES：" + ANCIENT_ALTAR_RECIPES.size());
+////        Debug.logWarn("预加载的配方HEATED_PRESSURE_CHAMBER_RECIPES:" + HEATED_PRESSURE_CHAMBER_RECIPES);
+////        System.out.println("预加载的配方数量ANCIENT_ALTAR_RECIPES:" + ANCIENT_ALTAR_RECIPES.size());
 //    }
 
 
@@ -84,14 +84,14 @@ public class MagicExpansionQuickHeatedPressureChamber extends SimpleSlimefunItem
     @Override
     public ItemUseHandler getItemHandler() {
         return e->{
-            // 阻止默认行为（放置方块或使用物品）
+            // 阻止默认行为(放置方块或使用物品)
             e.setUseItem(Event.Result.DENY);
             e.setUseBlock(Event.Result.DENY);
 
             // 获取玩家
             Player player = e.getPlayer();
             // 打开菜单并动态加载配方
-            ChestMenu menu = new ChestMenu(getGradientName("魔法压力舱"));
+            ChestMenu menu = new ChestMenu(getGradientName("Magic Heated Pressure Chamber"));
             addAvailableRecipesToMenu(player, menu,0, HEATED_PRESSURE_CHAMBER_RECIPES, RecipeType.HEATED_PRESSURE_CHAMBER);
 
             // 设置空槽位是否可点击

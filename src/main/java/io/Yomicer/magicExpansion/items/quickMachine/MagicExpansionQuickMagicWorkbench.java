@@ -35,14 +35,14 @@ public class MagicExpansionQuickMagicWorkbench extends SimpleSlimefunItem<ItemUs
     @Override
     public ItemUseHandler getItemHandler() {
         return e->{
-            // 阻止默认行为（放置方块或使用物品）
+            // 阻止默认行为(放置方块或使用物品)
             e.setUseItem(Event.Result.DENY);
             e.setUseBlock(Event.Result.DENY);
 
             // 获取玩家
             Player player = e.getPlayer();
             // 打开菜单并动态加载配方
-            ChestMenu menu = new ChestMenu(getGradientName("魔法工作台（魔法工作台）"));
+            ChestMenu menu = new ChestMenu(getGradientName("Magic Workbench"));
             addAvailableRecipesToMenu(player, menu,0, MAGIC_WORKBENCH_RECIPES,RecipeType.MAGIC_WORKBENCH);
 
             // 设置空槽位是否可点击

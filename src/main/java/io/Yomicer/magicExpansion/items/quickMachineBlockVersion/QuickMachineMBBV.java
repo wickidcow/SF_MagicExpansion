@@ -101,20 +101,20 @@ public class QuickMachineMBBV extends SlimefunItem implements EnergyNetComponent
                 }));
                 // 初始化菜单内容
                 for (int i : starslot) {
-                menu.addItem(i, new CustomItemStack(Material.NETHER_STAR, "§x§F§D§B§7§D§4使用说明",
-                            "§x§F§D§B§7§D§4§l点我一下刷新产物列表",
-                            "§e右键 §b查看单次合成所需的材料",
-                            "§e左键 §b制作一次",
-                            "§b按住 §eShift 右键 §b一次制作32个物品",
-                            "§b按住 §eShift 左键 §b制作所有可制作的物品",
-                            "§b注意 §e1~4行 §b是输入槽也是输出槽"),
+                menu.addItem(i, new CustomItemStack(Material.NETHER_STAR, "§x§F§D§B§7§D§4",
+                            "§x§F§D§B§7§D§4§lRefresh Recipes",
+                            "§eRight-click: §bView required materials",
+                            "§eLeft-click: §bCraft one batch",
+                            "§eShift-right-click: §bCraft 32 batches",
+                            "§eShift-left-click: §bCraft all possible batches",
+                            "§7Slots 1–4 are used for machine input and output."),
                         (player1, slot, item, action) -> {
                             addAvailableRecipesToMenu(menu, receivedMBRecipes);
                             return false;
                         });
                 }
                 for (int i : arrowslots) {
-                    menu.addItem(i, new CustomItemStack(Material.ARROW, "&a点击翻页"),
+                    menu.addItem(i, new CustomItemStack(Material.ARROW, "&aClick"),
                             (player, slot, item, action) -> false);
                 }
 

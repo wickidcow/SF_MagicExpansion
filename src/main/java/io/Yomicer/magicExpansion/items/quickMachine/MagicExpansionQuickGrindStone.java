@@ -23,11 +23,11 @@ public class MagicExpansionQuickGrindStone extends SimpleSlimefunItem<ItemUseHan
         super(category, item, recipeType, recipe);
     }
 
-//    // 预加载的 磨石 配方列表（静态常量）
+//    // 预加载的 磨石 配方列表(静态常量)
 //    private static final List<Map<String, Integer>> GRIND_STONE_RECIPES = new ArrayList<>();
 //
 //    /**
-//     * 静态初始化块：在类加载时预加载所有 GRIND_STONE 类型的配方
+//     * 静态初始化块:在类加载时预加载所有 GRIND_STONE 类型的配方
 //     */
 //    static {
 //        loadGrindStoneRecipes();
@@ -83,10 +83,10 @@ public class MagicExpansionQuickGrindStone extends SimpleSlimefunItem<ItemUseHan
 //    }
 //
 //    /**
-//     * 获取物品的唯一键（Slimefun ID 或 Minecraft 材质名称）
+//     * 获取物品的唯一键(Slimefun ID 或 Minecraft 材质名称)
 //     *
 //     * @param item 物品
-//     * @return 唯一键（"sf:<ID>" 或 "mc:<Material>"），如果无法识别则返回 null
+//     * @return 唯一键("sf:<ID>" 或 "mc:<Material>"),如果无法识别则返回 null
 //     */
 //    private static String getUniqueItemKey(ItemStack item) {
 //        if (item == null || item.getType() == Material.AIR) {
@@ -102,14 +102,14 @@ public class MagicExpansionQuickGrindStone extends SimpleSlimefunItem<ItemUseHan
     @Override
     public ItemUseHandler getItemHandler() {
         return e->{
-            // 阻止默认行为（放置方块或使用物品）
+            // 阻止默认行为(放置方块或使用物品)
             e.setUseItem(Event.Result.DENY);
             e.setUseBlock(Event.Result.DENY);
 
             // 获取玩家
             Player player = e.getPlayer();
             // 打开菜单并动态加载配方
-            ChestMenu menu = new ChestMenu(getGradientName("魔法磨石"));
+            ChestMenu menu = new ChestMenu(getGradientName("Magic Grind Stone"));
             QuickMachineMBUtile.addAvailableRecipesToMenu(player, menu,0, GRIND_STONE_RECIPES);
 
             // 设置空槽位是否可点击

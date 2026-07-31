@@ -8,7 +8,7 @@ import io.github.thebusybiscuit.slimefun4.core.handlers.ItemUseHandler;
 import io.github.thebusybiscuit.slimefun4.implementation.SlimefunItems;
 import io.github.thebusybiscuit.slimefun4.implementation.items.SimpleSlimefunItem;
 import me.mrCookieSlime.CSCoreLibPlugin.general.Inventory.ChestMenu;
-import net.guizhanss.guizhanlib.minecraft.helper.inventory.ItemStackHelper;
+import io.Yomicer.magicExpansion.utils.compat.ItemStackHelper;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
@@ -34,7 +34,7 @@ public class MagicExpansionMineralCave extends SimpleSlimefunItem<ItemUseHandler
     public ItemUseHandler getItemHandler() {
 
         return e -> {
-            // 阻止默认行为（放置方块或使用物品）
+            // 阻止默认行为(放置方块或使用物品)
             e.setUseItem(Event.Result.DENY);
             e.setUseBlock(Event.Result.DENY);
 
@@ -49,7 +49,7 @@ public class MagicExpansionMineralCave extends SimpleSlimefunItem<ItemUseHandler
 
     private void openCustomMenu(Player player) {
         // 创建一个新的 ChestMenu
-        ChestMenu menu = new ChestMenu(getGradientName("魔法矿洞"));
+        ChestMenu menu = new ChestMenu(getGradientName("Magic Mineral Cave"));
         // 用于记录已点击的槽位
         Set<Integer> clickedSlots = new HashSet<>();
         // 设置菜单槽位内容
@@ -58,24 +58,24 @@ public class MagicExpansionMineralCave extends SimpleSlimefunItem<ItemUseHandler
             // 判断是否满足 80% 概率
             boolean isGenerated = random.nextDouble() < 0.8;
             if (isGenerated||i==53){
-            menu.addItem(i, createItem(Material.STONE, getGradientName("点击我挖取这里的石头")), (player1, slot, item, action) -> {
+            menu.addItem(i, createItem(Material.STONE, getGradientName("Click")), (player1, slot, item, action) -> {
 
                 // 检查该槽位是否已被点击过
                 if (clickedSlots.contains(slot)) {
-                    player1.sendMessage("§c你已经挖掘过这里了！");
+                    player1.sendMessage("§cyou already!");
                     return false; // 返回 false 表示不消耗物品
                 }
-                // 玩家点击后，将该槽位替换为普通圆石
+                // 玩家点击后,将该槽位替换为普通圆石
                 ItemStack randomItem = getRandomItem(random);
                 ItemStack treasureItem = randomItem.clone();
                 ItemMeta meta = treasureItem.getItemMeta();
-                meta.setDisplayName("§e宝藏：§b" + ItemStackHelper.getDisplayName(treasureItem));
+                meta.setDisplayName("§eTreasure: §b" + ItemStackHelper.getDisplayName(treasureItem));
                 treasureItem.setItemMeta(meta);
                 menu.replaceExistingItem(slot, treasureItem);
                 GiveItem.giveOrDropItem(player1, randomItem);
                 // 将槽位标记为已点击
                 clickedSlots.add(slot);
-                player1.sendMessage("你挖掘了坐标为 " + slot+" 的石头！");
+                player1.sendMessage("You mined the stone at coordinates " + slot+"!");
                 return false; // 返回 false 表示不消耗物品
             });
         }
@@ -91,7 +91,7 @@ public class MagicExpansionMineralCave extends SimpleSlimefunItem<ItemUseHandler
 
 
 
-    // 预设的物品列表（静态常量）
+    // 预设的物品列表(静态常量)
     private static final List<ItemStack> ITEMS;
     static {
         // 初始化物品列表

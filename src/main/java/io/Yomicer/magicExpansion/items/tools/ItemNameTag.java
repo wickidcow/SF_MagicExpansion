@@ -23,13 +23,13 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.Map;
 import java.util.UUID;
 
 public class ItemNameTag extends SimpleSlimefunItem<ItemUseHandler> implements Listener {
 
-    private final Map<UUID, Long> renameStartTime = new HashMap<>(); // 存储 System.currentTimeMillis()
+    private final Map<UUID, Long> renameStartTime = new ConcurrentHashMap<>(); // 存储 System.currentTimeMillis()
 
     public ItemNameTag(ItemGroup itemGroup, SlimefunItemStack item, RecipeType recipeType, ItemStack[] recipe) {
         super(itemGroup, item, recipeType, recipe);
@@ -54,26 +54,25 @@ public class ItemNameTag extends SimpleSlimefunItem<ItemUseHandler> implements L
             }
 
             if (player.isSneaking()) {
-                player.sendMessage(ColorGradient.getGradientNameVer2("请输入新名称（支持 & 颜色代码或渐变前缀，60秒内输入）："));
-                player.sendMessage(ColorGradient.getGradientNameVer2("渐变代码前缀："));
-                player.sendMessage(ColorGradient.getGradientNameVer2("(使用魔法一代渐变色)"));
-                player.sendMessage(ColorGradient.getGradientNameVer2("(使用魔法二代渐变色)"));
-                player.sendMessage(ColorGradient.getGradientNameVer2("例如：(使用魔法二代渐变色)物品需要修改的名称"));
+                player.sendMessage(ColorGradient.getGradientNameVer2("Enter the new item name within 60 seconds."));
+                player.sendMessage(ColorGradient.getGradientNameVer2("Use & color codes, <g1>text, or <g2>text. Type 'cancel' to stop."));
                 UUID uuid = player.getUniqueId();
                 renameStartTime.put(uuid, System.currentTimeMillis()); // 记录开始时间
 
-                // 60秒后自动清理（可选，防止内存泄漏）
+                // 60秒后自动清理(可选,防止内存泄漏)
                 Bukkit.getScheduler().runTaskLater(MagicExpansion.getInstance(), () -> {
-                    renameStartTime.remove(uuid);
+                    if (renameStartTime.remove(uuid) != null && player.isOnline()) {
+                        player.sendMessage(ColorGradient.getGradientNameVer2("The renaming request timed out."));
+                    }
                 }, 20 * 60);
             } else {
-                // === 普通右键：直接复制主手 displayName 到副手 ===
+                // === 普通右键:直接复制主手 displayName 到副手 ===
                 ItemStack nameTag = player.getInventory().getItemInMainHand();
 
                 // 检查副手是否有物品
                 ItemStack offHand = player.getInventory().getItemInOffHand();
                 if (offHand == null || offHand.getType() == Material.AIR) {
-                    player.sendMessage(ColorGradient.getGradientNameVer2("副手没有物品！"));
+                    player.sendMessage(ColorGradient.getGradientNameVer2("There is no item in your off hand!"));
                     return;
                 }
 
@@ -83,7 +82,7 @@ public class ItemNameTag extends SimpleSlimefunItem<ItemUseHandler> implements L
                     displayName = nameTag.getItemMeta().getDisplayName();
                 }
                 if (displayName == null || displayName.trim().isEmpty()) {
-                    player.sendMessage(ColorGradient.getGradientNameVer2("命名签没有设置名称，无法复制！"));
+                    player.sendMessage(ColorGradient.getGradientNameVer2("The name tag has no custom name to copy!"));
                     return;
                 }
 
@@ -94,76 +93,92 @@ public class ItemNameTag extends SimpleSlimefunItem<ItemUseHandler> implements L
                     player.getInventory().setItemInMainHand(new ItemStack(Material.AIR));
                 }
 
-                // 复制 displayName 到副手（保留原有 NBT，只改名字）
+                // 复制 displayName 到副手(保留原有 NBT,只改名字)
                 ItemMeta offMeta = offHand.getItemMeta();
                 if (offMeta != null) {
-                    offMeta.setDisplayName(displayName); // 直接复制，包括 § 颜色
+                    offMeta.setDisplayName(displayName); // 直接复制,包括 § 颜色
                     offHand.setItemMeta(offMeta);
-                    player.sendMessage(ColorGradient.getGradientNameVer2("已将名称复制到副手物品！"));
+                    player.sendMessage(ColorGradient.getGradientNameVer2("Copied the name to the off-hand item!"));
                     player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1.0f, 1.5f);
                 }
             }
         };
     }
 
-    // ===== 仅用于 Shift+右键的聊天重命名 =====
+    // Handles Shift-right-click chat input for renaming.
     @EventHandler
-    public void onPlayerChat(AsyncPlayerChatEvent e) {
-        Player player = e.getPlayer();
+    public void onPlayerChat(AsyncPlayerChatEvent event) {
+        Player player = event.getPlayer();
         UUID uuid = player.getUniqueId();
 
         Long startTime = renameStartTime.get(uuid);
-        if (startTime == null) return; // 不在流程中
+        if (startTime == null) {
+            return;
+        }
 
-        // ⏱️ 检查是否超时（60秒 = 60_000 毫秒）
+        event.setCancelled(true);
+        String input = event.getMessage().trim();
+
         if (System.currentTimeMillis() - startTime > 60_000L) {
             renameStartTime.remove(uuid);
-            player.sendMessage(ColorGradient.getGradientNameVer2("命名操作已超时！"));
-            e.setCancelled(true);
+            Bukkit.getScheduler().runTask(MagicExpansion.getInstance(), () ->
+                    player.sendMessage(ColorGradient.getGradientNameVer2("The renaming request timed out.")));
             return;
         }
 
-        // ✅ 未超时，继续处理
-        renameStartTime.remove(uuid); // 处理完就清除
-        e.setCancelled(true);
+        if (input.equalsIgnoreCase("cancel")) {
+            renameStartTime.remove(uuid);
+            Bukkit.getScheduler().runTask(MagicExpansion.getInstance(), () ->
+                    player.sendMessage(ColorGradient.getGradientNameVer2("Renaming cancelled.")));
+            return;
+        }
 
-        String input = e.getMessage().trim();
         if (input.isEmpty()) {
-            player.sendMessage(ColorGradient.getGradientNameVer2("名称不能为空！"));
+            Bukkit.getScheduler().runTask(MagicExpansion.getInstance(), () ->
+                    player.sendMessage(ColorGradient.getGradientNameVer2("The name cannot be empty.")));
             return;
         }
 
-        String finalName;
-
-        // ===== 渐变色识别 =====
-        if (input.startsWith("(使用魔法二代渐变色)")) {
-            String text = input.substring("(使用魔法二代渐变色)".length());
+        final String finalName;
+        if (input.regionMatches(true, 0, "<g2>", 0, 4)) {
+            String text = input.substring(4);
             if (text.isEmpty()) {
-                player.sendMessage(ColorGradient.getGradientNameVer2("渐变文本不能为空！"));
+                Bukkit.getScheduler().runTask(MagicExpansion.getInstance(), () ->
+                        player.sendMessage(ColorGradient.getGradientNameVer2("Gradient text cannot be empty.")));
                 return;
             }
             finalName = ColorGradient.getGradientNameVer2(text);
-        } else if (input.startsWith("(使用魔法一代渐变色)")) {
-            String text = input.substring("(使用魔法一代渐变色)".length());
+        } else if (input.regionMatches(true, 0, "<g1>", 0, 4)) {
+            String text = input.substring(4);
             if (text.isEmpty()) {
-                player.sendMessage(ColorGradient.getGradientNameVer2("渐变文本不能为空！"));
+                Bukkit.getScheduler().runTask(MagicExpansion.getInstance(), () ->
+                        player.sendMessage(ColorGradient.getGradientNameVer2("Gradient text cannot be empty.")));
                 return;
             }
-            finalName = ColorGradient.getGradientName(text); // 确保该方法存在
+            finalName = ColorGradient.getGradientName(text);
         } else {
             finalName = ChatColor.translateAlternateColorCodes('&', input);
         }
 
-        // 应用名称
-        ItemStack mainHand = player.getInventory().getItemInMainHand();
-        if (mainHand != null && mainHand.getType() != Material.AIR) {
-            ItemMeta meta = mainHand.getItemMeta();
-            if (meta != null) {
-                meta.setDisplayName(finalName);
-                mainHand.setItemMeta(meta);
-                player.sendMessage(ColorGradient.getGradientNameVer2("物品已重命名！"));
-                player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1.0f, 1.5f);
+        renameStartTime.remove(uuid);
+        Bukkit.getScheduler().runTask(MagicExpansion.getInstance(), () -> {
+            ItemStack mainHand = player.getInventory().getItemInMainHand();
+            if (mainHand.getType() == Material.AIR) {
+                player.sendMessage(ColorGradient.getGradientNameVer2("Hold the item you want to rename in your main hand."));
+                return;
             }
-        }
+
+            ItemMeta meta = mainHand.getItemMeta();
+            if (meta == null) {
+                player.sendMessage(ColorGradient.getGradientNameVer2("That item cannot be renamed."));
+                return;
+            }
+
+            meta.setDisplayName(finalName);
+            mainHand.setItemMeta(meta);
+            player.sendMessage(ColorGradient.getGradientNameVer2("Item renamed!"));
+            player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1.0f, 1.5f);
+        });
     }
+
 }

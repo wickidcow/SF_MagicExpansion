@@ -43,7 +43,7 @@ public class MagicExpansionRandomSummon extends SimpleSlimefunItem<ItemUseHandle
                 ItemStack itemInHand = player.getInventory().getItemInMainHand();
                 // 检查玩家手上是否有物品
                 if (e.getHand()!= HAND) {
-                    player.sendMessage(getGradientName("请使用主手使用~", createColorList()));
+                    player.sendMessage(getGradientName("Hold this item in your main hand to use it.", createColorList()));
                     return;
                 }
                 if(!ItemPermissionUtils.hasPermissionRe(player)){
@@ -54,7 +54,7 @@ public class MagicExpansionRandomSummon extends SimpleSlimefunItem<ItemUseHandle
                     if (itemInHand.getAmount() > 1) {
                         itemInHand.setAmount(itemInHand.getAmount() - 1);
                     } else {
-                        player.getInventory().setItemInMainHand(null); // 如果数量为 1，则直接移除
+                        player.getInventory().setItemInMainHand(null); // 如果数量为 1,则直接移除
                     }
                     // 使用 entitySpawner
                     // 在距离玩家 3 格的位置随机召唤一个生物
@@ -73,8 +73,8 @@ public class MagicExpansionRandomSummon extends SimpleSlimefunItem<ItemUseHandle
     /**
      * 将 RGB 值转换为 Minecraft 颜色代码字符
      *
-     * @param value RGB 分量值（0-255）
-     * @return 十六进制字符（0-9 或 A-F）
+     * @param value RGB 分量值(0-255)
+     * @return 十六进制字符(0-9 或 A-F)
      */
     public static char codeColor(int value) {
         if (value < 0 || value > 15) {
@@ -84,7 +84,7 @@ public class MagicExpansionRandomSummon extends SimpleSlimefunItem<ItemUseHandle
     }
 
     /**
-     * 生成带有渐变色的字符串（Minecraft §x 格式）
+     * 生成带有渐变色的字符串(Minecraft §x 格式)
      *
      * @param text       输入的字符串
      * @param colorList  渐变色列表
@@ -93,7 +93,7 @@ public class MagicExpansionRandomSummon extends SimpleSlimefunItem<ItemUseHandle
     public static String getGradientName(String text, List<Color> colorList) {
         StringBuilder stringBuilder = new StringBuilder();
 
-        // 如果文本为空或长度不足，补全空格
+        // 如果文本为空或长度不足,补全空格
         if (text.length() == 0) {
             text += " ";
         }

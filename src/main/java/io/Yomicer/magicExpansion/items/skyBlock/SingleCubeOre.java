@@ -9,7 +9,7 @@ import io.github.thebusybiscuit.slimefun4.core.attributes.HologramOwner;
 import io.github.thebusybiscuit.slimefun4.core.handlers.BlockBreakHandler;
 import io.github.thebusybiscuit.slimefun4.core.handlers.BlockPlaceHandler;
 import io.github.thebusybiscuit.slimefun4.implementation.handlers.SimpleBlockBreakHandler;
-import net.guizhanss.guizhanlib.minecraft.helper.inventory.ItemStackHelper;
+import io.Yomicer.magicExpansion.utils.compat.ItemStackHelper;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.BlockData;
@@ -54,7 +54,7 @@ public class SingleCubeOre extends SlimefunItem implements HologramOwner{
                 // 使用 ItemStackHelper 获取显示名称
                 String displayName = ItemStackHelper.getDisplayName(blockItemStack);
 
-                updateHologram(e.getBlock(), ColorGradient.getGradientName( "单方块·矿脉-形态:"+ displayName));
+                updateHologram(e.getBlock(), ColorGradient.getGradientName( "Single Block: Ore Vein Form: "+ displayName));
             }
         };
     }
@@ -97,7 +97,7 @@ public class SingleCubeOre extends SlimefunItem implements HologramOwner{
 //                ItemStack blockItemStack = new ItemStack(block.getType());
 //                String displayName = ItemStackHelper.getDisplayName(blockItemStack);
                 String displayName = ItemStackHelper.getDisplayName(new ItemStack(newMaterial));
-                updateHologram(block, ColorGradient.getGradientName("单方块·矿脉-形态:" + displayName));
+                updateHologram(block, ColorGradient.getGradientName("Single Block: Ore Vein Form: " + displayName));
                 }else{
                 removeHologram(block);
                 }
@@ -107,7 +107,7 @@ public class SingleCubeOre extends SlimefunItem implements HologramOwner{
         };
     }
 
-    // 获取随机矿石方块（直接从缓存中取）
+    // 获取随机矿石方块(直接从缓存中取)
     public Material getRandomOreBlock() {
         return oreMaterials.get(random.nextInt(oreMaterials.size()));
     }

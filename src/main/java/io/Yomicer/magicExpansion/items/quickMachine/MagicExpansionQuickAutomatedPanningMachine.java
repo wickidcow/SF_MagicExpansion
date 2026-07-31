@@ -35,14 +35,14 @@ public class MagicExpansionQuickAutomatedPanningMachine extends SimpleSlimefunIt
     @Override
     public ItemUseHandler getItemHandler() {
         return e->{
-            // 阻止默认行为（放置方块或使用物品）
+            // 阻止默认行为(放置方块或使用物品)
             e.setUseItem(Event.Result.DENY);
             e.setUseBlock(Event.Result.DENY);
 
             // 获取玩家
             Player player = e.getPlayer();
             // 打开菜单并动态加载配方
-            ChestMenu menu = new ChestMenu(getGradientName("魔法淘金盘"));
+            ChestMenu menu = new ChestMenu(getGradientName("Magic Automated Panning Machine"));
             addAvailableRecipesToMenu(player, menu,0, GOLD_PAN_RECIPES, RecipeType.GOLD_PAN);
 
             // 设置空槽位是否可点击

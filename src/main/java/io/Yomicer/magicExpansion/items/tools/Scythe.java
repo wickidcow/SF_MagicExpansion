@@ -61,7 +61,7 @@ public class Scythe extends SimpleSlimefunItem<ItemUseHandler> implements NotPla
                     List<Block> crops = Vein.find(e.getBlock(), MAX_BROKEN, b -> {
                         BlockData data = b.getBlockData();
 
-                        // 双重验证：既是作物且已成熟
+                        // 双重验证:既是作物且已成熟
                         return Tag.CROPS.isTagged(b.getType())
                                 && data instanceof Ageable
                                 && ((Ageable) data).getAge() == ((Ageable) data).getMaximumAge();

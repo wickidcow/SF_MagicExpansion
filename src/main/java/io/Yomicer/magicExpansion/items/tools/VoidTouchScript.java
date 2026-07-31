@@ -56,7 +56,7 @@ public class VoidTouchScript extends SimpleSlimefunItem<ItemUseHandler> implemen
             PersistentDataContainer container = meta.getPersistentDataContainer();
 
             // ========================
-            // 情况1：Shift + 右键方块 → 记录坐标到物品
+            // 情况1:Shift + 右键方块 → 记录坐标到物品
             // ========================
             if (player.isSneaking() && e.getClickedBlock().isPresent()) {
                 Block block = e.getClickedBlock().get();
@@ -71,12 +71,12 @@ public class VoidTouchScript extends SimpleSlimefunItem<ItemUseHandler> implemen
                 updateLore(meta, block.getLocation());
                 item.setItemMeta(meta);
 
-                player.sendMessage("🔗 已绑定到方块: " + formatLocation(block.getLocation()));
+                player.sendMessage("Binding updated: " + formatLocation(block.getLocation()));
                 player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 1.0f, 1.5f);
             }
 
             // ========================
-            // 情况2：右键任意东西 → 优先尝试远程交互
+            // 情况2:右键任意东西 → 优先尝试远程交互
             // ========================
             else {
                 Location targetLoc = null;
@@ -101,7 +101,7 @@ public class VoidTouchScript extends SimpleSlimefunItem<ItemUseHandler> implemen
                     Location playerLoc = player.getLocation();
                     // ✅ 检查是否在同一世界
                     if (!playerLoc.getWorld().equals(targetLoc.getWorld())) {
-                        player.sendMessage("⚠️ 目标位置位于不同维度，无法交互！");
+                        player.sendMessage("⚠️ The target location is unavailable.");
                         player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1.0f, 1.0f);
                         return;
                     }
@@ -109,7 +109,7 @@ public class VoidTouchScript extends SimpleSlimefunItem<ItemUseHandler> implemen
                     double distance = targetLoc.distance(playerLoc);
 
                     if (distance > 250) {
-                        player.sendMessage("⚠️ 目标位置距离过远（超过 100坤 方块），无法交互！");
+                        player.sendMessage("⚠️ The target location is unavailable or more than 100 blocks away.");
                         player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1.0f, 1.0f);
                         return;
                     }
@@ -126,7 +126,7 @@ public class VoidTouchScript extends SimpleSlimefunItem<ItemUseHandler> implemen
 
                     Bukkit.getPluginManager().callEvent(interactEvent);
 
-                    player.sendMessage("🔁 虚空之触可以遍及绝大多数地方: " + formatLocation(targetLoc));
+                    player.sendMessage("🔁 Void Touchcan:" + formatLocation(targetLoc));
                     player.playSound(player.getLocation(), Sound.BLOCK_ENDER_CHEST_OPEN, 1.0f, 1.0f);
                 }
             }
@@ -143,15 +143,15 @@ public class VoidTouchScript extends SimpleSlimefunItem<ItemUseHandler> implemen
         } else {
             lore = new ArrayList<>();
         }
-        lore.add("§b绑定坐标: §fX:" + loc.getBlockX() + " Y:" + loc.getBlockY() + " Z:" + loc.getBlockZ());
-        lore.add("§b世界: §f" + loc.getWorld().getName());
+        lore.add("§bBound Coordinates: §fX:" + loc.getBlockX() + " Y:" + loc.getBlockY() + " Z:" + loc.getBlockZ());
+        lore.add("§bWorld: §f" + loc.getWorld().getName());
         meta.setLore(lore);
         meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
     }
 
     // 格式化位置显示
     private String formatLocation(Location loc) {
-        return String.format("X:%d Y:%d Z:%d (世界:%s)",
+        return String.format("X:%d Y:%d Z:%d (World: %s)",
                 loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(),
                 loc.getWorld().getName());
     }

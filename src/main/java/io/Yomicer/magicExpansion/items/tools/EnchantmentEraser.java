@@ -38,25 +38,25 @@ public class EnchantmentEraser extends SimpleSlimefunItem<ItemUseHandler> {
 
             // 检查触发事件的手
             if (e.getHand() != EquipmentSlot.HAND) {
-                // 如果是副手触发的，不处理（我们希望清除器在主手）
+                // 如果是副手触发的,不处理(我们希望清除器在主手)
                 return;
             }
 
-            // 获取主手物品（应该是清除器）
+            // 获取主手物品(应该是清除器)
             ItemStack mainHandItem = player.getInventory().getItemInMainHand();
 
-            // 获取副手物品（需要清除的物品）
+            // 获取副手物品(需要清除的物品)
             ItemStack offhandItem = player.getInventory().getItemInOffHand();
 
             // 检查副手是否有物品且不是空气
             if (offhandItem == null || offhandItem.getType() == Material.AIR) {
-                player.sendMessage(ColorGradient.getGradientNameVer2("请将需要清除赋能属性的物品放在副手！"));
+                player.sendMessage(ColorGradient.getGradientNameVer2("Place the item you want to clear in your off hand!"));
                 return;
             }
 
             // 检查副手物品是否包含赋能属性
             if (!hasEnchantmentAttributesExact(offhandItem)) {
-                player.sendMessage(ColorGradient.getGradientNameVer2("副手物品没有魔法赋能属性！"));
+                player.sendMessage(ColorGradient.getGradientNameVer2("The off-hand item has no Magic Empowerment attributes!"));
                 return;
             }
 
@@ -78,9 +78,9 @@ public class EnchantmentEraser extends SimpleSlimefunItem<ItemUseHandler> {
                     player.getInventory().setItemInMainHand(new ItemStack(Material.AIR));
                 }
 
-                player.sendMessage(ColorGradient.getGradientNameVer2("成功清除副手物品的魔法赋能属性！"));
+                player.sendMessage(ColorGradient.getGradientNameVer2("Magic Empowerment attributes cleared successfully!"));
             } else {
-                player.sendMessage(ColorGradient.getGradientNameVer2("清除失败，该物品可能没有魔法赋能属性！"));
+                player.sendMessage(ColorGradient.getGradientNameVer2("Could not clear the item; it may have no Magic Empowerment attributes."));
             }
         };
     }
@@ -113,12 +113,12 @@ public class EnchantmentEraser extends SimpleSlimefunItem<ItemUseHandler> {
             }
         }
 
-        // 如果没有属性被移除，返回原物品
+        // 如果没有属性被移除,返回原物品
         if (!hasRemovedAttributes) {
             return item;
         }
 
-        // 更新Lore，移除整个魔法赋能段落
+        // 更新Lore,移除整个魔法赋能段落
         removeEnchantmentLore(meta, attributesToRemove);
 
         item.setItemMeta(meta);
@@ -143,50 +143,50 @@ public class EnchantmentEraser extends SimpleSlimefunItem<ItemUseHandler> {
             String line = lore.get(i);
             String strippedLine = stripAllColorCodes(line);
 
-            // 检查是否是"魔法赋能："标题行
-            if (strippedLine.contains("魔法赋能") && (strippedLine.contains("：") || strippedLine.contains(":"))) {
-                // 如果已经在赋能段落中，先结束之前的段落
+            // 检查是否是"魔法赋能:"标题行
+            if ((strippedLine.contains("Magic Empowerment") || strippedLine.contains("\u9b54\u6cd5\u8d4b\u80fd")) && (strippedLine.contains(":") || strippedLine.contains(":"))) {
+                // 如果已经在赋能段落中,先结束之前的段落
                 if (inEnchantmentSection) {
                     // 跳过之前段落的所有行
-//                    MagicExpansion.getInstance().getLogger().info("结束魔法赋能段落 " + sectionCount + "，从行 " + enchantmentSectionStart + " 到 " + (i-1));
+//                    MagicExpansion.getInstance().getLogger().info("结束魔法赋能段落 " + sectionCount + ",从行 " + enchantmentSectionStart + " 到 " + (i-1));
                 }
 
                 // 开始新的赋能段落
                 inEnchantmentSection = true;
                 enchantmentSectionStart = i;
                 sectionCount++;
-//                MagicExpansion.getInstance().getLogger().info("发现魔法赋能段落 " + sectionCount + "，标题行: " + strippedLine);
+//                MagicExpansion.getInstance().getLogger().info("发现魔法赋能段落 " + sectionCount + ",标题行: " + strippedLine);
                 continue; // 跳过标题行
             }
 
             // 如果在赋能段落中
             if (inEnchantmentSection) {
-                // 检查是否是属性行（去色后以"- "开头）
+                // 检查是否是属性行(去色后以"- "开头)
                 if (strippedLine.startsWith("- ")) {
 //                    MagicExpansion.getInstance().getLogger().info("跳过属性行: " + strippedLine);
                     continue; // 跳过属性行
                 }
 
-                // 如果不是属性行，结束当前赋能段落
-//                MagicExpansion.getInstance().getLogger().info("结束魔法赋能段落 " + sectionCount + "，从行 " + enchantmentSectionStart + " 到 " + (i-1));
+                // 如果不是属性行,结束当前赋能段落
+//                MagicExpansion.getInstance().getLogger().info("结束魔法赋能段落 " + sectionCount + ",从行 " + enchantmentSectionStart + " 到 " + (i-1));
                 inEnchantmentSection = false;
 
-                // 当前行不是属性行，添加到新Lore
+                // 当前行不是属性行,添加到新Lore
                 newLore.add(line);
             } else {
-                // 不在赋能段落中，直接添加
+                // 不在赋能段落中,直接添加
                 newLore.add(line);
             }
         }
 
-        // 如果最后还在赋能段落中，结束它
+        // 如果最后还在赋能段落中,结束它
         if (inEnchantmentSection) {
-//            MagicExpansion.getInstance().getLogger().info("结束魔法赋能段落 " + sectionCount + "，从行 " + enchantmentSectionStart + " 到末尾");
+//            MagicExpansion.getInstance().getLogger().info("结束魔法赋能段落 " + sectionCount + ",从行 " + enchantmentSectionStart + " 到末尾");
         }
 
 //        MagicExpansion.getInstance().getLogger().info("原始Lore行数: " + lore.size() + ", 新Lore行数: " + newLore.size());
 
-        // 如果移除了整个赋能段落导致Lore为空，设为null
+        // 如果移除了整个赋能段落导致Lore为空,设为null
         if (newLore.isEmpty()) {
             meta.setLore(null);
         } else {
@@ -195,7 +195,7 @@ public class EnchantmentEraser extends SimpleSlimefunItem<ItemUseHandler> {
     }
 
     /**
-     * 去除字符串中的所有Minecraft颜色代码（包括十六进制颜色代码）
+     * 去除字符串中的所有Minecraft颜色代码(包括十六进制颜色代码)
      * 处理 §x§F§D§B§7§D§4 这种格式的渐变颜色代码
      */
     private static String stripAllColorCodes(String input) {
@@ -204,7 +204,7 @@ public class EnchantmentEraser extends SimpleSlimefunItem<ItemUseHandler> {
         }
 
         // 先处理十六进制颜色代码 §x§F§D§B§7§D§4 格式
-        // 这种格式是 §x 后面跟12个字符（6组 §+十六进制数字）
+        // 这种格式是 §x 后面跟12个字符(6组 §+十六进制数字)
         String result = input;
 
         // 循环移除所有颜色代码
@@ -217,10 +217,10 @@ public class EnchantmentEraser extends SimpleSlimefunItem<ItemUseHandler> {
 
             char nextChar = result.charAt(index + 1);
 
-            // 如果是 §x（十六进制颜色代码开头）
+            // 如果是 §x(十六进制颜色代码开头)
             if (nextChar == 'x' || nextChar == 'X') {
-                // §x 后面应该有12个字符（6组 §+十六进制数字）
-                // 总共14个字符：§x + 6*(§+数字)
+                // §x 后面应该有12个字符(6组 §+十六进制数字)
+                // 总共14个字符:§x + 6*(§+数字)
                 if (index + 13 < result.length()) {
                     // 检查后面是否都是正确的格式
                     boolean validHexColor = true;
@@ -245,7 +245,7 @@ public class EnchantmentEraser extends SimpleSlimefunItem<ItemUseHandler> {
                 // 移除这两个字符
                 result = result.substring(0, index) + result.substring(index + 2);
             } else {
-                // 如果不是颜色代码，只移除 § 字符本身
+                // 如果不是颜色代码,只移除 § 字符本身
                 result = result.substring(0, index) + result.substring(index + 1);
             }
         }
@@ -254,7 +254,7 @@ public class EnchantmentEraser extends SimpleSlimefunItem<ItemUseHandler> {
     }
 
     /**
-     * 检查字符是否是有效的十六进制数字（0-9, a-f, A-F）
+     * 检查字符是否是有效的十六进制数字(0-9, a-f, A-F)
      */
     private static boolean isHexDigit(char c) {
         return (c >= '0' && c <= '9') || (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F');
@@ -291,12 +291,12 @@ public class EnchantmentEraser extends SimpleSlimefunItem<ItemUseHandler> {
             }
         }
 
-        // 如果PDC中没有，检查Lore中是否有"魔法赋能："字样
+        // 如果PDC中没有,检查Lore中是否有"魔法赋能:"字样
         List<String> lore = meta.getLore();
         if (lore != null) {
             for (String line : lore) {
                 String strippedLine = stripAllColorCodes(line);
-                if (strippedLine.contains("魔法赋能") && (strippedLine.contains("：") || strippedLine.contains(":"))) {
+                if ((strippedLine.contains("Magic Empowerment") || strippedLine.contains("\u9b54\u6cd5\u8d4b\u80fd")) && (strippedLine.contains(":") || strippedLine.contains(":"))) {
                     return true;
                 }
             }

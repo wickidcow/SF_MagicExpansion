@@ -41,14 +41,14 @@ public class MagicExpansionQuickOreGrinder extends SimpleSlimefunItem<ItemUseHan
     @Override
     public ItemUseHandler getItemHandler() {
         return e->{
-            // 阻止默认行为（放置方块或使用物品）
+            // 阻止默认行为(放置方块或使用物品)
             e.setUseItem(Event.Result.DENY);
             e.setUseBlock(Event.Result.DENY);
 
             // 获取玩家
             Player player = e.getPlayer();
             // 打开菜单并动态加载配方
-            ChestMenu menu = new ChestMenu(getGradientName("破损的魔法碎矿机"));
+            ChestMenu menu = new ChestMenu(getGradientName("Damaged Magic Ore Grinder"));
             addAvailableRecipesToMenu(player, menu,0, ORE_CRUSHER_RECIPES, RecipeType.ORE_CRUSHER);
 
             // 设置空槽位是否可点击

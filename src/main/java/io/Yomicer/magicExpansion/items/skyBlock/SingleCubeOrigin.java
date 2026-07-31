@@ -12,7 +12,7 @@ import io.github.thebusybiscuit.slimefun4.core.handlers.BlockPlaceHandler;
 import io.github.thebusybiscuit.slimefun4.implementation.handlers.SimpleBlockBreakHandler;
 import me.mrCookieSlime.Slimefun.Objects.SlimefunItem.abstractItems.AContainer;
 import me.mrCookieSlime.Slimefun.api.inventory.BlockMenu;
-import net.guizhanss.guizhanlib.minecraft.helper.inventory.ItemStackHelper;
+import io.Yomicer.magicExpansion.utils.compat.ItemStackHelper;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.BlockData;
@@ -54,7 +54,7 @@ public class SingleCubeOrigin extends SlimefunItem implements HologramOwner{
                 // 使用 ItemStackHelper 获取显示名称
                 String displayName = ItemStackHelper.getDisplayName(blockItemStack);
 
-                updateHologram(e.getBlock(), ColorGradient.getGradientName( "单方块·起源-形态:"+ displayName));
+                updateHologram(e.getBlock(), ColorGradient.getGradientName( "Single Block: Origin Form: "+ displayName));
             }
         };
     }
@@ -97,7 +97,7 @@ public class SingleCubeOrigin extends SlimefunItem implements HologramOwner{
 //                ItemStack blockItemStack = new ItemStack(block.getType());
 //                String displayName = ItemStackHelper.getDisplayName(blockItemStack);
                 String displayName = ItemStackHelper.getDisplayName(new ItemStack(newMaterial));
-                updateHologram(block, ColorGradient.getGradientName("单方块·起源-形态:" + displayName));
+                updateHologram(block, ColorGradient.getGradientName("Single Block: Origin Form: " + displayName));
                 }else{
                 removeHologram(block);
                 }
@@ -116,7 +116,7 @@ public class SingleCubeOrigin extends SlimefunItem implements HologramOwner{
         return material;
     }
 
-    // 判断是否为无效方块（排除不可放置、非完整碰撞箱、特殊功能方块等）
+    // 判断是否为无效方块(排除不可放置、非完整碰撞箱、特殊功能方块等)
     public boolean isInvalidBlock(Material material) {
         if (material == null || material == Material.AIR) {
             return true;
@@ -127,7 +127,7 @@ public class SingleCubeOrigin extends SlimefunItem implements HologramOwner{
             return true;
         }
 
-        // 黑名单：排除特殊功能方块、非完整方块、流体等
+        // 黑名单:排除特殊功能方块、非完整方块、流体等
         Set<Material> blockedMaterials = new HashSet<>(Set.of(
                 Material.BEDROCK,
                 Material.BARRIER,
@@ -147,7 +147,7 @@ public class SingleCubeOrigin extends SlimefunItem implements HologramOwner{
                 Material.VOID_AIR,
                 Material.LIGHT,
                 Material.POWDER_SNOW_CAULDRON,  // ✅ 新增排除项
-                Material.SCULK_SENSOR,          // 可选：排除侦测器
+                Material.SCULK_SENSOR,          // 可选:排除侦测器
                 Material.MOVING_PISTON,         // 排除移动中的活塞
                 Material.BUBBLE_COLUMN          // 排除气泡柱
         ));

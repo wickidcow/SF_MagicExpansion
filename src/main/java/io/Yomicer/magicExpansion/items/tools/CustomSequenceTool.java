@@ -59,7 +59,7 @@ public class CustomSequenceTool extends SimpleSlimefunItem<ItemUseHandler> imple
     // 在类中添加这个字段
     private static final NamespacedKey KEY_SCRIPT = new NamespacedKey(MagicExpansion.getInstance(), "has_script");
 
-    // Gson实例，用于JSON序列化
+    // Gson实例,用于JSON序列化
     private static final Gson gson = new GsonBuilder().create();
 
     // 存储正在运行的序列任务
@@ -92,14 +92,14 @@ public class CustomSequenceTool extends SimpleSlimefunItem<ItemUseHandler> imple
     }
 
     private void openSequenceMenu(Player player, ItemStack item) {
-        ChestMenu menu = new ChestMenu("序列配置菜单");
+        ChestMenu menu = new ChestMenu("menu");
 
         // 设置玩家物品栏可点击
         menu.setPlayerInventoryClickable(true);
 
         PlayerSequenceData playerData = getPlayerData(item);
 
-        // 添加54个屏障物品，显示步骤信息
+        // 添加54个屏障物品,显示步骤信息
         for (int i = 0; i < 54; i++) {
             final int slot = i;
             SlotData slotData = playerData.getSlotData(slot);
@@ -118,34 +118,34 @@ public class CustomSequenceTool extends SimpleSlimefunItem<ItemUseHandler> imple
 
     private ItemStack createBarrierItem(int slot, SlotData slotData) {
         List<String> lore = new ArrayList<>();
-        lore.add("§7步骤 " + (slot + 1));
+        lore.add("§7Sequence step " + (slot + 1));
         lore.add("");
         // 检查是否有脚本
         boolean hasScript = checkIfSlotHasScript(slotData);
 
         // 显示当前设置的信息
         if (slotData.leftClickLocation != null) {
-            lore.add("§a左键坐标: " + formatLocation(slotData.leftClickLocation));
+            lore.add("§aLeft-click target: " + formatLocation(slotData.leftClickLocation));
         } else {
-            lore.add("§c左键坐标: 未设置");
+            lore.add("§cLeft-click target: Not set");
         }
 
         if (slotData.rightClickLocation != null) {
-            lore.add("§a右键坐标: " + formatLocation(slotData.rightClickLocation));
+            lore.add("§aRight-click target: " + formatLocation(slotData.rightClickLocation));
         } else {
-            lore.add("§c右键坐标: 未设置");
+            lore.add("§cRight-click target: Not set");
         }
 
         if (slotData.teleportLocation != null) {
-            lore.add("§a传送坐标: " + formatLocation(slotData.teleportLocation));
+            lore.add("§aTeleport target: " + formatLocation(slotData.teleportLocation));
         } else {
-            lore.add("§c传送坐标: 未设置");
+            lore.add("§cTeleport target: Not set");
         }
 
         if (slotData.interval > 0) {
-            lore.add("§b间隔时间: " + String.format("%.2f", slotData.interval) + "秒");
+            lore.add("§aInterval: " + String.format("%.2f", slotData.interval) + "s");
         } else {
-            lore.add("§c间隔时间: 未设置");
+            lore.add("§cInterval: Not set");
         }
 
         if (slotData.message != null && !slotData.message.isEmpty()) {
@@ -153,37 +153,34 @@ public class CustomSequenceTool extends SimpleSlimefunItem<ItemUseHandler> imple
             String displayMessage = slotData.message.length() > maxLength ?
                     slotData.message.substring(0, maxLength) + "..." : slotData.message;
 
-            if (slotData.message.startsWith("/")) {
-                lore.add("§d指令: " + displayMessage);
-            } else {
-                lore.add("§d消息: " + displayMessage);
-            }
+            String messageType = slotData.message.startsWith("/") ? "§aCommand: " : "§aMessage: ";
+            lore.add(messageType + displayMessage);
         } else {
-            lore.add("§c消息/指令: 未设置");
+            lore.add("§cMessage/command: Not set");
         }
 
         lore.add("");
-        lore.add("§e手持虚空之触时:");
-        lore.add("§e- 左键: 设置左键坐标");
-        lore.add("§e- 右键: 设置右键坐标");
-        lore.add("§e- Shift+左键: 设置传送坐标");
-        lore.add("§6空手时:");
-        lore.add("§6- 左键: 设置间隔时间");
-        lore.add("§6- 右键: 设置消息/指令");
-        lore.add("§6- Shift+左键: 重置此格子的脚本");
+        lore.add("§eWith a Void Touch on your cursor:");
+        lore.add("§e- Left-click: Set left-click target");
+        lore.add("§e- Right-click: Set right-click target");
+        lore.add("§e- Shift-left-click: Set teleport target");
         lore.add("");
-        lore.add("§a直接右键使用物品开始运行序列");
+        lore.add("§6Without a Void Touch:");
+        lore.add("§6- Left-click: Set interval");
+        lore.add("§6- Right-click: Set message or command");
+        lore.add("");
+        lore.add("§cShift-left-click without an item: Reset this step");
 
         // 根据是否有脚本选择不同的材质
         Material itemMaterial = hasScript ? Material.NETHER_STAR : Material.BARRIER;
-        String itemName = hasScript ? "§6§l步骤 " + (slot + 1) + " §e(脚本)" : "§6步骤 " + (slot + 1);
+        String itemName = hasScript ? "§6§lStep " + (slot + 1) + " §e(Script)" : "§6Step " + (slot + 1);
 
         return new CustomItemStack(itemMaterial, itemName, lore.toArray(new String[0]));
     }
 
     // 添加检查脚本的方法
     private boolean checkIfSlotHasScript(SlotData slotData) {
-        // 检查是否有任何设置（坐标、消息或间隔时间）
+        // 检查是否有任何设置(坐标、消息或间隔时间)
         return slotData.leftClickLocation != null ||
                 slotData.rightClickLocation != null ||
                 slotData.teleportLocation != null ||
@@ -202,7 +199,7 @@ public class CustomSequenceTool extends SimpleSlimefunItem<ItemUseHandler> imple
             Location voidTouchLocation = getVoidTouchLocation(cursorItem);
 
             if (voidTouchLocation == null) {
-                player.sendMessage("§c虚空之触物品没有存储坐标！请先使用Shift+右键方块绑定坐标。");
+                player.sendMessage("§cThis Void Touch has no bound location. Bind it before using it here!");
                 player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1.0f, 1.0f);
                 return;
             }
@@ -211,19 +208,19 @@ public class CustomSequenceTool extends SimpleSlimefunItem<ItemUseHandler> imple
                 if (!action.isRightClicked()) {
                     // Shift+左键设置传送坐标
                     playerData.setTeleportLocation(slot, voidTouchLocation);
-                    player.sendMessage("§a已设置步骤 " + (slot + 1) + " 的传送坐标: " + formatLocation(voidTouchLocation));
+                    player.sendMessage("§aConfigured step " + (slot + 1) + " teleport target: " + formatLocation(voidTouchLocation));
                     player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 1.0f, 1.5f);
                 }
             } else {
                 if (!action.isRightClicked()) {
                     // 左键设置左键坐标
                     playerData.setLeftClickLocation(slot, voidTouchLocation);
-                    player.sendMessage("§a已设置步骤 " + (slot + 1) + " 的左键坐标: " + formatLocation(voidTouchLocation));
+                    player.sendMessage("§aConfigured step " + (slot + 1) + " left-click target: " + formatLocation(voidTouchLocation));
                     player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 1.0f, 1.5f);
                 } else if (action.isRightClicked()) {
                     // 右键设置右键坐标
                     playerData.setRightClickLocation(slot, voidTouchLocation);
-                    player.sendMessage("§a已设置步骤 " + (slot + 1) + " 的右键坐标: " + formatLocation(voidTouchLocation));
+                    player.sendMessage("§aConfigured step " + (slot + 1) + " right-click target: " + formatLocation(voidTouchLocation));
                     player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 1.0f, 1.5f);
                 }
             }
@@ -261,14 +258,14 @@ public class CustomSequenceTool extends SimpleSlimefunItem<ItemUseHandler> imple
         slotData.message = "";
 
         savePlayerData(playerData, toolItem);
-        player.sendMessage("§a已重置步骤 " + (slot + 1) + " 的所有设置");
+        player.sendMessage("§aReset step " + (slot + 1) + " and cleared all of its settings.");
         player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 1.0f, 1.5f);
     }
 
     private void startSequence(Player player, ItemStack toolItem) {
         UUID playerId = player.getUniqueId();
 
-        // 如果序列已经在运行，则停止它
+        // 如果序列已经在运行,则停止它
         if (runningTasks.containsKey(playerId)) {
             stopSequence(player);
             return;
@@ -287,7 +284,7 @@ public class CustomSequenceTool extends SimpleSlimefunItem<ItemUseHandler> imple
         }
 
         if (!hasSteps) {
-            player.sendMessage("§c没有设置任何序列步骤！请先使用Shift+右键配置序列。");
+            player.sendMessage("§cNo sequence steps are configured. Sneak-right-click to configure them.");
             player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1.0f, 1.0f);
             return;
         }
@@ -297,7 +294,7 @@ public class CustomSequenceTool extends SimpleSlimefunItem<ItemUseHandler> imple
         runningTasks.put(playerId, task);
         task.runTaskTimer(MagicExpansion.getInstance(), 0L, 1L); // 每tick检查一次
 
-        player.sendMessage("§a序列已开始运行！再次右键停止。");
+        player.sendMessage("§aSequence started. Right-click again to stop it.");
         player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1.0f, 1.5f);
     }
 
@@ -306,7 +303,7 @@ public class CustomSequenceTool extends SimpleSlimefunItem<ItemUseHandler> imple
         if (runningTasks.containsKey(playerId)) {
             runningTasks.get(playerId).cancel();
             runningTasks.remove(playerId);
-            player.sendMessage("§c序列已停止运行。");
+            player.sendMessage("§cSequence stopped.");
             player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 1.0f, 0.5f);
         }
     }
@@ -318,8 +315,8 @@ public class CustomSequenceTool extends SimpleSlimefunItem<ItemUseHandler> imple
             @Override
             public void run() {
                 player.closeInventory();
-                player.sendMessage("§6请在聊天框中输入间隔时间（秒，最低0.01）:");
-                player.sendMessage("§c输入 'cancel' 取消设置");
+                player.sendMessage("§6Enter the interval in seconds (minimum 0.01):");
+                player.sendMessage("§cType 'cancel' to cancel.");
                 // 记录等待输入
                 waitingForInput.put(player.getUniqueId(), new InputRequest(InputType.INTERVAL, slot, playerData, toolItem));
             }
@@ -329,17 +326,16 @@ public class CustomSequenceTool extends SimpleSlimefunItem<ItemUseHandler> imple
 
     // 设置消息/指令 - 完整实现
     private void setMessageOrCommand(Player player, int slot, PlayerSequenceData playerData, ItemStack toolItem) {
-        // 延迟一 tick 关闭菜单，确保先处理完点击事件
+        // 延迟一 tick 关闭菜单,确保先处理完点击事件
         new BukkitRunnable() {
             @Override
             public void run() {
                 player.closeInventory();
-                player.sendMessage("§6=== 序列工具设置 ===");
-                player.sendMessage("§6请在聊天框中输入消息或指令:");
-                player.sendMessage("§7- 输入普通消息: 序列运行时发送聊天消息");
-                player.sendMessage("§7- 输入以/开头的指令: 序列运行时执行指令");
-                player.sendMessage("§c输入 'cancel' 取消设置");
-                player.sendMessage("§e注意: 您现在可以输入指令（如 /help），它会被保存而不会立即执行");
+                player.sendMessage("§6Enter a message or command:");
+                player.sendMessage("§7- Enter a normal message to send it when the sequence runs.");
+                player.sendMessage("§7- Enter a command beginning with / to execute it when the sequence runs.");
+                player.sendMessage("§cType 'cancel' to cancel.");
+                player.sendMessage("§eCommands must begin with a slash, for example: /help");
 
                 // 记录等待输入
                 waitingForInput.put(player.getUniqueId(), new InputRequest(InputType.MESSAGE, slot, playerData, toolItem));
@@ -352,7 +348,7 @@ public class CustomSequenceTool extends SimpleSlimefunItem<ItemUseHandler> imple
         Player player = event.getPlayer();
         UUID playerId = player.getUniqueId();
 
-        // 如果玩家正在等待输入，取消指令执行并处理输入
+        // 如果玩家正在等待输入,取消指令执行并处理输入
         if (waitingForInput.containsKey(playerId)) {
             event.setCancelled(true);
 
@@ -360,7 +356,7 @@ public class CustomSequenceTool extends SimpleSlimefunItem<ItemUseHandler> imple
 
             // 只处理 MESSAGE 类型的输入请求
             if (request.type != InputType.MESSAGE) {
-                player.sendMessage("§c请先完成当前设置！输入 'cancel' 取消");
+                player.sendMessage("§cA configuration request is already active. Type 'cancel' to cancel it.");
                 player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1.0f, 1.0f);
                 return;
             }
@@ -371,8 +367,8 @@ public class CustomSequenceTool extends SimpleSlimefunItem<ItemUseHandler> imple
             request.playerData.setMessage(request.slot, command);
             savePlayerData(request.playerData, request.toolItem);
 
-            player.sendMessage("§a已设置步骤 " + (request.slot + 1) + " 的指令为: " + command);
-            player.sendMessage("§7注意: 这个指令将在序列运行时执行");
+            player.sendMessage("§aConfigured step " + (request.slot + 1) + " command to: " + command);
+            player.sendMessage("§7Note: This command will execute when the sequence runs.");
             player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 1.0f, 1.5f);
 
             waitingForInput.remove(playerId);
@@ -399,7 +395,7 @@ public class CustomSequenceTool extends SimpleSlimefunItem<ItemUseHandler> imple
             return;
         }
 
-        // 如果消息以"/"开头，说明是指令，我们不处理（由指令预处理器处理）
+        // 如果消息以"/"开头,说明是指令,我们不处理(由指令预处理器处理)
         if (event.getMessage().startsWith("/")) {
             return;
         }
@@ -412,7 +408,7 @@ public class CustomSequenceTool extends SimpleSlimefunItem<ItemUseHandler> imple
         // 处理取消
         if (message.equalsIgnoreCase("cancel")) {
             waitingForInput.remove(playerId);
-            player.sendMessage("§c已取消设置。");
+            player.sendMessage("§cConfiguration cancelled.");
             player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1.0f, 1.0f);
 
             // 取消后重新打开菜单
@@ -433,29 +429,29 @@ public class CustomSequenceTool extends SimpleSlimefunItem<ItemUseHandler> imple
                 try {
                     double interval = Double.parseDouble(message);
                     if (interval < 0.01) {
-                        player.sendMessage("§c间隔时间必须大于等于0.01秒！");
+                        player.sendMessage("§cThe interval must be at least 0.01 seconds!");
                         player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1.0f, 1.0f);
                         return;
                     }
 
                     request.playerData.setInterval(request.slot, interval);
                     savePlayerData(request.playerData, request.toolItem);
-                    player.sendMessage("§a已设置步骤 " + (request.slot + 1) + " 的间隔时间为 " + String.format("%.2f", interval) + " 秒");
+                    player.sendMessage("§aConfigured step " + (request.slot + 1) + " interval to " + String.format("%.2f", interval) + " seconds.");
                     player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 1.0f, 1.5f);
                 } catch (NumberFormatException e) {
-                    player.sendMessage("§c请输入有效的数字！");
+                    player.sendMessage("§cEnter a valid number!");
                     player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1.0f, 1.0f);
                     return;
                 }
                 break;
 
             case MESSAGE:
-                // 处理普通消息（非指令）
+                // 处理普通消息(非指令)
                 request.playerData.setMessage(request.slot, message);
                 savePlayerData(request.playerData, request.toolItem);
 
-                player.sendMessage("§a已设置步骤 " + (request.slot + 1) + " 的消息为: " + message);
-                player.sendMessage("§7注意: 这个消息将在序列运行时发送");
+                player.sendMessage("§aConfigured step " + (request.slot + 1) + " message to: " + message);
+                player.sendMessage("§7Note: This message will be sent when the sequence runs.");
                 player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 1.0f, 1.5f);
                 break;
         }
@@ -497,13 +493,13 @@ public class CustomSequenceTool extends SimpleSlimefunItem<ItemUseHandler> imple
 
         @Override
         public void run() {
-            // 检查玩家是否还持有这个物品（只检查主手）
+            // 检查玩家是否还持有这个物品(只检查主手)
             if (!isPlayerHoldingTool()) {
                 stopSequence(player);
                 return;
             }
 
-            // 如果正在执行步骤，等待完成
+            // 如果正在执行步骤,等待完成
             if (isRunningStep) {
                 return;
             }
@@ -514,7 +510,7 @@ public class CustomSequenceTool extends SimpleSlimefunItem<ItemUseHandler> imple
                 return;
             }
 
-            // 如果没有激活的步骤，停止
+            // 如果没有激活的步骤,停止
             if (activeSteps.isEmpty()) {
                 stopSequence(player);
                 return;
@@ -537,7 +533,7 @@ public class CustomSequenceTool extends SimpleSlimefunItem<ItemUseHandler> imple
                 return false;
             }
 
-            // 直接比较物品，而不是SlimefunItem类型
+            // 直接比较物品,而不是SlimefunItem类型
             if (item.isSimilar(toolItem)) {
                 return true;
             }
@@ -569,7 +565,7 @@ public class CustomSequenceTool extends SimpleSlimefunItem<ItemUseHandler> imple
                 // 执行传送操作
                 if (slotData.teleportLocation != null) {
                     player.teleport(slotData.teleportLocation);
-                    player.sendMessage("§e传送到步骤 " + (step + 1) + " 的坐标");
+                    player.sendMessage("§eTeleported to the target for step " + (step + 1) + ".");
                 }
 
                 // 执行消息/指令
@@ -582,10 +578,10 @@ public class CustomSequenceTool extends SimpleSlimefunItem<ItemUseHandler> imple
                     }
                 }
 
-                player.sendMessage("§a执行步骤 " + (step + 1));
+                player.sendMessage("§aExecuted step " + (step + 1));
 
             } catch (Exception e) {
-                player.sendMessage("§c执行步骤 " + (step + 1) + " 时出现错误: " + e.getMessage());
+                player.sendMessage("§cError while executing step " + (step + 1) + ": " + e.getMessage());
             } finally {
                 // 执行完步骤后再次检查是否还持有物品
                 if (!isPlayerHoldingTool()) {
@@ -594,7 +590,7 @@ public class CustomSequenceTool extends SimpleSlimefunItem<ItemUseHandler> imple
                 }
             }
 
-            // 设置延迟（转换为ticks，1秒=20ticks）
+            // 设置延迟(转换为ticks,1秒=20ticks)
             double intervalSeconds = slotData.interval > 0 ? slotData.interval : 0.01;
             delayTicks = (int) Math.max(intervalSeconds * 20, 1); // 最少1tick延迟
             isRunningStep = false;
@@ -700,7 +696,7 @@ public class CustomSequenceTool extends SimpleSlimefunItem<ItemUseHandler> imple
                         }
                     }
                 } catch (Exception e) {
-                    MagicExpansion.getInstance().getLogger().warning("反序列化物品数据失败: " + e.getMessage());
+                    MagicExpansion.getInstance().getLogger().warning("Failed to read sequence data: " + e.getMessage());
                 }
             }
         }
@@ -743,7 +739,7 @@ public class CustomSequenceTool extends SimpleSlimefunItem<ItemUseHandler> imple
                 container.set(KEY_SLOT_DATA, PersistentDataType.STRING, jsonData);
                 item.setItemMeta(meta);
             } catch (Exception e) {
-                MagicExpansion.getInstance().getLogger().warning("序列化物品数据失败: " + e.getMessage());
+                MagicExpansion.getInstance().getLogger().warning("Failed to save sequence data: " + e.getMessage());
             }
         }
     }
@@ -771,7 +767,7 @@ public class CustomSequenceTool extends SimpleSlimefunItem<ItemUseHandler> imple
                 }
             }
         } catch (Exception e) {
-            MagicExpansion.getInstance().getLogger().warning("反序列化位置失败: " + locationString);
+            MagicExpansion.getInstance().getLogger().warning("Failed to deserialize location: " + locationString);
         }
         return null;
     }
