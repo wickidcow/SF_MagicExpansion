@@ -79,7 +79,7 @@ public class ZKBTMPlayer {
                     int[] chorus = {7,9,7,5}; // G A G E
                     float p = (float) Math.pow(2, chorus[idx] / 12.0) * 1.0f;
                     world.playSound(loc, Sound.BLOCK_NOTE_BLOCK_PLING, 1.4f, p);
-                    world.spawnParticle(Particle.FIREWORKS_SPARK, loc.clone().add(0,1.2,0), 2);
+                    world.spawnParticle(Particle.FIREWORK, loc.clone().add(0,1.2,0), 2);
                 }
 
                 // === 尾声渐弱 ===
@@ -91,7 +91,7 @@ public class ZKBTMPlayer {
                             float[] end = {4,2,0}; // E D C
                             float p = (float) Math.pow(2, end[f] / 12.0) * 1.0f;
                             world.playSound(loc, Sound.BLOCK_NOTE_BLOCK_PLING, 0.5f - f * 0.1f, p * 0.9f);
-                            world.spawnParticle(Particle.TOWN_AURA, loc.clone().add(0,1,0), 1);
+                            world.spawnParticle(Particle.MYCELIUM, loc.clone().add(0,1,0), 1);
                         }, i * 20L);
                     }
                 }

@@ -153,9 +153,9 @@ public class RecipeMachineCrude extends AbstractElectricRecipeMachine {
             Location loc = block.getLocation().add(0.5, 0.5, 0.5);
             World world = block.getWorld();
             if (world == null) return false;
-            world.spawnParticle(Particle.EXPLOSION_HUGE, loc, 1);
-            world.spawnParticle(Particle.EXPLOSION_LARGE, loc, 20);
-            world.spawnParticle(Particle.EXPLOSION_NORMAL, loc, 50);
+            world.spawnParticle(Particle.EXPLOSION_EMITTER, loc, 1);
+            world.spawnParticle(Particle.EXPLOSION, loc, 20);
+            world.spawnParticle(Particle.POOF, loc, 50);
         }
 
         return pc3 > pc4;

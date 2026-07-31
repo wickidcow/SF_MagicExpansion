@@ -6,7 +6,7 @@ import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItemStack;
 import io.github.thebusybiscuit.slimefun4.api.recipes.RecipeType;
 import io.github.thebusybiscuit.slimefun4.core.handlers.ItemConsumptionHandler;
 import io.github.thebusybiscuit.slimefun4.implementation.items.SimpleSlimefunItem;
-import org.bukkit.Effect;
+import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
@@ -35,10 +35,10 @@ public class FarmHavestBread extends SimpleSlimefunItem<ItemConsumptionHandler> 
             if (RANDOM.nextDouble() < 0.20) {
                 ItemStack seeds = MagicExpansionItems.WHEAT_SEEDS;
                 p.getWorld().dropItemNaturally(p.getLocation(), seeds);
-                p.sendMessage("§e✨!you type.");
+                p.sendMessage("§e✨ The harvest blessed you with extra seeds!");
             }
             p.playSound(p.getLocation(), Sound.ENTITY_PLAYER_BURP, 1.0f, 1.2f);
-            p.getWorld().playEffect(p.getLocation().add(0, 1, 0), Effect.VILLAGER_PLANT_GROW, 10);
+            p.getWorld().spawnParticle(Particle.HAPPY_VILLAGER, p.getLocation().add(0, 1, 0), 10, 0.35, 0.35, 0.35, 0.05);
         };
     }
 }

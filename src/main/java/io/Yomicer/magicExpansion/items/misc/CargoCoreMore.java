@@ -2459,7 +2459,7 @@ public class CargoCoreMore extends SlimefunItem implements EnergyNetComponent{
             deductStoredItemFromMainStorage(data, template, actuallyTransferred);
 
             // 显示传输效果
-            showTransferParticles(sourceBlock.getLocation(), targetLocation, Particle.VILLAGER_HAPPY);
+            showTransferParticles(sourceBlock.getLocation(), targetLocation, Particle.HAPPY_VILLAGER);
         }
     }
 
@@ -2975,7 +2975,7 @@ public class CargoCoreMore extends SlimefunItem implements EnergyNetComponent{
         }
         if (hasExtracted) {
             // 显示粒子效果
-            showTransferParticles(sourceMenu.getLocation(), destBlock.getLocation(), Particle.DRAGON_BREATH);
+            showTransferParticles(sourceMenu.getLocation(), destBlock.getLocation(), Particle.PORTAL);
         }
 
     }

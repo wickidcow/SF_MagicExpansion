@@ -128,7 +128,7 @@ public class NewYearsDayFireworkYuanDan extends SimpleSlimefunItem<ItemUseHandle
                         Location markLoc = location.clone().add(x, 0.2, z);
 
                         Color color = getRainbowColor(currentLayer / 5.0);
-                        world.spawnParticle(Particle.REDSTONE, markLoc, 1,
+                        world.spawnParticle(Particle.DUST, markLoc, 1,
                                 new Particle.DustOptions(color, 2.0f));
                     }
 
@@ -163,7 +163,7 @@ public class NewYearsDayFireworkYuanDan extends SimpleSlimefunItem<ItemUseHandle
                         Location beamLoc = location.clone().add(x, y, z);
 
                         Color color = getRainbowColor((y / EXPLOSION_HEIGHT + tick * 0.02) % 1.0);
-                        world.spawnParticle(Particle.REDSTONE, beamLoc, 1,
+                        world.spawnParticle(Particle.DUST, beamLoc, 1,
                                 new Particle.DustOptions(color, 1.2f));
                     }
                 }
@@ -171,7 +171,7 @@ public class NewYearsDayFireworkYuanDan extends SimpleSlimefunItem<ItemUseHandle
                 // 顶部闪光
                 if (tick % 5 == 0) {
                     Location top = location.clone().add(0, EXPLOSION_HEIGHT, 0);
-                    world.spawnParticle(Particle.FLASH, top, 2, 1, 1, 1, 0);
+                    world.spawnParticle(Particle.FLASH, top, 2, 1, 1, 1, 0, Color.WHITE);
                     world.playSound(top, Sound.BLOCK_NOTE_BLOCK_BELL, 0.8f, 1.2f);
                 }
             }
@@ -383,12 +383,12 @@ public class NewYearsDayFireworkYuanDan extends SimpleSlimefunItem<ItemUseHandle
                 World world = loc.getWorld();
 
                 // 多重粒子
-                world.spawnParticle(Particle.FIREWORKS_SPARK, loc, 8, 0.3, 0.3, 0.3, 0.1);
+                world.spawnParticle(Particle.FIREWORK, loc, 8, 0.3, 0.3, 0.3, 0.1);
 
                 // 彩虹尾迹
                 double hue = (tick / 30.0) % 1.0;
                 Color color = getRainbowColor(hue);
-                world.spawnParticle(Particle.REDSTONE, loc, 5,
+                world.spawnParticle(Particle.DUST, loc, 5,
                         new Particle.DustOptions(color, 2.0f));
 
                 // 闪电效果
@@ -401,7 +401,7 @@ public class NewYearsDayFireworkYuanDan extends SimpleSlimefunItem<ItemUseHandle
                         double z = distance * Math.sin(angle);
 
                         Location sparkLoc = loc.clone().add(x, 0, z);
-                        world.spawnParticle(Particle.FLASH, sparkLoc, 1);
+                        world.spawnParticle(Particle.FLASH, sparkLoc, 1, 0, 0, 0, 0, Color.WHITE);
                     }
                     world.playSound(loc, Sound.BLOCK_NOTE_BLOCK_HAT, 0.3f, 1.8f);
                 }
@@ -423,10 +423,10 @@ public class NewYearsDayFireworkYuanDan extends SimpleSlimefunItem<ItemUseHandle
                 Location loc = firework.getLocation();
                 World world = loc.getWorld();
 
-                world.spawnParticle(Particle.FIREWORKS_SPARK, loc, 4, 0.2, 0.2, 0.2, 0.05);
+                world.spawnParticle(Particle.FIREWORK, loc, 4, 0.2, 0.2, 0.2, 0.05);
 
                 Color color = NEW_YEAR_COLORS[random.nextInt(NEW_YEAR_COLORS.length)];
-                world.spawnParticle(Particle.REDSTONE, loc, 2,
+                world.spawnParticle(Particle.DUST, loc, 2,
                         new Particle.DustOptions(color, 1.5f));
             }
         }.runTaskTimer(MagicExpansion.getInstance(), 0L, 1L);
@@ -447,7 +447,7 @@ public class NewYearsDayFireworkYuanDan extends SimpleSlimefunItem<ItemUseHandle
                 World world = loc.getWorld();
 
                 // 大量火花
-                world.spawnParticle(Particle.FIREWORKS_SPARK, loc, 12, 0.4, 0.4, 0.4, 0.15);
+                world.spawnParticle(Particle.FIREWORK, loc, 12, 0.4, 0.4, 0.4, 0.15);
 
                 // 双重彩虹
                 double hue1 = (tick / 25.0) % 1.0;
@@ -456,14 +456,14 @@ public class NewYearsDayFireworkYuanDan extends SimpleSlimefunItem<ItemUseHandle
                 Color color1 = getRainbowColor(hue1);
                 Color color2 = getRainbowColor(hue2);
 
-                world.spawnParticle(Particle.REDSTONE, loc, 4,
+                world.spawnParticle(Particle.DUST, loc, 4,
                         new Particle.DustOptions(color1, 2.0f));
-                world.spawnParticle(Particle.REDSTONE, loc, 4,
+                world.spawnParticle(Particle.DUST, loc, 4,
                         new Particle.DustOptions(color2, 2.0f));
 
                 // 闪光和音效
                 if (tick % 3 == 0) {
-                    world.spawnParticle(Particle.FLASH, loc, 2, 0.5, 0.5, 0.5, 0);
+                    world.spawnParticle(Particle.FLASH, loc, 2, 0.5, 0.5, 0.5, 0, Color.WHITE);
                     world.playSound(loc, Sound.ENTITY_FIREWORK_ROCKET_BLAST, 0.5f, 1.5f);
                 }
 
@@ -502,12 +502,12 @@ public class NewYearsDayFireworkYuanDan extends SimpleSlimefunItem<ItemUseHandle
                         double hue = (currentLayer + i / (double) particles) % 1.0;
                         Color color = getRainbowColor(hue);
 
-                        world.spawnParticle(Particle.REDSTONE, explosionLoc, 2,
+                        world.spawnParticle(Particle.DUST, explosionLoc, 2,
                                 new Particle.DustOptions(color, 3.5f));
 
                         // 闪光
                         if (random.nextDouble() < 0.25) {
-                            world.spawnParticle(Particle.FLASH, explosionLoc, 2);
+                            world.spawnParticle(Particle.FLASH, explosionLoc, 2, 0, 0, 0, 0, Color.WHITE);
                         }
                     }
 
@@ -585,17 +585,17 @@ public class NewYearsDayFireworkYuanDan extends SimpleSlimefunItem<ItemUseHandle
                             color = Color.fromRGB(100, 200, 255); // 蓝色
                         }
 
-                        world.spawnParticle(Particle.REDSTONE, explosionLoc, 3, // 从1增加到3
+                        world.spawnParticle(Particle.DUST, explosionLoc, 3, // 从1增加到3
                                 new Particle.DustOptions(color, 3.2f)); // 从2.5f增加到3.2f
 
                         // 更强的闪光效果
                         if (random.nextDouble() < 0.3) {
-                            world.spawnParticle(Particle.FLASH, explosionLoc, 2);
+                            world.spawnParticle(Particle.FLASH, explosionLoc, 2, 0, 0, 0, 0, Color.WHITE);
                         }
 
                         // 更多的火花
                         if (random.nextDouble() < 0.4) {
-                            world.spawnParticle(Particle.FIREWORKS_SPARK, explosionLoc,
+                            world.spawnParticle(Particle.FIREWORK, explosionLoc,
                                     3, 0.3, 0.3, 0.3, 0.15);
                         }
                     }
@@ -636,13 +636,13 @@ public class NewYearsDayFireworkYuanDan extends SimpleSlimefunItem<ItemUseHandle
 
                         // 彩色冲击波
                         Color color = getRainbowColor(i / 144.0);
-                        world.spawnParticle(Particle.REDSTONE, waveLoc, 2,
+                        world.spawnParticle(Particle.DUST, waveLoc, 2,
                                 new Particle.DustOptions(color, 2.8f));
 
                         // 垂直冲击波层
                         for (int h = -3; h <= 3; h++) {
                             Location verticalWave = waveLoc.clone().add(0, h * 2, 0);
-                            world.spawnParticle(Particle.REDSTONE, verticalWave, 1,
+                            world.spawnParticle(Particle.DUST, verticalWave, 1,
                                     new Particle.DustOptions(color, 2.0f));
                         }
                     }
@@ -671,7 +671,7 @@ public class NewYearsDayFireworkYuanDan extends SimpleSlimefunItem<ItemUseHandle
             Location sphereLoc = center.clone().add(x, y, z);
 
             Color color = NEW_YEAR_COLORS[random.nextInt(NEW_YEAR_COLORS.length)];
-            world.spawnParticle(Particle.REDSTONE, sphereLoc, 2, // 增加粒子数量
+            world.spawnParticle(Particle.DUST, sphereLoc, 2, // 增加粒子数量
                     new Particle.DustOptions(color, 2.5f)); // 增大粒子大小
 
             // 添加内部填充粒子
@@ -682,7 +682,7 @@ public class NewYearsDayFireworkYuanDan extends SimpleSlimefunItem<ItemUseHandle
                 double innerZ = innerR * Math.sin(phi) * Math.sin(theta);
 
                 Location innerLoc = center.clone().add(innerX, innerY, innerZ);
-                world.spawnParticle(Particle.REDSTONE, innerLoc, 1,
+                world.spawnParticle(Particle.DUST, innerLoc, 1,
                         new Particle.DustOptions(color, 1.8f));
             }
         }
@@ -697,7 +697,7 @@ public class NewYearsDayFireworkYuanDan extends SimpleSlimefunItem<ItemUseHandle
             double z = radius * Math.sin(phi) * Math.sin(theta);
 
             Location edgeLoc = center.clone().add(x, y, z);
-            world.spawnParticle(Particle.FIREWORKS_SPARK, edgeLoc, 1);
+            world.spawnParticle(Particle.FIREWORK, edgeLoc, 1);
         }
     }
 
@@ -719,13 +719,13 @@ public class NewYearsDayFireworkYuanDan extends SimpleSlimefunItem<ItemUseHandle
                 Location ringLoc = center.clone().add(x, 0, z);
 
                 Color color = getRainbowColor(i / 96.0);
-                world.spawnParticle(Particle.REDSTONE, ringLoc, 2, // 增加粒子数量
+                world.spawnParticle(Particle.DUST, ringLoc, 2, // 增加粒子数量
                         new Particle.DustOptions(color, 2.2f)); // 增大粒子大小
 
                 // 增加垂直环的厚度
                 for (int v = -2; v <= 2; v++) {
                     Location verticalLoc = center.clone().add(0, x + v, z);
-                    world.spawnParticle(Particle.REDSTONE, verticalLoc, 1,
+                    world.spawnParticle(Particle.DUST, verticalLoc, 1,
                             new Particle.DustOptions(color, 1.8f));
                 }
             }
@@ -750,17 +750,17 @@ public class NewYearsDayFireworkYuanDan extends SimpleSlimefunItem<ItemUseHandle
                 // 主星形
                 Location starLoc = center.clone().add(xRot, yRot, 0);
                 Color color = Color.fromRGB(255, 255, 150 + rotation * 30);
-                world.spawnParticle(Particle.REDSTONE, starLoc, 2, // 增加粒子数量
+                world.spawnParticle(Particle.DUST, starLoc, 2, // 增加粒子数量
                         new Particle.DustOptions(color, 2.2f));
 
                 // 另一平面
                 Location starLoc2 = center.clone().add(0, yRot, xRot);
-                world.spawnParticle(Particle.REDSTONE, starLoc2, 2,
+                world.spawnParticle(Particle.DUST, starLoc2, 2,
                         new Particle.DustOptions(color, 2.2f));
 
                 // 第三平面
                 Location starLoc3 = center.clone().add(yRot, 0, xRot);
-                world.spawnParticle(Particle.REDSTONE, starLoc3, 1,
+                world.spawnParticle(Particle.DUST, starLoc3, 1,
                         new Particle.DustOptions(color, 1.8f));
             }
         }
@@ -775,7 +775,7 @@ public class NewYearsDayFireworkYuanDan extends SimpleSlimefunItem<ItemUseHandle
             double y = tipRadius * Math.sin(radians);
 
             Location tipLoc = center.clone().add(x, y, 0);
-            world.spawnParticle(Particle.FLASH, tipLoc, 2);
+            world.spawnParticle(Particle.FLASH, tipLoc, 2, 0, 0, 0, 0, Color.WHITE);
             world.playSound(tipLoc, Sound.BLOCK_NOTE_BLOCK_BELL, 0.3f, 1.5f);
         }
     }
@@ -797,7 +797,7 @@ public class NewYearsDayFireworkYuanDan extends SimpleSlimefunItem<ItemUseHandle
                 Location heartLoc = center.clone().add(xRot, y, zRot);
 
                 Color color = Color.fromRGB(255, 105, 180); // 粉色
-                world.spawnParticle(Particle.REDSTONE, heartLoc, 1,
+                world.spawnParticle(Particle.DUST, heartLoc, 1,
                         new Particle.DustOptions(color, 2.0f));
             }
         }
@@ -817,13 +817,13 @@ public class NewYearsDayFireworkYuanDan extends SimpleSlimefunItem<ItemUseHandle
             Location waveLoc = center.clone().add(x, 0, z);
 
             Color color = Color.WHITE;
-            world.spawnParticle(Particle.REDSTONE, waveLoc, 3,
+            world.spawnParticle(Particle.DUST, waveLoc, 3,
                     new Particle.DustOptions(color, 3.0f));
 
             // 垂直冲击波
             for (int h = -5; h <= 5; h += 2) {
                 Location verticalWave = waveLoc.clone().add(0, h, 0);
-                world.spawnParticle(Particle.REDSTONE, verticalWave, 2,
+                world.spawnParticle(Particle.DUST, verticalWave, 2,
                         new Particle.DustOptions(color, 2.0f));
             }
         }
@@ -857,7 +857,7 @@ public class NewYearsDayFireworkYuanDan extends SimpleSlimefunItem<ItemUseHandle
 
                         // 立即显示
                         Color color = Color.fromRGB(255, 215, 0); // 金色
-                        world.spawnParticle(Particle.REDSTONE, digitLoc, 2,
+                        world.spawnParticle(Particle.DUST, digitLoc, 2,
                                 new Particle.DustOptions(color, 2.5f));
 
                         // 光晕效果
@@ -870,7 +870,7 @@ public class NewYearsDayFireworkYuanDan extends SimpleSlimefunItem<ItemUseHandle
                             double haloZ = radius * Math.sin(radians);
 
                             Location haloLoc = digitLoc.clone().add(haloX, 0, haloZ);
-                            world.spawnParticle(Particle.REDSTONE, haloLoc, 1,
+                            world.spawnParticle(Particle.DUST, haloLoc, 1,
                                     new Particle.DustOptions(Color.WHITE, 1.2f));
                         }
 
@@ -900,7 +900,7 @@ public class NewYearsDayFireworkYuanDan extends SimpleSlimefunItem<ItemUseHandle
 
                                         Location digitLoc = new Location(world, x, y, z);
                                         Color color = getRainbowColor(currentBlink / 5.0);
-                                        world.spawnParticle(Particle.REDSTONE, digitLoc, 1,
+                                        world.spawnParticle(Particle.DUST, digitLoc, 1,
                                                 new Particle.DustOptions(color, 3.0f));
                                     }
                                 }

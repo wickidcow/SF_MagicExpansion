@@ -310,7 +310,7 @@ public class MagicAltarManager {
             Location particleLoc = location.clone().add(0, y, 0);
 
             // 增加粒子数量
-            world.spawnParticle(Particle.REDSTONE, particleLoc, 15, 0.2, 0.2, 0.2, 0, dustOptions);
+            world.spawnParticle(Particle.DUST, particleLoc, 15, 0.2, 0.2, 0.2, 0, dustOptions);
 
             // 添加分支效果
             if (Math.random() < 0.4) {
@@ -319,7 +319,7 @@ public class MagicAltarManager {
 
                 for (int branch = 0; branch < 2; branch++) {
                     Location branchLoc = particleLoc.clone().add(branchX * branch, 0, branchZ * branch);
-                    world.spawnParticle(Particle.REDSTONE, branchLoc, 6, 0.15, 0.15, 0.15, 0, dustOptions);
+                    world.spawnParticle(Particle.DUST, branchLoc, 6, 0.15, 0.15, 0.15, 0, dustOptions);
                 }
             }
 
@@ -331,7 +331,7 @@ public class MagicAltarManager {
                             (Math.random() - 0.5) * 1.5,
                             (Math.random() - 0.5) * 2
                     );
-                    world.spawnParticle(Particle.FIREWORKS_SPARK, sparkLoc, 4, 0.1, 0.1, 0.1, 0.05);
+                    world.spawnParticle(Particle.FIREWORK, sparkLoc, 4, 0.1, 0.1, 0.1, 0.05);
                     world.spawnParticle(Particle.CRIT, sparkLoc, 2, 0.1, 0.1, 0.1, 0.05);
                 }
             }
@@ -345,7 +345,7 @@ public class MagicAltarManager {
                 double x = Math.cos(rad) * radius;
                 double z = Math.sin(rad) * radius;
                 Location circleLoc = location.clone().add(x, 0.2, z);
-                world.spawnParticle(Particle.REDSTONE, circleLoc, 2, 0.1, 0.1, 0.1, 0, dustOptions);
+                world.spawnParticle(Particle.DUST, circleLoc, 2, 0.1, 0.1, 0.1, 0, dustOptions);
             }
         }
     }
@@ -462,7 +462,7 @@ public class MagicAltarManager {
                             Location particleLoc = sourceLoc.clone().add(offsetX, offsetY, offsetZ);
 
                             // 使用多种粒子类型
-                            Particle particleType = Math.random() < 0.9 ? Particle.ENCHANTMENT_TABLE : Particle.ELECTRIC_SPARK;
+                            Particle particleType = Math.random() < 0.9 ? Particle.ENCHANT : Particle.ELECTRIC_SPARK;
 
                             sourceLoc.getWorld().spawnParticle(
                                     particleType,
@@ -479,7 +479,7 @@ public class MagicAltarManager {
 
                 // 中心聚集效果 - 在方块中央
                 targetLoc.getWorld().spawnParticle(
-                        Particle.SPELL_WITCH,
+                        Particle.WITCH,
                         targetLoc,
                         10,
                         0.2, 0.2, 0.2,
@@ -487,7 +487,7 @@ public class MagicAltarManager {
                 );
 
                 targetLoc.getWorld().spawnParticle(
-                        Particle.ENCHANTMENT_TABLE,
+                        Particle.ENCHANT,
                         targetLoc,
                         23,
                         0.15, 0.15, 0.15,
@@ -597,7 +597,7 @@ public class MagicAltarManager {
         }
 
         Location targetLoc = centerDispenserLoc.clone().add(0.5, 1.5, 0.5);
-        targetLoc.getWorld().spawnParticle(Particle.FIREWORKS_SPARK, targetLoc, 30, 0.5, 0.5, 0.5, 0.1);
+        targetLoc.getWorld().spawnParticle(Particle.FIREWORK, targetLoc, 30, 0.5, 0.5, 0.5, 0.1);
         targetLoc.getWorld().playSound(targetLoc, Sound.ENTITY_PLAYER_LEVELUP, 1.0f, 1.0f);
 
         player.sendMessage("§aItem received." + recipe.getResult().getType().name());

@@ -42,7 +42,7 @@ public class HolyPie extends SimpleSlimefunItem<ItemConsumptionHandler> implemen
         return (e, p, i) -> {
             double maxHealth = p.getMaxHealth();
             p.setHealth(Math.min(p.getHealth() + 12.0, maxHealth)); // 回 6 颗心
-            p.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 30, 254));
+            p.addPotionEffect(new PotionEffect(PotionEffectType.RESISTANCE, 30, 254));
             removeNegativeEffects(p);
             holyProtectedPlayers.add(p.getUniqueId());
             new BukkitRunnable() {
@@ -70,7 +70,7 @@ public class HolyPie extends SimpleSlimefunItem<ItemConsumptionHandler> implemen
         p.playSound(loc, Sound.ENTITY_PLAYER_LEVELUP, 0.5f, 2.0f); // 升级感
         world.spawnParticle(Particle.END_ROD, loc, 30, 0.5, 0.5, 0.5, 0.05);
         world.spawnParticle(Particle.HEART, loc, 15, 0.4, 0.4, 0.4, 0.1);
-        world.spawnParticle(Particle.VILLAGER_HAPPY, loc, 20, 0.5, 0.5, 0.5, 0.1);
+        world.spawnParticle(Particle.HAPPY_VILLAGER, loc, 20, 0.5, 0.5, 0.5, 0.1);
         new BukkitRunnable() {
             int ticks = 0;
             @Override
@@ -85,7 +85,7 @@ public class HolyPie extends SimpleSlimefunItem<ItemConsumptionHandler> implemen
                     double rad = Math.toRadians(angle);
                     double x = currentLoc.getX() + (Math.cos(rad) * 0.8);
                     double z = currentLoc.getZ() + (Math.sin(rad) * 0.8);
-                    world.spawnParticle(Particle.FLASH, new Location(world, x, currentLoc.getY(), z), 1, 0, 0, 0, 0);
+                    world.spawnParticle(Particle.FLASH, new Location(world, x, currentLoc.getY(), z), 1, 0, 0, 0, 0, Color.WHITE);
                 }
                 ticks++;
                 if (ticks >= 10) this.cancel();

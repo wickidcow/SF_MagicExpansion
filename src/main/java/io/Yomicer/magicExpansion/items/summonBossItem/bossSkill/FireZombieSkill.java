@@ -27,7 +27,7 @@ public class FireZombieSkill {
         // 魔法粒子
         // 定义粒子的颜色(青色)
 //        Particle.DustOptions dustOptions = new Particle.DustOptions(Color.fromRGB(0, 255, 255), 1.0f);
-        location.getWorld().spawnParticle(Particle.ENCHANTMENT_TABLE, location, 1000, 10, 8, 10, 0.1);
+        location.getWorld().spawnParticle(Particle.ENCHANT, location, 1000, 10, 8, 10, 0.1);
 //        player.sendMessage("ENCHANT触发");
     }
 
@@ -65,7 +65,7 @@ public class FireZombieSkill {
         for (Player nearbyPlayer : getNearbyPlayers(mob,10,5)) {
             nearbyPlayer.damage(10, mob); // 造成5点伤害
             nearbyPlayer.sendMessage(bossName+" launched a magical attack against you!");
-            spawnOneParticle(nearbyPlayer.getLocation(), nearbyPlayer, Particle.WATER_BUBBLE,2500);
+            spawnOneParticle(nearbyPlayer.getLocation(), nearbyPlayer, Particle.BUBBLE,2500);
         }
     }
 
@@ -77,15 +77,15 @@ public class FireZombieSkill {
         for (Player nearbyPlayer : getNearbyPlayers(mob,10,5)) {
             nearbyPlayer.damage(8, mob); // 造成5点伤害
             nearbyPlayer.sendMessage("§b§lThe Flame Zombie has cursed you!");
-            spawnOneParticle(nearbyPlayer.getLocation(), nearbyPlayer, Particle.REDSTONE, dustOptions);
+            spawnOneParticle(nearbyPlayer.getLocation(), nearbyPlayer, Particle.DUST, dustOptions);
             // 添加负面效果(持续2秒,等级10)
-            nearbyPlayer.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 40, 10)); // 攻击缓慢
+            nearbyPlayer.addPotionEffect(new PotionEffect(PotionEffectType.MINING_FATIGUE, 40, 10)); // 攻击缓慢
             nearbyPlayer.sendMessage(ChatColor.RED + "§lYour arms become unbearably heavy," + ChatColor.YELLOW + "§land your attack speed drops sharply!");
-            nearbyPlayer.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 40, 10));         // 移动缓慢
+            nearbyPlayer.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, 40, 10));         // 移动缓慢
             nearbyPlayer.sendMessage(ChatColor.DARK_BLUE + "§lYour legs feel weighted with lead," + ChatColor.GOLD + "§land your movement slows to a crawl!");
             nearbyPlayer.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 40, 10));    // 致盲
             nearbyPlayer.sendMessage(ChatColor.BLACK + "§lDarkness covers your vision," + ChatColor.LIGHT_PURPLE + "§land you can barely see!");
-            nearbyPlayer.addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, 180, 10));    // 反胃
+            nearbyPlayer.addPotionEffect(new PotionEffect(PotionEffectType.NAUSEA, 180, 10));    // 反胃
             nearbyPlayer.sendMessage(ChatColor.GREEN + "§lA violent wave of dizziness strikes," + ChatColor.DARK_GREEN + "§land the world begins to spin!");
             nearbyPlayer.addPotionEffect(new PotionEffect(PotionEffectType.HUNGER, 40, 10));       // 饥饿
             nearbyPlayer.sendMessage(ChatColor.DARK_RED + "§lYour stomach twists in pain," + ChatColor.GRAY + "§land hunger drains your strength!");
@@ -101,18 +101,18 @@ public class FireZombieSkill {
         for (Player nearbyPlayer : getNearbyPlayers(mob,15,8)) {
             nearbyPlayer.damage(21, mob); // 造成21点伤害
             nearbyPlayer.sendMessage("§3§lThe Wind Spirit has struck you!");
-            spawnOneParticle(nearbyPlayer.getLocation(), nearbyPlayer, Particle.REDSTONE, dustOptions);
+            spawnOneParticle(nearbyPlayer.getLocation(), nearbyPlayer, Particle.DUST, dustOptions);
             // 1. 失衡:跳跃提升(反向效果)→ 模拟"被狂风吹起,无法落地"
             nearbyPlayer.addPotionEffect(new PotionEffect(PotionEffectType.LEVITATION, 80, 5)); // 被气流托起,漂浮
             nearbyPlayer.sendMessage(ChatColor.AQUA + "§l↑↑↑ A violent current hurls you into the air!" + ChatColor.WHITE + " §lYou float upward uncontrollably...");
 
             // 2. 减速:缓慢 + 缓慢挖掘(双重迟滞)
-            nearbyPlayer.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 80, 3));
-            nearbyPlayer.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 80, 3));
+            nearbyPlayer.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, 80, 3));
+            nearbyPlayer.addPotionEffect(new PotionEffect(PotionEffectType.MINING_FATIGUE, 80, 3));
             nearbyPlayer.sendMessage(ChatColor.LIGHT_PURPLE + "§l🌀 The wind forms shackles around you," + ChatColor.GRAY + "§land your movements become slow and weak...");
 
             // 3. 视觉干扰:反胃(模拟眩晕 + 视野扭曲)
-            nearbyPlayer.addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, 250, 3));
+            nearbyPlayer.addPotionEffect(new PotionEffect(PotionEffectType.NAUSEA, 250, 3));
             nearbyPlayer.sendMessage(ChatColor.DARK_AQUA + "§l🌪️ The world spins wildly before your eyes," + ChatColor.YELLOW + "§land you can no longer tell sky from ground...");
 
             // 4. 呼吸困难:饥饿效果(象征体力流失)
@@ -202,8 +202,8 @@ public class FireZombieSkill {
         spawnLinkEffect(mob.getLocation(), targetPlayer.getLocation(), Color.AQUA);
         spawnLinkEffect(mob.getLocation(), targetPlayer2.getLocation(), Color.AQUA);
         // 在目标玩家位置生成火焰粒子效果
-        spawnOneParticle(targetPlayer.getLocation(), targetPlayer, Particle.WATER_SPLASH, 300, 1, 1, 1);
-        spawnOneParticle(targetPlayer2.getLocation(), targetPlayer, Particle.WATER_SPLASH, 300, 1, 1, 1);
+        spawnOneParticle(targetPlayer.getLocation(), targetPlayer, Particle.SPLASH, 300, 1, 1, 1);
+        spawnOneParticle(targetPlayer2.getLocation(), targetPlayer, Particle.SPLASH, 300, 1, 1, 1);
 
         // 广播消息给范围内的其他玩家(非目标玩家)
         for (Player nearbyPlayer : nearbyPlayers) {
@@ -252,7 +252,7 @@ public class FireZombieSkill {
             Location particleLocation = new Location(start.getWorld(), x, y, z);
 
             // 生成粒子效果(例如红线或能量线)
-            start.getWorld().spawnParticle(Particle.REDSTONE, particleLocation, 1, new Particle.DustOptions(color, 1.0f));
+            start.getWorld().spawnParticle(Particle.DUST, particleLocation, 1, new Particle.DustOptions(color, 1.0f));
         }
     }
 

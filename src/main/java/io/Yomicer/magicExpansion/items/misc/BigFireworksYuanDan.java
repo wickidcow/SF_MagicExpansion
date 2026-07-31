@@ -41,14 +41,14 @@ public class BigFireworksYuanDan extends SimpleSlimefunItem<ItemUseHandler> impl
 
     // 粒子类型
     private final Particle[] EXPLOSION_PARTICLES = {
-            Particle.FIREWORKS_SPARK,
+            Particle.FIREWORK,
             Particle.FLAME,
-            Particle.DRAGON_BREATH,
+            Particle.SOUL_FIRE_FLAME,
             Particle.END_ROD,
-            Particle.SPELL_WITCH,
-            Particle.SPELL_INSTANT,
+            Particle.WITCH,
+            Particle.ENCHANTED_HIT,
             Particle.CLOUD,
-            Particle.SPELL_MOB
+            Particle.GLOW
     };
 
     public BigFireworksYuanDan(ItemGroup itemGroup, SlimefunItemStack item, RecipeType recipeType, ItemStack[] recipe) {
@@ -151,7 +151,7 @@ public class BigFireworksYuanDan extends SimpleSlimefunItem<ItemUseHandler> impl
                 current.setZ(z);
 
                 // 创建粒子轨迹
-                world.spawnParticle(Particle.FIREWORKS_SPARK, current, 10, 0.2, 0.2, 0.2, 0);
+                world.spawnParticle(Particle.FIREWORK, current, 10, 0.2, 0.2, 0.2, 0);
                 world.spawnParticle(Particle.FLAME, current, 5, 0.1, 0.1, 0.1, 0);
 
                 // 播放飞行音效
@@ -227,7 +227,7 @@ public class BigFireworksYuanDan extends SimpleSlimefunItem<ItemUseHandler> impl
                         for (int h = 0; h < 3; h++) {
                             Location loc = particleLoc.clone().add(0, h * 2, 0);
                             Particle.DustOptions dustOptions = new Particle.DustOptions(color, 3.0f);
-                            world.spawnParticle(Particle.REDSTONE, loc, 1, 0, 0, 0, 0, dustOptions);
+                            world.spawnParticle(Particle.DUST, loc, 1, 0, 0, 0, 0, dustOptions);
                         }
                     }
 
@@ -243,7 +243,7 @@ public class BigFireworksYuanDan extends SimpleSlimefunItem<ItemUseHandler> impl
                         for (int h = 0; h < 3; h++) {
                             Location loc = particleLoc.clone().add(0, -h * 2, 0);
                             Particle.DustOptions dustOptions = new Particle.DustOptions(color, 3.0f);
-                            world.spawnParticle(Particle.REDSTONE, loc, 1, 0, 0, 0, 0, dustOptions);
+                            world.spawnParticle(Particle.DUST, loc, 1, 0, 0, 0, 0, dustOptions);
                         }
                     }
                 }
@@ -287,7 +287,7 @@ public class BigFireworksYuanDan extends SimpleSlimefunItem<ItemUseHandler> impl
             public void run() {
                 if (progress > 1.0) {
                     // 在目标位置创建小爆炸
-                    world.spawnParticle(Particle.EXPLOSION_LARGE, target, 1, 0, 0, 0, 0);
+                    world.spawnParticle(Particle.EXPLOSION, target, 1, 0, 0, 0, 0);
                     this.cancel();
                     return;
                 }
@@ -302,8 +302,8 @@ public class BigFireworksYuanDan extends SimpleSlimefunItem<ItemUseHandler> impl
                 current.setZ(z);
 
                 // 创建粒子
-                world.spawnParticle(Particle.REDSTONE, current, 3, 0.1, 0.1, 0.1, 0, dustOptions);
-                world.spawnParticle(Particle.FIREWORKS_SPARK, current, 2, 0, 0, 0, 0.1);
+                world.spawnParticle(Particle.DUST, current, 3, 0.1, 0.1, 0.1, 0, dustOptions);
+                world.spawnParticle(Particle.FIREWORK, current, 2, 0, 0, 0, 0.1);
 
                 progress += 0.1;
             }
@@ -332,7 +332,7 @@ public class BigFireworksYuanDan extends SimpleSlimefunItem<ItemUseHandler> impl
             Particle.DustOptions dustOptions = new Particle.DustOptions(color, 1.5f);
 
             // 缓慢下落的余辉粒子
-            world.spawnParticle(Particle.REDSTONE, particleLoc, 1, 0, 0, 0, 0, dustOptions);
+            world.spawnParticle(Particle.DUST, particleLoc, 1, 0, 0, 0, 0, dustOptions);
         }
     }
 
@@ -348,9 +348,11 @@ public class BigFireworksYuanDan extends SimpleSlimefunItem<ItemUseHandler> impl
 
             Location particleLoc = center.clone().add(x, y, z);
 
-            if (particle == Particle.REDSTONE && color != null) {
+            if (particle == Particle.DUST && color != null) {
                 Particle.DustOptions dustOptions = new Particle.DustOptions(color, 2.0f);
                 world.spawnParticle(particle, particleLoc, 1, 0, 0, 0, 0, dustOptions);
+            } else if (particle == Particle.FLASH) {
+                world.spawnParticle(particle, particleLoc, 1, 0, 0, 0, 0, color == null ? Color.WHITE : color);
             } else {
                 world.spawnParticle(particle, particleLoc, 1, 0, 0, 0, 0);
             }

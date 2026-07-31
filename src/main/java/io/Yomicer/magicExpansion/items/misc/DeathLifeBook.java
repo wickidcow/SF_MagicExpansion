@@ -134,7 +134,7 @@ public class DeathLifeBook extends SimpleSlimefunItem<ItemUseHandler> implements
         ), (p, slot, item, action) -> {
             // 添加更强的失明效果
             p.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 60, 2)); // 3秒更强的失明
-            p.addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, 80, 2)); // 4秒更强的反胃效果
+            p.addPotionEffect(new PotionEffect(PotionEffectType.NAUSEA, 80, 2)); // 4秒更强的反胃效果
 
             // 清除所有生物
             int killedCount = 0;
@@ -221,7 +221,7 @@ public class DeathLifeBook extends SimpleSlimefunItem<ItemUseHandler> implements
                 if (!finalEntity.isDead()) {
                     // 添加短暂失明效果
                     p.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 40, 1)); // 2秒失明 (40 ticks)
-                    p.addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, 60, 1)); // 3秒反胃效果,增强传送感
+                    p.addPotionEffect(new PotionEffect(PotionEffectType.NAUSEA, 60, 1)); // 3秒反胃效果,增强传送感
 
                     p.teleport(finalEntity.getLocation().add(0, 1, 0));
                     p.sendMessage("§aTeleported to §e" + finalEntityName + "§a!");

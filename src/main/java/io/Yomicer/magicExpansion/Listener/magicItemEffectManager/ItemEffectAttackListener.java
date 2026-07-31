@@ -76,7 +76,7 @@ public class ItemEffectAttackListener implements Listener {
 
                     // 施加减速效果(减速等级为 50%,持续 2 秒)
 //                    SlownessManager.applySlowness(livingTarget, slownessLevel, slownessLevel); // 40 ticks = 2 秒
-                    livingTarget.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, slownessLevel*3, slownessLevel));
+                    livingTarget.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, slownessLevel*3, slownessLevel));
 
                 }
                 break;
