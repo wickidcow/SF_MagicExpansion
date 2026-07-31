@@ -20,7 +20,7 @@ public class BasicCreation {
     魔法2.0二代自适应渐变字体
     js脚本调用示例:
     var BasicCreation= Java.type("io.Yomicer.magicExpansion.extraUtils.items.BasicCreation")
-    var s = BasicCreation.MagicExpansionVer2ColorBuild("你需要的字符");
+    var s = BasicCreation.MagicExpansionVer2ColorBuild("you requires");
     ---> s 为 已经处理过渐变的字符串
     使用示例:
     例如在onUse(e)中调用
@@ -29,9 +29,9 @@ public class BasicCreation {
     ----------------------
     java调用示例:
     import io.Yomicer.magicExpansion.extraUtils.items;
-    String s = BasicCreation.MagicExpansionVer2ColorBuild("你需要的字符");
+    String s = BasicCreation.MagicExpansionVer2ColorBuild("you requires");
     使用示例:
-    java就不用多描述了，s只是一个字符串，你想哪里用都可以，只要在这个方法里面
+    java就不用多描述了,s只是一个字符串,你想哪里用都可以,只要在这个方法里面
     */
     public static String MagicExpansionVer2ColorBuild(String s) {
         return ColorGradient.getGradientNameVer2(s);
@@ -41,7 +41,7 @@ public class BasicCreation {
 
     /*
     * 根据sfid创建制定数量的堆叠物
-    * 若sfid不存在，则物品变为石头
+    * 若sfid不存在,则物品变为石头
     * */
     public static ItemStack SfItemWithAmount(String s, int amount) {
         ItemStack i = stoneCreateItem(s);
@@ -59,7 +59,7 @@ public class BasicCreation {
         int range = end - start;
         int randomOffset = new Random().nextInt(range);
         ans = (char) (start + randomOffset);
-        ItemStack it = new CustomItemStack(Material.SUGAR, ColorGradient.getGradientNameVer2("符号"), "&f" + ans, ("§7凭空制造物质的基础"));
+        ItemStack it = new CustomItemStack(Material.SUGAR, ColorGradient.getGradientNameVer2("Symbol"), "&f" + ans, ("§7The foundation of creating matter from nothing."));
         ItemStack s = new SlimefunItemStack("MOMOTECH_LETTER", it);
         return s;
     }
