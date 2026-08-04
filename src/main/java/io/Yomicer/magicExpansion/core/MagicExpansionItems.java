@@ -888,6 +888,7 @@ public class MagicExpansionItems {
     public static final SlimefunItemStack UPDATE_LOG_2026_07_03 = createDefaultItemGlowV2Vertical("UPDATE_LOG_2026_07_03",Material.PAPER);
     public static final SlimefunItemStack UPDATE_LOG_2026_07_12 = createDefaultItemGlowV2Vertical("UPDATE_LOG_2026_07_12",Material.PAPER);
     public static final SlimefunItemStack UPDATE_LOG_2026_07_30 = createDefaultItemGlowV2Vertical("UPDATE_LOG_2026_07_30",Material.PAPER);
+    public static final SlimefunItemStack UPDATE_LOG_2026_08_05 = createDefaultItemGlowV2Vertical("UPDATE_LOG_2026_08_05",Material.PAPER);
 
 
 
@@ -929,6 +930,9 @@ public class MagicExpansionItems {
     public static final SlimefunItemStack FISHING_STICK_STAR_IRON = createDefaultItem("FISHING_STICK_STAR_IRON",Material.STICK);
     public static final SlimefunItemStack FISHING_ROD_WIND_SPEAKER = createDefaultItem("FISHING_ROD_WIND_SPEAKER",Material.FISHING_ROD);
     public static final SlimefunItemStack FISHING_ROD_FINAL_STICK = createDefaultItem("南柯一梦终须醒_浮生若梦皆是空",Material.FISHING_ROD);
+
+    // Between Water and Clouds series
+    public static final SlimefunItemStack FISHING_ROD_BETWEEN_WATER_CLOUD_CYAN_BAMBOO = createDefaultItem("FISHING_ROD_BETWEEN_WATER_CLOUD_CYAN_BAMBOO",Material.FISHING_ROD);
     public static final SlimefunItemStack FISHING_ROD_FINAL_STRING = createDefaultItem("FISHING_ROD_FINAL_STRING",Material.STRING);
     public static final SlimefunItemStack FISHING_ROD_FINAL_HOOK = createDefaultItem("FISHING_ROD_FINAL_HOOK",Material.DIAMOND_PICKAXE);
 
@@ -1051,6 +1055,48 @@ public class MagicExpansionItems {
             get("Items.FISH_LURE_ORE.Name"),getList("Items.FISH_LURE_ORE.Lore"));
     public static final SlimefunItemStack FISH_LURE_ALLOY_INGOT = themedVer2Vertical("FISH_LURE_ALLOY_INGOT",Material.BROWN_DYE,
             get("Items.FISH_LURE_ALLOY_INGOT.Name"),getList("Items.FISH_LURE_ALLOY_INGOT.Lore"));
+
+
+
+
+    // Between Water and Clouds lures
+    public static final SlimefunItemStack FISH_LURE_BETWEEN_WATER_CLOUD_CUIXIA = createDefaultItem("FISH_LURE_BETWEEN_WATER_CLOUD_CUIXIA",Material.ORANGE_DYE);
+    public static final SlimefunItemStack FISH_LURE_BETWEEN_WATER_CLOUD_CUIXIA_CLONE = new SlimefunItemStack(
+            "FISH_LURE_BETWEEN_WATER_CLOUD_CUIXIA_CLONE",
+            FISH_LURE_BETWEEN_WATER_CLOUD_CUIXIA
+    );
+    public static final SlimefunItemStack FISH_LURE_BETWEEN_WATER_CLOUD_WEICHEN = createDefaultItem("FISH_LURE_BETWEEN_WATER_CLOUD_WEICHEN",Material.GUNPOWDER);
+    public static final SlimefunItemStack FISH_LURE_BETWEEN_WATER_CLOUD_WEICHEN_CLONE = new SlimefunItemStack(
+            "FISH_LURE_BETWEEN_WATER_CLOUD_WEICHEN_CLONE",
+            FISH_LURE_BETWEEN_WATER_CLOUD_WEICHEN
+    );
+    public static final SlimefunItemStack FISH_LURE_BETWEEN_WATER_CLOUD_RONGHUO = createDefaultItem("FISH_LURE_BETWEEN_WATER_CLOUD_RONGHUO",Material.RED_DYE);
+    public static final SlimefunItemStack FISH_LURE_BETWEEN_WATER_CLOUD_RONGHUO_CLONE = new SlimefunItemStack(
+            "FISH_LURE_BETWEEN_WATER_CLOUD_RONGHUO_CLONE",
+            FISH_LURE_BETWEEN_WATER_CLOUD_RONGHUO
+    );
+    public static final SlimefunItemStack FISH_LURE_BETWEEN_WATER_CLOUD_YUEJIN = createDefaultItem("FISH_LURE_BETWEEN_WATER_CLOUD_YUEJIN",Material.YELLOW_DYE);
+    public static final SlimefunItemStack FISH_LURE_BETWEEN_WATER_CLOUD_YUEJIN_CLONE = new SlimefunItemStack(
+            "FISH_LURE_BETWEEN_WATER_CLOUD_YUEJIN_CLONE",
+            FISH_LURE_BETWEEN_WATER_CLOUD_YUEJIN
+    );
+    public static final SlimefunItemStack FISH_LURE_BETWEEN_WATER_CLOUD_XINGHE = createDefaultItem("FISH_LURE_BETWEEN_WATER_CLOUD_XINGHE",Material.NETHER_STAR);
+    public static final SlimefunItemStack FISH_LURE_BETWEEN_WATER_CLOUD_XINGHE_CLONE = new SlimefunItemStack(
+            "FISH_LURE_BETWEEN_WATER_CLOUD_XINGHE_CLONE",
+            FISH_LURE_BETWEEN_WATER_CLOUD_XINGHE
+    );
+
+
+
+
+
+    public static final SlimefunItemStack FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_CUIXIA = createDefaultItem("FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_CUIXIA",Material.WATER_BUCKET);
+    public static final SlimefunItemStack FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_WEICHEN = createDefaultItem("FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_WEICHEN",Material.WATER_BUCKET);
+    public static final SlimefunItemStack FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_RONGHUO = createDefaultItem("FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_RONGHUO",Material.WATER_BUCKET);
+    public static final SlimefunItemStack FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_YUEJIN = createDefaultItem("FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_YUEJIN",Material.WATER_BUCKET);
+    public static final SlimefunItemStack FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_XINGHE = createDefaultItem("FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_XINGHE",Material.WATER_BUCKET);
+
+
 
 
 

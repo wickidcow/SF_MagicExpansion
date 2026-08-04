@@ -9,6 +9,7 @@ import io.Yomicer.magicExpansion.items.misc.fish.Fish;
 import io.Yomicer.magicExpansion.items.misc.fish.FishKeys;
 import io.Yomicer.magicExpansion.items.tools.VoidTouch;
 import io.Yomicer.magicExpansion.utils.CustomHeadUtils.CustomHead;
+import io.Yomicer.magicExpansion.utils.NetworkStorage;
 import io.github.thebusybiscuit.slimefun4.api.items.ItemGroup;
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItem;
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItemStack;
@@ -195,16 +196,19 @@ public class FishOutputMachine extends MenuBlock implements EnergyNetComponent, 
     }
     protected void tick(Block block) {
         BlockMenu inv = StorageCacheUtils.getMenu(block.getLocation());
+        if (inv == null) {
+            return;
+        }
 
-        if(inv != null && inv.hasViewer()) {
-            if (getCharge(block.getLocation()) < getEnergyConsumption()) {
-                inv.addItem(48, new CustomItemStack(doGlow(Material.LANTERN), getGradientName("⚡machine⚡"),
+        if (getCharge(block.getLocation()) < getEnergyConsumption()) {
+            if(inv != null && inv.hasViewer()) {
+                inv.addItem(48, new CustomItemStack(doGlow(Material.LANTERN), getGradientName("⚡ Machine Stopped ⚡"),
                                 getGradientName("Check that the machine has enough power.")),
                         (player1, slot, item, action) -> false);
                 return;
             }
+            return;
         }
-
         ItemStack fish = null;
         ItemMeta meta = null;
         if (inv != null) {
@@ -236,7 +240,7 @@ public class FishOutputMachine extends MenuBlock implements EnergyNetComponent, 
                 ItemStack baseOutput = FISH_OUTPUT_MAP.get(fishType).clone();
                 if (baseOutput != null) {
 
-                    int multiplier = Fish.WeightRarity.getMultiplierByName(weightRarityName);
+                    int multiplier = WeightRarity.getMultiplierByName(weightRarityName);
                     long amount = (long) (weight * multiplier); // 使用 long 防止中间结果溢出
                     if (amount <= 0) {
                         amount = 1;
@@ -253,14 +257,14 @@ public class FishOutputMachine extends MenuBlock implements EnergyNetComponent, 
         }
 
         if (inv != null && inv.hasViewer() && outItems != null) {
-            inv.addItem(48, new CustomItemStack(doGlow(Material.SOUL_LANTERN), getGradientName("⚡machine⚡"),
-                            getGradientName("The machine output slots are already full"),
+            inv.addItem(48, new CustomItemStack(doGlow(Material.SOUL_LANTERN), getGradientName("⚡ Machine Running ⚡"),
+                            getGradientName("Production continues while external storage has capacity."),
                             getGradientName("Current Output: ")+ ItemStackHelper.getDisplayName(outItems),
                             getGradientName("Current Rate: ")+ "§r" +getRandomGradientName(calculateRealAmount(outItems) + " items/tick")),
                     (player1, slot, item, action) -> false);
         } else {
             if (inv != null && inv.hasViewer()) {
-                inv.addItem(48, new CustomItemStack(doGlow(Material.LANTERN), getGradientName("⚡machine⚡"),
+                inv.addItem(48, new CustomItemStack(doGlow(Material.LANTERN), getGradientName("⚡ Machine Stopped ⚡"),
                                 getGradientName("Check that the fish type is supported.")),
                         (player1, slot, item, action) -> false);
             }
@@ -268,6 +272,16 @@ public class FishOutputMachine extends MenuBlock implements EnergyNetComponent, 
 
         ItemStack VoidTouchSlotItem = inv.getItemInSlot(VoidTouchSlot);
         if (VoidTouchSlotItem != null && !VoidTouchSlotItem.getType().isAir() && outItems != null){
+            // 网络量子存储：直接存入量子存储物品（最大值/溢出保护封装在 NetworkStorage 中）
+            if (VoidTouchSlotItem.getAmount() == 1 && NetworkStorage.isQuantumStorageItem(VoidTouchSlotItem)) {
+                long leftover = NetworkStorage.store(VoidTouchSlotItem, outItems);
+                if (leftover < outItems.getAmount()) {
+                    inv.replaceExistingItem(VoidTouchSlot, VoidTouchSlotItem);
+                    removeCharge(block.getLocation(), getEnergyConsumption());
+                }
+                return; // 已连接外部存储：只走存储，不做输出格限制、不回落输出格
+            }
+            // 虚空之触 → 魔法存储终端（原逻辑不变）
             SlimefunItem VoidTouchItem = SlimefunItem.getByItem(VoidTouchSlotItem);
             if (VoidTouchItem != null && VoidTouchItem instanceof VoidTouch) {
                 ItemMeta VoidTouchMeta = VoidTouchSlotItem.getItemMeta();
@@ -295,6 +309,13 @@ public class FishOutputMachine extends MenuBlock implements EnergyNetComponent, 
                                         removeCharge(block.getLocation(), getEnergyConsumption());
                                         return;
                                     }
+                                } else if (NetworkStorage.isQuantumStorageBlock(sfItem)) {
+                                    // 虚空之触绑定网络量子存储方块：直接存入该方块缓存
+                                    long leftover = NetworkStorage.storeToQuantumStorageBlock(targetLocation, outItems);
+                                    if (leftover < outItems.getAmount()) {
+                                        removeCharge(block.getLocation(), getEnergyConsumption());
+                                    }
+                                    return; // 已连接外部存储：不回落到输出格
                                 }
                             }
                         }
@@ -303,9 +324,16 @@ public class FishOutputMachine extends MenuBlock implements EnergyNetComponent, 
             }
         }
 
-        if (outItems != null && inv != null) {
-            removeCharge(block.getLocation(), getEnergyConsumption());
-            pushAllItems(inv,outItems, getOutputSlots());
+        if (outItems != null) {
+            // No external storage: cap production to the available output-slot capacity.
+            int fit = NetworkStorage.calculateFitAmount(inv, getOutputSlots(), outItems);
+            if (outItems.getAmount() > fit) {
+                outItems.setAmount(fit);
+            }
+            if (outItems.getAmount() > 0) {
+                pushAllItems(inv, outItems, getOutputSlots());
+                removeCharge(block.getLocation(), getEnergyConsumption());
+            }
         }
 
     }

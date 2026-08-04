@@ -1,3 +1,14 @@
+# 1.1.0 - Upstream Build 84 Port (2026-08-04)
+
+- Ported the important changes from Yomicer/MagicExpansion upstream commit `b56aad4`.
+- Added the Between Water and Clouds fishing series, Cyan Bamboo Rod, five lures, and special catches.
+- Added optional Networks/NetworksExpansion quantum-storage support through reflection and PDC compatibility keys.
+- Kept the plugin fully independent of GuizhanLib by using the local compatibility helper.
+- Added vivarium output capacity limits, numerical overflow protection, and high-output lag safeguards.
+- Added quantum-storage support to the Etheric Vivarium Array.
+- Fixed stale Draw Machine hologram cleanup and upstream output/energy handling issues.
+- Preserved English presentation, the `Magic` guide category, existing item IDs, Java 21 bytecode, and Paper/Purpur 26.2 support.
+
 # Changelog
 
 ## 1.0.3 - Paper 26.2 compilation and cargo accessor fix

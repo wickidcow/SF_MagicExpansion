@@ -7,6 +7,7 @@ import io.Yomicer.magicExpansion.Listener.SlimefunRegistryListener;
 import io.Yomicer.magicExpansion.Listener.bossListener.BasicBossAttackListener;
 import io.Yomicer.magicExpansion.Listener.bossListener.BasicBossDropListener;
 import io.Yomicer.magicExpansion.Listener.fishingListener.PlayerFishingListener;
+import io.Yomicer.magicExpansion.Listener.fishingListener.PlayerFishingWaterCloudListener;
 import io.Yomicer.magicExpansion.Listener.magicItemEffectManager.ArrowHitLocationListener;
 import io.Yomicer.magicExpansion.Listener.magicItemEffectManager.ItemEffectAttackListener;
 import io.Yomicer.magicExpansion.Listener.magicItemEffectManager.ItemEffectKillListener;
@@ -107,6 +108,7 @@ public class MagicExpansion extends JavaPlugin implements SlimefunAddon {
         getServer().getPluginManager().registerEvents(new BasicBossAttackListener(), this);
         getServer().getPluginManager().registerEvents(new BasicBossDropListener(), this);
         getServer().getPluginManager().registerEvents(new PlayerFishingListener(), this);
+        getServer().getPluginManager().registerEvents(new PlayerFishingWaterCloudListener(), this);
         getServer().getPluginManager().registerEvents(new Events(), this);
         getServer().getPluginManager().registerEvents(new ItemFrameListener(), this);
         getServer().getPluginManager().registerEvents(aiManager, this);

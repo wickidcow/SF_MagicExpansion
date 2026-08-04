@@ -11,10 +11,7 @@ import io.Yomicer.magicExpansion.items.misc.fish.Fish;
 import io.Yomicer.magicExpansion.items.misc.fish.FishKeys;
 import io.Yomicer.magicExpansion.items.tools.VoidTouch;
 import io.Yomicer.magicExpansion.utils.CustomHeadUtils.CustomHead;
-import io.Yomicer.magicExpansion.utils.networksUtils.DataTypeMethods;
-import io.Yomicer.magicExpansion.utils.networksUtils.NetworksKeys;
-import io.Yomicer.magicExpansion.utils.networksUtils.PersistentQuantumStorageType;
-import io.Yomicer.magicExpansion.utils.networksUtils.QuantumCache;
+import io.Yomicer.magicExpansion.utils.NetworkStorage;
 import io.github.thebusybiscuit.slimefun4.api.items.ItemGroup;
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItem;
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItemStack;
@@ -213,14 +210,17 @@ public class FishOutputMachineStack extends MenuBlock implements EnergyNetCompon
     }
     protected void tick(Block block) {
         BlockMenu inv = StorageCacheUtils.getMenu(block.getLocation());
+        if (inv == null) {
+            return;
+        }
 
-        if(inv != null && inv.hasViewer()) {
-            if (getCharge(block.getLocation()) < getEnergyConsumption()) {
-                inv.addItem(48, new CustomItemStack(doGlow(Material.LANTERN), getGradientName("⚡machine⚡"),
+        if (getCharge(block.getLocation()) < getEnergyConsumption()) {
+            if (inv.hasViewer()) {
+                inv.addItem(48, new CustomItemStack(doGlow(Material.LANTERN), getGradientName("⚡ Machine Stopped ⚡"),
                                 getGradientName("Check that the machine has enough power.")),
                         (player1, slot, item, action) -> false);
-                return;
             }
+            return;
         }
         long totalNormalAmount = 0;
         long totalEasyAmount = 0;
@@ -239,11 +239,11 @@ public class FishOutputMachineStack extends MenuBlock implements EnergyNetCompon
             int amount = item.getAmount(); // 获取该格子中物品的堆叠数量
 
             if (sfItem instanceof FishOutputMachine) {
-                totalNormalAmount += amount;
+                totalNormalAmount = safeAdd(totalNormalAmount, amount);
             } else if (sfItem instanceof FishOutputMachineEasy) {
-                totalEasyAmount += amount;
+                totalEasyAmount = safeAdd(totalEasyAmount, amount);
             }
-            // === 第二步:检查是否为 CargoFragment 并解析内部物品 ===
+            // === 第二步：检查是否为 CargoFragment 并解析内部物品 ===
             if (sfItem instanceof CargoFragment){
             ItemMeta meta = item.getItemMeta();
             if (meta != null) {
@@ -259,15 +259,28 @@ public class FishOutputMachineStack extends MenuBlock implements EnergyNetCompon
                             SlimefunItem originalSfItem = SlimefunItem.getByItem(originalItem);
                             if (originalSfItem != null) {
                                 if (originalSfItem instanceof FishOutputMachine) {
-                                    totalNormalAmount += fragmentAmount;
+                                    totalNormalAmount = safeAdd(totalNormalAmount, fragmentAmount);
                                 } else if (originalSfItem instanceof FishOutputMachineEasy) {
-                                    totalEasyAmount += fragmentAmount;
+                                    totalEasyAmount = safeAdd(totalEasyAmount, fragmentAmount);
                                 }
                             }
                         }
                     }
                 }
             }
+            }
+            // === 第三步：检查是否为量子存储物品（内部存有生态缸/简易生态缸时计入） ===
+            if (NetworkStorage.isQuantumStorageItem(item)) {
+                NetworkStorage.QuantumCache qc = NetworkStorage.getQuantumCache(item.getItemMeta());
+                if (qc != null && qc.getItemStack() != null) {
+                    SlimefunItem storedSf = SlimefunItem.getByItem(qc.getItemStack());
+                    long storedAmount = qc.getAmountLong();
+                    if (storedSf instanceof FishOutputMachine) {
+                        totalNormalAmount = safeAdd(totalNormalAmount, storedAmount);
+                    } else if (storedSf instanceof FishOutputMachineEasy) {
+                        totalEasyAmount = safeAdd(totalEasyAmount, storedAmount);
+                    }
+                }
             }
         }
 
@@ -312,9 +325,9 @@ public class FishOutputMachineStack extends MenuBlock implements EnergyNetCompon
                     long amountEasy = (long) (weight * multiplierEasy);
                     if (amount <= 0) amount = 1;
                     if (amountEasy <= 0) amountEasy = 1;
-                    long finalAmount = amount * totalNormalAmount;
-                    long finalAmountEasy = amountEasy * totalEasyAmount;
-                    long finalAmountTotal = finalAmount + finalAmountEasy;
+                    long finalAmount = safeMul(amount, totalNormalAmount);
+                    long finalAmountEasy = safeMul(amountEasy, totalEasyAmount);
+                    long finalAmountTotal = safeAdd(finalAmount, finalAmountEasy);
                     if (finalAmountTotal > Integer.MAX_VALUE) {
                         finalAmountTotal = Integer.MAX_VALUE;
                     } else if (finalAmountTotal <= 0) {
@@ -330,16 +343,16 @@ public class FishOutputMachineStack extends MenuBlock implements EnergyNetCompon
         }
 
         if (inv != null && inv.hasViewer() && outItems != null) {
-            inv.addItem(48, new CustomItemStack(doGlow(Material.SOUL_LANTERN), getGradientName("⚡machine⚡"),
-                            getGradientName("This machine has no standard output slot."),
+            inv.addItem(48, new CustomItemStack(doGlow(Material.SOUL_LANTERN), getGradientName("⚡ Machine Running ⚡"),
+                            getGradientName("This machine sends output through its connected storage slot."),
                             getGradientName("Current Output: ")+ ItemStackHelper.getDisplayName(outItems),
-                            ItemStackHelper.getDisplayName(MagicExpansionItems.FISH_VIVARIUM_EASY)+getRandomGradientName(":" + totalEasyAmount + ""),
-                            ItemStackHelper.getDisplayName(MagicExpansionItems.FISH_VIVARIUM)+getRandomGradientName(":" + totalNormalAmount + ""),
+                            ItemStackHelper.getDisplayName(MagicExpansionItems.FISH_VIVARIUM_EASY)+getRandomGradientName(": " + totalEasyAmount),
+                            ItemStackHelper.getDisplayName(MagicExpansionItems.FISH_VIVARIUM)+getRandomGradientName(": " + totalNormalAmount),
                             getGradientName("Current Rate")+ "§r" +getRandomGradientName(": " + calculateRealAmount(outItems) + " items/tick")),
                     (player1, slot, item, action) -> false);
         } else {
             if (inv != null && inv.hasViewer()) {
-                inv.addItem(48, new CustomItemStack(doGlow(Material.LANTERN), getGradientName("⚡machine⚡"),
+                inv.addItem(48, new CustomItemStack(doGlow(Material.LANTERN), getGradientName("⚡ Machine Stopped ⚡"),
                                 getGradientName("Check that the fish type is supported.")),
                         (player1, slot, item, action) -> false);
             }
@@ -347,6 +360,7 @@ public class FishOutputMachineStack extends MenuBlock implements EnergyNetCompon
         ItemStack VoidTouchSlotItem = inv.getItemInSlot(VoidTouchSlot);
         if (VoidTouchSlotItem != null && !VoidTouchSlotItem.getType().isAir() && outItems != null){
             SlimefunItem VoidTouchItem = SlimefunItem.getByItem(VoidTouchSlotItem);
+            // ① 虚空之触：绑定魔法存储终端 / 网络量子存储方块
             if (VoidTouchItem != null && VoidTouchItem instanceof VoidTouch) {
                 ItemMeta VoidTouchMeta = VoidTouchSlotItem.getItemMeta();
                 if (VoidTouchMeta != null) {
@@ -367,52 +381,60 @@ public class FishOutputMachineStack extends MenuBlock implements EnergyNetCompon
                             Location targetLocation = new Location(world, x, y, z);
                             SlimefunItem sfItem = StorageCacheUtils.getSfItem(targetLocation);
 
-                            if (sfItem != null) {
-                                if (sfItem instanceof CargoCoreMore) {
-                                    if (pushItemToCargoCore(targetLocation, outItems)){
-                                        removeCharge(block.getLocation(), getEnergyConsumption());
-                                    }
+                            if (sfItem instanceof CargoCoreMore) {
+                                if (pushItemToCargoCore(targetLocation, outItems)){
+                                    removeCharge(block.getLocation(), getEnergyConsumption());
                                 }
+                            } else if (NetworkStorage.isQuantumStorageBlock(sfItem)) {
+                                // 新增：虚空之触绑定网络量子存储方块
+                                long leftover = NetworkStorage.storeToQuantumStorageBlock(targetLocation, outItems);
+                                if (leftover < outItems.getAmount()) {
+                                    removeCharge(block.getLocation(), getEnergyConsumption());
+                                }
+                            } else {
+                                // 绑定目标已被销毁或不是可存储方块：提示玩家，不扣电
+                                showDeadTargetWarning(inv);
                             }
                         }
                     }
                 }
             }
-            else if (VoidTouchSlotItem.getItemMeta() != null && VoidTouchSlotItem.getAmount() == 1){
-                ItemMeta VoidSlotQuantumCacheItemMeta = VoidTouchSlotItem.getItemMeta();
-                QuantumCache quantumCache = DataTypeMethods.getCustom(VoidSlotQuantumCacheItemMeta,
-                        NetworksKeys.QUANTUM_STORAGE_INSTANCE, PersistentQuantumStorageType.TYPE);
-                if (quantumCache == null || quantumCache.getItemStack() == null) {
-                    return;
+            // ② 量子存储物品：直接存入（最大值/溢出保护封装在 NetworkStorage 中）
+            else if (VoidTouchSlotItem.getAmount() == 1 && NetworkStorage.isQuantumStorageItem(VoidTouchSlotItem)) {
+                long leftover = NetworkStorage.store(VoidTouchSlotItem, outItems);
+                if (leftover < outItems.getAmount()) {
+                    inv.replaceExistingItem(VoidTouchSlot, VoidTouchSlotItem);
+                    removeCharge(block.getLocation(), getEnergyConsumption());
                 }
-                ItemStack cacheItem = quantumCache.getItemStack();
-                if (SlimefunUtils.isItemSimilar(outItems, cacheItem, true)) {
-                    long currentAmount = quantumCache.getAmount();
-                    long maxCapacity = quantumCache.getLimit();
-                    long remainingSpace = maxCapacity - currentAmount;
-                    if (remainingSpace > 0) {
-                        int outAmount = outItems.getAmount();
-                        long maxTransfer;
-                        if (outAmount > remainingSpace) {
-                            maxTransfer = remainingSpace;
-                        } else {
-                            maxTransfer = outAmount;
-                        }
-                        if (maxTransfer > 0) {
-                            quantumCache.increaseAmount((int) maxTransfer);
-                            DataTypeMethods.setCustom(VoidSlotQuantumCacheItemMeta, NetworksKeys.QUANTUM_STORAGE_INSTANCE,
-                                    PersistentQuantumStorageType.TYPE, quantumCache);
-                            quantumCache.updateMetaLore(VoidSlotQuantumCacheItemMeta);
-                            VoidTouchSlotItem.setItemMeta(VoidSlotQuantumCacheItemMeta);
-                            inv.replaceExistingItem(VoidTouchSlot, VoidTouchSlotItem);
-                            removeCharge(block.getLocation(), getEnergyConsumption());
-                        }
-                    }
-                }
-
             }
         }
 
+    }
+
+    private void showDeadTargetWarning(BlockMenu inv) {
+        if (inv != null && inv.hasViewer()) {
+            inv.replaceExistingItem(48, new CustomItemStack(doGlow(Material.BARRIER),
+                    getGradientName("⚡ Void Touch Target Lost ⚡"),
+                    getGradientName("The bound storage block no longer exists."),
+                    getGradientName("Rebind or remove the Void Touch.")));
+        }
+    }
+
+    private static long safeMul(long a, long b) {
+        if (a == 0 || b == 0) {
+            return 0;
+        }
+        if (a > Long.MAX_VALUE / b) {
+            return Long.MAX_VALUE;
+        }
+        return a * b;
+    }
+
+    private static long safeAdd(long a, long b) {
+        if (b > Long.MAX_VALUE - a) {
+            return Long.MAX_VALUE;
+        }
+        return a + b;
     }
 
     private boolean pushItemToCargoCore (Location loc, ItemStack item) {

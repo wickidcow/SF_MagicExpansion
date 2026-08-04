@@ -4,8 +4,8 @@ version: ${project.version}
 author: Yomicer
 api-version: '26.2'
 depend: [Slimefun]
-softdepend: [RykenSlimeCustomizer]
-description: English-first MagicExpansion build maintained for Slimefun Legacy and modern Paper servers.
+softdepend: [RykenSlimeCustomizer, Networks, NetworksExpansion]
+description: English-first MagicExpansion build for Slimefun Legacy with United and Gugu compatibility.
 
 commands:
   magicexpansion:

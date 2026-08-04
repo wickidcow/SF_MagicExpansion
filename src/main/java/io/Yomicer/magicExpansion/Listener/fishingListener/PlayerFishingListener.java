@@ -54,7 +54,12 @@ public class PlayerFishingListener implements Listener {
                     ("§fThis bait can catch almost anything."),
                     ("§fIt exists somewhere in the past—or the future."),
                     ("§fWhat you see now may not be its true form.")),
-                    "fishLureFinal")
+                    "fishLureFinal"),
+            new MoreLure(MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_CUIXIA,"CuiXia"),
+            new MoreLure(MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_WEICHEN,"WeiChen"),
+            new MoreLure(MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_RONGHUO,"RongHuo"),
+            new MoreLure(MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_YUEJIN,"YueJin"),
+            new MoreLure(MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_XINGHE,"XingHe")
     );
 
     private static final Set<ItemStack> RANDOM_FISH_TYPES = new HashSet<>();

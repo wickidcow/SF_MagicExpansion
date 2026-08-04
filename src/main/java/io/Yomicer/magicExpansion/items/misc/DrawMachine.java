@@ -1050,11 +1050,8 @@ public class DrawMachine extends SlimefunItem implements EnergyNetComponent {
     public static void cleanupAllHolograms() {
         for (World world : Bukkit.getWorlds()) {
             for (Entity entity : world.getEntities()) {
-                if (entity instanceof Item) {
-                    Item item = (Item) entity;
-                    if (item.hasMetadata("draw-machine-hologram")) {
-                        item.remove();
-                    }
+                if (entity.hasMetadata("draw-machine-hologram")) {
+                    entity.remove();
                 }
             }
         }

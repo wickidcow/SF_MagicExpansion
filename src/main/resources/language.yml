@@ -707,6 +707,16 @@ en_US:
       Lore:
       - A magical item from MagicExpansion.
       - Used for Update Log 2026 07 30.
+    UPDATE_LOG_2026_08_05:
+      Name: Update Log 2026 08 05
+      Lore:
+      - Added the Between Water and Clouds fishing series.
+      - Added the Cyan Bamboo Rod and five specialized lures.
+      - Added optional Networks quantum-storage support for vivariums.
+      - Added direct quantum item storage and Void Touch block binding.
+      - Added capacity and overflow protection for high-output fish.
+      - Added quantum-storage support to the Etheric Vivarium Array.
+      - Fixed duplicate output, energy charging, and stale Draw Machine holograms.
     COOPERATE_CREATION_INFO:
       Name: Cooperative Creation Information
       Lore:
@@ -797,6 +807,53 @@ en_US:
       Lore:
       - A fishing item from MagicExpansion.
       - Used for Fish Lure Alloy Ingot.
+    FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_CUIXIA:
+      Name: Between Water and Clouds Special Catch - Tempered Sunset
+      Lore:
+      - Internal special-catch marker.
+    FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_WEICHEN:
+      Name: Between Water and Clouds Special Catch - Motes
+      Lore:
+      - Internal special-catch marker.
+    FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_RONGHUO:
+      Name: Between Water and Clouds Special Catch - Molten Flame
+      Lore:
+      - Internal special-catch marker.
+    FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_YUEJIN:
+      Name: Between Water and Clouds Special Catch - Leaping Gold
+      Lore:
+      - Internal special-catch marker.
+    FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_XINGHE:
+      Name: Between Water and Clouds Special Catch - Star Core
+      Lore:
+      - Internal special-catch marker.
+
+    FISH_LURE_BETWEEN_WATER_CLOUD_CUIXIA:
+      Name: Tempered Sunset
+      Lore:
+      - A spark of sunset tempered beside the forge.
+      - Draws alloy, metal, and crafted treasures from the water.
+    FISH_LURE_BETWEEN_WATER_CLOUD_WEICHEN:
+      Name: Motes
+      Lore:
+      - Fine mineral dust gathered beside the stream.
+      - Draws ores, dusts, and raw materials from the water.
+    FISH_LURE_BETWEEN_WATER_CLOUD_RONGHUO:
+      Name: Molten Flame
+      Lore:
+      - A coal-black ember taken from the heart of a furnace.
+      - Draws smelted resources and blazing treasures from the water.
+    FISH_LURE_BETWEEN_WATER_CLOUD_YUEJIN:
+      Name: Leaping Gold
+      Lore:
+      - Golden light gathered from ripples at sunset.
+      - Draws wealth and precious materials from the water.
+    FISH_LURE_BETWEEN_WATER_CLOUD_XINGHE:
+      Name: Star Core
+      Lore:
+      - A fallen spark that still carries the light of distant stars.
+      - Draws rare and celestial treasures from the water.
+
     FISHING_ROD_LOG:
       Name: Fishing Rod Log
       Lore:
@@ -807,6 +864,12 @@ en_US:
       Lore:
       - A fishing item from MagicExpansion.
       - Used for Fishing Rod New Player.
+    FISHING_ROD_BETWEEN_WATER_CLOUD_CYAN_BAMBOO:
+      Name: Between Water and Clouds - Cyan Bamboo Rod
+      Lore:
+      - Cut from green bamboo beside a quiet stream.
+      - Its line rests lightly between cloud and water.
+      - Sit with the river; the catch is only part of the journey.
     FISHING_STICK_STAR_IRON:
       Name: Fishing Stick Star Iron
       Lore:
