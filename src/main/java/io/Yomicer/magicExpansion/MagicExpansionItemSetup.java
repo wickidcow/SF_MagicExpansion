@@ -1552,7 +1552,7 @@ public final class MagicExpansionItemSetup {
                 null,STICK,STRING_1,
                 STICK,null,MAGIC_EXPANSION_MAGIC_SUGAR_1
         }, new HashMap<>() {{
-            put(Enchantment.LUCK, 1);
+            put(Enchantment.LUCK_OF_THE_SEA, 1);
             put(Enchantment.LURE, 2);
         }}, false,
                 Map.of(
