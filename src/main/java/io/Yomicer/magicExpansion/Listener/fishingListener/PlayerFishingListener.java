@@ -4,6 +4,7 @@ import io.Yomicer.magicExpansion.MagicExpansion;
 import io.Yomicer.magicExpansion.core.MagicExpansionItems;
 import io.Yomicer.magicExpansion.items.misc.Lure;
 import io.Yomicer.magicExpansion.items.misc.WeightedItem;
+import io.Yomicer.magicExpansion.items.misc.baitbag.BaitBagMenu;
 import io.Yomicer.magicExpansion.items.misc.fish.FishKeys;
 import io.Yomicer.magicExpansion.items.misc.moreLure.MoreLure;
 import io.Yomicer.magicExpansion.items.tools.FishingRod;
@@ -99,35 +100,47 @@ public class PlayerFishingListener implements Listener {
 
         Set<String> supportedKeys = fishingRod.getLootTable().keySet();
 
+        // 饵料袋优先消耗, 其次副手/背包
+        String bagKey = BaitBagMenu.tryConsumeFromBag(player, supportedKeys);
         Lure activeLure = null;
-
-        ItemStack offHand = player.getInventory().getItemInOffHand();
-        if (offHand != null) {
+        if (bagKey != null) {
             activeLure = LURES.stream()
-                    .filter(lure -> supportedKeys.contains(lure.getKey())) // 鱼竿支持
-                    .filter(lure -> SlimefunUtils.isItemSimilar(offHand, lure.getItem(), true))
+                    .filter(lure -> lure.getKey().equals(bagKey))
                     .findFirst()
                     .orElse(null);
+        } else {
+            ItemStack offHand = player.getInventory().getItemInOffHand();
+            if (offHand != null) {
+                activeLure = LURES.stream()
+                        .filter(lure -> supportedKeys.contains(lure.getKey())) // 鱼竿支持
+                        .filter(lure -> SlimefunUtils.isItemSimilar(offHand, lure.getItem(), true))
+                        .findFirst()
+                        .orElse(null);
+            }
+            if (activeLure == null) {
+                activeLure = LURES.stream()
+                        .filter(lure -> supportedKeys.contains(lure.getKey()))
+                        .filter(lure -> lure.hasLure(player))
+                        .findFirst()
+                        .orElse(null);
+            }
         }
-        if (activeLure == null) {
-            activeLure = LURES.stream()
-                    .filter(lure -> supportedKeys.contains(lure.getKey()))
-                    .filter(lure -> lure.hasLure(player))
-                    .findFirst()
-                    .orElse(null);
-        }
-        ItemStack drop = getSmartLoot(player, fishingRod).clone();
+        ItemStack drop = getSmartLoot(player, fishingRod, activeLure).clone();
         Boolean FinalLureEnable = cfg.getBoolean("Fish.FishingRod.FISHING_ROD_FINAL_STICK.Enable.FinalLure_Obtain");
         if (!FinalLureEnable) {
             while (drop.isSimilar(new CustomItemStack(new ItemStack(Material.PRISMARINE_SHARD), getGradientNameVer2("鱼饵·记忆碎片"),
                     ("§f这个鱼饵可以钓到任何物品"),
                     ("§f他存在于过去或者是未来"),
                     ("§f你现在看到的他并非真正的他")))) {
-                drop = getSmartLoot(player, fishingRod).clone();
+                drop = getSmartLoot(player, fishingRod, activeLure).clone();
             }
         }
-        if (activeLure != null) {
+        if (activeLure != null && bagKey == null) {
             consumeLure(player, activeLure);
+        } else if (activeLure != null) {
+            // 饵料袋消耗: 同样弹出消耗提示
+            player.sendMessage(ColorGradient.getRandomGradientName("钓鱼佬，你消耗了 1 个 ") + "§r"
+                    + ItemStackHelper.getDisplayName(activeLure.getItem()) + ColorGradient.getRandomGradientName(" ！"));
         }
         Entity hook = e.getHook();
         Location hookLocation = hook.getLocation();
@@ -217,23 +230,24 @@ public class PlayerFishingListener implements Listener {
     }
 
 
-    private ItemStack getSmartLoot(Player player, FishingRod fishingRod) {
+    private ItemStack getSmartLoot(Player player, FishingRod fishingRod, Lure activeLure) {
         Set<String> supportedKeys = fishingRod.getLootTable().keySet();
-        Lure activeLure = null;
-        ItemStack offHand = player.getInventory().getItemInOffHand();
-        if (offHand != null) {
-            activeLure = LURES.stream()
-                    .filter(lure -> supportedKeys.contains(lure.getKey())) // 鱼竿支持
-                    .filter(lure -> SlimefunUtils.isItemSimilar(offHand, lure.getItem(), true))
-                    .findFirst()
-                    .orElse(null);
-        }
         if (activeLure == null) {
-            activeLure = LURES.stream()
-                    .filter(lure -> supportedKeys.contains(lure.getKey()))
-                    .filter(lure -> lure.hasLure(player))
-                    .findFirst()
-                    .orElse(null);
+            ItemStack offHand = player.getInventory().getItemInOffHand();
+            if (offHand != null) {
+                activeLure = LURES.stream()
+                        .filter(lure -> supportedKeys.contains(lure.getKey())) // 鱼竿支持
+                        .filter(lure -> SlimefunUtils.isItemSimilar(offHand, lure.getItem(), true))
+                        .findFirst()
+                        .orElse(null);
+            }
+            if (activeLure == null) {
+                activeLure = LURES.stream()
+                        .filter(lure -> supportedKeys.contains(lure.getKey()))
+                        .filter(lure -> lure.hasLure(player))
+                        .findFirst()
+                        .orElse(null);
+            }
         }
         List<WeightedItem> pool = fishingRod.getLootPoolForLure(activeLure);
         return getRandomItemFromWeightedPool(pool != null ? pool : getDefaultLootPool());

@@ -171,7 +171,7 @@ public class NewYearsDayFireworkYuanDan extends SimpleSlimefunItem<ItemUseHandle
                 // 顶部闪光
                 if (tick % 5 == 0) {
                     Location top = location.clone().add(0, EXPLOSION_HEIGHT, 0);
-                    world.spawnParticle(Particle.FLASH, top, 2, 1, 1, 1, 0);
+                    world.spawnParticle(Particle.FLASH, top, 2, 1, 1, 1, 0, Color.WHITE);
                     world.playSound(top, Sound.BLOCK_NOTE_BLOCK_BELL, 0.8f, 1.2f);
                 }
             }
@@ -401,7 +401,7 @@ public class NewYearsDayFireworkYuanDan extends SimpleSlimefunItem<ItemUseHandle
                         double z = distance * Math.sin(angle);
 
                         Location sparkLoc = loc.clone().add(x, 0, z);
-                        world.spawnParticle(Particle.FLASH, sparkLoc, 1);
+                        world.spawnParticle(Particle.FLASH, sparkLoc, 1, color);
                     }
                     world.playSound(loc, Sound.BLOCK_NOTE_BLOCK_HAT, 0.3f, 1.8f);
                 }
@@ -463,7 +463,7 @@ public class NewYearsDayFireworkYuanDan extends SimpleSlimefunItem<ItemUseHandle
 
                 // 闪光和音效
                 if (tick % 3 == 0) {
-                    world.spawnParticle(Particle.FLASH, loc, 2, 0.5, 0.5, 0.5, 0);
+                    world.spawnParticle(Particle.FLASH, loc, 2, 0.5, 0.5, 0.5, 0, color1);
                     world.playSound(loc, Sound.ENTITY_FIREWORK_ROCKET_BLAST, 0.5f, 1.5f);
                 }
 
@@ -507,7 +507,7 @@ public class NewYearsDayFireworkYuanDan extends SimpleSlimefunItem<ItemUseHandle
 
                         // 闪光
                         if (random.nextDouble() < 0.25) {
-                            world.spawnParticle(Particle.FLASH, explosionLoc, 2);
+                            world.spawnParticle(Particle.FLASH, explosionLoc, 2, color);
                         }
                     }
 
@@ -590,7 +590,7 @@ public class NewYearsDayFireworkYuanDan extends SimpleSlimefunItem<ItemUseHandle
 
                         // 更强的闪光效果
                         if (random.nextDouble() < 0.3) {
-                            world.spawnParticle(Particle.FLASH, explosionLoc, 2);
+                            world.spawnParticle(Particle.FLASH, explosionLoc, 2, color);
                         }
 
                         // 更多的火花
@@ -775,7 +775,7 @@ public class NewYearsDayFireworkYuanDan extends SimpleSlimefunItem<ItemUseHandle
             double y = tipRadius * Math.sin(radians);
 
             Location tipLoc = center.clone().add(x, y, 0);
-            world.spawnParticle(Particle.FLASH, tipLoc, 2);
+            world.spawnParticle(Particle.FLASH, tipLoc, 2, Color.WHITE);
             world.playSound(tipLoc, Sound.BLOCK_NOTE_BLOCK_BELL, 0.3f, 1.5f);
         }
     }

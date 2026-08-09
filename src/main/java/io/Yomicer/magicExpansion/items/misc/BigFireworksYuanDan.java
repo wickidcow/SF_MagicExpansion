@@ -351,6 +351,8 @@ public class BigFireworksYuanDan extends SimpleSlimefunItem<ItemUseHandler> impl
             if (particle == Particle.REDSTONE && color != null) {
                 Particle.DustOptions dustOptions = new Particle.DustOptions(color, 2.0f);
                 world.spawnParticle(particle, particleLoc, 1, 0, 0, 0, 0, dustOptions);
+            } else if (particle == Particle.FLASH && color != null) {
+                world.spawnParticle(particle, particleLoc, 1, 0, 0, 0, 0, color);
             } else {
                 world.spawnParticle(particle, particleLoc, 1, 0, 0, 0, 0);
             }

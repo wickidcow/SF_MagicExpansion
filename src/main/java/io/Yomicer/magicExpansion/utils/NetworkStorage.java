@@ -695,7 +695,7 @@ public final class NetworkStorage {
         return emptySlots > Integer.MAX_VALUE / 64 ? Integer.MAX_VALUE : emptySlots * 64;
     }
 
-    private static void refreshLore(@NotNull ItemMeta meta, @NotNull QuantumCache cache) {
+    public static void refreshLore(@NotNull ItemMeta meta, @NotNull QuantumCache cache) {
         try {
             cache.updateMetaLore(meta);
         } catch (Throwable t) {

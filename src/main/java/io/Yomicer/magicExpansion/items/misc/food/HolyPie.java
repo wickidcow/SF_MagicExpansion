@@ -85,7 +85,7 @@ public class HolyPie extends SimpleSlimefunItem<ItemConsumptionHandler> implemen
                     double rad = Math.toRadians(angle);
                     double x = currentLoc.getX() + (Math.cos(rad) * 0.8);
                     double z = currentLoc.getZ() + (Math.sin(rad) * 0.8);
-                    world.spawnParticle(Particle.FLASH, new Location(world, x, currentLoc.getY(), z), 1, 0, 0, 0, 0);
+                    world.spawnParticle(Particle.FLASH, new Location(world, x, currentLoc.getY(), z), 1, 0, 0, 0, 0, Color.WHITE);
                 }
                 ticks++;
                 if (ticks >= 10) this.cancel();

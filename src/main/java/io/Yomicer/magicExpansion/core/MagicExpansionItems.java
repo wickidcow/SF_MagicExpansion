@@ -96,6 +96,13 @@ public class MagicExpansionItems {
             "&7不再会连锁破坏未成熟的农作物"
     );
 
+    //饵料袋
+    public static final SlimefunItemStack BAIT_BAG = new SlimefunItemStack(
+            "BAIT_BAG",
+            Material.FISHING_ROD,
+            getGradientNameVer2("云梦袋")
+    );
+
     //虚空之触
     public static final SlimefunItemStack VOID_TOUCH = themedVer2Vertical("VOID_TOUCH",doGlow(Material.WEEPING_VINES),
             get("Items.VOID_TOUCH.Name"),getList("Items.VOID_TOUCH.Lore"));

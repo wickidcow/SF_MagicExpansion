@@ -10,6 +10,7 @@ import io.Yomicer.magicExpansion.items.electric.recipeMachine.RecipeRandomMachin
 import io.Yomicer.magicExpansion.items.electric.resourceGenerator.*;
 import io.Yomicer.magicExpansion.items.enchantMachine.EnchantingTable;
 import io.Yomicer.magicExpansion.items.misc.*;
+import io.Yomicer.magicExpansion.items.misc.baitbag.BaitBag;
 import io.Yomicer.magicExpansion.items.misc.FishWeightEnhancer;
 import io.Yomicer.magicExpansion.items.misc.fish.CommonFish;
 import io.Yomicer.magicExpansion.items.misc.fish.CommonFishHidden;
@@ -24,6 +25,12 @@ import io.Yomicer.magicExpansion.items.skyBlock.SingleCubeOrigin;
 import io.Yomicer.magicExpansion.items.summonBossItem.FireZombie;
 import io.Yomicer.magicExpansion.items.summonBossItem.WindElf;
 import io.Yomicer.magicExpansion.items.tools.*;
+// 主分类已还原为原生 NestedItemGroup,不再使用自绘主组
+import io.Yomicer.magicExpansion.items.groups.HiddenNestedItemGroup;
+import io.Yomicer.magicExpansion.items.groups.MagicExpansionGuideGroup;
+import io.Yomicer.magicExpansion.items.groups.VirtualGuideGroup;
+import io.Yomicer.magicExpansion.utils.GuideCategoryMenu;
+import io.Yomicer.magicExpansion.utils.GuideMenuGroups;
 import io.Yomicer.magicExpansion.core.MagicExpansionItems;
 import io.Yomicer.magicExpansion.utils.ColorGradient;
 import io.Yomicer.magicExpansion.utils.CustomHeadUtils.CustomHead;
@@ -50,6 +57,7 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import javax.annotation.Nonnull;
 
@@ -71,131 +79,63 @@ import static io.Yomicer.magicExpansion.utils.itemUtils.sfItemUtils.sfItemAmount
 public final class MagicExpansionItemSetup {
 
     // ItemGroups
-    public static final NestedItemGroup magicexpansion = new NestedItemGroup(
+    // Menu tree is registered in GuideMenuGroups; keep static references for item registration.
+    static {
+        GuideMenuGroups.initialize();
+    }
+    public static final MagicExpansionGuideGroup magicexpansion = new MagicExpansionGuideGroup(
             new NamespacedKey(MagicExpansion.getInstance(), "magicexpansion"),
-            new CustomItemStack(doGlow(Material.LIGHT),"§x§F§D§B§7§D§4§kll§x§F§D§B§7§D§4魔§x§F§A§7§E§B§3法§x§F§F§6§9§B§42.§x§F§F§6§9§B§40§x§F§D§B§7§D§4§kll"),0
+            new CustomItemStack(doGlow(Material.LIGHT),"§x§F§D§B§7§D§4§kll§x§F§D§B§7§D§4魔§x§F§A§7§E§B§3法§x§F§F§6§9§B§42.§x§F§F§6§9§B§40§x§F§D§B§7§D§4§kll")
     );
+    public static final SubItemGroup magicexpansionattachmentinfo = GuideMenuGroups.get("attachmentinfo");
+    public static final SubItemGroup magicexpansioncontribution = GuideMenuGroups.get("contribution");
+    public static final SubItemGroup magicexpansionupdateinfo = GuideMenuGroups.get("updateinfo");
 
-    private static final ItemGroup magicexpansioncontribution = new SubItemGroup(
-            new NamespacedKey(MagicExpansion.getInstance(), "contribution"), magicexpansion,
-            new CustomItemStack(doGlow(Material.COMMAND_BLOCK), ColorGradient.getGradientNameVer2("贡献")), 0
-    );
+    public static final SubItemGroup magicexpansionmaterial = GuideMenuGroups.get("material");
+    public static final SubItemGroup magicexpansionresource = GuideMenuGroups.get("resource");
+    public static final SubItemGroup magicexpansionresourcedlc = GuideMenuGroups.get("resourcedlc");
 
-    private static final ItemGroup magicexpansionresource = new SubItemGroup(
-            new NamespacedKey(MagicExpansion.getInstance(), "resource"), magicexpansion,
-            new CustomItemStack(doGlow(Material.SNOWBALL), ColorGradient.getGradientName("资源")), 1
-    );
+    public static final SubItemGroup magicexpansionspecial = GuideMenuGroups.get("special");
+    public static final SubItemGroup magicexpansionspecialitem = GuideMenuGroups.get("specialitem");
+    public static final SubItemGroup magicexpansionhonkai = GuideMenuGroups.get("honkai");
+    public static final SubItemGroup magicexpansionskyblock = GuideMenuGroups.get("skyblock");
+    public static final SubItemGroup magicexpansioncommemorate = GuideMenuGroups.get("commemorate");
 
-    private static final ItemGroup magicexpansionresourcedlc = new SubItemGroup(
-            new NamespacedKey(MagicExpansion.getInstance(), "resourcedlc"), magicexpansion,
-            new CustomItemStack(doGlow(Material.TOTEM_OF_UNDYING), getGradientName("补丁材料")), 2
-    );
+    public static final SubItemGroup magicexpansionmachine = GuideMenuGroups.get("machine");
+    public static final SubItemGroup magicexpansionquickmachine = GuideMenuGroups.get("quickmachine");
+    public static final SubItemGroup magicexpansionenergy = GuideMenuGroups.get("energy");
+    public static final SubItemGroup magicexpansionpower = GuideMenuGroups.get("power");
+    public static final SubItemGroup magicexpansionelectricbot = GuideMenuGroups.get("electric_bot");
+    public static final SubItemGroup magicexpansionrscmagic = GuideMenuGroups.get("rscmagic");
 
-    private static final ItemGroup magicexpansionspecialitem = new SubItemGroup(
-            new NamespacedKey(MagicExpansion.getInstance(), "specialitem"), magicexpansion,
-            new CustomItemStack(doGlow(Material.SHEARS), getGradientName("特殊道具")), 3
-    );
+    public static final SubItemGroup magicexpansionfunctional = GuideMenuGroups.get("functional");
+    public static final SubItemGroup magicexpansionresourcegenerator = GuideMenuGroups.get("resourcegenerator");
+    public static final SubItemGroup magicexpansionrecipemachine = GuideMenuGroups.get("recipemachine");
 
-    public static final ItemGroup magicexpansionquickmachine = new SubItemGroup(
-            new NamespacedKey(MagicExpansion.getInstance(), "quickmachine"), magicexpansion,
-            new CustomItemStack(doGlow(Material.MAGENTA_GLAZED_TERRACOTTA), getGradientName("快捷机器")), 4
-    );
+    public static final SubItemGroup magicexpansionboss = GuideMenuGroups.get("boss");
 
-    public static final ItemGroup magicexpansionresourcegenerator = new SubItemGroup(
-            new NamespacedKey(MagicExpansion.getInstance(), "resourcegenerator"), magicexpansion,
-            new CustomItemStack(doGlow(Material.LANTERN), ColorGradient.getGradientName("资源生成器")), 5
-    );
-    public static final ItemGroup magicexpansionrecipemachine = new SubItemGroup(
-            new NamespacedKey(MagicExpansion.getInstance(), "recipemachine"), magicexpansion,
-            new CustomItemStack(doGlow(Material.SOUL_CAMPFIRE), ColorGradient.getGradientName("消耗型生产机器")), 5
-    );
+    public static final SubItemGroup magicexpansionprebuild = GuideMenuGroups.get("prebuild");
+    public static final SubItemGroup magicexpansionprebuilding = GuideMenuGroups.get("prebuilding");
+    public static final SubItemGroup magicexpansionprebuildingresource = GuideMenuGroups.get("prebuildingresource");
 
-    public static final ItemGroup magicexpansionenergy = new SubItemGroup(
-            new NamespacedKey(MagicExpansion.getInstance(), "energy"), magicexpansion,
-            new CustomItemStack(doGlow(Material.SOUL_LANTERN), ColorGradient.getGradientName("特殊机器")), 6
-    );
+    public static final SubItemGroup magicexpansionforge = GuideMenuGroups.get("forge");
 
-    public static final ItemGroup magicexpansionpower = new SubItemGroup(
-            new NamespacedKey(MagicExpansion.getInstance(), "power"), magicexpansion,
-            new CustomItemStack(CustomHead.getHead("24378b986e358555ee73f09b210d49ec13719de5ea88d75523770d31163f3aef"), ColorGradient.getGradientName("发电机")), 6
-    );
+    public static final SubItemGroup magicexpansionfishing = GuideMenuGroups.get("fishing");
+    public static final SubItemGroup magicexpansionnonsensical = GuideMenuGroups.get("nonsensical");
+    public static final SubItemGroup magicexpansiondreamerlure = GuideMenuGroups.get("dreamer_lure");
+    public static final SubItemGroup magicexpansiondreamerrod = GuideMenuGroups.get("dreamer_rod");
+    public static final SubItemGroup magicexpansiondreamerguide = GuideMenuGroups.get("dreamer_guide");
+    public static final SubItemGroup magicexpansionwatercloudmaterial = GuideMenuGroups.get("watercloud_material");
+    public static final SubItemGroup magicexpansionwatercloudlure = GuideMenuGroups.get("watercloud_lure");
+    public static final SubItemGroup magicexpansionwatercloudrod = GuideMenuGroups.get("watercloud_rod");
+    public static final SubItemGroup magicexpansionwatercloudguide = GuideMenuGroups.get("watercloud_guide");
 
-    private static final ItemGroup magicexpansionelectricbot = new SubItemGroup(
-            new NamespacedKey(MagicExpansion.getInstance(), "electric_bot"), magicexpansion,
-            new CustomItemStack(CustomHead.BOT_PINK.getItem(), ColorGradient.getGradientName("电力机器人")), 6
-    );
+    public static final SubItemGroup magicexpansioncrop = GuideMenuGroups.get("crop");
+    public static final SubItemGroup magicexpansionfood = GuideMenuGroups.get("food");
+    public static final SubItemGroup magicexpansionfoodresource = GuideMenuGroups.get("foodresource");
 
-    private static final ItemGroup magicexpansionboss = new SubItemGroup(
-            new NamespacedKey(MagicExpansion.getInstance(), "boss"), magicexpansion,
-            new CustomItemStack(doGlow(Material.ENDER_DRAGON_SPAWN_EGG), ColorGradient.getGradientName("魔法BOSS")), 7
-    );
+    public static final SubItemGroup magicexpansioncooperatecreate = GuideMenuGroups.get("cooperatecreate");
 
-    private static final ItemGroup magicexpansionforge = new SubItemGroup(
-            new NamespacedKey(MagicExpansion.getInstance(), "forge"), magicexpansion,
-            new CustomItemStack(doGlow(Material.ANVIL), ColorGradient.getGradientName("魔法锻造")), 8
-    );
-
-    private static final ItemGroup magicexpansionprebuildingresource = new SubItemGroup(
-            new NamespacedKey(MagicExpansion.getInstance(), "prebuildingresource"), magicexpansion,
-            new CustomItemStack(doGlow(Material.PRISMARINE_CRYSTALS), ColorGradient.getGradientName("建筑材料")), 9
-    );
-
-    private static final ItemGroup magicexpansionprebuilding = new SubItemGroup(
-            new NamespacedKey(MagicExpansion.getInstance(), "prebuilding"), magicexpansion,
-            new CustomItemStack(doGlow(Material.BRICKS), ColorGradient.getGradientName("预制菜（建筑）")), 10
-    );
-
-    public static final ItemGroup magicexpansionhonkai = new SubItemGroup(
-            new NamespacedKey(MagicExpansion.getInstance(), "honkai"), magicexpansion,
-            new CustomItemStack(CustomHead.SILVER_WOLF.getItem(), ColorGradient.getRandomGradientName("Honkai: Star Rail")), 10
-    );
-
-    public static final ItemGroup magicexpansionskyblock = new SubItemGroup(
-            new NamespacedKey(MagicExpansion.getInstance(), "skyblock"), magicexpansion,
-            new CustomItemStack(CustomHead.getHead("7948942fed672ded57f8cdb169a5076062586e77002ee30e07693c025e6f0db5"), ColorGradient.getGradientName("魔法-SkyBlock")), 10
-    );
-
-    public static final ItemGroup magicexpansionrscmagic = new SubItemGroup(
-            new NamespacedKey(MagicExpansion.getInstance(), "rscmagic"), magicexpansion,
-            new CustomItemStack(CustomHead.MAGICSOLO.getItem(), ColorGradient.getRandomGradientName("魔法-1.21修复/优化~物品/机器")), 10
-    );
-
-    public static final ItemGroup magicexpansionfishing = new SubItemGroup(
-            new NamespacedKey(MagicExpansion.getInstance(), "fishing"), magicexpansion,
-            new CustomItemStack(doGlow(Material.FISHING_ROD), ColorGradient.getGradientName("钓鱼佬")), 10
-    );
-
-    public static final ItemGroup magicexpansionnonsensical = new SubItemGroup(
-            new NamespacedKey(MagicExpansion.getInstance(), "nonsensical"), magicexpansion,
-            new CustomItemStack(doGlow(Material.DRAGON_EGG), ColorGradient.getRandomGradientName("无厘头-打发时间")), 10
-    );
-    public static final ItemGroup magicexpansioncommemorate = new SubItemGroup(
-            new NamespacedKey(MagicExpansion.getInstance(), "commemorate"), magicexpansion,
-            new CustomItemStack(doGlow(Material.FIREWORK_ROCKET), ColorGradient.getRandomGradientName("纪念品")), 10
-    );
-    public static final ItemGroup magicexpansionfood = new SubItemGroup(
-            new NamespacedKey(MagicExpansion.getInstance(), "food"), magicexpansion,
-            new CustomItemStack(doGlow(Material.CAKE), ColorGradient.getGradientNameVer2("美食")), 10
-    );
-    public static final ItemGroup magicexpansionfoodresource = new SubItemGroup(
-            new NamespacedKey(MagicExpansion.getInstance(), "foodresource"), magicexpansion,
-            new CustomItemStack(doGlow(Material.WHEAT), ColorGradient.getGradientNameVer2("食材原料")), 10
-    );
-
-    public static final ItemGroup magicexpansioncooperatecreate = new SubItemGroup(
-            new NamespacedKey(MagicExpansion.getInstance(), "cooperatecreate"), magicexpansion,
-            new CustomItemStack(CustomHead.getHead("7971e55df39a58faad05742d882e9a05ffa511a0c58e4f687777bb74614006eb"), ColorGradient.getGradientNameVer2("魔法2.0-共创")), 10
-    );
-
-    private static final ItemGroup magicexpansionupdateinfo = new SubItemGroup(
-            new NamespacedKey(MagicExpansion.getInstance(), "updateinfo"), magicexpansion,
-            new CustomItemStack(doGlow(Material.PAPER), ColorGradient.getRandomGradientName("魔法-更新日志")), 11
-    );
-
-    private static final ItemGroup magicexpansionnamecollection = new SubItemGroup(
-            new NamespacedKey(MagicExpansion.getInstance(), "namecollection"), magicexpansion,
-            new CustomItemStack(doGlow(Material.FLINT), ColorGradient.getRandomGradientName("留名集")), 11
-    );
 
 
     // 定义一个新的配方类型
@@ -277,6 +217,17 @@ public final class MagicExpansionItemSetup {
 
     public static void setup(@Nonnull MagicExpansion plugin) {
 
+        // 注册魔法2.0主分类(自绘一级菜单入口)
+        magicexpansion.register(plugin);
+
+
+        // 容器组占位物品:由菜单注册表统一注册(所有一级容器组)
+        GuideMenuGroups.registerPlaceholders(plugin);
+
+
+
+
+
 
         //版本信息
         new UnplaceableBlock(magicexpansioncontribution, MagicExpansionItems.MAGIC_EXPANSION_INFO, SPECIAL_RECIPE_TYPE, new ItemStack[] {
@@ -312,8 +263,6 @@ public final class MagicExpansionItemSetup {
         registerUIBlockInContribution(MagicExpansionItems.UI_5,plugin);
         registerUIBlockInContribution(MagicExpansionItems.UI_6,plugin);
         registerUIBlockInContribution(MagicExpansionItems.UI_7,plugin);
-        registerUIBlockInContribution(MagicExpansionItems.UI_8,plugin);
-        registerUIBlockInContribution(MagicExpansionItems.UI_9,plugin);
         //UI
         new UnplaceableBlock(magicexpansioncontribution, MagicExpansionItems.UI_THX, RecipeType.NULL, new ItemStack[] {
                 null, null, null,
@@ -707,6 +656,24 @@ public final class MagicExpansionItemSetup {
                 SlimefunItems.MAGIC_LUMP_3, SlimefunItems.ENDER_LUMP_3, SlimefunItems.MAGIC_LUMP_3
         }).register(plugin);
 
+        //饵料袋(云梦袋): lore 在注册时统一使用魔法二代渐变色
+        SlimefunItemStack baitBagStack = (SlimefunItemStack) MagicExpansionItems.BAIT_BAG.clone();
+        ItemMeta baitBagMeta = baitBagStack.getItemMeta();
+        baitBagMeta.setLore(List.of(
+                getGradientNameVer2("梦里垂纶，云间藏饵"),
+                getGradientNameVer2("一囊收尽两界水云"),
+                getGradientNameVer2("愿者，自有饵来"),
+                getGradientNameVer2("此袋所藏，皆是钓者与水的旧约"),
+                "",
+                getGradientNameVer2("用于存放所有钓鱼佬系列的鱼饵")
+        ));
+        baitBagStack.setItemMeta(baitBagMeta);
+        new BaitBag(magicexpansionspecialitem, baitBagStack, RecipeType.ENHANCED_CRAFTING_TABLE, new ItemStack[] {
+                new ItemStack(Material.LEATHER), new ItemStack(Material.LEATHER), new ItemStack(Material.LEATHER),
+                new ItemStack(Material.LEATHER), MagicExpansionItems.SPACE_INFINITY_MAGIC, new ItemStack(Material.LEATHER),
+                new ItemStack(Material.LEATHER), new ItemStack(Material.LEATHER), new ItemStack(Material.LEATHER)
+        }).register(plugin);
+
         //虚空之触
         new VoidTouch(magicexpansionspecialitem, MagicExpansionItems.VOID_TOUCH, RecipeType.ENHANCED_CRAFTING_TABLE, new ItemStack[] {
                 PURE_ELEMENT_EARTH, MagicExpansionItems.PURE_ELEMENT_INGOT, PURE_ELEMENT_EARTH,
@@ -974,7 +941,7 @@ public final class MagicExpansionItemSetup {
 
 
         // 自定义
-        new FishingRod(magicexpansionfishing, MagicExpansionItems.FISHING_ROD_LOG, RecipeType.ENHANCED_CRAFTING_TABLE, new ItemStack[] {
+        new FishingRod(magicexpansiondreamerrod, MagicExpansionItems.FISHING_ROD_LOG, RecipeType.ENHANCED_CRAFTING_TABLE, new ItemStack[] {
                 null,null,new ItemStack(Material.OAK_LOG),
                 null,new ItemStack(Material.CHERRY_LOG),new ItemStack(Material.STRING),
                 new ItemStack(Material.BIRCH_LOG),null, AMETHYST_SHARD
@@ -1000,7 +967,7 @@ public final class MagicExpansionItemSetup {
                 ), List.of()).register(plugin);
 
         // 萌新钓竿
-        new FishingRod(magicexpansionfishing, MagicExpansionItems.FISHING_ROD_NEW_PLAYER, RecipeType.ENHANCED_CRAFTING_TABLE, new ItemStack[] {
+        new FishingRod(magicexpansiondreamerrod, MagicExpansionItems.FISHING_ROD_NEW_PLAYER, RecipeType.ENHANCED_CRAFTING_TABLE, new ItemStack[] {
                 null,null,STICK,
                 null,STICK,new ItemStack(Material.STRING),
                 STICK,null,SlimefunItems.MAGIC_SUGAR
@@ -1219,7 +1186,7 @@ public final class MagicExpansionItemSetup {
 
 
         // 风语者之竿
-        new FishingRod(magicexpansionfishing, MagicExpansionItems.FISHING_ROD_WIND_SPEAKER, RecipeType.ENHANCED_CRAFTING_TABLE, new ItemStack[] {
+        new FishingRod(magicexpansiondreamerrod, MagicExpansionItems.FISHING_ROD_WIND_SPEAKER, RecipeType.ENHANCED_CRAFTING_TABLE, new ItemStack[] {
                 null,null,WATER_ELEMENT,
                 null,FISHING_ROD_NEW_PLAYER,WIND_SPIRIT,
                 FISHING_STICK_STAR_IRON,null,AMETHYST_SHARD
@@ -1546,7 +1513,7 @@ public final class MagicExpansionItemSetup {
 
 
         // 终焉鱼杆
-        new FishingRod(magicexpansionfishing, MagicExpansionItems.FISHING_ROD_FINAL_STICK, RecipeType.ENHANCED_CRAFTING_TABLE, new ItemStack[] {
+        new FishingRod(magicexpansiondreamerrod, MagicExpansionItems.FISHING_ROD_FINAL_STICK, RecipeType.ENHANCED_CRAFTING_TABLE, new ItemStack[] {
                 null,null,MAGIC_EXPANSION_MAGIC_SUGAR_CANE,
                 null,MAGIC_EXPANSION_MAGIC_SUGAR_CANE,FISHING_ROD_FINAL_STRING,
                 MAGIC_EXPANSION_MAGIC_SUGAR_CANE,null, FISHING_ROD_FINAL_HOOK
@@ -1559,7 +1526,7 @@ public final class MagicExpansionItemSetup {
 
 
         //新系列鱼竿  水云间
-        new FishingRodWaterCloud(magicexpansionfishing, MagicExpansionItems.FISHING_ROD_BETWEEN_WATER_CLOUD_CYAN_BAMBOO, RecipeType.ENHANCED_CRAFTING_TABLE, new ItemStack[] {
+        new FishingRodWaterCloud(magicexpansionwatercloudrod, MagicExpansionItems.FISHING_ROD_BETWEEN_WATER_CLOUD_CYAN_BAMBOO, RecipeType.ENHANCED_CRAFTING_TABLE, new ItemStack[] {
                 null,null,MagicExpansionItems.BAMBOO_JOINT,
                 null,MagicExpansionItems.BAMBOO_JOINT,MagicExpansionItems.MAGIC_THREAD,
                 MagicExpansionItems.BAMBOO_JOINT,null,MAGIC_EXPANSION_MAGIC_SUGAR_1
@@ -1690,7 +1657,7 @@ public final class MagicExpansionItemSetup {
                         FISH_LURE_BETWEEN_WATER_CLOUD_YUEJIN,FISH_LURE_BETWEEN_WATER_CLOUD_XINGHE)).register(plugin);
 
         //水云间·芦花钓(暂定:先独立内联一份与青竹竿相同的鱼饵池,后续可单独调整)
-        new FishingRodWaterCloud(magicexpansionfishing, MagicExpansionItems.FISHING_ROD_BETWEEN_WATER_CLOUD_REED, RecipeType.ENHANCED_CRAFTING_TABLE, new ItemStack[] {
+        new FishingRodWaterCloud(magicexpansionwatercloudrod, MagicExpansionItems.FISHING_ROD_BETWEEN_WATER_CLOUD_REED, RecipeType.ENHANCED_CRAFTING_TABLE, new ItemStack[] {
                 null,new ItemStack(Material.SUGAR_CANE),null,
                 new ItemStack(Material.SUGAR_CANE),MagicExpansionItems.FISHING_ROD_BETWEEN_WATER_CLOUD_CYAN_BAMBOO,MagicExpansionItems.MAGIC_THREAD,
                 null,new ItemStack(Material.SUGAR_CANE),null
@@ -1878,55 +1845,55 @@ public final class MagicExpansionItemSetup {
                 null, null, null
         }).register(plugin);
         //钓鱼说明
-        new UnplaceableBlock(magicexpansionfishing, FISHING_INFO, RecipeType.NULL, new ItemStack[] {
+        new UnplaceableBlock(magicexpansiondreamerguide, FISHING_INFO, RecipeType.NULL, new ItemStack[] {
                 null, null, null,
                 null, null, null,
                 null, null, null
         }).register(plugin);
         //鱼类说明
-        new UnplaceableBlock(magicexpansionfishing, FISH_CATEGORY_INFO, RecipeType.NULL, new ItemStack[] {
+        new UnplaceableBlock(magicexpansiondreamerguide, FISH_CATEGORY_INFO, RecipeType.NULL, new ItemStack[] {
                 null, null, null,
                 null, null, null,
                 null, null, null
         }).register(plugin);
 
         //鱼book
-        new FishingBook(magicexpansionfishing, FISHING_BOOK, RecipeType.NULL, new ItemStack[] {
+        new FishingBook(magicexpansiondreamerguide, FISHING_BOOK, RecipeType.NULL, new ItemStack[] {
                 null, null, null,
                 null, new CustomItemStack(new ItemStack(doGlow(Material.FISHING_ROD)),getGradientName("通过指令获取"), ColorGradient.getGradientName("/mxf guide"),getGradientName("输入该指令即可获取钓鱼指南")), null,
                 null, null, null
         }).register(plugin);
 
         // 普通鱼
-        new CommonFish(magicexpansionfishing, RANDOM_FISH_COMMON, RecipeType.NULL, new ItemStack[] {
+        new CommonFish(magicexpansiondreamerguide, RANDOM_FISH_COMMON, RecipeType.NULL, new ItemStack[] {
                 null,null,null,
                 null,new CustomItemStack(new ItemStack(doGlow(Material.FISHING_ROD)),getGradientName("钓鱼有概率获取"), ColorGradient.getGradientName("通过魔法2.0系列鱼杆钓取"),getGradientName("很常见的鱼")),null,
                 null,null,null
         }).register(plugin);
         // 罕见鱼
-        new CommonFish(magicexpansionfishing, RANDOM_FISH_UNCOMMON, RecipeType.NULL, new ItemStack[] {
+        new CommonFish(magicexpansiondreamerguide, RANDOM_FISH_UNCOMMON, RecipeType.NULL, new ItemStack[] {
                 null,null,null,
                 null,new CustomItemStack(new ItemStack(doGlow(Material.FISHING_ROD)),getGradientName("钓鱼有概率获取"), ColorGradient.getGradientName("通过魔法2.0系列鱼杆钓取"),getGradientName("比较罕见的鱼")),null,
                 null,null,null
         }).register(plugin);
         // 稀有鱼
-        new CommonFish(magicexpansionfishing, RANDOM_FISH_RARE, RecipeType.NULL, new ItemStack[] {
+        new CommonFish(magicexpansiondreamerguide, RANDOM_FISH_RARE, RecipeType.NULL, new ItemStack[] {
                 null,null,null,
                 null,new CustomItemStack(new ItemStack(doGlow(Material.FISHING_ROD)),getGradientName("钓鱼有概率获取"), ColorGradient.getGradientName("通过魔法2.0系列鱼杆钓取"),getGradientName("出没地点隐秘，且停留时间极短，可能对某些鱼饵有一定兴趣")),null,
                 null,null,null
         }).register(plugin);
 
-        new CommonFishHidden(magicexpansionfishing, RANDOM_FISH_RARE_POOL_DUST, RecipeType.NULL, new ItemStack[] {
+        new CommonFishHidden(magicexpansiondreamerguide, RANDOM_FISH_RARE_POOL_DUST, RecipeType.NULL, new ItemStack[] {
                 null,null,null,
                 null,new CustomItemStack(new ItemStack(doGlow(Material.FISHING_ROD)),getGradientName("钓鱼有概率获取"), ColorGradient.getGradientName("通过魔法2.0系列鱼杆钓取"),getGradientName("出没地点隐秘，且停留时间极短，可能对某些鱼饵有一定兴趣")),null,
                 null,null,null
         }).register(plugin);
-        new CommonFishHidden(magicexpansionfishing, RANDOM_FISH_RARE_POOL_ORE, RecipeType.NULL, new ItemStack[] {
+        new CommonFishHidden(magicexpansiondreamerguide, RANDOM_FISH_RARE_POOL_ORE, RecipeType.NULL, new ItemStack[] {
                 null,null,null,
                 null,new CustomItemStack(new ItemStack(doGlow(Material.FISHING_ROD)),getGradientName("钓鱼有概率获取"), ColorGradient.getGradientName("通过魔法2.0系列鱼杆钓取"),getGradientName("出没地点隐秘，且停留时间极短，可能对某些鱼饵有一定兴趣")),null,
                 null,null,null
         }).register(plugin);
-        new CommonFishHidden(magicexpansionfishing, RANDOM_FISH_RARE_POOL_INDUSTRY, RecipeType.NULL, new ItemStack[] {
+        new CommonFishHidden(magicexpansiondreamerguide, RANDOM_FISH_RARE_POOL_INDUSTRY, RecipeType.NULL, new ItemStack[] {
                 null,null,null,
                 null,new CustomItemStack(new ItemStack(doGlow(Material.FISHING_ROD)),getGradientName("钓鱼有概率获取"), ColorGradient.getGradientName("通过魔法2.0系列鱼杆钓取"),getGradientName("出没地点隐秘，且停留时间极短，可能对某些鱼饵有一定兴趣")),null,
                 null,null,null
@@ -1938,7 +1905,7 @@ public final class MagicExpansionItemSetup {
 
 
         // 史诗鱼
-        new CommonFish(magicexpansionfishing, RANDOM_FISH_EPIC, RecipeType.NULL, new ItemStack[] {
+        new CommonFish(magicexpansiondreamerguide, RANDOM_FISH_EPIC, RecipeType.NULL, new ItemStack[] {
                 null,null,null,
                 null,new CustomItemStack(new ItemStack(doGlow(Material.FISHING_ROD)),getGradientName("钓鱼有概率获取"), ColorGradient.getGradientName("通过魔法2.0系列鱼杆钓取"),getGradientName("极少有人能证明它真的存在，不使用特殊鱼饵几乎无法碰见")),null,
                 null,null,null
@@ -1946,12 +1913,12 @@ public final class MagicExpansionItemSetup {
 
 
 
-        new CommonFishHidden(magicexpansionfishing, RANDOM_FISH_EPIC_POOL_INDUSTRY, RecipeType.NULL, new ItemStack[] {
+        new CommonFishHidden(magicexpansiondreamerguide, RANDOM_FISH_EPIC_POOL_INDUSTRY, RecipeType.NULL, new ItemStack[] {
                 null,null,null,
                 null,new CustomItemStack(new ItemStack(doGlow(Material.FISHING_ROD)),getGradientName("钓鱼有概率获取"), ColorGradient.getGradientName("通过魔法2.0系列鱼杆钓取"),getGradientName("出没地点隐秘，且停留时间极短，可能对某些鱼饵有一定兴趣")),null,
                 null,null,null
         }).register(plugin);
-        new CommonFishHidden(magicexpansionfishing, RANDOM_FISH_EPIC_POOL_ALLOY_INGOT, RecipeType.NULL, new ItemStack[] {
+        new CommonFishHidden(magicexpansiondreamerguide, RANDOM_FISH_EPIC_POOL_ALLOY_INGOT, RecipeType.NULL, new ItemStack[] {
                 null,null,null,
                 null,new CustomItemStack(new ItemStack(doGlow(Material.FISHING_ROD)),getGradientName("钓鱼有概率获取"), ColorGradient.getGradientName("通过魔法2.0系列鱼杆钓取"),getGradientName("出没地点隐秘，且停留时间极短，可能对某些鱼饵有一定兴趣")),null,
                 null,null,null
@@ -1960,7 +1927,7 @@ public final class MagicExpansionItemSetup {
 
 
         // 传说鱼
-        new CommonFish(magicexpansionfishing, RANDOM_FISH_LEGENDARY, RecipeType.NULL, new ItemStack[] {
+        new CommonFish(magicexpansiondreamerguide, RANDOM_FISH_LEGENDARY, RecipeType.NULL, new ItemStack[] {
                 null,null,null,
                 null,new CustomItemStack(new ItemStack(doGlow(Material.FISHING_ROD)),getGradientName("钓鱼有概率获取"), ColorGradient.getGradientName("通过魔法2.0系列鱼杆钓取"),getGradientName("只存在于古老传说中，现实是否存疑，只有传说中的鱼饵才有些许概率能够遇到")),null,
                 null,null,null
@@ -1972,25 +1939,25 @@ public final class MagicExpansionItemSetup {
                 null,null,null
         }).register(plugin);
         // 基础饵料
-        new UnplaceableBlock(magicexpansionfishing, FISH_LURE_BASIC, RecipeType.ENHANCED_CRAFTING_TABLE, new ItemStack[] {
+        new UnplaceableBlock(magicexpansiondreamerlure, FISH_LURE_BASIC, RecipeType.ENHANCED_CRAFTING_TABLE, new ItemStack[] {
                 new ItemStack(Material.SWEET_BERRIES),BONE_MEAL,new ItemStack(Material.CARROT),
                 BONE_MEAL,new ItemStack(Material.APPLE),BONE_MEAL,
                 new ItemStack(Material.POTATO),BONE_MEAL,new ItemStack(Material.MELON_SLICE)
         }).register(plugin);
         // 混合矿粉饵料
-        new UnplaceableBlock(magicexpansionfishing, FISH_LURE_DUST, RecipeType.ENHANCED_CRAFTING_TABLE, new ItemStack[] {
+        new UnplaceableBlock(magicexpansiondreamerlure, FISH_LURE_DUST, RecipeType.ENHANCED_CRAFTING_TABLE, new ItemStack[] {
                 SlimefunItems.COPPER_DUST,SlimefunItems.IRON_DUST,SlimefunItems.GOLD_DUST,
                 SlimefunItems.SILVER_DUST,FISH_LURE_BASIC,SlimefunItems.MAGNESIUM_DUST,
                 SlimefunItems.ZINC_DUST,SlimefunItems.TIN_DUST,SlimefunItems.ALUMINUM_DUST
         },sfItemAmount(FISH_LURE_DUST,16)).register(plugin);
         // 混合矿物饵料
-        new UnplaceableBlock(magicexpansionfishing, FISH_LURE_ORE, RecipeType.ENHANCED_CRAFTING_TABLE, new ItemStack[] {
+        new UnplaceableBlock(magicexpansiondreamerlure, FISH_LURE_ORE, RecipeType.ENHANCED_CRAFTING_TABLE, new ItemStack[] {
                 new ItemStack(Material.DIAMOND),new ItemStack(Material.GOLD_INGOT),new ItemStack(Material.IRON_INGOT),
                 new ItemStack(Material.EMERALD),FISH_LURE_BASIC,new ItemStack(Material.QUARTZ),
                 new ItemStack(Material.AMETHYST_SHARD),new ItemStack(Material.LAPIS_LAZULI),new ItemStack(Material.GLOWSTONE_DUST)
         },sfItemAmount(FISH_LURE_ORE,16)).register(plugin);
         // 混合合金锭
-        new UnplaceableBlock(magicexpansionfishing, FISH_LURE_ALLOY_INGOT, RecipeType.ENHANCED_CRAFTING_TABLE, new ItemStack[] {
+        new UnplaceableBlock(magicexpansiondreamerlure, FISH_LURE_ALLOY_INGOT, RecipeType.ENHANCED_CRAFTING_TABLE, new ItemStack[] {
                 FISH_LURE_DUST,JIN_KE_LA,FISH_LURE_ORE,
                 JIN_KE_LA,FISH_LURE_BASIC,JIN_KE_LA,
                 FISH_LURE_ORE,JIN_KE_LA,FISH_LURE_DUST
@@ -2004,27 +1971,27 @@ public final class MagicExpansionItemSetup {
 
 
         // 水云间系列-鱼获
-        new HiddenItem(magicexpansionfishing, FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_CUIXIA, RecipeType.NULL, new ItemStack[] {
+        new HiddenItem(magicexpansionwatercloudlure, FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_CUIXIA, RecipeType.NULL, new ItemStack[] {
                 null,null,null,
                 null,null,null,
                 null,null,null
         }).register(plugin);
-        new HiddenItem(magicexpansionfishing, FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_WEICHEN, RecipeType.NULL, new ItemStack[] {
+        new HiddenItem(magicexpansionwatercloudlure, FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_WEICHEN, RecipeType.NULL, new ItemStack[] {
                 null,null,null,
                 null,null,null,
                 null,null,null
         }).register(plugin);
-        new HiddenItem(magicexpansionfishing, FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_RONGHUO, RecipeType.NULL, new ItemStack[] {
+        new HiddenItem(magicexpansionwatercloudlure, FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_RONGHUO, RecipeType.NULL, new ItemStack[] {
                 null,null,null,
                 null,null,null,
                 null,null,null
         }).register(plugin);
-        new HiddenItem(magicexpansionfishing, FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_YUEJIN, RecipeType.NULL, new ItemStack[] {
+        new HiddenItem(magicexpansionwatercloudlure, FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_YUEJIN, RecipeType.NULL, new ItemStack[] {
                 null,null,null,
                 null,null,null,
                 null,null,null
         }).register(plugin);
-        new HiddenItem(magicexpansionfishing, FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_XINGHE, RecipeType.NULL, new ItemStack[] {
+        new HiddenItem(magicexpansionwatercloudlure, FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_XINGHE, RecipeType.NULL, new ItemStack[] {
                 null,null,null,
                 null,null,null,
                 null,null,null
@@ -2041,7 +2008,7 @@ public final class MagicExpansionItemSetup {
         //新系列鱼饵相关 水云间   暂定为合成
 
         //1
-        new UnplaceableBlock(magicexpansionfishing, FISH_LURE_BETWEEN_WATER_CLOUD_CUIXIA, RecipeType.ENHANCED_CRAFTING_TABLE, new ItemStack[] {
+        new UnplaceableBlock(magicexpansionwatercloudlure, FISH_LURE_BETWEEN_WATER_CLOUD_CUIXIA, RecipeType.ENHANCED_CRAFTING_TABLE, new ItemStack[] {
                 SlimefunItems.MAGIC_SUGAR,SlimefunItems.MAGIC_SUGAR,SlimefunItems.MAGIC_SUGAR,
                 SlimefunItems.MAGIC_SUGAR,new ItemStack(Material.TORCH),SlimefunItems.MAGIC_SUGAR,
                 SlimefunItems.MAGIC_SUGAR,SlimefunItems.MAGIC_SUGAR,SlimefunItems.MAGIC_SUGAR
@@ -2054,7 +2021,7 @@ public final class MagicExpansionItemSetup {
         },sfItemAmount(FISH_LURE_BETWEEN_WATER_CLOUD_CUIXIA,64)).register(plugin);
 
         //2
-        new UnplaceableBlock(magicexpansionfishing, FISH_LURE_BETWEEN_WATER_CLOUD_WEICHEN, RecipeType.ENHANCED_CRAFTING_TABLE, new ItemStack[] {
+        new UnplaceableBlock(magicexpansionwatercloudlure, FISH_LURE_BETWEEN_WATER_CLOUD_WEICHEN, RecipeType.ENHANCED_CRAFTING_TABLE, new ItemStack[] {
                 SlimefunItems.MAGIC_SUGAR,SlimefunItems.MAGIC_SUGAR,SlimefunItems.MAGIC_SUGAR,
                 SlimefunItems.MAGIC_SUGAR,new ItemStack(Material.GUNPOWDER),SlimefunItems.MAGIC_SUGAR,
                 SlimefunItems.MAGIC_SUGAR,SlimefunItems.MAGIC_SUGAR,SlimefunItems.MAGIC_SUGAR
@@ -2068,7 +2035,7 @@ public final class MagicExpansionItemSetup {
 
 
         //3
-        new UnplaceableBlock(magicexpansionfishing, FISH_LURE_BETWEEN_WATER_CLOUD_RONGHUO, RecipeType.ENHANCED_CRAFTING_TABLE, new ItemStack[] {
+        new UnplaceableBlock(magicexpansionwatercloudlure, FISH_LURE_BETWEEN_WATER_CLOUD_RONGHUO, RecipeType.ENHANCED_CRAFTING_TABLE, new ItemStack[] {
                 SlimefunItems.MAGIC_SUGAR,SlimefunItems.MAGIC_SUGAR,SlimefunItems.MAGIC_SUGAR,
                 SlimefunItems.MAGIC_SUGAR,new ItemStack(Material.COAL),SlimefunItems.MAGIC_SUGAR,
                 SlimefunItems.MAGIC_SUGAR,SlimefunItems.MAGIC_SUGAR,SlimefunItems.MAGIC_SUGAR
@@ -2082,7 +2049,7 @@ public final class MagicExpansionItemSetup {
 
 
         //4
-        new UnplaceableBlock(magicexpansionfishing, FISH_LURE_BETWEEN_WATER_CLOUD_YUEJIN, RecipeType.ENHANCED_CRAFTING_TABLE, new ItemStack[] {
+        new UnplaceableBlock(magicexpansionwatercloudlure, FISH_LURE_BETWEEN_WATER_CLOUD_YUEJIN, RecipeType.ENHANCED_CRAFTING_TABLE, new ItemStack[] {
                 SlimefunItems.MAGIC_SUGAR,SlimefunItems.MAGIC_SUGAR,SlimefunItems.MAGIC_SUGAR,
                 SlimefunItems.MAGIC_SUGAR,new ItemStack(Material.GOLD_INGOT),SlimefunItems.MAGIC_SUGAR,
                 SlimefunItems.MAGIC_SUGAR,SlimefunItems.MAGIC_SUGAR,SlimefunItems.MAGIC_SUGAR
@@ -2096,7 +2063,7 @@ public final class MagicExpansionItemSetup {
 
 
         //5
-        new UnplaceableBlock(magicexpansionfishing, FISH_LURE_BETWEEN_WATER_CLOUD_XINGHE, RecipeType.ENHANCED_CRAFTING_TABLE, new ItemStack[] {
+        new UnplaceableBlock(magicexpansionwatercloudlure, FISH_LURE_BETWEEN_WATER_CLOUD_XINGHE, RecipeType.ENHANCED_CRAFTING_TABLE, new ItemStack[] {
                 SlimefunItems.MAGIC_SUGAR,SlimefunItems.MAGIC_SUGAR,SlimefunItems.MAGIC_SUGAR,
                 SlimefunItems.MAGIC_SUGAR,new ItemStack(Material.GLISTERING_MELON_SLICE),SlimefunItems.MAGIC_SUGAR,
                 SlimefunItems.MAGIC_SUGAR,SlimefunItems.MAGIC_SUGAR,SlimefunItems.MAGIC_SUGAR
@@ -2109,14 +2076,14 @@ public final class MagicExpansionItemSetup {
         },sfItemAmount(FISH_LURE_BETWEEN_WATER_CLOUD_XINGHE,64)).register(plugin);
 
         //水云间材料·青竹节
-        new UnplaceableBlock(magicexpansionresource, MagicExpansionItems.BAMBOO_JOINT, RecipeType.ENHANCED_CRAFTING_TABLE, new ItemStack[] {
+        new UnplaceableBlock(magicexpansionwatercloudmaterial, MagicExpansionItems.BAMBOO_JOINT, RecipeType.ENHANCED_CRAFTING_TABLE, new ItemStack[] {
                 SlimefunItems.REINFORCED_ALLOY_INGOT,new ItemStack(Material.BAMBOO),SlimefunItems.REINFORCED_ALLOY_INGOT,
                 new ItemStack(Material.BAMBOO),MAGIC_EXPANSION_MAGIC_SUGAR_1,new ItemStack(Material.BAMBOO),
                 SlimefunItems.REINFORCED_ALLOY_INGOT,new ItemStack(Material.BAMBOO),SlimefunItems.REINFORCED_ALLOY_INGOT
         }).register(plugin);
 
         //水云间材料·魔法线
-        new UnplaceableBlock(magicexpansionresource, MagicExpansionItems.MAGIC_THREAD, RecipeType.ENHANCED_CRAFTING_TABLE, new ItemStack[] {
+        new UnplaceableBlock(magicexpansionwatercloudmaterial, MagicExpansionItems.MAGIC_THREAD, RecipeType.ENHANCED_CRAFTING_TABLE, new ItemStack[] {
                 SlimefunItems.MAGIC_LUMP_1,MAGIC_EXPANSION_MAGIC_SUGAR_1,SlimefunItems.MAGIC_LUMP_1,
                 MAGIC_EXPANSION_MAGIC_SUGAR_1,new ItemStack(Material.STRING),MAGIC_EXPANSION_MAGIC_SUGAR_1,
                 SlimefunItems.MAGIC_LUMP_1,MAGIC_EXPANSION_MAGIC_SUGAR_1,SlimefunItems.MAGIC_LUMP_1
@@ -4662,6 +4629,7 @@ public final class MagicExpansionItemSetup {
 
 
 
+    /** 容器组占位物品:仅用于让原生分组页显示容器组,点击会被监听器拦截转为自绘三级菜单 */
     private static void registerHiddenRecipe(MagicExpansion plugin, ItemGroup itemGroup, SlimefunItemStack item) {
         Material type = item.getType();
 

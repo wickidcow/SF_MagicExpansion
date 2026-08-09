@@ -4,6 +4,7 @@ import io.Yomicer.magicExpansion.MagicExpansion;
 import io.Yomicer.magicExpansion.core.MagicExpansionItems;
 import io.Yomicer.magicExpansion.items.misc.Lure;
 import io.Yomicer.magicExpansion.items.misc.WeightedItem;
+import io.Yomicer.magicExpansion.items.misc.baitbag.BaitBagMenu;
 import io.Yomicer.magicExpansion.items.misc.moreLure.MoreLure;
 import io.Yomicer.magicExpansion.items.tools.FishingRodWaterCloud;
 import io.Yomicer.magicExpansion.utils.ColorGradient;
@@ -131,8 +132,12 @@ public class PlayerFishingWaterCloudListener implements Listener {
         // 1. 判定是否水云间系列鱼竿
         if (!(sfItem instanceof FishingRodWaterCloud fishingRod)) return;
 
-        // 2. 获取当前鱼饵(副手优先,其次背包)
-        Lure activeLure = getActiveLure(player, fishingRod);
+        // 2. 获取当前鱼饵(饵料袋优先,其次副手/背包)
+        Set<String> supportedKeys = fishingRod.getLootTable().keySet();
+        String bagKey = BaitBagMenu.tryConsumeFromBag(player, supportedKeys);
+        Lure activeLure = bagKey != null
+                ? SHUIYUNJIAN_LURES.stream().filter(l -> l.getKey().equals(bagKey)).findFirst().orElse(null)
+                : getActiveLure(player, fishingRod);
 
         // 3. 没有鱼饵 → 按原版普通鱼竿走,不干预原版钓获
         if (activeLure == null) {
@@ -149,8 +154,15 @@ public class PlayerFishingWaterCloudListener implements Listener {
             item.remove();
         }
 
-        // 6. 消耗鱼饵(水云间提示)
-        consumeLure(player, activeLure);
+        // 6. 消耗鱼饵(饵料袋已消耗则跳过,水云间提示)
+        if (bagKey == null) {
+            consumeLure(player, activeLure);
+        } else {
+            // 饵料袋消耗: 同样弹出水云间消耗提示
+            String prefix = SHUIYUNJIAN_CONSUME_PHRASES.get(new Random().nextInt(SHUIYUNJIAN_CONSUME_PHRASES.size()));
+            player.sendMessage(ColorGradient.getRandomGradientName(prefix) + " §r"
+                    + ItemStackHelper.getDisplayName(activeLure.getItem()) + ColorGradient.getRandomGradientName(" ！"));
+        }
 
         // 7. 在鱼钩位置生成掉落物
         spawnDrop(player, e.getHook().getLocation(), drop);

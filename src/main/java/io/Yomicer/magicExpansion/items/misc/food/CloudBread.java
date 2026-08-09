@@ -73,7 +73,7 @@ public class CloudBread extends SimpleSlimefunItem<ItemConsumptionHandler> {
                 double rad = Math.toRadians(i);
                 double x = loc.getX() + Math.cos(rad) * 0.6;
                 double z = loc.getZ() + Math.sin(rad) * 0.6;
-                world.spawnParticle(Particle.FLASH, new Location(world, x, loc.getY(), z), 1, 0, 0, 0, 0);
+                world.spawnParticle(Particle.FLASH, new Location(world, x, loc.getY(), z), 1, 0, 0, 0, 0, Color.WHITE);
             }
         }
     }
