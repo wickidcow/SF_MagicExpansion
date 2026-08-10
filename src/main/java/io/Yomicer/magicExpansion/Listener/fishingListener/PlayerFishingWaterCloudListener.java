@@ -41,10 +41,9 @@ import java.util.concurrent.ThreadLocalRandom;
 /**
  * Water Cloud fishing integration.
  *
- * PyroFishingPro/BetterFishing remain authoritative when present. In external
- * provider mode this listener never removes or replaces their caught entity;
- * it only applies MagicExpansion rod proficiency, Magic lure preservation,
- * and separate MagicExpansion bonus rewards.
+ * External fishing plugins remain authoritative for the actual catch. This
+ * listener only adds MagicExpansion progression, Magic lure perks, and separate
+ * MagicExpansion bonus rewards after an external provider confirms a catch.
  */
 public class PlayerFishingWaterCloudListener implements Listener {
 
@@ -111,12 +110,10 @@ public class PlayerFishingWaterCloudListener implements Listener {
 
     public PlayerFishingWaterCloudListener() {
         WaterCloudHookManager.setAutoReelHandler(this::onAutoReel);
+        FishingIntegrationManager.setExternalCatchHandler(this::handleExternalCatch);
     }
 
-    /**
-     * MagicExpansion-owned fishing path. It is skipped completely when an
-     * external fishing provider is primary.
-     */
+    /** MagicExpansion-owned fishing path, used only when no external provider is primary. */
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onFish(PlayerFishEvent event) {
         if (FishingIntegrationManager.isExternalProviderActive()) {
@@ -147,7 +144,6 @@ public class PlayerFishingWaterCloudListener implements Listener {
                     processCustomStateCatch(player, fishingRod, event.getHook().getLocation(), false);
                 }
             } else if (event.getState() == PlayerFishEvent.State.CAUGHT_FISH) {
-                // Defensive fallback if vanilla unexpectedly produces a catch while the state machine owns the hook.
                 if (event.getCaught() instanceof Item caughtItem) {
                     caughtItem.remove();
                 }
@@ -162,9 +158,8 @@ public class PlayerFishingWaterCloudListener implements Listener {
     }
 
     /**
-     * External-provider additive path. MONITOR is observation-only with respect
-     * to the provider's catch: MagicExpansion never cancels the event or edits
-     * the caught entity.
+     * Generic Bukkit fallback for external providers. PyroFishingPro uses its
+     * provider-native catch event bridge when available to avoid duplicate rewards.
      */
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onExternalProviderCatch(PlayerFishEvent event) {
@@ -173,7 +168,23 @@ public class PlayerFishingWaterCloudListener implements Listener {
             return;
         }
 
-        Player player = event.getPlayer();
+        FishingIntegrationManager.Provider provider = FishingIntegrationManager.getPrimaryProvider();
+        if (FishingIntegrationManager.hasNativeCatchBridge(provider)) {
+            return;
+        }
+
+        ItemStack providerCatch = event.getCaught() instanceof Item item ? item.getItemStack().clone() : null;
+        handleExternalCatch(provider, event.getPlayer(), providerCatch, event.getHook().getLocation());
+    }
+
+    private void handleExternalCatch(FishingIntegrationManager.Provider provider,
+                                     Player player,
+                                     ItemStack providerCatch,
+                                     Location rewardLocation) {
+        if (provider != FishingIntegrationManager.getPrimaryProvider() || player == null) {
+            return;
+        }
+
         ItemStack rod = player.getInventory().getItemInMainHand();
         SlimefunItem sfItem = SlimefunItem.getByItem(rod);
         if (!(sfItem instanceof FishingRodWaterCloud fishingRod)) {
@@ -190,12 +201,12 @@ public class PlayerFishingWaterCloudListener implements Listener {
                 consumeLure(player, activeLure);
             }
 
-            // Never duplicate or mutate an external plugin's custom fish. A double-catch proc
-            // instead creates a separate MagicExpansion reward from this rod's own loot table.
+            // Never clone or mutate the provider's fish. A double-catch proc is a
+            // separate roll from MagicExpansion's own Water Cloud loot table.
             if (ThreadLocalRandom.current().nextDouble() < WaterCloudRodEffects.getOldDoubleCatchChance(level)) {
                 ItemStack bonus = getCaughtDrop(fishingRod, activeLure, level, false);
                 if (bonus != null) {
-                    spawnDrop(player, event.getHook().getLocation(), bonus);
+                    spawnDrop(player, rewardLocation == null ? player.getLocation() : rewardLocation, bonus);
                     player.sendMessage(BONUS_PHRASES.get(ThreadLocalRandom.current().nextInt(BONUS_PHRASES.size())));
                     ItemStack special = getSpecialCatchForLure(activeLure);
                     if (special != null && SlimefunUtils.isItemSimilar(bonus, special, true)) {
@@ -205,7 +216,6 @@ public class PlayerFishingWaterCloudListener implements Listener {
             }
         }
 
-        ItemStack providerCatch = event.getCaught() instanceof Item item ? item.getItemStack() : null;
         grantProficiency(player, rod, activeLure, providerCatch);
     }
 
@@ -429,7 +439,11 @@ public class PlayerFishingWaterCloudListener implements Listener {
         int oldLevel = WaterCloudRodProficiency.getLevel(rod);
         int newLevel = WaterCloudRodProficiency.addProficiency(rod, xp);
         WaterCloudRodProficiency.updateLoreWithReward(rod);
-        player.getInventory().setItemInMainHand(rod);
+
+        ItemStack currentMainHand = player.getInventory().getItemInMainHand();
+        if (SlimefunItem.getByItem(currentMainHand) instanceof FishingRodWaterCloud) {
+            player.getInventory().setItemInMainHand(rod);
+        }
         player.sendActionBar(WaterCloudRodProficiency.getActionBarProgress(rod));
 
         if (newLevel > oldLevel) {
@@ -445,10 +459,11 @@ public class PlayerFishingWaterCloudListener implements Listener {
         if (drop == null || drop.getType() == Material.AIR) {
             return;
         }
-        Item reward = player.getWorld().dropItem(hookLocation, drop);
+        Location location = hookLocation == null ? player.getLocation() : hookLocation;
+        Item reward = player.getWorld().dropItem(location, drop);
         reward.setPickupDelay(0);
         Vector direction = player.getLocation().add(0, 2, 0).toVector()
-                .subtract(hookLocation.toVector())
+                .subtract(location.toVector())
                 .normalize()
                 .multiply(2.5);
         reward.setVelocity(direction);
