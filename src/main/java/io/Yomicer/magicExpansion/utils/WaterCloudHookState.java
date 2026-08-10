@@ -6,8 +6,8 @@ import org.bukkit.Sound;
 /** Optional MagicExpansion-owned fishing states used only when no external fishing provider is primary. */
 public enum WaterCloudHookState {
     WAITING(0.10, -1, 0.01, null, null, 0, "§7"),
-    LIGHT_BITE(0.20, 8, 0.40, Sound.BLOCK_WATER_AMBIENT, Particle.WATER_BUBBLE, 3, "§e"),
-    FULL_BITE(0.00, -1, 0.00, Sound.ENTITY_FISHING_BOBBER_SPLASH, Particle.WATER_SPLASH, 5, "§c");
+    LIGHT_BITE(0.20, 8, 0.40, Sound.BLOCK_WATER_AMBIENT, Particle.BUBBLE, 3, "§e"),
+    FULL_BITE(0.00, -1, 0.00, Sound.ENTITY_FISHING_BOBBER_SPLASH, Particle.SPLASH, 5, "§c");
 
     private final double biteChance;
     private final int maxSeconds;
