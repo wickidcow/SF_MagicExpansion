@@ -1,8 +1,15 @@
 package io.Yomicer.magicExpansion.utils;
 
 import io.Yomicer.magicExpansion.MagicExpansion;
+import org.bukkit.Location;
+import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 
+import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Locale;
 
@@ -29,14 +36,28 @@ public final class FishingIntegrationManager {
         }
     }
 
+    @FunctionalInterface
+    public interface ExternalCatchHandler {
+        void onExternalCatch(Provider provider, Player player, ItemStack caughtItem, Location rewardLocation);
+    }
+
+    private static final Listener REFLECTIVE_EVENT_LISTENER = new Listener() {};
+
     private static MagicExpansion plugin;
+    private static ExternalCatchHandler externalCatchHandler;
+    private static boolean pyroCatchBridgeRegistered;
 
     private FishingIntegrationManager() {
     }
 
     public static void initialize(MagicExpansion instance) {
         plugin = instance;
+        registerPyroCatchBridge();
         logStatus();
+    }
+
+    public static void setExternalCatchHandler(ExternalCatchHandler handler) {
+        externalCatchHandler = handler;
     }
 
     public static Provider getPrimaryProvider() {
@@ -82,6 +103,10 @@ public final class FishingIntegrationManager {
         return provider == Provider.PYRO_FISHING || provider == Provider.BETTER_FISHING;
     }
 
+    public static boolean hasNativeCatchBridge(Provider provider) {
+        return provider == Provider.PYRO_FISHING && pyroCatchBridgeRegistered;
+    }
+
     /**
      * The upstream Water Cloud state machine is only allowed to control a hook
      * when no external provider owns fishing, unless a server owner explicitly
@@ -107,15 +132,15 @@ public final class FishingIntegrationManager {
 
     public static boolean isProviderAvailable(Provider provider) {
         return switch (provider) {
-            case PYRO_FISHING -> isAnyPluginEnabled("PyroFishingPro", "PyroFishing");
-            case BETTER_FISHING -> isAnyPluginEnabled("BetterFishing");
+            case PYRO_FISHING -> findEnabledPlugin("PyroFishingPro", "PyroFishing") != null;
+            case BETTER_FISHING -> findEnabledPlugin("BetterFishing", "FishingBetter") != null;
             case VANILLA -> true;
         };
     }
 
-    private static boolean isAnyPluginEnabled(String... names) {
+    private static Plugin findEnabledPlugin(String... names) {
         if (plugin == null) {
-            return false;
+            return null;
         }
 
         for (Plugin candidate : plugin.getServer().getPluginManager().getPlugins()) {
@@ -124,11 +149,75 @@ public final class FishingIntegrationManager {
             }
             for (String name : names) {
                 if (candidate.getName().equalsIgnoreCase(name)) {
-                    return true;
+                    return candidate;
                 }
             }
         }
-        return false;
+        return null;
+    }
+
+    /**
+     * PyroFishingPro exposes PyroFishCatchEvent, but MagicExpansion intentionally
+     * does not compile against the paid plugin. Register the event reflectively
+     * so Pyro remains optional while still giving us a reliable successful-catch
+     * signal after Pyro has produced its own fish.
+     */
+    @SuppressWarnings("unchecked")
+    private static void registerPyroCatchBridge() {
+        pyroCatchBridgeRegistered = false;
+        Plugin pyro = findEnabledPlugin("PyroFishingPro", "PyroFishing");
+        if (pyro == null) {
+            return;
+        }
+
+        try {
+            Class<?> rawEventClass = Class.forName(
+                    "me.arsmagica.API.PyroFishCatchEvent",
+                    false,
+                    pyro.getClass().getClassLoader()
+            );
+            if (!Event.class.isAssignableFrom(rawEventClass)) {
+                plugin.getLogger().warning("PyroFishingPro catch API class is not a Bukkit Event; using PlayerFishEvent fallback.");
+                return;
+            }
+
+            Class<? extends Event> eventClass = (Class<? extends Event>) rawEventClass;
+            Method getPlayer = rawEventClass.getMethod("getPlayer");
+            Method getItemStack = rawEventClass.getMethod("getItemStack");
+
+            plugin.getServer().getPluginManager().registerEvent(
+                    eventClass,
+                    REFLECTIVE_EVENT_LISTENER,
+                    EventPriority.MONITOR,
+                    (listener, event) -> {
+                        if (getPrimaryProvider() != Provider.PYRO_FISHING || externalCatchHandler == null) {
+                            return;
+                        }
+                        try {
+                            Player player = (Player) getPlayer.invoke(event);
+                            ItemStack caught = (ItemStack) getItemStack.invoke(event);
+                            if (player != null) {
+                                externalCatchHandler.onExternalCatch(
+                                        Provider.PYRO_FISHING,
+                                        player,
+                                        caught == null ? null : caught.clone(),
+                                        player.getLocation()
+                                );
+                            }
+                        } catch (ReflectiveOperationException | ClassCastException exception) {
+                            plugin.getLogger().warning("Could not read PyroFishingPro catch event: " + exception.getMessage());
+                        }
+                    },
+                    plugin,
+                    true
+            );
+
+            pyroCatchBridgeRegistered = true;
+            plugin.getLogger().info("PyroFishingPro catch API bridge registered without a hard plugin dependency.");
+        } catch (ReflectiveOperationException | LinkageError exception) {
+            plugin.getLogger().warning("PyroFishingPro catch API bridge unavailable; using PlayerFishEvent fallback: "
+                    + exception.getMessage());
+        }
     }
 
     private static Provider parseProvider(String value) {
@@ -143,7 +232,7 @@ public final class FishingIntegrationManager {
 
         return switch (normalized) {
             case "PYROFISHING", "PYROFISHINGPRO", "PYRO" -> Provider.PYRO_FISHING;
-            case "BETTERFISHING", "BETTER" -> Provider.BETTER_FISHING;
+            case "BETTERFISHING", "FISHINGBETTER", "BETTER" -> Provider.BETTER_FISHING;
             case "VANILLA", "NONE" -> Provider.VANILLA;
             case "AUTO", "" -> null;
             default -> null;
