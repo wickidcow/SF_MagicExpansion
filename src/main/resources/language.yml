@@ -1428,6 +1428,22 @@ zh_CN:
         - 'ui重构'
         - '2. 新增鱼饵储物袋'
         - '云梦袋 - 存储钓鱼佬系列鱼饵'
+    UPDATE_LOG_2026_08_11:
+      Name: 'Date: 2026-08-11'
+      Lore:
+        - ' '
+        - '1. 新增水云间钓鱼指南'
+        - '使用/mxf guide ShuiYunJian指令获取'
+        - '旧版钓鱼指南用/mxf guide ZhiMeng获取'
+        - '2. 水云间系列鱼竿新增一套全新的钓鱼体系'
+        - '新增管理员命令:/mxfishmode'
+        - '可用true/false控制水云间系列新版钓鱼体系的启动与否'
+        - '后续将开放玩家自主选择钓鱼方式'
+        - '3.芦花钓熟练度系统增加升级奖励'
+        - '芦花钓配方修改'
+        - '4. 新增鱼饵 蒹葭,此饵为芦花钓专用鱼饵'
+        - '5. 云梦袋优化'
+        - '6. 修复了 抽奖机 奖券展示示例异常的bug'
 
     COOPERATE_CREATION_INFO:
       Name: '魔法共创说明'
@@ -1557,46 +1573,18 @@ zh_CN:
         - '若你真的钓到它，或许将改写整个钓鱼史'
 
 
-    FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_CUIXIA:
-      Name: '水云间-特殊事件-淬霞'
+
+    BAIT_BAG:
+      Name: '云梦袋'
       Lore:
         - ''
-        - '不需要描述'
-        - '不需要描述'
-        - '不需要描述'
-        - '不需要描述'
-    FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_WEICHEN:
-      Name: '水云间-特殊事件-微尘'
-      Lore:
+        - '梦里垂纶，云间藏饵'
+        - '一囊收尽两界水云'
+        - '愿者，自有饵来'
+        - '此袋所藏，皆是钓者与水的旧约'
         - ''
-        - '不需要描述'
-        - '不需要描述'
-        - '不需要描述'
-        - '不需要描述'
-    FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_RONGHUO:
-      Name: '水云间-特殊事件-熔火'
-      Lore:
-        - ''
-        - '不需要描述'
-        - '不需要描述'
-        - '不需要描述'
-        - '不需要描述'
-    FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_YUEJIN:
-      Name: '水云间-特殊事件-跃金'
-      Lore:
-        - ''
-        - '不需要描述'
-        - '不需要描述'
-        - '不需要描述'
-        - '不需要描述'
-    FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_XINGHE:
-      Name: '水云间-特殊事件-星核'
-      Lore:
-        - ''
-        - '不需要描述'
-        - '不需要描述'
-        - '不需要描述'
-        - '不需要描述'
+        - '用于存放所有钓鱼佬系列的鱼饵'
+
 
 
     FISH_LEGENDARY_EEL_POWER:
@@ -1695,13 +1683,109 @@ zh_CN:
         - '幽光自核而起，炽如初阳'
         - '莫伸手触它，灼灼不可近'
         - '星核沉处，万物生光'
-
+    FISH_LURE_BETWEEN_WATER_CLOUD_REED_JIANJIA:
+      Name: '蒹葭'
+      Lore:
+        - ''
+        - '蒹葭苍苍，白露为霜'
+        - '所谓伊人，在水一方'
+        - '此饵入水，可唤书中之灵'
+    FISH_LURE_BETWEEN_WATER_CLOUD_REED_LUXUE:
+      Name: '芦雪'
+      Lore:
+        - ''
+        - '苇絮如雪，随风而散'
+        - '落于水面，静待有缘之鱼'
+        - '一羽轻白，胜过千钧鱼饵'
+    FISH_LURE_BETWEEN_WATER_CLOUD_REED_WEILU:
+      Name: '苇露'
+      Lore:
+        - ''
+        - '苇尖凝露，一泓清凉'
+        - '日出前采撷，犹带水泽气息'
+        - '鱼儿闻之，如饮甘霖'
+    FISH_LURE_BETWEEN_WATER_CLOUD_REED_BAILU:
+      Name: '白露'
+      Lore:
+        - ''
+        - '白露既降，寒潭生烟'
+        - '一丝凉意，透入水底'
+        - '寒渊之鱼，闻此而聚'
+    FISH_LURE_BETWEEN_WATER_CLOUD_REED_LUYA:
+      Name: '芦芽'
+      Lore:
+        - ''
+        - '新芦破水，生机初醒'
+        - '由竹而生，承青竹竿之余韵'
+        - '嫩芽入水，万物逢春'
+    FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_REED_JIANJIA:
+      Name: '水云间-特殊事件-蒹葭'
+      Lore:
+        - ''
+        - '不需要描述'
+        - '不需要描述'
+        - '不需要描述'
+        - '不需要描述'
+    FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_REED_LUXUE:
+      Name: '水云间-特殊事件-芦雪'
+      Lore:
+        - ''
+        - '不需要描述'
+        - '不需要描述'
+        - '不需要描述'
+        - '不需要描述'
+    FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_REED_WEILU:
+      Name: '水云间-特殊事件-苇露'
+      Lore:
+        - ''
+        - '不需要描述'
+        - '不需要描述'
+        - '不需要描述'
+        - '不需要描述'
+    FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_REED_BAILU:
+      Name: '水云间-特殊事件-白露'
+      Lore:
+        - ''
+        - '不需要描述'
+        - '不需要描述'
+        - '不需要描述'
+        - '不需要描述'
+    FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_REED_LUYA:
+      Name: '水云间-特殊事件-芦芽'
+      Lore:
+        - ''
+        - '不需要描述'
+        - '不需要描述'
+        - '不需要描述'
+        - '不需要描述'
+    FISHING_BOOK_BETWEEN_WATER_CLOUD:
+      Name: '水云间钓鱼指南'
+      Lore:
+        - ''
+    FISHING_GUIDE_BETWEEN_WATER_CLOUD:
+      Name: '水云间新钓鱼体系'
+      Lore:
+        - ''
+        - '水云间新钓鱼体系使用方法:'
+        - '1. 抛竿入水,浮标静候 —— 依次经历 静默/轻咬/完全咬钩'
+        - '2. 完全咬钩后浮标剧烈晃动, 进入蓄力阶段'
+        - '3. 转动视角让动作栏标尺的色块对准中央, 持续蓄力'
+        - '4. 蓄力满自动收竿必中鱼; 手动收竿时蓄力越高中鱼率越高'
+        - '5. 鱼饵放入云梦袋可自动消耗; 熟练度随钓获成长, 等级解锁额外加成'
     BAMBOO_JOINT:
       Name: '青竹节'
       Lore:
         - ''
         - '取溪畔青竹，截节成材'
         - '每一节都封存着一缕山间清风'
+    REED_TASSEL:
+      Name: '芦穗'
+      Lore:
+        - ''
+        - '蒹葭苍苍，白露为霜'
+        - '所谓伊人，在水一方'
+        - '风过水云，穗影婆娑'
+        - '此穗入水，可作芦花钓之竿材'
     MAGIC_THREAD:
       Name: '魔法线'
       Lore:

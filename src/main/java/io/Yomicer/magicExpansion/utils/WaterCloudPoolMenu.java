@@ -35,22 +35,32 @@ public class WaterCloudPoolMenu {
     /** 每个掉落物页展示的条目数(分页,4 行 × 7 列) */
     private static final int ITEMS_PER_PAGE = 28;
 
-    private static final String[] BAIT_KEYS = {"CuiXia", "WeiChen", "RongHuo", "YueJin", "XingHe"};
-    private static final String[] BAIT_NAMES = {"淬霞", "微尘", "熔火", "跃金", "星核"};
-    private static final String[] BAIT_COLORS = {"§c", "§7", "§4", "§6", "§d"};
+    private static final String[] BAIT_KEYS = {"CuiXia", "WeiChen", "RongHuo", "YueJin", "XingHe", "JianJia", "LuXue", "WeiLu", "BaiLu", "LuYa"};
+    private static final String[] BAIT_NAMES = {"淬霞", "微尘", "熔火", "跃金", "星核", "蒹葭", "芦雪", "苇露", "白露", "芦芽"};
+    private static final String[] BAIT_COLORS = {"§c", "§7", "§4", "§6", "§d", "§b", "§f", "§3", "§e", "§a"};
     private static final ItemStack[] BAIT_ICONS = {
             MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_CUIXIA,
             MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_WEICHEN,
             MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_RONGHUO,
             MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_YUEJIN,
-            MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_XINGHE
+            MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_XINGHE,
+            MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_REED_JIANJIA,
+            MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_REED_LUXUE,
+            MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_REED_WEILU,
+            MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_REED_BAILU,
+            MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_REED_LUYA
     };
     private static final ItemStack[] SPECIAL_ICONS = {
-            MagicExpansionItems.FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_CUIXIA,
-            MagicExpansionItems.FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_WEICHEN,
-            MagicExpansionItems.FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_RONGHUO,
-            MagicExpansionItems.FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_YUEJIN,
-            MagicExpansionItems.FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_XINGHE
+            MagicExpansionItems.REED_TASSEL,  // 淬霞特殊钓物 = 芦穗
+            MagicExpansionItems.REED_TASSEL,  // 微尘特殊钓物 = 芦穗
+            MagicExpansionItems.REED_TASSEL,  // 熔火特殊钓物 = 芦穗
+            MagicExpansionItems.REED_TASSEL,  // 跃金特殊钓物 = 芦穗
+            MagicExpansionItems.REED_TASSEL,  // 星核特殊钓物 = 芦穗
+            MagicExpansionItems.FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_REED_JIANJIA, // 蒹葭特殊钓物(占位)
+            MagicExpansionItems.FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_REED_LUXUE,   // 芦雪特殊钓物(占位)
+            MagicExpansionItems.FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_REED_WEILU,   // 苇露特殊钓物(占位)
+            MagicExpansionItems.FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_REED_BAILU,   // 白露特殊钓物(占位)
+            MagicExpansionItems.FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_REED_LUYA     // 芦芽特殊钓物(占位)
     };
 
     private WaterCloudPoolMenu() {
@@ -92,9 +102,14 @@ public class WaterCloudPoolMenu {
 
         Map<String, List<WeightedItem>> table = rod.getLootTable();
         int[] slots = {10, 11, 12, 13, 14};
+        int slotIdx = 0;
 
-        for (int i = 0; i < BAIT_KEYS.length && i < slots.length; i++) {
+        for (int i = 0; i < BAIT_KEYS.length && slotIdx < slots.length; i++) {
+            // 只显示该鱼竿实际拥有的鱼饵池(芦花钓只有蒹葭, 青竹竿为五饵)
+            if (!table.containsKey(BAIT_KEYS[i])) continue;
             final int fi = i;
+            int baitSlot = slots[slotIdx];
+            slotIdx++;
             List<WeightedItem> pool = table.getOrDefault(BAIT_KEYS[i], List.of());
             int total = pool.stream().mapToInt(WeightedItem::getWeight).sum();
             WeightedItem special = pool.stream().filter(w -> isSpecialItem(w.getItem(), fi)).findFirst().orElse(null);
@@ -114,7 +129,7 @@ public class WaterCloudPoolMenu {
             meta.setLore(lore);
             icon.setItemMeta(meta);
 
-            menu.addItem(slots[i], icon, (p, slot, item, action) -> {
+            menu.addItem(baitSlot, icon, (p, slot, item, action) -> {
                 p.playSound(p.getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1.0f);
                 openPool(p, rod, BAIT_KEYS[fi], 0);
                 return false;

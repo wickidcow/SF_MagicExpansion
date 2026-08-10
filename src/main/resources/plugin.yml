@@ -66,6 +66,12 @@ commands:
     usage: /magicshop <open|admin>
     aliases: [ mshop ]
 
+  mxfishmode:
+    description: 切换水云间新钓鱼系统(true=状态机判定, false=旧系统)
+    usage: /mxfishmode <true|false>
+    permission: magicexpansion.admin.fishmode
+    permission-message: "&c你没有权限执行此指令！"
+
 
 permissions:
   MagicExpansionMachines.use:
@@ -89,6 +95,10 @@ permissions:
 
   magicexpansion.shop.admin:
     description: 允许使用管理员商店菜单
+    default: op
+
+  magicexpansion.admin.fishmode:
+    description: 允许切换水云间新钓鱼系统(/mxfishmode)
     default: op
 
 #  magicexpansion.record:

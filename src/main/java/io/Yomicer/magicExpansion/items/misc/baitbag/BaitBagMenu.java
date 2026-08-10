@@ -16,7 +16,9 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Sound;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -53,12 +55,84 @@ public final class BaitBagMenu {
             new BaitEntry("ronghuo", "RongHuo", "水云间", MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_RONGHUO),
             new BaitEntry("yuejin", "YueJin", "水云间", MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_YUEJIN),
             new BaitEntry("xinghe", "XingHe", "水云间", MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_XINGHE),
-            new BaitEntry("memory", "fishLureFinal", "记忆碎片", memoryFragment())
+            new BaitEntry("memory", "fishLureFinal", "记忆碎片", memoryFragment()),
+            new BaitEntry("jianjia", "JianJia", "芦花", MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_REED_JIANJIA),
+            new BaitEntry("magicsugar", "magic_sugar", "织梦者", MagicExpansionItems.MAGIC_EXPANSION_MAGIC_SUGAR_1)
     );
 
-    private static final int[] DREAMER_SLOTS = {11, 12, 13, 14};
-    private static final int[] WATER_SLOTS = {20, 21, 22, 23, 24};
-    private static final int MEMORY_SLOT = 15;
+    // ==================== 4×7 布局数据模型(系列 → 鱼竿 → 鱼饵, 数据驱动, 新增鱼竿在此登记即可自动排版) ====================
+
+    /** 鱼竿布局: 展示名 / 鱼竿图标 / 该竿消耗的鱼饵 key 列表 */
+    private record RodLayout(String rodName, ItemStack rodIcon, List<String> lureKeys) {
+    }
+
+    /** 系列布局: 系列名 / 系列标识图标 / 该系列下的鱼竿列表 */
+    private record SeriesLayout(String seriesName, Material seriesIcon, List<RodLayout> rods) {
+    }
+
+    /** 中间 4×7 存储区每行起始槽位 */
+    private static final int[] GRID_ROWS = {10, 19, 28, 37};
+
+    /** 系列 → 鱼竿 → 鱼饵 布局(新增鱼竿按此处登记, 自动排版) */
+    private static final List<SeriesLayout> LAYOUT = List.of(
+            new SeriesLayout("织梦者", Material.GHAST_TEAR, List.of(
+                    new RodLayout("萌新鱼竿/风语者之竿", MagicExpansionItems.FISHING_ROD_WIND_SPEAKER,
+                            List.of("fishLureBasic", "fishLureDust", "fishLureOre", "fishLureAlloyIngot", "magic_sugar")),
+                    new RodLayout("纠缠之节：终焉之丝·悖论为钩", MagicExpansionItems.FISHING_ROD_FINAL_STICK,
+                            List.of("fishLureFinal"))
+            )),
+            new SeriesLayout("水云间", Material.CYAN_DYE, List.of(
+                    new RodLayout("青竹竿", MagicExpansionItems.FISHING_ROD_BETWEEN_WATER_CLOUD_CYAN_BAMBOO,
+                            List.of("CuiXia", "WeiChen", "RongHuo", "YueJin", "XingHe")),
+                    new RodLayout("芦花钓", MagicExpansionItems.FISHING_ROD_BETWEEN_WATER_CLOUD_REED,
+                            List.of("JianJia"))
+            ))
+    );
+
+    /** 鱼饵 → 存储槽位 映射(静态构建, 与渲染共用) */
+    private static final Map<BaitEntry, Integer> ENTRY_SLOTS = new java.util.LinkedHashMap<>();
+
+    static {
+        int row = 0;
+        int col = 0;
+        for (SeriesLayout series : LAYOUT) {
+            if (col != 0) {
+                row++;
+                col = 0;
+            }
+            col = 1; // 槽0 = 系列标识格
+            for (RodLayout rod : series.rods()) {
+                if (col > 6) {
+                    // 本行已满: 换行, 行首为装饰格(系列标识不重复)
+                    row++;
+                    col = 1;
+                }
+                col++; // 鱼竿展示格占 1 格
+                for (String key : rod.lureKeys()) {
+                    if (col > 6) {
+                        row++;
+                        col = 1;
+                    }
+                    BaitEntry entry = findEntryByKey(key);
+                    if (entry != null) {
+                        ENTRY_SLOTS.put(entry, GRID_ROWS[row] + col);
+                    }
+                    col++;
+                }
+            }
+            row++;
+            col = 0;
+        }
+    }
+
+    private static BaitEntry findEntryByKey(String key) {
+        for (BaitEntry entry : BAITS) {
+            if (entry.key().equals(key)) return entry;
+        }
+        return null;
+    }
+
+    /** 旧固定槽位布局已由 LAYOUT 数据驱动取代(保留常量以兼容遗留代码) */
     private static final int INPUT_SLOT = 49;
 
     // 以太秘匣内部数据 key(与 CargoFragment 一致)
@@ -139,8 +213,9 @@ public final class BaitBagMenu {
 
     private static int seriesSize(String series) {
         return switch (series) {
-            case "织梦者" -> 4;
+            case "织梦者" -> 5;
             case "水云间" -> 5;
+            case "芦花" -> 5;
             default -> 1;
         };
     }
@@ -229,6 +304,55 @@ public final class BaitBagMenu {
         return null;
     }
 
+    /**
+     * 只读锁定: 按优先级探测袋中第一个可用鱼饵的 key(不消耗, 供中鱼结算前锁定鱼获池)
+     *
+     * @return 可用鱼饵的 key(如 CuiXia / fishLureBasic), 无袋或无可用鱼饵时返回 null
+     */
+    public static String peekFromBag(Player player, Set<String> supportedKeys) {
+        for (int slot : bagSlotsInOrder(player)) {
+            ItemStack bag = player.getInventory().getItem(slot);
+            if (!isBaitBag(bag)) continue;
+
+            List<BaitEntry> candidates = new ArrayList<>();
+            for (BaitEntry entry : BAITS) {
+                if (!supportedKeys.contains(entry.key())) continue;
+                if (getAmount(bag, entry) > 0) candidates.add(entry);
+            }
+            if (candidates.isEmpty()) continue;
+
+            candidates.sort((a, b) -> {
+                int pa = getPriority(bag, a);
+                int pb = getPriority(bag, b);
+                if (pa != pb) return Integer.compare(pa, pb); // 优先级数值小的先消耗
+                return Integer.compare(BAITS.indexOf(a), BAITS.indexOf(b)); // 同级按 织梦者→水云间→记忆碎片
+            });
+            return candidates.get(0).key();
+        }
+        return null;
+    }
+
+    /**
+     * 按指定 key 从袋中消耗 1 个鱼饵(袋子已丢失或袋中无该鱼饵时不消耗)
+     *
+     * @return 是否成功消耗
+     */
+    public static boolean consumeFromBagByKey(Player player, String key) {
+        for (int slot : bagSlotsInOrder(player)) {
+            ItemStack bag = player.getInventory().getItem(slot);
+            if (!isBaitBag(bag)) continue;
+            for (BaitEntry entry : BAITS) {
+                if (!entry.key().equals(key)) continue;
+                long amount = getAmount(bag, entry);
+                if (amount <= 0) continue;
+                setAmount(bag, entry, amount - 1);
+                player.getInventory().setItem(slot, bag);
+                return true;
+            }
+        }
+        return false;
+    }
+
     /** 主手 → 副手 → 快捷栏 → 背包 的槽位顺序 */
     private static List<Integer> bagSlotsInOrder(Player player) {
         PlayerInventory inv = player.getInventory();
@@ -275,7 +399,7 @@ public final class BaitBagMenu {
         menu.setPlayerInventoryClickable(true);
         menu.addMenuOpeningHandler(p -> p.playSound(p.getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1.0f));
 
-        // 白色填充(含第1行7槽装饰、取消返回按钮后的1槽、各行行首与行尾)
+        // 白色填充(外围装饰, 不含中间 4×7 存储区)
         for (int s : new int[]{0, 1, 2, 3, 5, 6, 7, 8, 9, 17, 18, 26, 27, 35, 36, 44, 45, 53}) {
             menu.addItem(s, plainPane(Material.WHITE_STAINED_GLASS_PANE), ChestMenuUtils.getEmptyClickHandler());
         }
@@ -283,10 +407,11 @@ public final class BaitBagMenu {
         for (int s : new int[]{47, 48, 50, 51}) {
             menu.addItem(s, new CustomItemStack(Material.PINK_STAINED_GLASS_PANE, getGradientNameVer2("输入槽")), ChestMenuUtils.getEmptyClickHandler());
         }
-        // 淡蓝填充(水云间区 + 下半区)
-        for (int s : new int[]{16, 25, 28, 29, 30, 31, 32, 33, 34, 37, 38, 39, 40, 41, 42, 43}) {
+        // 中间 4×7 存储区: 先铺淡蓝装饰, 再由 renderGrid 覆盖(系列标识/鱼竿展示/鱼饵存储)
+        for (int s : new int[]{10,11,12,13,14,15,16,19,20,21,22,23,24,25,28,29,30,31,32,33,34,37,38,39,40,41,42,43}) {
             menu.addItem(s, plainPane(Material.LIGHT_BLUE_STAINED_GLASS_PANE), ChestMenuUtils.getEmptyClickHandler());
         }
+        renderGrid(menu, current, bagSlot);
 
         // 4槽: 使用说明
         menu.addItem(4, new CustomItemStack(Material.BOOK,
@@ -296,9 +421,7 @@ public final class BaitBagMenu {
                 getGradientNameVer2("Shift+左键取出全部(最多3456)"),
                 getGradientNameVer2("右键循环调整优先级")), ChestMenuUtils.getEmptyClickHandler());
 
-        // 系列标签
-        menu.addItem(10, new CustomItemStack(Material.GHAST_TEAR, getGradientNameVer2("织梦者"), getGradientNameVer2("优先级 1~4")), ChestMenuUtils.getEmptyClickHandler());
-        menu.addItem(19, new CustomItemStack(Material.CYAN_DYE, getGradientNameVer2("水云间"), getGradientNameVer2("优先级 1~5")), ChestMenuUtils.getEmptyClickHandler());
+        // 系列标签与鱼饵槽由 renderGrid 统一渲染(数据驱动)
 
         // 翻页槽: 无页可翻时显示白色玻璃板
         menu.addItem(46, plainPane(Material.WHITE_STAINED_GLASS_PANE), ChestMenuUtils.getEmptyClickHandler());
@@ -321,35 +444,77 @@ public final class BaitBagMenu {
             return false;
         });
 
-        // 织梦者鱼饵槽
-        for (int i = 0; i < DREAMER_SLOTS.length; i++) {
-            int baitSlot = DREAMER_SLOTS[i];
-            BaitEntry entry = BAITS.get(i);
-            menu.addItem(baitSlot, baitIcon(current, entry), ChestMenuUtils.getEmptyClickHandler());
-            menu.addMenuClickHandler(baitSlot, (p, s, it, a) -> {
-                handleBaitClick(p, menu, current, bagSlot, entry, a);
-                return false;
-            });
-        }
-        // 水云间鱼饵槽
-        for (int i = 0; i < WATER_SLOTS.length; i++) {
-            int baitSlot = WATER_SLOTS[i];
-            BaitEntry entry = BAITS.get(4 + i);
-            menu.addItem(baitSlot, baitIcon(current, entry), ChestMenuUtils.getEmptyClickHandler());
-            menu.addMenuClickHandler(baitSlot, (p, s, it, a) -> {
-                handleBaitClick(p, menu, current, bagSlot, entry, a);
-                return false;
-            });
-        }
-        // 记忆碎片槽
-        BaitEntry memory = BAITS.get(BAITS.size() - 1);
-        menu.addItem(MEMORY_SLOT, baitIcon(current, memory), ChestMenuUtils.getEmptyClickHandler());
-        menu.addMenuClickHandler(MEMORY_SLOT, (p, s, it, a) -> {
-            handleBaitClick(p, menu, current, bagSlot, memory, a);
-            return false;
-        });
+        // 鱼饵槽: 由 renderGrid 按布局注册(数据驱动)
 
         menu.open(player);
+    }
+
+    /**
+     * 渲染中间 4×7 存储区: 系列标识格 → 鱼竿展示格 → 鱼饵存储格
+     * 行满自动换行(换行后行首为装饰格, 系列标识不重复); 新增鱼竿只需在 LAYOUT 登记
+     */
+    private static void renderGrid(ChestMenu menu, ItemStack bag, int bagSlot) {
+        int row = 0;
+        int col = 0;
+        for (SeriesLayout series : LAYOUT) {
+            if (col != 0) {
+                // 系列不在行首: 换行(行首为装饰格)
+                row++;
+                col = 0;
+            }
+            // 系列标识格(行首, 偏移0)
+            menu.addItem(GRID_ROWS[row], new CustomItemStack(series.seriesIcon(),
+                    getGradientNameVer2(series.seriesName()),
+                    getGradientNameVer2("优先级 1~" + seriesSize(series.seriesName()))), ChestMenuUtils.getEmptyClickHandler());
+            col = 1;
+            for (RodLayout rod : series.rods()) {
+                if (col > 6) {
+                    // 本行已满: 换行, 行首为装饰格
+                    row++;
+                    col = 1;
+                }
+                // 鱼竿展示格(偏移 col)
+                menu.addItem(GRID_ROWS[row] + col, rodDisplay(rod), ChestMenuUtils.getEmptyClickHandler());
+                col++;
+                for (String key : rod.lureKeys()) {
+                    if (col > 6) {
+                        row++;
+                        col = 1;
+                    }
+                    BaitEntry entry = findEntryByKey(key);
+                    if (entry != null) {
+                        BaitEntry e = entry;
+                        int slot = GRID_ROWS[row] + col;
+                        menu.addItem(slot, baitIcon(bag, e), ChestMenuUtils.getEmptyClickHandler());
+                        menu.addMenuClickHandler(slot, (p, s, it, a) -> {
+                            handleBaitClick(p, menu, bag, bagSlot, e, a);
+                            return false;
+                        });
+                    }
+                    col++;
+                }
+            }
+            row++;
+            col = 0;
+        }
+    }
+
+    /** 鱼竿展示格: 竿材质 + 发光 + 展示名 + 说明(告诉玩家该竿消耗哪些鱼饵) */
+    private static ItemStack rodDisplay(RodLayout rod) {
+        ItemStack icon = rod.rodIcon().clone();
+        ItemMeta meta = icon.getItemMeta();
+        if (meta != null) {
+            // 发光: 按 key 运行时解析(兼容 1.20.4 DURABILITY 与 1.21 UNBREAKING)
+            Enchantment glow = Enchantment.getByKey(NamespacedKey.minecraft("unbreaking"));
+            if (glow != null) {
+                meta.addEnchant(glow, 1, true);
+                meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+            }
+            meta.setDisplayName(getGradientNameVer2(rod.rodName()));
+            meta.setLore(List.of(getGradientNameVer2("该鱼竿消耗以下鱼饵")));
+            icon.setItemMeta(meta);
+        }
+        return icon;
     }
 
     private static ItemStack plainPane(Material material) {
@@ -398,6 +563,8 @@ public final class BaitBagMenu {
             if (other == entry || !other.series().equals(entry.series())) continue;
             if (getPriority(bag, other) == next) {
                 setPriority(bag, other, current);
+                // 修复: 被互换方优先级已变, 同步刷新其槽位图标
+                refreshBaitSlot(menu, bag, other);
                 break;
             }
         }
@@ -598,15 +765,17 @@ public final class BaitBagMenu {
         }
     }
 
+    /** 鱼饵存储槽位映射(由 LAYOUT 静态构建, 数据驱动) */
     private static int baitSlotFor(BaitEntry entry) {
-        int idx = BAITS.indexOf(entry);
-        if (idx >= 0 && idx < 4) return DREAMER_SLOTS[idx];
-        if (idx >= 4 && idx < 9) return WATER_SLOTS[idx - 4];
-        return MEMORY_SLOT;
+        Integer slot = ENTRY_SLOTS.get(entry);
+        return slot != null ? slot : -1;
     }
 
     private static void refreshBaitSlot(ChestMenu menu, ItemStack bag, BaitEntry entry) {
-        menu.replaceExistingItem(baitSlotFor(entry), baitIcon(bag, entry));
+        int slot = baitSlotFor(entry);
+        if (slot >= 0) {
+            menu.replaceExistingItem(slot, baitIcon(bag, entry));
+        }
     }
 
     private static void refreshInputSlot(ChestMenu menu, ItemStack bag) {

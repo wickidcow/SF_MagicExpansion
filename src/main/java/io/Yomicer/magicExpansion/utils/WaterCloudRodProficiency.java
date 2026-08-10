@@ -2,7 +2,6 @@ package io.Yomicer.magicExpansion.utils;
 
 import io.Yomicer.magicExpansion.MagicExpansion;
 import org.bukkit.NamespacedKey;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
@@ -46,8 +45,6 @@ public class WaterCloudRodProficiency {
     /** 特殊钓物熟练度 */
     public static final int XP_SPECIAL = 5;
 
-    /** 基础 LURE 附魔等级(上钩速度),熟练度在此基础上叠加 */
-    public static final int BASE_LURE = 2;
     /** 动作栏进度条格子数(50 个 |) */
     public static final int ACTION_BAR_LENGTH = 50;
     /** 鱼竿 lore 进度条格子数(33 个 |) */
@@ -140,6 +137,39 @@ public class WaterCloudRodProficiency {
         return level;
     }
 
+    /** 剥离 §x 与所有 § 格式码(渐变行中文字被色码隔开, 直接 contains 匹配会失败) */
+    private static String stripColorCodes(String line) {
+        return line.replace("§x", "").replaceAll("§[0-9a-fk-orA-FK-OR]", "");
+    }
+
+    /**
+     * 一次读写完成熟练度行 + 属性加成行更新(钓鱼升级时调用)
+     * 避免同一 tick 内对含 §x 渐变行进行二次 getLore/setLore 往返(旧版渐进色正常即因单次往返)
+     */
+    public static void updateLoreWithReward(ItemStack rod) {
+        if (rod == null) return;
+        int level = getLevel(rod);
+        boolean newSystem = WaterCloudHookManager.isEnabled();
+        ItemMeta meta = rod.getItemMeta();
+        List<String> lore = meta.getLore() == null ? new ArrayList<>() : new ArrayList<>(meta.getLore());
+
+        // 移除旧熟练度行与旧属性加成行(先剥离色码再按文字匹配)
+        lore.removeIf(line -> {
+            String plain = stripColorCodes(line);
+            return plain.contains("熟练度")
+                    || REWARD_LINE_PREFIXES.stream().anyMatch(plain::contains);
+        });
+
+        // 熟练度行(魔法二代渐变) + 属性加成行
+        lore.add("§b熟练度: §f" + getLevelName(level) + " §e" + getProgressBar(level, getXp(rod)));
+        List<String> reward = buildRewardLore(level, newSystem);
+        if (!reward.isEmpty()) {
+            lore.addAll(reward);
+        }
+        meta.setLore(lore);
+        rod.setItemMeta(meta);
+    }
+
     /**
      * 更新鱼竿 lore 中的熟练度行(保留原有 lore)
      */
@@ -147,24 +177,69 @@ public class WaterCloudRodProficiency {
         if (rod == null) return;
         ItemMeta meta = rod.getItemMeta();
         List<String> lore = meta.getLore() == null ? new ArrayList<>() : new ArrayList<>(meta.getLore());
-        lore.removeIf(line -> line.startsWith("§b熟练度:"));
+        // 移除旧熟练度行(contains 匹配, 兼容行首颜色格式变化)
+        lore.removeIf(line -> line.contains("熟练度"));
         lore.add("§b熟练度: §f" + getLevelName(getLevel(rod)) + " §e" + getProgressBar(getLevel(rod), getXp(rod)));
         meta.setLore(lore);
         rod.setItemMeta(meta);
     }
 
+    /** 奖励属性行内容标记(用于定位并移除旧奖励段; 行首为渐变颜色码, 用 contains 匹配文字) */
+    private static final List<String> REWARD_LINE_PREFIXES = List.of(
+            "当前奖励 ·",  // 旧版残留标题行(已不再生成, 清除历史遗留)
+            "等待时间：", "轻咬时间：", "蓄力速度：", "双倍鱼获：", "特殊钓物：",
+            "上钩速度：", "杂物概率：", "省饵概率："
+    );
+
     /**
-     * 按当前等级应用 LURE 附魔(基础 + 等级特殊加成),用于提升上钩速度
-     * 加成数值来自 WaterCloudRodEffects,后续新增效果时在此一并应用
+     * 更新鱼竿 lore 中的属性加成行(按当前钓鱼系统与等级生成, 无标题行, 直接展示加成; 保留熟练度行与原有 lore)
+     * 切换系统/升级后调用, 加成行随系统与等级即时刷新
      */
-    public static void applyLureEnchant(ItemStack rod) {
+    public static void updateRewardLore(ItemStack rod) {
         if (rod == null) return;
+        int level = getLevel(rod);
+        boolean newSystem = WaterCloudHookManager.isEnabled();
         ItemMeta meta = rod.getItemMeta();
-        int total = BASE_LURE + WaterCloudRodEffects.getLureBonus(getLevel(rod));
-        meta.removeEnchant(Enchantment.LURE);
-        if (total > 0) {
-            meta.addEnchant(Enchantment.LURE, total, true);
+        List<String> lore = meta.getLore() == null ? new ArrayList<>() : new ArrayList<>(meta.getLore());
+
+        // 移除旧属性加成行(先剥离色码再按文字匹配)
+        lore.removeIf(line -> {
+            String plain = stripColorCodes(line);
+            return REWARD_LINE_PREFIXES.stream().anyMatch(plain::contains);
+        });
+
+        List<String> reward = buildRewardLore(level, newSystem);
+        if (!reward.isEmpty()) {
+            lore.addAll(reward);
         }
+        meta.setLore(lore);
         rod.setItemMeta(meta);
+    }
+
+    /** 按当前系统与等级生成属性加成行(内容行魔法二代渐变, 无标题行; 无加成的等级返回空列表) */
+    private static List<String> buildRewardLore(int level, boolean newSystem) {
+        List<String> lines = new ArrayList<>();
+        if (newSystem) {
+            double bite = WaterCloudRodEffects.getNewBiteChanceBonus(level);
+            double light = WaterCloudRodEffects.getNewLightBiteChanceBonus(level);
+            double charge = WaterCloudRodEffects.getNewChargeSpeedBonus(level);
+            double dbl = WaterCloudRodEffects.getNewDoubleCatchChance(level);
+            double rare = WaterCloudRodEffects.getNewRareBonus(level);
+            if (bite > 0) lines.add(ColorGradient.getGradientNameVer2("等待时间：+" + Math.round(bite * 100) + "%"));
+            if (light > 0) lines.add(ColorGradient.getGradientNameVer2("轻咬时间：+" + Math.round(light * 100) + "%"));
+            if (charge > 0) lines.add(ColorGradient.getGradientNameVer2("蓄力速度：+" + (int) charge + "/秒"));
+            if (dbl > 0) lines.add(ColorGradient.getGradientNameVer2("双倍鱼获：" + Math.round(dbl * 100) + "%"));
+            if (rare > 0) lines.add(ColorGradient.getGradientNameVer2("特殊钓物：+" + Math.round(rare * 100) + "%（满级）"));
+        } else {
+            int ticks = WaterCloudRodEffects.getOldHookSpeedTicks(level);
+            double junk = WaterCloudRodEffects.getOldJunkReduction(level);
+            double preserve = WaterCloudRodEffects.getOldLurePreserveChance(level);
+            double dbl = WaterCloudRodEffects.getOldDoubleCatchChance(level);
+            if (ticks > 0) lines.add(ColorGradient.getGradientNameVer2("上钩速度：+" + Math.round(ticks / 600.0 * 100) + "%"));
+            if (junk > 0) lines.add(ColorGradient.getGradientNameVer2("杂物概率：-" + Math.round(junk * 100) + "%"));
+            if (preserve > 0) lines.add(ColorGradient.getGradientNameVer2("省饵概率：" + Math.round(preserve * 100) + "%"));
+            if (dbl > 0) lines.add(ColorGradient.getGradientNameVer2("双倍鱼获：" + Math.round(dbl * 100) + "%"));
+        }
+        return lines;
     }
 }

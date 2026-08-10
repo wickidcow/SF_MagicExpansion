@@ -33,15 +33,42 @@ public class FishingGuideCommand implements CommandExecutor, TabCompleter {
 
         switch (args[0].toLowerCase()) {
             case "open_guide":
-                // 打开图鉴界面
-                FishingGuideMenu.openMainMenu(player);
-                player.sendMessage("§a已打开钓鱼图鉴！");
+                // 图鉴界面: /mxf open_guide <ZhiMeng|ShuiYunJian>
+                if (args.length < 2) {
+                    player.sendMessage("§e用法: /mxf open_guide <ZhiMeng|ShuiYunJian>");
+                    player.sendMessage("§7ZhiMeng     - 打开织梦者钓鱼图鉴");
+                    player.sendMessage("§7ShuiYunJian - 打开水云间钓鱼图鉴");
+                    break;
+                }
+                switch (args[1].toLowerCase()) {
+                    case "zhimeng" -> {
+                        FishingGuideMenu.openMainMenu(player);
+                        player.sendMessage("§a已打开织梦者钓鱼图鉴！");
+                    }
+                    case "shuiyunjian" -> player.sendMessage("§b水云间钓鱼图鉴制作中, 敬请期待！");
+                    default -> player.sendMessage("§c未知图鉴: " + args[1] + " §7(可选: ZhiMeng / ShuiYunJian)");
+                }
                 break;
 
             case "guide":
-                // 给予图鉴书
-                giveGuideBook(player);
-                player.sendMessage("§a已获得钓鱼图鉴书！");
+                // 指南书: /mxf guide <ZhiMeng|ShuiYunJian>
+                if (args.length < 2) {
+                    player.sendMessage("§e用法: /mxf guide <ZhiMeng|ShuiYunJian>");
+                    player.sendMessage("§7ZhiMeng     - 获取织梦者系列指南");
+                    player.sendMessage("§7ShuiYunJian - 获取水云间系列指南");
+                    break;
+                }
+                switch (args[1].toLowerCase()) {
+                    case "zhimeng" -> {
+                        giveItem(player, MagicExpansionItems.FISHING_BOOK);
+                        player.sendMessage("§a已获得织梦者系列指南！");
+                    }
+                    case "shuiyunjian" -> {
+                        giveItem(player, MagicExpansionItems.FISHING_BOOK_BETWEEN_WATER_CLOUD);
+                        player.sendMessage("§a已获得水云间系列指南！");
+                    }
+                    default -> player.sendMessage("§c未知指南: " + args[1] + " §7(可选: ZhiMeng / ShuiYunJian)");
+                }
                 break;
 
             default:
@@ -64,6 +91,14 @@ public class FishingGuideCommand implements CommandExecutor, TabCompleter {
                     completions.add(subCommand);
                 }
             }
+        } else if (args.length == 2 && (args[0].equalsIgnoreCase("guide") || args[0].equalsIgnoreCase("open_guide"))) {
+            // 第二个参数补全: 指南/图鉴系列
+            String[] guides = {"ZhiMeng", "ShuiYunJian"};
+            for (String guide : guides) {
+                if (guide.toLowerCase().startsWith(args[1].toLowerCase())) {
+                    completions.add(guide);
+                }
+            }
         }
 
         return completions;
@@ -74,24 +109,21 @@ public class FishingGuideCommand implements CommandExecutor, TabCompleter {
      */
     private void sendUsage(Player player) {
         player.sendMessage("§6=== 钓鱼图鉴命令 ===");
-        player.sendMessage("§a/mxf open_guide §7- 打开钓鱼图鉴界面");
-        player.sendMessage("§a/mxf guide §7- 获取钓鱼图鉴书");
+        player.sendMessage("§a/mxf open_guide <ZhiMeng|ShuiYunJian> §7- 打开钓鱼图鉴界面");
+        player.sendMessage("§a/mxf guide ZhiMeng §7- 获取织梦者系列指南");
+        player.sendMessage("§a/mxf guide ShuiYunJian §7- 获取水云间系列指南");
         player.sendMessage("§6===================");
     }
 
     /**
-     * 给予图鉴书
+     * 给予物品(背包满则掉落地上)
      */
-    private void giveGuideBook(Player player) {
-        ItemStack guideBook = MagicExpansionItems.FISHING_BOOK;
-        // 尝试将书添加到玩家背包，如果背包满了就掉落在地上
+    private void giveItem(Player player, ItemStack item) {
         if (player.getInventory().firstEmpty() == -1) {
-            // 背包满了，掉落在地上
-            player.getWorld().dropItemNaturally(player.getLocation(), guideBook);
-            player.sendMessage("§e你的背包已满，图鉴书已掉落在地上！");
+            player.getWorld().dropItemNaturally(player.getLocation(), item);
+            player.sendMessage("§e你的背包已满，物品已掉落在地上！");
         } else {
-            // 背包有空位，添加到背包
-            player.getInventory().addItem(guideBook);
+            player.getInventory().addItem(item);
         }
     }
 }

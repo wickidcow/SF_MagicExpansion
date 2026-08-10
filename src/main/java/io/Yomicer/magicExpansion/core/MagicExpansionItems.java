@@ -32,9 +32,9 @@ public class MagicExpansionItems {
             getGradientNameVer2("信息"),
             "",
             getGradientNameVer2("guizhanss Version:"),
-            getGradientNameVer2("Version: Build 86"),
+            getGradientNameVer2("Version: Build 88"),
             getGradientNameVer2("Github Version:"),
-            getGradientNameVer2("Official Version: Release 5"),
+            getGradientNameVer2("Official Version: Release 8"),
             getGradientNameVer2("您在提issues的时候需要展示这个")
     );
     //AUTHOR
@@ -96,12 +96,12 @@ public class MagicExpansionItems {
             "&7不再会连锁破坏未成熟的农作物"
     );
 
-    //饵料袋
-    public static final SlimefunItemStack BAIT_BAG = new SlimefunItemStack(
-            "BAIT_BAG",
-            Material.FISHING_ROD,
-            getGradientNameVer2("云梦袋")
-    );
+//    //饵料袋
+//    public static final SlimefunItemStack BAIT_BAG = new SlimefunItemStack(
+//            "BAIT_BAG",
+//            Material.FISHING_ROD,
+//            getGradientNameVer2("云梦袋")
+//    );
 
     //虚空之触
     public static final SlimefunItemStack VOID_TOUCH = themedVer2Vertical("VOID_TOUCH",doGlow(Material.WEEPING_VINES),
@@ -900,7 +900,8 @@ public class MagicExpansionItems {
     public static final SlimefunItemStack UPDATE_LOG_2026_07_30 = createDefaultItemGlowV2Vertical("UPDATE_LOG_2026_07_30",Material.PAPER);
     public static final SlimefunItemStack UPDATE_LOG_2026_08_05 = createDefaultItemGlowV2Vertical("UPDATE_LOG_2026_08_05",Material.PAPER);
     public static final SlimefunItemStack UPDATE_LOG_2026_08_07 = createDefaultItemGlowV2Vertical("UPDATE_LOG_2026_08_07",Material.PAPER);
-
+    public static final SlimefunItemStack UPDATE_LOG_2026_08_09 = createDefaultItemGlowV2Vertical("UPDATE_LOG_2026_08_09",Material.PAPER);
+    public static final SlimefunItemStack UPDATE_LOG_2026_08_11 = createDefaultItemGlowV2Vertical("UPDATE_LOG_2026_08_11",Material.PAPER);
 
 
 
@@ -1098,6 +1099,18 @@ public class MagicExpansionItems {
             FISH_LURE_BETWEEN_WATER_CLOUD_YUEJIN
     );
     public static final SlimefunItemStack FISH_LURE_BETWEEN_WATER_CLOUD_XINGHE = createDefaultItem("FISH_LURE_BETWEEN_WATER_CLOUD_XINGHE",Material.NETHER_STAR);
+    // 芦花钓专用鱼饵: 蒹葭(已实现); 芦雪/苇露/白露/芦芽(占位, 暂不在游戏中显示)
+    public static final SlimefunItemStack FISH_LURE_BETWEEN_WATER_CLOUD_REED_JIANJIA = createDefaultItem("FISH_LURE_BETWEEN_WATER_CLOUD_REED_JIANJIA",Material.WHEAT);
+    public static final SlimefunItemStack FISH_LURE_BETWEEN_WATER_CLOUD_REED_LUXUE = createDefaultItem("FISH_LURE_BETWEEN_WATER_CLOUD_REED_LUXUE",Material.WHITE_DYE);
+    public static final SlimefunItemStack FISH_LURE_BETWEEN_WATER_CLOUD_REED_WEILU = createDefaultItem("FISH_LURE_BETWEEN_WATER_CLOUD_REED_WEILU",Material.GLASS_BOTTLE);
+    public static final SlimefunItemStack FISH_LURE_BETWEEN_WATER_CLOUD_REED_BAILU = createDefaultItem("FISH_LURE_BETWEEN_WATER_CLOUD_REED_BAILU",Material.SNOWBALL);
+    public static final SlimefunItemStack FISH_LURE_BETWEEN_WATER_CLOUD_REED_LUYA = createDefaultItem("FISH_LURE_BETWEEN_WATER_CLOUD_REED_LUYA",Material.BAMBOO);
+    // 芦花钓专用鱼饵特殊钓物占位符(蒹葭生效, 其余占位)
+    public static final SlimefunItemStack FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_REED_JIANJIA = createDefaultItem("FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_REED_JIANJIA",Material.WATER_BUCKET);
+    public static final SlimefunItemStack FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_REED_LUXUE = createDefaultItem("FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_REED_LUXUE",Material.WATER_BUCKET);
+    public static final SlimefunItemStack FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_REED_WEILU = createDefaultItem("FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_REED_WEILU",Material.WATER_BUCKET);
+    public static final SlimefunItemStack FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_REED_BAILU = createDefaultItem("FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_REED_BAILU",Material.WATER_BUCKET);
+    public static final SlimefunItemStack FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_REED_LUYA = createDefaultItem("FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_REED_LUYA",Material.WATER_BUCKET);
     public static final SlimefunItemStack FISH_LURE_BETWEEN_WATER_CLOUD_XINGHE_CLONE = new SlimefunItemStack(
             "FISH_LURE_BETWEEN_WATER_CLOUD_XINGHE_CLONE",
             FISH_LURE_BETWEEN_WATER_CLOUD_XINGHE
@@ -1107,15 +1120,29 @@ public class MagicExpansionItems {
 
 
 
-    public static final SlimefunItemStack FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_CUIXIA = createDefaultItem("FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_CUIXIA",Material.WATER_BUCKET);
-    public static final SlimefunItemStack FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_WEICHEN = createDefaultItem("FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_WEICHEN",Material.WATER_BUCKET);
-    public static final SlimefunItemStack FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_RONGHUO = createDefaultItem("FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_RONGHUO",Material.WATER_BUCKET);
-    public static final SlimefunItemStack FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_YUEJIN = createDefaultItem("FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_YUEJIN",Material.WATER_BUCKET);
-    public static final SlimefunItemStack FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_XINGHE = createDefaultItem("FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_XINGHE",Material.WATER_BUCKET);
+    public static final SlimefunItemStack BAIT_BAG = createDefaultItem("BAIT_BAG", resolveBaitBagMaterial());
 
+    // 云梦袋材质: 优先 guster_banner_pattern(旋风人旗帜图案, 1.21+ 材质), 低版本自动回退 FISHING_ROD
+    private static Material resolveBaitBagMaterial() {
+        Material material = Material.matchMaterial("GUSTER_BANNER_PATTERN");
+        return material != null ? material : Material.FISHING_ROD;
+    }
+
+
+
+
+
+
+
+    // 水云间·钓鱼指南书(内容暂空)
+    public static final SlimefunItemStack FISHING_BOOK_BETWEEN_WATER_CLOUD = createDefaultItemGlow("FISHING_BOOK_BETWEEN_WATER_CLOUD",Material.KNOWLEDGE_BOOK);
+    // 水云间·新钓鱼体系指导书
+    public static final SlimefunItemStack FISHING_GUIDE_BETWEEN_WATER_CLOUD = createDefaultItem("FISHING_GUIDE_BETWEEN_WATER_CLOUD",Material.PAPER);
     // 水云间材料
     public static final SlimefunItemStack BAMBOO_JOINT = createDefaultItem("BAMBOO_JOINT",Material.BAMBOO);
     public static final SlimefunItemStack MAGIC_THREAD = createDefaultItem("MAGIC_THREAD",Material.STRING);
+    // 芦穗: 青竹竿+淬霞的特殊钓物(不可合成), 用于合成芦花钓
+    public static final SlimefunItemStack REED_TASSEL = createDefaultItem("REED_TASSEL",Material.SUGAR_CANE);
 
 
 

@@ -27,6 +27,10 @@ import net.guizhanss.guizhanlib.minecraft.helper.inventory.ItemStackHelper;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.ArmorStand;
+import org.bukkit.entity.ItemDisplay;
+import org.bukkit.util.Transformation;
+import org.joml.Quaternionf;
+import org.joml.Vector3f;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
@@ -35,6 +39,8 @@ import org.bukkit.inventory.BlockInventoryHolder;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 
@@ -53,6 +59,8 @@ public class DrawMachine extends SlimefunItem implements EnergyNetComponent {
     // 悬浮物存储 - 修改为存储物品实体和盔甲架
     private final Map<Location, Entity> itemDisplayMap = new HashMap<>();
     private final Map<Location, ArmorStand> textDisplayMap = new HashMap<>();
+    // 奖券投影掉落物式动画任务(按机器位置管理)
+    private static final Map<Location, BukkitTask> HOLOGRAM_ANIMATIONS = new HashMap<>();
 
     // 奖励槽位范围
     private static final int[] REWARD_SLOTS = {
@@ -190,33 +198,28 @@ public class DrawMachine extends SlimefunItem implements EnergyNetComponent {
         removeHologram(block);
 
         Location baseLoc = block.getLocation().clone().add(0.5, 1.2, 0.5);
-        Location itemLoc = baseLoc.clone().add(0, 1.2, 0);   // 物品在 +2.4
+        Location itemLoc = baseLoc.clone().add(0, 1.6, 0);   // 物品在 +2.4
         Location line1Loc = baseLoc.clone().add(0, 0.7, 0);  // 第一行 +1.9
         Location line2Loc = baseLoc.clone().add(0, 0.4, 0);  // 第二行 +1.6
         Location line3Loc = baseLoc.clone().add(0, 0.1, 0);  // 第三行 +1.3
 
-        // === 创建物品悬浮体 ===
+        // === 创建物品悬浮体(使用 ItemDisplay 显示实体, 不会被扫地插件当掉落物拾取) ===
         ItemStack placeholder = new CustomItemStack(Material.BARRIER, HOLOGRAM_PREFIX + "ITEM");
-        Item itemEntity = SlimefunUtils.spawnItem(
-                itemLoc,
-                placeholder,
-                ItemSpawnReason.MISC,
-                false,
-                null
-        );
-        if (itemEntity != null) {
-            itemEntity.setMetadata("draw-machine-hologram", new org.bukkit.metadata.FixedMetadataValue(MagicExpansion.getInstance(), true));
-        }
-
-        if (itemEntity != null) {
-            itemEntity.setInvulnerable(true);
-            itemEntity.setGravity(false);
-            itemEntity.setVelocity(new Vector(0, 0, 0)); // 轻微上抛动画
-            itemEntity.setCustomNameVisible(false);
-            SlimefunUtils.markAsNoPickup(itemEntity, "draw_machine_hologram");
-            itemDisplayMap.put(block.getLocation(), itemEntity);
-            BlockStorage.addBlockInfo(block, "hologram_item", itemEntity.getUniqueId().toString());
-        }
+        ItemDisplay itemEntity = itemLoc.getWorld().spawn(itemLoc, ItemDisplay.class);
+        itemEntity.setItemStack(placeholder);
+        // 缩放为掉落物大小(约 0.25 格), 保持之前掉落物的观感
+        itemEntity.setTransformation(new Transformation(
+                new Vector3f(0, 0, 0),
+                new Quaternionf(),
+                new Vector3f(0.25f, 0.25f, 0.25f),
+                new Quaternionf()
+        ));
+        itemEntity.setInvulnerable(true);
+        itemEntity.setPersistent(true);
+        itemEntity.setMetadata("draw-machine-hologram", new org.bukkit.metadata.FixedMetadataValue(MagicExpansion.getInstance(), true));
+        itemDisplayMap.put(block.getLocation(), itemEntity);
+        BlockStorage.addBlockInfo(block, "hologram_item", itemEntity.getUniqueId().toString());
+        startHologramAnimation(block.getLocation(), itemEntity);
 
 //        // 创建物品显示实体
 //        Item displayItem = block.getWorld().dropItem(itemLoc, new ItemStack(Material.BARRIER));
@@ -240,12 +243,47 @@ public class DrawMachine extends SlimefunItem implements EnergyNetComponent {
         BlockStorage.addBlockInfo(block, "hologram_line2", line2.getUniqueId().toString());
         BlockStorage.addBlockInfo(block, "hologram_line3", line3.getUniqueId().toString());
     }
+
+    /** 掉落物式动画: 缓慢旋转 + 轻微上下浮动, 仍使用 ItemDisplay 不被扫地插件误收 */
+    private void startHologramAnimation(Location location, ItemDisplay display) {
+        cancelHologramAnimation(location);
+        final float[] angle = {0f};
+        final int[] tick = {0};
+        BukkitTask task = new BukkitRunnable() {
+            @Override
+            public void run() {
+                if (display.isDead() || !display.isValid()) {
+                    cancel();
+                    HOLOGRAM_ANIMATIONS.remove(location);
+                    return;
+                }
+                tick[0]++;
+                angle[0] += 0.12f; // 缓慢旋转, 约 7°/tick
+                float bob = (float) Math.sin(tick[0] * 0.08) * 0.06f; // 轻微上下浮动
+                display.setTransformation(new Transformation(
+                        new Vector3f(0, bob, 0),
+                        new Quaternionf().rotateY(angle[0]),
+                        new Vector3f(0.25f, 0.25f, 0.25f),
+                        new Quaternionf()
+                ));
+            }
+        }.runTaskTimer(MagicExpansion.getInstance(), 0L, 1L);
+        HOLOGRAM_ANIMATIONS.put(location, task);
+    }
+
+    private static void cancelHologramAnimation(Location location) {
+        BukkitTask task = HOLOGRAM_ANIMATIONS.remove(location);
+        if (task != null) {
+            task.cancel();
+        }
+    }
     // 创建文本盔甲架的辅助方法
     private ArmorStand createTextArmorStand(Location loc, String text) {
         ArmorStand armorStand = loc.getWorld().spawn(loc, ArmorStand.class);
         armorStand.setVisible(false);
         armorStand.setGravity(false);
         armorStand.setInvulnerable(true);
+        armorStand.setPersistent(true);
         armorStand.setCustomNameVisible(true);
         armorStand.setCustomName(text);
         armorStand.setAI(false);
@@ -308,8 +346,7 @@ public class DrawMachine extends SlimefunItem implements EnergyNetComponent {
             String itemName = ItemStackHelper.getDisplayName(originalTemplateItem);
 
             // 更新物品显示 - 显示需要的数量
-            if (itemEntity instanceof Item) {
-                Item itemDisplay = (Item) itemEntity;
+            if (itemEntity instanceof ItemDisplay itemDisplay) {
                 ItemStack displayStack = originalTemplateItem.clone();
                 displayStack.setAmount(Math.min(requiredAmount, displayStack.getMaxStackSize()));
                 itemDisplay.setItemStack(displayStack);
@@ -322,8 +359,7 @@ public class DrawMachine extends SlimefunItem implements EnergyNetComponent {
             if (line3 != null) line3.setCustomName("§d奖池奖品剩余: " + totalRewards + "个");
         } else {
             // 更新物品显示为屏障
-            if (itemEntity instanceof Item) {
-                Item itemDisplay = (Item) itemEntity;
+            if (itemEntity instanceof ItemDisplay itemDisplay) {
                 itemDisplay.setItemStack(new ItemStack(Material.BARRIER));
             }
 
@@ -342,10 +378,9 @@ public class DrawMachine extends SlimefunItem implements EnergyNetComponent {
 
         try {
             UUID uuid = UUID.fromString(uuidStr);
-            for (Entity entity : block.getWorld().getNearbyEntities(block.getLocation(), 2, 2, 2)) {
-                if (entity instanceof ArmorStand && entity.getUniqueId().equals(uuid)) {
-                    return (ArmorStand) entity;
-                }
+            Entity entity = Bukkit.getEntity(uuid);
+            if (entity instanceof ArmorStand && !entity.isDead()) {
+                return (ArmorStand) entity;
             }
         } catch (IllegalArgumentException e) {
             // UUID格式无效
@@ -358,10 +393,9 @@ public class DrawMachine extends SlimefunItem implements EnergyNetComponent {
 
         try {
             UUID uuid = UUID.fromString(uuidStr);
-            for (Entity entity : block.getWorld().getNearbyEntities(block.getLocation(), 2, 2, 2)) {
-                if (entity.getUniqueId().equals(uuid)) {
-                    return entity;
-                }
+            Entity entity = Bukkit.getEntity(uuid);
+            if (entity != null && !entity.isDead()) {
+                return entity;
             }
         } catch (IllegalArgumentException e) {
             // UUID格式无效
@@ -372,6 +406,7 @@ public class DrawMachine extends SlimefunItem implements EnergyNetComponent {
 
     // 移除悬浮物 - 修改为移除两个实体
     private void removeHologram(Block block) {
+        cancelHologramAnimation(block.getLocation());
         Entity itemEntity = itemDisplayMap.remove(block.getLocation());
         ArmorStand textEntity = textDisplayMap.remove(block.getLocation());
 
@@ -1048,6 +1083,10 @@ public class DrawMachine extends SlimefunItem implements EnergyNetComponent {
     }
 
     public static void cleanupAllHolograms() {
+        for (BukkitTask task : HOLOGRAM_ANIMATIONS.values()) {
+            task.cancel();
+        }
+        HOLOGRAM_ANIMATIONS.clear();
         for (World world : Bukkit.getWorlds()) {
             for (Entity entity : world.getEntities()) {
                 if (entity.hasMetadata("draw-machine-hologram")) {

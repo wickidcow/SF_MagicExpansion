@@ -21,6 +21,7 @@ import io.Yomicer.magicExpansion.specialActions.Command.*;
 import io.Yomicer.magicExpansion.Listener.magicItemEffectManager.ItemEffectKillListener;
 import io.Yomicer.magicExpansion.utils.FishingGuideMenu;
 import io.Yomicer.magicExpansion.utils.Language;
+import io.Yomicer.magicExpansion.utils.WaterCloudHookManager;
 import io.Yomicer.magicExpansion.utils.aiManager.AIManager;
 import io.Yomicer.magicExpansion.utils.shop.BlackMarketManager;
 import io.Yomicer.magicExpansion.utils.shop.ShopCommand;
@@ -109,6 +110,7 @@ public class MagicExpansion extends JavaPlugin implements SlimefunAddon {
         this.getCommand("magicfish").setExecutor(new MagicFishCommand());
         ShopCommand shopCommand = new ShopCommand();
         this.getCommand("magicshop").setExecutor(shopCommand);
+        this.getCommand("mxfishmode").setExecutor(new FishModeCommand());
 //        this.getCommand("mxai").setTabCompleter(new AIChat());
 
         // 创建地图保存目录
@@ -136,6 +138,9 @@ public class MagicExpansion extends JavaPlugin implements SlimefunAddon {
         getServer().getPluginManager().registerEvents(aiManager, this);
         ShopManager.load();
         getServer().getPluginManager().registerEvents(new ShopGUI(), this);
+
+        // 水云间新钓鱼系统调度(秒级状态机 + 鱼钩晃动)
+        WaterCloudHookManager.startTicking(this);
         BlackMarketManager.init();
         getLogger().info("便携商店系统已加载！");
         getLogger().info("§b监听注册完毕！");
@@ -183,6 +188,7 @@ public class MagicExpansion extends JavaPlugin implements SlimefunAddon {
         //便携式以太秘匣传输器
         onPluginDisable();
         ShopManager.saveAll();
+        WaterCloudHookManager.stopTicking();
 
 
         // Plugin shutdown logic

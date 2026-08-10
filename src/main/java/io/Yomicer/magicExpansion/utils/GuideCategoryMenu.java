@@ -632,7 +632,7 @@ public final class GuideCategoryMenu {
 
     /* ==================== 四级菜单: 平铺组物品列表页(4x7) ==================== */
 
-    /** 四级菜单:平铺组点开后的物品列表页, 风格延续二三级, 淡蓝边框包裹 4x7 物品格 */
+    /** 四级菜单:平铺组点开后的物品列表页, 风格延续二、三级, 淡蓝边框包裹 4x7 物品格 */
     public static void openItemGroupPage(Player player, PlayerProfile profile, SlimefunGuideMode mode, ItemGroup group, int page) {
         if (group == null) return;
         if (group instanceof FlexItemGroup) {
