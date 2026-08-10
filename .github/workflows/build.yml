@@ -3,11 +3,12 @@ name: Build MagicExpansion Legacy English
 on:
   push:
     branches: [ "**" ]
+    tags: [ "v*" ]
   pull_request:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   build:
@@ -26,9 +27,34 @@ jobs:
       - name: Build
         run: mvn --batch-mode --no-transfer-progress -DskipTests clean package
 
-      - name: Upload JAR
+      - name: Stage SF_MagicExpansion.jar
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p dist
+          JAR="$(find target -maxdepth 1 -type f -name 'MagicExpansion-Legacy-English-*.jar' ! -name 'original-*' -print -quit)"
+          test -n "$JAR"
+          cp "$JAR" dist/SF_MagicExpansion.jar
+          test -s dist/SF_MagicExpansion.jar
+          sha256sum dist/SF_MagicExpansion.jar
+
+      - name: Upload SF_MagicExpansion.jar
         uses: actions/upload-artifact@v4
         with:
-          name: MagicExpansion-Legacy-English
-          path: target/MagicExpansion-Legacy-English-*.jar
+          name: SF_MagicExpansion
+          path: dist/SF_MagicExpansion.jar
           if-no-files-found: error
+
+      - name: Publish direct JAR release asset
+        if: startsWith(github.ref, 'refs/tags/v')
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          TAG="$GITHUB_REF_NAME"
+          JAR="dist/SF_MagicExpansion.jar"
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release upload "$TAG" "$JAR" --clobber
+          else
+            gh release create "$TAG" "$JAR" --generate-notes --title "MagicExpansion $TAG"
+          fi
