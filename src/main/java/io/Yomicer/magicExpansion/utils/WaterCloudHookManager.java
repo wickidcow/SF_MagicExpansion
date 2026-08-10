@@ -12,6 +12,7 @@ import org.bukkit.scheduler.BukkitTask;
 import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
@@ -243,7 +244,8 @@ public final class WaterCloudHookManager {
             return;
         }
 
-        for (HookSession session : SESSIONS.values()) {
+        // Work from a snapshot because a fully charged session removes itself.
+        for (HookSession session : List.copyOf(SESSIONS.values())) {
             if (session.state != WaterCloudHookState.FULL_BITE) {
                 continue;
             }
@@ -358,7 +360,7 @@ public final class WaterCloudHookManager {
             double dx = (ThreadLocalRandom.current().nextDouble() - 0.5) * 2 * SHAKE_RADIUS;
             double dz = (ThreadLocalRandom.current().nextDouble() - 0.5) * 2 * SHAKE_RADIUS;
             hook.teleport(hook.getLocation().add(dx, 0, dz));
-            player.getWorld().spawnParticle(Particle.WATER_SPLASH, hook.getLocation().add(0, 0.1, 0),
+            player.getWorld().spawnParticle(Particle.SPLASH, hook.getLocation().add(0, 0.1, 0),
                     2, 0.1, 0, 0.1, 0.01);
         }
     }
