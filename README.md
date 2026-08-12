@@ -17,6 +17,8 @@ This fork preserves the original gameplay systems, items, recipes, machines, car
 * Optional AI functionality with safe timeouts and disabled-by-default configuration
 * GitHub Actions workflow for automatic builds
 * English migration support for older MagicExpansion items
+* External fishing-provider compatibility for PyroFishingPro and BetterFishing
+* Water Cloud rod proficiency, lure preservation, and MagicExpansion bonus rewards without replacing external-plugin catches
 
 ## Included Content
 
@@ -32,6 +34,34 @@ MagicExpansion adds a large collection of magical and technological Slimefun con
 * Structure-placement tools
 * Special materials, fragments, and progression items
 
+## Fishing Integration
+
+External fishing plugins are treated as the primary fishing engine by default. MagicExpansion does not replace or duplicate their caught fish. Instead, Water Cloud rods add their own progression and safe bonus layer after a successful external catch.
+
+Supported provider modes:
+
+* **PyroFishingPro** - detected automatically. MagicExpansion uses PyroFishingPro's catch event reflectively when available, so Pyro remains an optional paid dependency and is never bundled or modified.
+* **BetterFishing** - detected automatically and kept authoritative for its fishing flow. MagicExpansion uses the provider-neutral Bukkit catch fallback unless a stable public provider API is available.
+* **Vanilla** - used automatically when no supported external fishing provider is active.
+
+Default configuration:
+
+```yaml
+fishing-integration:
+  external-plugins-primary: true
+  provider: AUTO
+  priority:
+    - PyroFishingPro
+    - BetterFishing
+    - VANILLA
+
+fishing-system:
+  new-system: false
+  only-when-no-external-provider: true
+```
+
+The optional Water Cloud custom fishing minigame is disabled by default. Even when enabled, it is suppressed while an external fishing provider is primary unless the server owner explicitly changes the compatibility settings.
+
 ## Compatibility
 
 | Software                          | Support                     |
@@ -40,6 +70,8 @@ MagicExpansion adds a large collection of magical and technological Slimefun con
 | Purpur 26.2                       | ✅ Supported                 |
 | Slimefun Legacy                   | ✅ Recommended               |
 | SlimefunGugu API-compatible forks | ✅ Expected to work          |
+| PyroFishingPro                    | ✅ Optional integration      |
+| BetterFishing                     | ✅ Optional integration      |
 | Spigot/CraftBukkit                | ❌ Not supported             |
 | Folia                             | ⚠️ Not currently guaranteed |
 
@@ -62,4 +94,3 @@ One historical internal Chinese item identifier remains preserved for compatibil
 MagicExpansion Legacy English is an independent community-maintained fork. It is not an official release from the original MagicExpansion or Slimefun developers.
 
 The goal of this project is to preserve MagicExpansion, improve English accessibility, maintain compatibility with modern Minecraft servers, and provide a stable version for Slimefun Legacy users.
-

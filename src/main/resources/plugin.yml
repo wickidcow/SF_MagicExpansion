@@ -4,7 +4,7 @@ version: ${project.version}
 author: Yomicer
 api-version: '26.2'
 depend: [Slimefun]
-softdepend: [RykenSlimeCustomizer, Networks, NetworksExpansion]
+softdepend: [RykenSlimeCustomizer, Networks, NetworksExpansion, PyroFishingPro, BetterFishing]
 description: English-first MagicExpansion build for Slimefun Legacy with United and Gugu compatibility.
 
 commands:
@@ -28,6 +28,11 @@ commands:
     usage: /magicfish give <fish> [weight] [amount]
     permission: magicexpansion.admin.fish
     permission-message: '&cYou do not have permission to use this command.'
+  mxfishmode:
+    description: Toggle the optional Water Cloud fishing minigame.
+    usage: /mxfishmode <true|false>
+    permission: magicexpansion.admin.fishmode
+    permission-message: '&cYou do not have permission to change the fishing mode.'
   mxwand:
     description: Obtain the Magic Altar wand.
     usage: /<command> wand
@@ -59,6 +64,9 @@ permissions:
     default: op
   magicexpansion.admin.fish:
     description: Allows use of the Magic Fish administration command.
+    default: op
+  magicexpansion.admin.fishmode:
+    description: Allows changing the optional Water Cloud fishing mode.
     default: op
   magicexpansion.shop.admin:
     description: Allows access to the shop administration menu.

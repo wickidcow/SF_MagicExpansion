@@ -10,9 +10,6 @@ on:
 permissions:
   contents: write
 
-env:
-  LEGACY_ARTIFACT_VERSION: "1.0.0"
-
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -35,11 +32,14 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p dist
+          VERSION="$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)"
+          test -n "$VERSION"
           JAR="$(find target -maxdepth 1 -type f -name 'MagicExpansion-Legacy-English-*.jar' ! -name 'original-*' -print -quit)"
           test -n "$JAR"
-          OUTPUT="dist/SF_MagicExpansion_Legacy_v${LEGACY_ARTIFACT_VERSION}.jar"
+          OUTPUT="dist/SF_MagicExpansion_Legacy_v${VERSION}.jar"
           cp "$JAR" "$OUTPUT"
           test -s "$OUTPUT"
+          echo "LEGACY_ARTIFACT_VERSION=$VERSION" >> "$GITHUB_ENV"
           sha256sum "$OUTPUT"
 
       - name: Upload direct versioned Legacy JAR

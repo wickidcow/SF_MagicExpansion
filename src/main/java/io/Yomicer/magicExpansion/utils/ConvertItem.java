@@ -7,87 +7,120 @@ import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItemStack;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
-public class ConvertItem {
-    public static ItemStack BasicCreateItem(String selectedItem) {
-        // 根据 ID 获取 Slimefun 物品
-        SlimefunItem slimefunItem = SlimefunItem.getById(selectedItem);
+import java.util.HashSet;
+import java.util.Set;
 
-        // 检查是否成功获取到 Slimefun 物品
-        if (slimefunItem == null) {
-            Debug.logInfo("Magic 1.0 is not installed; substituted an equivalent material. Original Magic 1.0 ID: "+ selectedItem);
-            return MagicExpansionItems.MAGIC_EXPANSION_TO_MAGIC_ITEM_BASIC; // 返回一个初级
+public final class ConvertItem {
+
+    private static final Set<String> ANNOUNCED_LEGACY_FALLBACKS = new HashSet<>();
+    private static final Set<String> ANNOUNCED_MISSING_IDS = new HashSet<>();
+
+    private ConvertItem() {
+    }
+
+    /**
+     * Resolves Magic 1.0 IDs that are intentionally supported by the Legacy fork
+     * even when the original Magic addon is not installed.
+     */
+    private static SlimefunItemStack getLegacyFallback(String selectedItem) {
+        return switch (selectedItem) {
+            case "MAGIC_REDSTONE" -> MagicExpansionItems.MAGIC_EXPANSION_TO_MAGIC_ITEM_BASIC;
+            case "MAGIC_COSMIC_DUST" -> MagicExpansionItems.MAGIC_EXPANSION_TO_MAGIC_ITEM_ADVANCED;
+            default -> null;
+        };
+    }
+
+    private static String getLegacyFallbackName(String selectedItem) {
+        return switch (selectedItem) {
+            case "MAGIC_REDSTONE" -> "Basic Universal Magic Material";
+            case "MAGIC_COSMIC_DUST" -> "Advanced Universal Magic Material";
+            default -> "MagicExpansion compatibility material";
+        };
+    }
+
+    private static SlimefunItemStack resolveLegacyFallback(String selectedItem) {
+        SlimefunItemStack fallback = getLegacyFallback(selectedItem);
+        if (fallback != null && ANNOUNCED_LEGACY_FALLBACKS.add(selectedItem)) {
+            Debug.logInfo(
+                    "Magic 1.0 compatibility: " + selectedItem + " -> " + getLegacyFallbackName(selectedItem)
+            );
+        }
+        return fallback;
+    }
+
+    private static void logMissingOnce(String selectedItem, String action) {
+        if (ANNOUNCED_MISSING_IDS.add(selectedItem)) {
+            Debug.logInfo("Could not find a Slimefun item with ID " + selectedItem + "; " + action + ".");
+        }
+    }
+
+    public static ItemStack BasicCreateItem(String selectedItem) {
+        SlimefunItem slimefunItem = SlimefunItem.getById(selectedItem);
+        if (slimefunItem != null) {
+            return slimefunItem.getItem().clone();
         }
 
-        // 获取物品并创建 ItemStack
-        ItemStack itemStack = new ItemStack(slimefunItem.getItem());
+        SlimefunItemStack legacyFallback = resolveLegacyFallback(selectedItem);
+        if (legacyFallback != null) {
+            return legacyFallback.clone();
+        }
 
-        return itemStack;
+        logMissingOnce(selectedItem, "using the basic compatibility material");
+        return MagicExpansionItems.MAGIC_EXPANSION_TO_MAGIC_ITEM_BASIC.clone();
     }
 
     public static SlimefunItemStack createItem(String selectedItem) {
-        // 根据 ID 获取 Slimefun 物品
         SlimefunItem slimefunItem = SlimefunItem.getById(selectedItem);
-
-        if (slimefunItem == null) {
-            Debug.logInfo("Could not find a Slimefun item with ID " + selectedItem + "!");
-            return MagicExpansionItems.MAGIC_EXPANSION_TO_MAGIC_ITEM_BASIC; // 返回默认物品
+        if (slimefunItem != null) {
+            return new SlimefunItemStack(selectedItem, slimefunItem.getItem().clone());
         }
 
-        // 正确返回 SlimefunItemStack
-        return new SlimefunItemStack(
-                selectedItem, // 唯一ID
-                slimefunItem.getItem().clone()            // 克隆原始物品
-        );
+        SlimefunItemStack legacyFallback = resolveLegacyFallback(selectedItem);
+        if (legacyFallback != null) {
+            return legacyFallback;
+        }
+
+        logMissingOnce(selectedItem, "using the basic compatibility material");
+        return MagicExpansionItems.MAGIC_EXPANSION_TO_MAGIC_ITEM_BASIC;
     }
 
-
     public static ItemStack AdvancedCreateItem(String selectedItem) {
-        // 根据 ID 获取 Slimefun 物品
         SlimefunItem slimefunItem = SlimefunItem.getById(selectedItem);
-
-        // 检查是否成功获取到 Slimefun 物品
-        if (slimefunItem == null) {
-            Debug.logInfo("Magic 1.0 is not installed; substituted an equivalent material. Original Magic 1.0 ID: "+ selectedItem);
-            return MagicExpansionItems.MAGIC_EXPANSION_TO_MAGIC_ITEM_ADVANCED; // 返回一个进阶
+        if (slimefunItem != null) {
+            return slimefunItem.getItem().clone();
         }
 
-        // 获取物品并创建 ItemStack
-        ItemStack itemStack = new ItemStack(slimefunItem.getItem());
+        SlimefunItemStack legacyFallback = resolveLegacyFallback(selectedItem);
+        if (legacyFallback != null) {
+            return legacyFallback.clone();
+        }
 
-        return itemStack;
+        logMissingOnce(selectedItem, "using the advanced compatibility material");
+        return MagicExpansionItems.MAGIC_EXPANSION_TO_MAGIC_ITEM_ADVANCED.clone();
     }
 
     public static ItemStack stoneCreateItem(String selectedItem) {
-        // 根据 ID 获取 Slimefun 物品
         SlimefunItem slimefunItem = SlimefunItem.getById(selectedItem);
-
-        // 检查是否成功获取到 Slimefun 物品
-        if (slimefunItem == null) {
-            Debug.logInfo("Could not find a Slimefun item with ID " + selectedItem + "!");
-            Debug.logInfo("Using vanilla stone as a fallback.");
-            return new ItemStack(Material.STONE); // 返回一个进阶
+        if (slimefunItem != null) {
+            return slimefunItem.getItem().clone();
         }
 
-        // 获取物品并创建 ItemStack
-        ItemStack itemStack = new ItemStack(slimefunItem.getItem());
-
-        return itemStack;
+        logMissingOnce(selectedItem, "using vanilla stone as a fallback");
+        return new ItemStack(Material.STONE);
     }
 
-    public static Boolean IfItemXist(String i) {
-        // 根据 ID 获取 Slimefun 物品
-        SlimefunItem slimefunItem = SlimefunItem.getById(i);
-        // 检查是否成功获取到 Slimefun 物品
-        if (slimefunItem == null) {
-            Debug.logInfo("Could not find a Slimefun item with ID " + i + "; skipping registration.");
-            return false;
+    public static Boolean IfItemXist(String selectedItem) {
+        if (SlimefunItem.getById(selectedItem) != null) {
+            return true;
         }
-        return true;
+
+        // Known Magic 1.0 IDs are valid dependencies because MagicExpansion
+        // supplies equivalent compatibility materials when Magic 1.0 is absent.
+        if (resolveLegacyFallback(selectedItem) != null) {
+            return true;
+        }
+
+        logMissingOnce(selectedItem, "skipping registration");
+        return false;
     }
-
-
-
-
-
-
 }

@@ -5,6 +5,24 @@ options:
   test: false
   clear-old-config: false
 
+# External fishing engines are authoritative by default. MagicExpansion keeps
+# Water Cloud proficiency, Magic lure preservation, and safe bonus rewards but
+# does not replace another plugin's hook/catch flow.
+fishing-integration:
+  external-plugins-primary: true
+  # AUTO, PyroFishingPro, BetterFishing, or VANILLA
+  provider: AUTO
+  priority:
+    - PyroFishingPro
+    - BetterFishing
+    - VANILLA
+
+# Upstream's new Water Cloud minigame is available as an optional fallback.
+# Legacy keeps it disabled by default so existing fishing plugins remain intact.
+fishing-system:
+  new-system: false
+  only-when-no-external-provider: true
+
 StarShardsSword:
   help: 'Star Shards Sword combat configuration.'
   StarShards_Atk_Mix: 3.8
