@@ -8,7 +8,8 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
-import org.bukkit.inventory.ItemStack;
+
+import java.util.Locale;
 
 public class RecipeBookListener implements Listener {
 
@@ -23,21 +24,20 @@ public class RecipeBookListener implements Listener {
         if (!(event.getWhoClicked() instanceof Player)) return;
 
         Player player = (Player) event.getWhoClicked();
-        String title = event.getView().getTitle();
 
-        // 检查是否在配方书相关的GUI中
-        if (title.contains("recipe") ||
-                title.contains("Recipe Details") ||
-                title.contains("Dispenser Items") ||
-                title.contains("Dispenser List") ||
-                title.contains("Altar Base")) {
-
-            // 完全取消事件,防止任何物品被移动
+        if (isRecipeBookGui(event.getView().getTitle())) {
+            // The recipe guide is display-only. Cancelling the complete click event
+            // blocks normal pickup, shift-click, number-key swaps, double-click
+            // collection, cursor swaps, drops, and other InventoryClick actions.
             event.setCancelled(true);
 
-            // 只处理有物品的点击
-            if (event.getCurrentItem() != null) {
-                plugin.getPluginInitializer().getRecipeBookManager().handleInventoryClick(player, event.getRawSlot(), event.getCurrentItem());
+            // Only process navigation/buttons from the top guide inventory.
+            if (event.getRawSlot() >= 0
+                    && event.getRawSlot() < event.getView().getTopInventory().getSize()
+                    && event.getCurrentItem() != null) {
+                plugin.getPluginInitializer()
+                        .getRecipeBookManager()
+                        .handleInventoryClick(player, event.getRawSlot(), event.getCurrentItem());
             }
         }
     }
@@ -46,16 +46,8 @@ public class RecipeBookListener implements Listener {
     public void onInventoryDrag(InventoryDragEvent event) {
         if (!(event.getWhoClicked() instanceof Player)) return;
 
-        String title = event.getView().getTitle();
-
-        // 检查是否在配方书相关的GUI中
-        if (title.contains("recipe") ||
-                title.contains("Recipe Details") ||
-                title.contains("Dispenser Items") ||
-                title.contains("Dispenser List") ||
-                title.contains("Altar Base")) {
-
-            // 取消拖拽事件,防止物品被拖拽
+        if (isRecipeBookGui(event.getView().getTitle())) {
+            // Prevent dragging items into, out of, or across the display-only guide.
             event.setCancelled(true);
         }
     }
@@ -66,10 +58,25 @@ public class RecipeBookListener implements Listener {
 
         Player player = event.getPlayer();
 
-        // 检查是否右键了配方书
         if (plugin.getPluginInitializer().getRecipeBookManager().isRecipeBook(player.getInventory().getItemInMainHand())) {
             event.setCancelled(true);
             plugin.getPluginInitializer().getRecipeBookManager().openRecipeBook(player);
         }
+    }
+
+    private boolean isRecipeBookGui(String title) {
+        if (title == null) return false;
+
+        // Inventory titles include legacy color codes and capitalization differs
+        // between the main menu and detail screens. Normalizing the title keeps
+        // every Magic Altar recipe screen protected without affecting normal
+        // player inventories.
+        String normalizedTitle = title.toLowerCase(Locale.ROOT);
+
+        return normalizedTitle.contains("magic altar recipe guide")
+                || normalizedTitle.contains("recipe details")
+                || normalizedTitle.contains("dispenser items")
+                || normalizedTitle.contains("dispenser list")
+                || normalizedTitle.contains("altar base");
     }
 }
