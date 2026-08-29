@@ -210,6 +210,10 @@ public class FishOutputMachineStack extends MenuBlock implements EnergyNetCompon
     }
     protected void tick(Block block) {
         BlockMenu inv = StorageCacheUtils.getMenu(block.getLocation());
+        // A3 修复：区块加载时序窗口内可能取不到菜单（inv == null），入口统一判空返回，避免下方槽位循环直接 NPE
+        if (inv == null) {
+            return;
+        }
 
         if(inv != null && inv.hasViewer()) {
             if (getCharge(block.getLocation()) < getEnergyConsumption()) {
@@ -325,8 +329,9 @@ public class FishOutputMachineStack extends MenuBlock implements EnergyNetCompon
                     long finalAmount = safeMul(amount, totalNormalAmount);
                     long finalAmountEasy = safeMul(amountEasy, totalEasyAmount);
                     long finalAmountTotal = safeAdd(finalAmount, finalAmountEasy);
-                    if (finalAmountTotal > Integer.MAX_VALUE) {
-                        finalAmountTotal = Integer.MAX_VALUE;
+                    if (finalAmountTotal > MAX_OUTPUT_PER_TICK) {
+                        // A5 修复：原处直接放行 Integer.MAX_VALUE，现按输出槽容量钳制单 tick 产出上限
+                        finalAmountTotal = MAX_OUTPUT_PER_TICK;
                     } else if (finalAmountTotal <= 0) {
                         finalAmountTotal = 1;
                     }
@@ -345,7 +350,7 @@ public class FishOutputMachineStack extends MenuBlock implements EnergyNetCompon
                             getGradientName("当前产出: ")+ ItemStackHelper.getDisplayName(outItems),
                             ItemStackHelper.getDisplayName(MagicExpansionItems.FISH_VIVARIUM_EASY)+getRandomGradientName("：" + totalEasyAmount + "个"),
                             ItemStackHelper.getDisplayName(MagicExpansionItems.FISH_VIVARIUM)+getRandomGradientName("：" + totalNormalAmount + "个"),
-                            getGradientName("当前效率")+ "§r" +getRandomGradientName(": " + calculateRealAmount(outItems) + "个/tick")),
+                            getGradientName("当前效率")+ "§r" +getRandomGradientName(": " + outItems.getAmount() + "个/tick")), // A1 修复：calculateRealAmount 返回值恒等于 getAmount()，删除冗余循环后直接取值
                     (player1, slot, item, action) -> false);
         } else {
             if (inv != null && inv.hasViewer()) {
@@ -455,123 +460,19 @@ public class FishOutputMachineStack extends MenuBlock implements EnergyNetCompon
      * 检查CargoCore中是否已经有该物品
      */
     private boolean hasStoredItem(SlimefunBlockData data, ItemStack item) {
-        if (item == null || item.getType() == Material.AIR) return false;
-
-        ItemStack prototype = item.clone();
-        prototype.setAmount(1);
-
-        // 遍历所有存储槽位
-        for (int i = 0; i < MAX_STORED_ITEMS; i++) {
-            String jsonData = data.getData("item_type_" + i);
-            if (jsonData == null || jsonData.isEmpty()) continue;
-
-            try {
-                ItemStack storedItem = itemFromBase64(jsonData);
-                if (storedItem != null && storedItem.getType() != Material.AIR) {
-                    storedItem.setAmount(1); // 确保只比较类型
-
-                    // 比较物品是否相同
-                    if (SlimefunUtils.isItemSimilar(prototype, storedItem, true)) {
-                        // 检查当前数量
-                        String countStr = data.getData("item_count_" + i);
-                        if (countStr != null && !countStr.isEmpty()) {
-                            try {
-                                long count = Long.parseLong(countStr);
-                                if (count > 0) {
-                                    return true; // 有该物品且数量>0
-                                }
-                            } catch (Exception e) {
-                                continue;
-                            }
-                        }
-                    }
-                }
-            } catch (Exception e) {
-                continue;
-            }
-        }
-
-        return false;
+        // A2 修复：改为调用 FishOutputMachine 中的共享缓存实现，避免每 tick 1145 次 Base64 反序列化
+        return FishOutputMachine.hasStoredItemCached(data, item);
     }
     /**
      * 只向已有物品的槽位存储（不创建新槽位）
      */
     private void storeItemToExistingSlot(SlimefunBlockData data, ItemStack item) {
-        if (item == null || item.getType() == Material.AIR) return;
-
-        ItemStack prototype = item.clone();
-        prototype.setAmount(1);
-        int amountToStore = item.getAmount();
-
-        // 查找匹配的已有槽位
-        for (int i = 0; i < MAX_STORED_ITEMS; i++) {
-            String jsonData = data.getData("item_type_" + i);
-            if (jsonData == null || jsonData.isEmpty()) continue;
-
-            try {
-                ItemStack storedItem = itemFromBase64(jsonData);
-                if (storedItem != null && storedItem.getType() != Material.AIR) {
-                    storedItem.setAmount(1); // 确保只比较类型
-
-                    if (SlimefunUtils.isItemSimilar(prototype, storedItem, true)) {
-                        // 找到匹配的槽位，增加数量
-                        long currentCount = 0;
-                        String countStr = data.getData("item_count_" + i);
-                        if (countStr != null && !countStr.isEmpty()) {
-                            try {
-                                currentCount = Long.parseLong(countStr);
-                            } catch (Exception e) {
-                                continue;
-                            }
-                        }
-
-                        // 计算新数量
-                        long newCount = currentCount + amountToStore;
-                        data.setData("item_count_" + i, String.valueOf(newCount));
-
-                        // 检查是否有数量限制
-                        String maxStr = data.getData("item_max_" + i);
-                        if (maxStr != null && !maxStr.isEmpty()) {
-                            try {
-                                long maxCount = Long.parseLong(maxStr);
-                                if (maxCount != -1 && newCount > maxCount) {
-                                    // 如果超过上限，调整到上限
-                                    newCount = maxCount;
-                                    data.setData("item_count_" + i, String.valueOf(newCount));
-                                }
-                            } catch (Exception e) {
-                                // 最大数量解析失败，忽略
-                            }
-                        }
-
-                        // 存储成功，返回
-                        return;
-                    }
-                }
-            } catch (Exception e) {
-                continue;
-            }
-        }
-
-        // 如果没有找到匹配的槽位，什么也不做（不存储新物品）
+        // A2 修复：改为调用 FishOutputMachine 中的共享缓存实现（写入后标 dirty，下一 tick 重建缓存）
+        FishOutputMachine.storeItemToExistingSlotCached(data, item);
     }
 
-    private static final int MAX_STORED_ITEMS = 1145; // 最多支持 18 种不同物品
-
-    private int calculateRealAmount(ItemStack item) {
-        int totalAmount = item.getAmount(); // 这就是原始总数量
-        int maxStackSize = 64;
-        int realAmount = 0;
-
-        // 模拟 dropItemInBatches 的分批逻辑，累加每一批的数量
-        while (totalAmount > 0) {
-            int batchSize = Math.min(totalAmount, maxStackSize);
-            realAmount += batchSize;      // 累加这一批
-            totalAmount -= batchSize;     // 减去已处理的
-        }
-
-        return realAmount;
-    }
+    // A5: 单 tick 输出上限（与 FishOutputMachine 保持一致，替代原先放行的 Integer.MAX_VALUE）
+    private static final int MAX_OUTPUT_PER_TICK = FishOutputMachine.MAX_OUTPUT_PER_TICK;
 
     protected void pushAllItems(BlockMenu menu, ItemStack item, int[] outputSlots) {
         if (item == null || item.getType() == Material.AIR || item.getAmount() <= 0) {
@@ -581,13 +482,20 @@ public class FishOutputMachineStack extends MenuBlock implements EnergyNetCompon
         int totalAmount = item.getAmount();  // 总共有多少个
         int perPush = 64;                    // 每次塞64个
 
+        // A4 修复：累加 pushItem 实际接受的量，输出槽满则停止本 tick 推送，
+        // 剩余产量由下个 tick 重新生成，不再静默销毁被拒绝的部分
         while (totalAmount > 0) {
+            int batch = Math.min(totalAmount, perPush);
             ItemStack toPush = item.clone();
-            toPush.setAmount(Math.min(totalAmount, perPush));  // 最后一次可能不足64
+            toPush.setAmount(batch);
 
-            menu.pushItem(toPush, outputSlots);  // 直接塞！不管有没有被拒绝（暴力！）
+            ItemStack leftover = menu.pushItem(toPush, outputSlots); // 返回未放下的部分
+            int accepted = batch - (leftover == null ? 0 : leftover.getAmount());
+            totalAmount -= accepted;
 
-            totalAmount -= perPush;  // 每次减64，不管实际推进去多少（简单粗暴）
+            if (accepted <= 0) {
+                break; // 输出槽已满，剩余留待下 tick
+            }
         }
     }
 

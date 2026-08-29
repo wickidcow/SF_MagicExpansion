@@ -31,13 +31,13 @@ import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class LuckCapacitor extends SlimefunItem implements EnergyNetComponent {
 
     private final int capacity;
-    private Random random = new Random();
+    // 修复：删除实例 Random 字段，改为 ThreadLocalRandom（线程安全，ticker 异步线程调用）
     private final int pow1;
     private final int pow2;
     private final int sign;
@@ -76,10 +76,11 @@ public class LuckCapacitor extends SlimefunItem implements EnergyNetComponent {
         if (pow1 == pow2){
             randomCharge = pow1;
         } else {
-            randomCharge = random.nextInt(pow1,pow2);
+            // 修复：使用 ThreadLocalRandom 替代实例 Random（ticker 可能在异步线程调用，非线程安全）
+            randomCharge = ThreadLocalRandom.current().nextInt(pow1, pow2);
         }
         if (sign != 1 && sign != -1){
-            randomCharge = randomCharge * (random.nextBoolean() ? 1 : -1);
+            randomCharge = randomCharge * (ThreadLocalRandom.current().nextBoolean() ? 1 : -1);
         } else {
             randomCharge = randomCharge * sign;
         }
@@ -97,7 +98,11 @@ public class LuckCapacitor extends SlimefunItem implements EnergyNetComponent {
         return new BlockBreakHandler(false,false) {
             public void onPlayerBreak(BlockBreakEvent e, ItemStack item, List<ItemStack> drops) {
                 e.setDropItems(false);
-                int charge = CHARGE_CACHE.getOrDefault(e.getBlock().getLocation(), 0);
+                Location loc = e.getBlock().getLocation();
+                // 修复：缓存缺失时回源 getCharge 读取真实电量（非玩家破坏路径如爆炸不会走本方法，
+                // 其残留缓存条目由本回源逻辑兜底保证玩家破坏时仍能取到正确电量）
+                Integer cached = CHARGE_CACHE.get(loc);
+                int charge = cached != null ? cached : getCharge(loc);
                 ItemStack itemStack = LuckCapacitor.this.getItem();
                 ItemStack drop = itemStack.clone();
                 ItemMeta meta = drop.getItemMeta();
@@ -110,7 +115,8 @@ public class LuckCapacitor extends SlimefunItem implements EnergyNetComponent {
                     }
                 }
                 e.getBlock().getWorld().dropItemNaturally(e.getBlock().getLocation(), drop);
-                CHARGE_CACHE.remove(e.getBlock().getLocation());
+                // 修复：破坏后清理缓存条目，防止内存泄漏
+                CHARGE_CACHE.remove(loc);
             }
         };
     }

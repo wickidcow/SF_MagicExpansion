@@ -31,7 +31,14 @@ public class MapUtils {
             return;
         }
 
-        List<BlockData> blocks = getBlocksInRegion(p1, p2);
+        List<BlockData> blocks;
+        try {
+            // 修复(Y)：getBlocksInRegion 内置体积上限校验，捕获异常提示玩家（防止超大区域拖垮服务器）
+            blocks = getBlocksInRegion(p1, p2);
+        } catch (IllegalArgumentException e) {
+            player.sendMessage(ChatColor.RED + "导出失败: " + e.getMessage());
+            return;
+        }
         String fileName = "map_" + System.currentTimeMillis() + ".json";
         File file = new File(player.getServer().getPluginManager().getPlugin("MagicExpansion").getDataFolder(), "maps/" + fileName);
 
@@ -45,6 +52,11 @@ public class MapUtils {
     }
 
     public static void pasteMap(Player player, String fileName) {
+        // 修复(Y)：文件名白名单校验 [a-zA-Z0-9_-]，防止路径穿越（如 ../../config）读取任意文件
+        if (fileName == null || !fileName.matches("[a-zA-Z0-9_-]+")) {
+            player.sendMessage(ChatColor.RED + "非法的文件名！");
+            return;
+        }
         File file = new File(player.getServer().getPluginManager().getPlugin("MagicExpansion").getDataFolder(), "maps/" + fileName + ".json");
 
         if (!file.exists()) {
@@ -64,6 +76,12 @@ public class MapUtils {
             Type listType = new TypeToken<List<BlockData>>() {}.getType();
             List<BlockData> blocks = gson.fromJson(reader, listType);
 
+            // 修复(Y)：gson.fromJson 可能返回 null（空文件/非法 JSON），判空防止 NPE
+            if (blocks == null) {
+                player.sendMessage(ChatColor.RED + "Failed to paste map: 地图数据为空或格式错误！");
+                return;
+            }
+
             for (BlockData blockData : blocks) {
                 Location location = new Location(
                         player.getWorld(),
@@ -78,6 +96,9 @@ public class MapUtils {
         } catch (IOException e) {
             player.sendMessage(ChatColor.RED + "Failed to paste map: " + e.getMessage());
             e.printStackTrace();
+        } catch (com.google.gson.JsonParseException e) {
+            // 修复(Y)：捕获 JSON 解析异常，避免恶意/损坏文件导致未捕获异常
+            player.sendMessage(ChatColor.RED + "Failed to paste map: 地图文件已损坏或不是合法 JSON！");
         }
     }
 
@@ -100,6 +121,12 @@ public class MapUtils {
         int maxX = Math.max(p1.getBlockX(), p2.getBlockX());
         int maxY = Math.max(p1.getBlockY(), p2.getBlockY());
         int maxZ = Math.max(p1.getBlockZ(), p2.getBlockZ());
+
+        // 修复(Y)：体积上限 32x256x32 保护，防止选区过大导致内存溢出/服务器卡死
+        long volume = (long) (maxX - minX + 1) * (maxY - minY + 1) * (maxZ - minZ + 1);
+        if (volume > 32L * 256L * 32L) {
+            throw new IllegalArgumentException("选区过大（体积 " + volume + " 超过上限 32x256x32），请缩小选区！");
+        }
 
         for (int x = minX; x <= maxX; x++) {
             for (int y = minY; y <= maxY; y++) {

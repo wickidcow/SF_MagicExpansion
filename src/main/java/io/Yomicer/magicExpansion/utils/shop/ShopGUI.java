@@ -21,19 +21,22 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class ShopGUI implements Listener {
 
-    private static final Map<UUID, String> pendingShopNameCreation = new HashMap<>();
-    private static final Map<UUID, Integer> playerMainPage = new HashMap<>();
-    private static final Map<UUID, Integer> adminMainPage = new HashMap<>();
-    private static final Map<UUID, Map<String, Integer>> shopTradesPage = new HashMap<>();
-    private static final Map<UUID, Map<String, Integer>> adminTradesPage = new HashMap<>();
+    // 修复：全部 static 会话集合改为 ConcurrentHashMap（异步聊天线程也会访问），支持静态 cleanup 清理
+    private static final Map<UUID, String> pendingShopNameCreation = new ConcurrentHashMap<>();
+    private static final Map<UUID, Integer> playerMainPage = new ConcurrentHashMap<>();
+    private static final Map<UUID, Integer> adminMainPage = new ConcurrentHashMap<>();
+    private static final Map<UUID, Map<String, Integer>> shopTradesPage = new ConcurrentHashMap<>();
+    private static final Map<UUID, Map<String, Integer>> adminTradesPage = new ConcurrentHashMap<>();
 
-    private static final Map<UUID, Integer> probPage = new HashMap<>();
+    private static final Map<UUID, Integer> probPage = new ConcurrentHashMap<>();
 
-    private static final Map<UUID, ShopEditData> currentEditingData = new HashMap<>();
-    private static final Set<UUID> safeClose = new HashSet<>();
+    private static final Map<UUID, ShopEditData> currentEditingData = new ConcurrentHashMap<>();
+    // 修复：Set 改为并发安全集合
+    private static final Set<UUID> safeClose = ConcurrentHashMap.newKeySet();
 
     private static final int[] BLACK_MARKET_SLOTS = {
             20, 21, 22, 23, 24,
@@ -49,7 +52,22 @@ public class ShopGUI implements Listener {
         String editing = "none";
         boolean isNew = true;
     }
-    private static final Map<UUID, ShopEditData> pendingEditData = new HashMap<>();
+    private static final Map<UUID, ShopEditData> pendingEditData = new ConcurrentHashMap<>();
+
+    /**
+     * 修复：玩家退出时遍历清理该玩家在所有会话 Map 中的数据，防止内存泄漏
+     */
+    public static void cleanup(UUID uuid) {
+        pendingShopNameCreation.remove(uuid);
+        playerMainPage.remove(uuid);
+        adminMainPage.remove(uuid);
+        shopTradesPage.remove(uuid);
+        adminTradesPage.remove(uuid);
+        probPage.remove(uuid);
+        currentEditingData.remove(uuid);
+        safeClose.remove(uuid);
+        pendingEditData.remove(uuid);
+    }
 
     private static final int[] CONTENT_SLOTS = {
             10, 11, 12, 13, 14, 15, 16,
@@ -733,7 +751,14 @@ public class ShopGUI implements Listener {
         else if (title.startsWith(ChatColor.DARK_RED + "配置: ")) {
             String shopName = title.replace(ChatColor.DARK_RED + "配置: ", "");
             ShopEditData currentData = readEditDataFromInventory(e.getInventory(), shopName);
-            currentData.isNew = currentEditingData.get(player.getUniqueId()).isNew;
+            // 修复：currentEditingData 可能不存在（重载/重启/会话丢失），判空防止 NPE
+            ShopEditData editingData = currentEditingData.get(player.getUniqueId());
+            if (editingData == null) {
+                player.closeInventory();
+                player.sendMessage(ChatColor.RED + "编辑会话已失效，请重新打开交易编辑器！");
+                return;
+            }
+            currentData.isNew = editingData.isNew;
 
             if (slot == 45) {
                 ShopManager.Shop shop = ShopManager.getShop(shopName);
@@ -869,58 +894,66 @@ public class ShopGUI implements Listener {
 
         if (pendingShopNameCreation.containsKey(uuid)) {
             e.setCancelled(true);
+            // 修复：异步聊天线程中只读取输入文本，随后切回主线程再操作 Map 与商店数据（避免异步修改集合/写盘）
             String msg = e.getMessage().trim();
+            Bukkit.getScheduler().runTask(MagicExpansion.getInstance(), () -> {
+                // 等待标记可能在切线程前被清理（退出/取消），需再次校验
+                if (!pendingShopNameCreation.containsKey(uuid)) return;
 
-            if (msg.equalsIgnoreCase("cancel")) {
-                player.sendMessage(ChatColor.YELLOW + "已取消创建商店。");
-                pendingShopNameCreation.remove(uuid);
-            } else {
-                boolean exists = false;
-                for (ShopManager.Shop shop : ShopManager.getShops()) {
-                    if (shop.name.equals(msg)) {
-                        exists = true;
-                        break;
+                if (msg.equalsIgnoreCase("cancel")) {
+                    player.sendMessage(ChatColor.YELLOW + "已取消创建商店。");
+                    pendingShopNameCreation.remove(uuid);
+                } else {
+                    boolean exists = false;
+                    for (ShopManager.Shop shop : ShopManager.getShops()) {
+                        if (shop.name.equals(msg)) {
+                            exists = true;
+                            break;
+                        }
+                    }
+
+                    if (exists) {
+                        player.sendMessage(ChatColor.RED + "已存在同名商店 " + msg + " ，请重新输入名称或输入 'cancel' 取消。");
+                    } else {
+                        ShopManager.createShop(msg);
+                        player.sendMessage(ChatColor.GREEN + "商店 " + msg + " 创建成功！");
+                        pendingShopNameCreation.remove(uuid);
+                        openAdminMainMenu(player);
                     }
                 }
-
-                if (exists) {
-                    player.sendMessage(ChatColor.RED + "已存在同名商店 " + msg + " ，请重新输入名称或输入 'cancel' 取消。");
-                } else {
-                    ShopManager.createShop(msg);
-                    player.sendMessage(ChatColor.GREEN + "商店 " + msg + " 创建成功！");
-                    pendingShopNameCreation.remove(uuid);
-                    Bukkit.getScheduler().runTask(MagicExpansion.getInstance(), () -> openAdminMainMenu(player));
-                }
-            }
+            });
             return;
         }
 
         if (pendingEditData.containsKey(uuid)) {
             e.setCancelled(true);
+            // 修复：异步聊天线程中只读取输入文本，随后切回主线程再操作 Map 与数据修改
             String msg = e.getMessage().trim();
-            ShopEditData data = pendingEditData.get(uuid);
-
-            if (msg.equalsIgnoreCase("cancel")) {
-                player.sendMessage(ChatColor.YELLOW + "已取消设置次数。");
-            } else {
-                try {
-                    int amount = Math.max(0, Integer.parseInt(msg));
-                    if (data.editing.equals("global")) {
-                        data.globalLimit = amount;
-                        player.sendMessage(ChatColor.GREEN + "全服限购次数已设置为: " + (amount == 0 ? "无限制" : amount));
-                    } else if (data.editing.equals("personal")) {
-                        data.personalLimit = amount;
-                        player.sendMessage(ChatColor.GREEN + "个人限购次数已设置为: " + (amount == 0 ? "无限制" : amount));
-                    }
-                } catch (NumberFormatException ex) {
-                    player.sendMessage(ChatColor.RED + "输入无效，必须是数字！");
-                }
-            }
-
             Bukkit.getScheduler().runTask(MagicExpansion.getInstance(), () -> {
+                // 等待标记可能在切线程前被清理，需再次校验
+                ShopEditData data = pendingEditData.get(uuid);
+                if (data == null) return;
+
+                if (msg.equalsIgnoreCase("cancel")) {
+                    player.sendMessage(ChatColor.YELLOW + "已取消设置次数。");
+                } else {
+                    try {
+                        int amount = Math.max(0, Integer.parseInt(msg));
+                        if (data.editing.equals("global")) {
+                            data.globalLimit = amount;
+                            player.sendMessage(ChatColor.GREEN + "全服限购次数已设置为: " + (amount == 0 ? "无限制" : amount));
+                        } else if (data.editing.equals("personal")) {
+                            data.personalLimit = amount;
+                            player.sendMessage(ChatColor.GREEN + "个人限购次数已设置为: " + (amount == 0 ? "无限制" : amount));
+                        }
+                    } catch (NumberFormatException ex) {
+                        player.sendMessage(ChatColor.RED + "输入无效，必须是数字！");
+                    }
+                }
+
                 openTradeEditor(player, data.shopName, data);
+                pendingEditData.remove(uuid);
             });
-            pendingEditData.remove(uuid);
             return;
         }
     }

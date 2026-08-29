@@ -190,13 +190,22 @@ public class EnergyInputGenerator extends MenuBlock implements EnergyNetProvider
         else if (nowPower + machineCharge > maxPower) {
             newNowPower = maxPower;
             takeCharge = maxPower - nowPower;
-            takeChargeInt = (int) takeCharge;
+            // J1 修复：takeCharge 为 long，直接 (int) 强转可能溢出为负；
+            // 钳制到 int 上限，且不超过机器实际 charge
+            takeChargeInt = (int) Math.min(Math.min(takeCharge, machineCharge), (long) Integer.MAX_VALUE);
         } else {
             newNowPower = nowPower + machineCharge;
             takeChargeInt = machineCharge;
         }
         if (takeChargeInt > 0) {
-            removeCharge(block.getLocation(), takeChargeInt);
+            // J1 修复：分段扣费——单次 removeCharge 不超过 Integer.MAX_VALUE，
+            // 且累计扣电量不超过机器实际 charge
+            long remainingToTake = takeChargeInt;
+            while (remainingToTake > 0) {
+                int step = (int) Math.min(remainingToTake, Integer.MAX_VALUE);
+                removeCharge(block.getLocation(), step);
+                remainingToTake -= step;
+            }
         }
         pdc.set(NowPower, PersistentDataType.LONG, newNowPower);
 
@@ -292,7 +301,9 @@ public class EnergyInputGenerator extends MenuBlock implements EnergyNetProvider
 
     @Override
     public int getCapacity() {
-        return Integer.MAX_VALUE;
+        // J2 修复：Integer.MAX_VALUE 过大，改为有限值 1,000,000,000，
+        // 避免参与减法/乘法运算时产生溢出
+        return 1_000_000_000;
     }
 
 

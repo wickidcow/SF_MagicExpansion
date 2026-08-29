@@ -69,6 +69,9 @@ public class PlayerFishingListener implements Listener {
 
     private static final Set<ItemStack> RANDOM_FISH_TYPES = new HashSet<>();
 
+    // C5: 共享静态随机数实例，避免每次钓获都新建 Random
+    private static final Random RANDOM = new Random();
+
     static {
         RANDOM_FISH_TYPES.add(MagicExpansionItems.RANDOM_FISH_COMMON);
         RANDOM_FISH_TYPES.add(MagicExpansionItems.RANDOM_FISH_UNCOMMON);
@@ -128,11 +131,20 @@ public class PlayerFishingListener implements Listener {
         ItemStack drop = getSmartLoot(player, fishingRod, activeLure).clone();
         Boolean FinalLureEnable = cfg.getBoolean("Fish.FishingRod.FISHING_ROD_FINAL_STICK.Enable.FinalLure_Obtain");
         if (!FinalLureEnable) {
-            while (drop.isSimilar(new CustomItemStack(new ItemStack(Material.PRISMARINE_SHARD), getGradientNameVer2("鱼饵·记忆碎片"),
+            // C1: 记忆碎片判定物提取到循环外，避免每轮循环重复构建
+            ItemStack memoryShard = new CustomItemStack(new ItemStack(Material.PRISMARINE_SHARD), getGradientNameVer2("鱼饵·记忆碎片"),
                     ("§f这个鱼饵可以钓到任何物品"),
                     ("§f他存在于过去或者是未来"),
-                    ("§f你现在看到的他并非真正的他")))) {
+                    ("§f你现在看到的他并非真正的他"));
+            // C1: 原来是死循环——若钓获池只有记忆碎片会无限重试；改为最多重试 16 次
+            int retries = 0;
+            while (drop.isSimilar(memoryShard) && retries < 16) {
                 drop = getSmartLoot(player, fishingRod, activeLure).clone();
+                retries++;
+            }
+            // C1: 仍命中记忆碎片则放弃本次特殊掉落，走默认钓获物
+            if (drop.isSimilar(memoryShard)) {
+                drop = getRandomItemFromWeightedPool(getDefaultLootPool());
             }
         }
         if (activeLure != null && bagKey == null) {
@@ -149,6 +161,8 @@ public class PlayerFishingListener implements Listener {
         if (caught instanceof Item item) {
             item.remove();
         }
+        // C3: 补上事件取消，防止原版钓鱼经验/掉落重复发放
+        e.setCancelled(true);
 
         if(isAnythingItem(drop)){
             drop = getRandomItemStack();
@@ -173,7 +187,8 @@ public class PlayerFishingListener implements Listener {
             tnt.setVelocity(direction);
             tnt.setGlowing(true);
             String itemName = ItemStackHelper.getDisplayName(drop);
-            String message = phrases.get(new Random().nextInt(phrases.size()));
+            // C5: 改用共享随机数实例
+            String message = phrases.get(RANDOM.nextInt(phrases.size()));
             player.sendMessage((ColorGradient.getRandomGradientName(message))+" §r"+itemName+ColorGradient.getRandomGradientName(" ！！"));
             return;
         }
@@ -189,10 +204,11 @@ public class PlayerFishingListener implements Listener {
                     .multiply(2.5);
             rewardItem.setVelocity(direction);
             rewardItem.setGlowing(true);
+            // C4: 物品名与提示消息移入判空块内，避免 drop 为 null 时 NPE
+            String itemName = ItemStackHelper.getDisplayName(drop);
+            String message = phrases.get(RANDOM.nextInt(phrases.size())); // C5: 改用共享随机数实例
+            player.sendMessage((ColorGradient.getRandomGradientName(message))+" §r"+itemName+ColorGradient.getRandomGradientName(" ！！"));
         }
-        String itemName = ItemStackHelper.getDisplayName(drop);
-        String message = phrases.get(new Random().nextInt(phrases.size()));
-        player.sendMessage((ColorGradient.getRandomGradientName(message))+" §r"+itemName+ColorGradient.getRandomGradientName(" ！！"));
     }
 
     List<String> phrases = List.of(
@@ -254,8 +270,15 @@ public class PlayerFishingListener implements Listener {
     }
 
     private ItemStack getRandomItemFromWeightedPool(List<WeightedItem> pool) {
+        // C2: 池为空或总权重 <= 0 时回退默认掉落池，防止 nextInt(0) 抛异常
+        if (pool == null || pool.isEmpty()) {
+            return getRandomItemFromWeightedPool(getDefaultLootPool());
+        }
         int total = pool.stream().mapToInt(WeightedItem::getWeight).sum();
-        int r = new Random().nextInt(total), current = 0;
+        if (total <= 0) {
+            return getDefaultLootPool().get(0).getItem().clone(); // 回退默认掉落（鳕鱼）
+        }
+        int r = RANDOM.nextInt(total), current = 0;
         for (WeightedItem w : pool) if ((current += w.getWeight()) > r) return w.getItem().clone();
         return pool.get(0).getItem().clone();
     }

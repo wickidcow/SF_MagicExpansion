@@ -58,6 +58,9 @@ public class FishKeys {
             MagicExpansionItems.FISHING_ROD_FINAL_STICK
 
     ));
+    // 修复(S)：Random 改为共享静态实例，避免每次垂钓结算新建 Random
+    private static final Random RANDOM = new Random();
+
     public static ItemStack enchantDropWithFishData(Player player, ItemStack drop, ItemStack rod) {
         Fish.Rarity targetRarity = null;
 
@@ -80,8 +83,8 @@ public class FishKeys {
             candidates = Collections.singletonList(Fish.XueFish);
         }
 
-        Random random = new Random();
-        Fish chosenFish = candidates.get(random.nextInt(candidates.size()));
+        // 修复(S)：使用共享静态 Random
+        Fish chosenFish = candidates.get(RANDOM.nextInt(candidates.size()));
 
         double weight = 0.0;
         if (isMagicFishingRod(rod, MAGIC_FISHING_RODS_NEW)) {
@@ -105,29 +108,26 @@ public class FishKeys {
         Fish.WeightRarity weightRarity = chosenFish.getWeightRarity(weight);
         pdc.set(FishKeys.FISH_WEIGHT_RARITY, PersistentDataType.STRING, weightRarity.name());
         String weightRareThis = "";
+        // 修复(S)：稀有鱼全服广播不再暴露精确 XYZ 坐标，改为世界名+方块近似坐标（防坐标测绘钓鱼定位他人）
+        String roughLocation = player.getWorld().getName() + " (" + player.getLocation().getBlockX()
+                + ", " + player.getLocation().getBlockY() + ", " + player.getLocation().getBlockZ() + ")";
         if (weightRarity == Fish.WeightRarity.RARE_FISH) {
             Bukkit.broadcastMessage("§a恭喜玩家 §e"+player.getName()+" §a在 §d"+ player.getWorld().getName() + " §a中垂钓意外捕获了一条§e稀有鱼！");
             Bukkit.broadcastMessage("§a恭喜玩家 §e"+player.getName()+
-                    " §a在坐标 §dX: "+ String.format("%.2f",player.getLocation().getX())+
-                    " Y: " + String.format("%.2f",player.getLocation().getY())+
-                    " Z: " + String.format("%.2f",player.getLocation().getZ()) +
+                    " §a在坐标 §d" + roughLocation +
                     " §a附近捕获了 §e稀有鱼 "+chosenFish.getDisplayName());
             weightRareThis = "§e§l⭐";
         }
         if (weightRarity == Fish.WeightRarity.SUPER_RARE_FISH) {
             Bukkit.broadcastMessage("§a恭喜玩家 §e"+player.getName()+" §a在 §d"+ player.getWorld().getName() + " §a中垂钓意外捕获了一条§b超级稀有鱼！");
             Bukkit.broadcastMessage("§a恭喜玩家 §e"+player.getName()+
-                    " §a在坐标 §dX: "+ String.format("%.2f",player.getLocation().getX())+
-                    " Y: " + String.format("%.2f",player.getLocation().getY())+
-                    " Z: " + String.format("%.2f",player.getLocation().getZ()) + " §a附近捕获了 §b超级稀有鱼 "+chosenFish.getDisplayName());
+                    " §a在坐标 §d" + roughLocation + " §a附近捕获了 §b超级稀有鱼 "+chosenFish.getDisplayName());
             weightRareThis = "§b§l\uD83D\uDC8E";
         }
         if (weightRarity == WeightRarity.MAX_WEIGHT_FISH) {
             Bukkit.broadcastMessage("§a恭喜玩家 §e"+player.getName()+" §a在 §d"+ player.getWorld().getName() + " §a中垂钓意外捕获了一条§b§l鱼皇！");
             Bukkit.broadcastMessage("§a恭喜玩家 §e"+player.getName()+
-                    " §a在坐标 §dX: "+ String.format("%.2f",player.getLocation().getX())+
-                    " Y: " + String.format("%.2f",player.getLocation().getY())+
-                    " Z: " + String.format("%.2f",player.getLocation().getZ()) + " §a附近捕获了 §c§l鱼皇 "+chosenFish.getDisplayName());
+                    " §a在坐标 §d" + roughLocation + " §a附近捕获了 §c§l鱼皇 "+chosenFish.getDisplayName());
             weightRareThis = "§c§l🎶";
         }
 

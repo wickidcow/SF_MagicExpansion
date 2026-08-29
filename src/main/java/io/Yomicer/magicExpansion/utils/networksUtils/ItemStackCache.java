@@ -1,12 +1,13 @@
 package io.Yomicer.magicExpansion.utils.networksUtils;
 
-import lombok.ToString;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.Nullable;
 
-@ToString
+/**
+ * 物品缓存基类（原 Lombok @ToString 改为手工 toString，用于调试输出）
+ */
 public class ItemStackCache {
 
     private @Nullable ItemStack itemStack;
@@ -45,5 +46,11 @@ public class ItemStackCache {
     @Nullable
     public Material getItemType() {
         return this.itemStack == null ? null : this.itemStack.getType();
+    }
+
+    // 原 Lombok @ToString 手工展开：输出物品类型与缓存状态，便于日志排查
+    @Override
+    public String toString() {
+        return "ItemStackCache{itemStack=" + itemStack + ", metaCached=" + metaCached + "}";
     }
 }

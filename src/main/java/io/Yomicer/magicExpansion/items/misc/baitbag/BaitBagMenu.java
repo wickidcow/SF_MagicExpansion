@@ -6,6 +6,7 @@ import io.Yomicer.magicExpansion.items.misc.CargoFragment;
 import io.Yomicer.magicExpansion.items.tools.VoidTouch;
 import io.Yomicer.magicExpansion.utils.NetworkStorage;
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItem;
+import io.github.thebusybiscuit.slimefun4.implementation.SlimefunItems;
 import io.github.thebusybiscuit.slimefun4.libraries.dough.items.CustomItemStack;
 import io.github.thebusybiscuit.slimefun4.utils.ChestMenuUtils;
 import io.github.thebusybiscuit.slimefun4.utils.SlimefunUtils;
@@ -57,7 +58,7 @@ public final class BaitBagMenu {
             new BaitEntry("xinghe", "XingHe", "水云间", MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_XINGHE),
             new BaitEntry("memory", "fishLureFinal", "记忆碎片", memoryFragment()),
             new BaitEntry("jianjia", "JianJia", "芦花", MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_REED_JIANJIA),
-            new BaitEntry("magicsugar", "magic_sugar", "织梦者", MagicExpansionItems.MAGIC_EXPANSION_MAGIC_SUGAR_1)
+            new BaitEntry("magicsugar", "magic_sugar", "织梦者", SlimefunItems.MAGIC_SUGAR)
     );
 
     // ==================== 4×7 布局数据模型(系列 → 鱼竿 → 鱼饵, 数据驱动, 新增鱼竿在此登记即可自动排版) ====================
@@ -107,11 +108,15 @@ public final class BaitBagMenu {
                     row++;
                     col = 1;
                 }
+                // 修复(L2)：边界保护 —— 行号溢出时放在最后一行而不是抛数组越界异常
+                if (row >= GRID_ROWS.length) row = GRID_ROWS.length - 1;
                 col++; // 鱼竿展示格占 1 格
                 for (String key : rod.lureKeys()) {
                     if (col > 6) {
                         row++;
                         col = 1;
+                        // 修复(L2)：边界保护 —— 行号溢出时放在最后一行
+                        if (row >= GRID_ROWS.length) row = GRID_ROWS.length - 1;
                     }
                     BaitEntry entry = findEntryByKey(key);
                     if (entry != null) {
@@ -619,8 +624,15 @@ public final class BaitBagMenu {
             int give = (int) Math.min(left, 64);
             stack.setAmount(give);
             Map<Integer, ItemStack> leftovers = player.getInventory().addItem(stack);
-            if (!leftovers.isEmpty()) break;
-            left -= give;
+            // 修复(L1)：addItem 部分放入时会返回 overflow，必须按"实际放入数量"扣减 left，
+            // 否则（尝试数-未扣减的left）会导致袋中数量少扣，重复取出刷物品
+            int overflowTotal = 0;
+            for (ItemStack rest : leftovers.values()) {
+                overflowTotal += rest.getAmount();
+            }
+            int actuallyAdded = give - overflowTotal;
+            left -= actuallyAdded;
+            if (!leftovers.isEmpty()) break; // 背包已满（有溢出），结束循环
         }
         setAmount(bag, entry, remaining - (toTake - left));
         player.getInventory().setItem(bagSlot, bag);
@@ -849,6 +861,8 @@ public final class BaitBagMenu {
             player.sendMessage(getGradientNameVer2("已从量子存储取出鱼饵"));
             refreshBaitSlot(menu, bag, vBait);
         } catch (Throwable t) {
+            // 修复(L3)：空吞异常改为输出警告日志，方便排查量子存储兼容问题
+            MagicExpansion.getInstance().getLogger().warning("饵料袋读取量子存储数据失败: " + t.getMessage());
         }
     }
 

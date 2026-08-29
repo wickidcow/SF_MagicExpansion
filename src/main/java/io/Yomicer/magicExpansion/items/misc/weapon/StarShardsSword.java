@@ -46,10 +46,13 @@ public class StarShardsSword extends SimpleSlimefunItem<ItemUseHandler> implemen
 
     //新增自定义倍率
 //    public static final double DAMAGE_MULTIPLIER = 61.8;
-    private final Map<UUID, Map<String, Long>> cooldowns = new HashMap<>();
-    private final Map<UUID, Long> lastMessageTime = new HashMap<>();
-    // 用于存储实体的流血任务，Key是实体UUID，Value是BukkitRunnable任务列表
-    private final Map<UUID, List<BukkitTask>> bleedingTasks = new ConcurrentHashMap<>();
+    // A5: 技能冷却表改为 static + ConcurrentHashMap，保证多线程安全且可被静态 cleanup 清理
+    private static final Map<UUID, Map<String, Long>> cooldowns = new ConcurrentHashMap<>();
+    // A5: 冷却提示限频时间戳改为 static + ConcurrentHashMap
+    private static final Map<UUID, Long> lastMessageTime = new ConcurrentHashMap<>();
+    // A3: 星界护盾无敌期表——记录玩家 UUID → 无敌到期时间戳，由 onEntityDamage 的事件取消逻辑实现无敌
+    private static final Map<UUID, Long> invulnerableUntil = new ConcurrentHashMap<>();
+    // A6: 删除了未使用的流血任务死字段 bleedingTasks（流血任务实际存放在目标实体的 metadata 中）
 
     Config cfg = new Config(MagicExpansion.getInstance());
     Double StarShards_Atk_Mix = cfg.getDouble("StarShardsSword.StarShards_Atk_Mix");
@@ -176,17 +179,25 @@ public class StarShardsSword extends SimpleSlimefunItem<ItemUseHandler> implemen
     public void onEntityDamage(EntityDamageEvent event) {
         if (!(event.getEntity() instanceof Player)) return;
         Player p = (Player) event.getEntity();
-        if (holyProtectedPlayers.contains(p.getUniqueId())) {
+        // A3: 星界护盾无敌期判定（替代原 player.setInvulnerable 方案）
+        Long until = invulnerableUntil.get(p.getUniqueId());
+        boolean shieldActive = until != null && System.currentTimeMillis() < until;
+        if (shieldActive || holyProtectedPlayers.contains(p.getUniqueId())) {
             event.setCancelled(true);
             if (event.getCause() != EntityDamageEvent.DamageCause.VOID) {
                 p.getWorld().spawnParticle(Particle.CLOUD, p.getLocation().add(0, 0.5, 0), 5, 0.2, 0.2, 0.2, 0.01);
             }
         }
+        // A3: 无敌期已过期的条目顺手移除，防止 Map 残留
+        if (until != null && !shieldActive) {
+            invulnerableUntil.remove(p.getUniqueId());
+        }
     }
 
 
     // ✅ 攻击事件监听（SF9 唯一方式）
-    @EventHandler
+    // A1: 加 ignoreCancelled = true，被领地保护等插件取消的攻击事件不再重复结算伤害
+    @EventHandler(ignoreCancelled = true)
     public void onPlayerAttack(EntityDamageByEntityEvent event) {
         if (!(event.getDamager() instanceof Player player)) return;
         if (!(event.getEntity() instanceof LivingEntity target)) return;
@@ -197,19 +208,13 @@ public class StarShardsSword extends SimpleSlimefunItem<ItemUseHandler> implemen
         if (!(handSfItem instanceof StarShardsSword)) return;
         // 应用伤害倍率
         // *新增固定百分比伤害
-        // 1. 计算本次要扣除的伤害值（保留你原有的公式）
+        // 1. 计算本次要附加的真实伤害值（保留原有公式）
         double damageToDeal = event.getDamage() * StarShards_Atk_Mix
                 + target.getMaxHealth() * (StarShards_Atk_ExtraPercent);
 
-        // 2. 计算扣除伤害后的新血量
-        double newHealth = target.getHealth() - damageToDeal;
-
-        // 3. 核心修改：如果血量小于等于 0，则强制设为 0.1
-        if (newHealth <= 0.0) {
-            newHealth = 0.1;
-        }
-
-        target.setHealth(newHealth);
+        // A2: 原先 target.setHealth(...) 直接扣血会绕过事件系统（无视领地保护/Boss伤害上限），
+        // 改为 target.damage(damage, player) 走标准伤害事件，总伤害效果保持接近
+        target.damage(damageToDeal, player);
 
 
 //        double damage =  event.getDamage();
@@ -243,15 +248,29 @@ public class StarShardsSword extends SimpleSlimefunItem<ItemUseHandler> implemen
         // 格式为 "MagicExpansion_BLEED_<攻击者UUID>"，确保来自不同玩家的流血效果可以叠加
         String bleedTagKey = "MagicExpansion_BLEED_" + damager.getUniqueId();
 
-        // 3. 启动一个持续3秒的异步任务
+        // 3. 启动一个持续8秒的异步任务
         BukkitTask bleedTask = new BukkitRunnable() {
             int ticksPassed = 0; // 记录已过去的游戏刻
 
+            // A6: 任务结束时从目标 metadata 的任务列表中移除自身；列表为空则移除整个 metadata 标签，防止残留
+            private void finishAndCleanup() {
+                this.cancel();
+                if (target.hasMetadata(bleedTagKey)) {
+                    List<BukkitTask> tasks = (List<BukkitTask>) target.getMetadata(bleedTagKey).get(0).value();
+                    if (tasks != null) {
+                        tasks.remove(this);
+                        if (tasks.isEmpty()) {
+                            target.removeMetadata(bleedTagKey, MagicExpansion.getInstance());
+                        }
+                    }
+                }
+            }
+
             @Override
             public void run() {
-                // 如果目标已死亡或无效，则取消任务
+                // 如果目标已死亡或无效，则清理 metadata 并取消任务
                 if (!target.isValid() || target.isDead()) {
-                    this.cancel();
+                    finishAndCleanup();
                     return;
                 }
 
@@ -280,9 +299,9 @@ public class StarShardsSword extends SimpleSlimefunItem<ItemUseHandler> implemen
 
                 ticksPassed++;
 
-                // 5秒后 (100游戏刻) 取消任务
+                // 8秒后 (160游戏刻) 结束任务并清理 metadata
                 if (ticksPassed >= 160) {
-                    this.cancel();
+                    finishAndCleanup();
                 }
             }
         }.runTaskTimer(MagicExpansion.getInstance(), 0L, 1L); // 立即开始，每1游戏刻检查一次
@@ -311,7 +330,7 @@ public class StarShardsSword extends SimpleSlimefunItem<ItemUseHandler> implemen
     private boolean checkCooldown(Player player, String skill, long seconds) {
         UUID id = player.getUniqueId();
         long now = System.currentTimeMillis();
-        cooldowns.putIfAbsent(id, new HashMap<>());
+        cooldowns.putIfAbsent(id, new ConcurrentHashMap<>()); // A5: 内层 Map 同步改为 ConcurrentHashMap
         Map<String, Long> map = cooldowns.get(id);
 
         if (map.containsKey(skill)) {
@@ -435,10 +454,10 @@ public class StarShardsSword extends SimpleSlimefunItem<ItemUseHandler> implemen
         player.sendMessage("§b✨ 星界護盾已激活！");
         player.getWorld().playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1.0f, 1.5f);
         player.getWorld().spawnParticle(Particle.ENCHANTMENT_TABLE, player.getLocation().add(0, 1, 0), 30, 0.5, 0.5, 0.5, 0.1);
-        player.setInvulnerable(true);
-        Bukkit.getScheduler().runTaskLater(getAddon().getJavaPlugin(), () -> {
-            if (player.isOnline()) player.setInvulnerable(false);
-        }, StarShards_AstralShield_During*20L);
+        // A3: 删除原 player.setInvulnerable(true/false) 方案，改为记录无敌到期时间戳，
+        // 由 onEntityDamage 中的事件取消逻辑实现无敌期（避免长期占用原版 invulnerable 标记）
+        invulnerableUntil.put(player.getUniqueId(),
+                System.currentTimeMillis() + StarShards_AstralShield_During * 1000L);
 
         holyProtectedPlayers.add(player.getUniqueId());
         new BukkitRunnable() {
@@ -477,6 +496,18 @@ public class StarShardsSword extends SimpleSlimefunItem<ItemUseHandler> implemen
                 le.addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, 20, 0));
             }
         }
+    }
+
+    /**
+     * A4: 玩家退出时的会话数据清理（由 PlayerCleanupListener 统一调用）：
+     * 清除技能冷却、冷却提示限频时间戳、星界护盾无敌期、圣盾名单等 per-player 状态，
+     * 防止 Map 残留离线玩家数据造成内存泄漏。
+     */
+    public static void cleanup(UUID uuid) {
+        cooldowns.remove(uuid);           // 清理技能冷却数据
+        lastMessageTime.remove(uuid);     // 清理冷却提示限频时间戳
+        invulnerableUntil.remove(uuid);   // 清理星界护盾无敌期时间戳
+        holyProtectedPlayers.remove(uuid);// 清理圣盾玩家名单
     }
 
     @Override

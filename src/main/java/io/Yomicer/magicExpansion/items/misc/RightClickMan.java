@@ -3,6 +3,7 @@ package io.Yomicer.magicExpansion.items.misc;
 import com.xzavier0722.mc.plugin.slimefun4.storage.controller.SlimefunBlockData;
 import com.xzavier0722.mc.plugin.slimefun4.storage.util.StorageCacheUtils;
 import io.Yomicer.magicExpansion.items.electric.entitykillMachinee.EntityKillMachine;
+import io.Yomicer.magicExpansion.utils.VirtualPlayerManager; // G1v3：虚拟玩家管理器
 import io.github.thebusybiscuit.slimefun4.api.items.ItemGroup;
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItem;
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItemStack;
@@ -21,7 +22,6 @@ import net.guizhanss.guizhanlib.minecraft.helper.inventory.ItemStackHelper;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
@@ -154,108 +154,71 @@ public class RightClickMan extends SlimefunItem implements EnergyNetComponent {
             boolean west = isButtonOn(menu, 13);
             boolean north = isButtonOn(menu, 14);
 
-            World world = block.getLocation().getWorld();
-            List<Player> nearbyPlayers = world.getPlayers().stream()
-                    .filter(player -> player.getLocation().distanceSquared(block.getLocation()) <= 2500)
-                    .sorted(Comparator.comparingDouble(a -> a.getLocation().distance(block.getLocation())))
-                    .toList();
+            // G2 修复：全量 getPlayers() 距离过滤+排序降频为每 10 tick 一次，结果缓存复用
+            NearestPlayerCache playerCache = nearestPlayerCache.computeIfAbsent(
+                    block.getLocation(), k -> new NearestPlayerCache());
+            long now = System.currentTimeMillis();
+            if (now >= playerCache.nextScanAt) {
+                playerCache.nextScanAt = now + PLAYER_SCAN_INTERVAL_MS;
+                playerCache.player = findNearestPlayer(block.getLocation());
+            }
+            Player nearestPlayer = playerCache.player;
 
-            if (nearbyPlayers.isEmpty()) return;
-            Player nearestPlayer = nearbyPlayers.get(0);
+            // G1v3（按需求）：优先使用虚拟玩家执行模拟右键；
+            // 虚拟玩家不可用时回退"附近真实玩家"，两者皆无才跳过本 tick
+            boolean hasVirtual = VirtualPlayerManager.obtainVirtual() != null;
+            if (!hasVirtual && nearestPlayer == null) return;
 
             String directions = "";
 
             if (up) {
-                Location loc1 = block.getLocation().clone().add(0, 1, 0);
-                Block targetBlock1 = loc1.getBlock();
-                PlayerInteractEvent interactEvent = new PlayerInteractEvent(
-                        nearestPlayer,
-                        Action.RIGHT_CLICK_BLOCK,
-                        new ItemStack(Material.AIR),
-                        targetBlock1,
-                        BlockFace.SELF
-                );
-                Bukkit.getPluginManager().callEvent(interactEvent);
+                interactTarget(nearestPlayer, block.getLocation().clone().add(0, 1, 0).getBlock());
                 directions += "上 ";
             }
 
             if (down) {
-                Location loc2 = block.getLocation().clone().add(0, -1, 0);
-                Block targetBlock2 = loc2.getBlock();
-                PlayerInteractEvent interactEvent = new PlayerInteractEvent(
-                        nearestPlayer,
-                        Action.RIGHT_CLICK_BLOCK,
-                        new ItemStack(Material.AIR),
-                        targetBlock2,
-                        BlockFace.SELF
-                );
-                Bukkit.getPluginManager().callEvent(interactEvent);
+                interactTarget(nearestPlayer, block.getLocation().clone().add(0, -1, 0).getBlock());
                 directions += "下 ";
             }
 
             if (east) {
-                Location loc3 = block.getLocation().clone().add(1, 0, 0);
-                Block targetBlock3 = loc3.getBlock();
-                PlayerInteractEvent interactEvent = new PlayerInteractEvent(
-                        nearestPlayer,
-                        Action.RIGHT_CLICK_BLOCK,
-                        new ItemStack(Material.AIR),
-                        targetBlock3,
-                        BlockFace.SELF
-                );
-                Bukkit.getPluginManager().callEvent(interactEvent);
+                interactTarget(nearestPlayer, block.getLocation().clone().add(1, 0, 0).getBlock());
                 directions += "东 ";
             }
 
             if (south) {
-                Location loc4 = block.getLocation().clone().add(0, 0, 1);
-                Block targetBlock4 = loc4.getBlock();
-                PlayerInteractEvent interactEvent = new PlayerInteractEvent(
-                        nearestPlayer,
-                        Action.RIGHT_CLICK_BLOCK,
-                        new ItemStack(Material.AIR),
-                        targetBlock4,
-                        BlockFace.SELF
-                );
-                Bukkit.getPluginManager().callEvent(interactEvent);
+                interactTarget(nearestPlayer, block.getLocation().clone().add(0, 0, 1).getBlock());
                 directions += "南 ";
             }
 
             if (west) {
-                Location loc5 = block.getLocation().clone().add(-1, 0, 0);
-                Block targetBlock5 = loc5.getBlock();
-                PlayerInteractEvent interactEvent = new PlayerInteractEvent(
-                        nearestPlayer,
-                        Action.RIGHT_CLICK_BLOCK,
-                        new ItemStack(Material.AIR),
-                        targetBlock5,
-                        BlockFace.SELF
-                );
-                Bukkit.getPluginManager().callEvent(interactEvent);
+                interactTarget(nearestPlayer, block.getLocation().clone().add(-1, 0, 0).getBlock());
                 directions += "西 ";
             }
 
             if (north) {
-                Location loc6 = block.getLocation().clone().add(0, 0, -1);
-                Block targetBlock6 = loc6.getBlock();
-                PlayerInteractEvent interactEvent = new PlayerInteractEvent(
-                        nearestPlayer,
-                        Action.RIGHT_CLICK_BLOCK,
-                        new ItemStack(Material.AIR),
-                        targetBlock6,
-                        BlockFace.SELF
-                );
-                Bukkit.getPluginManager().callEvent(interactEvent);
+                interactTarget(nearestPlayer, block.getLocation().clone().add(0, 0, -1).getBlock());
                 directions += "北";
             }
 
             // 更新状态显示
             if (menu.hasViewer()) {
-                if (nearestPlayer != null) {
+                // G1v3：模拟玩家显示——优先展示虚拟玩家及其模式，其次展示回退用的附近真实玩家
+                String actorLine;
+                if (hasVirtual) {
+                    // 虚拟玩家模式：显示傀儡名与实现方式（citizens / nms）
+                    actorLine = "§d" + VirtualPlayerManager.BOT_NAME + " §7(虚拟·" + VirtualPlayerManager.getMode() + ")";
+                } else if (nearestPlayer != null) {
+                    // 回退模式：显示附近真实玩家名
+                    actorLine = nearestPlayer.getName() + " §7(回退)";
+                } else {
+                    actorLine = null;
+                }
+                if (actorLine != null) {
                     menu.replaceExistingItem(16, new CustomItemStack(Material.PINK_CANDLE, "§b交互机器人",
                             "§b工作类型：§e右键交互方块",
                             "§b交互速度：§e1次/粘液刻",
-                            "§b模拟玩家：§e" + nearestPlayer.getName(),
+                            "§b模拟玩家：§e" + actorLine,
                             "§b模拟方向：§e" + directions.trim(),
                             "§b耗电速度：§e这个机器人不花电的",
                             "§b电量存储：§e这个机器人不储存电"));
@@ -263,12 +226,83 @@ public class RightClickMan extends SlimefunItem implements EnergyNetComponent {
                     menu.replaceExistingItem(16, new CustomItemStack(Material.PINK_CANDLE, "§b交互机器人",
                             "§b工作类型：§e右键交互方块",
                             "§b交互速度：§e1次/粘液刻",
-                            "§c未检测到玩家在附近",
+                            "§c未检测到虚拟玩家或附近玩家",
                             "§b耗电速度：§e这个机器人不花电的",
                             "§b电量存储：§e这个机器人不储存电"));
                 }
             }
         }
+    }
+
+    // ==================== G2 性能修复：邻近玩家扫描节流 ====================
+    private static final long PLAYER_SCAN_INTERVAL_MS = 500; // 扫描间隔 ≈ 10 tick
+    // 按机器位置缓存最近玩家：nextScanAt 为下次扫描时间，player 为缓存结果
+    private final Map<Location, NearestPlayerCache> nearestPlayerCache = new HashMap<>();
+
+    private static final class NearestPlayerCache {
+        long nextScanAt;
+        Player player; // 可能为 null 表示附近没有玩家
+    }
+
+    // G2: 全量 getPlayers() 距离过滤 + 排序（取最近一名玩家）
+    private Player findNearestPlayer(Location center) {
+        Player nearest = null;
+        double nearestDist = Double.MAX_VALUE;
+        for (Player player : center.getWorld().getPlayers()) {
+            double dist = player.getLocation().distanceSquared(center);
+            if (dist <= 2500 && dist < nearestDist) { // 与原逻辑一致：50 格内取最近
+                nearestDist = dist;
+                nearest = player;
+            }
+        }
+        return nearest;
+    }
+
+    /**
+     * G1v3（按需求）：模拟右键改为由"虚拟玩家"发起。
+     * 优先级：Citizens NPC（方案A）→ NMS 反射假玩家（方案B）→ 附近真实玩家（回退）。
+     * 虚拟玩家在每次交互前被传送到目标方块旁，保证事件处理器读到的位置正确；
+     * 事件仍为 PlayerInteractEvent(RIGHT_CLICK_BLOCK)，由各插件交互监听器自行响应。
+     *
+     * @param fallbackPlayer 虚拟玩家不可用时的回退对象（附近真实玩家，可能为 null）
+     * @param targetBlock    目标方块
+     */
+    private void interactTarget(Player fallbackPlayer, Block targetBlock) {
+        // 1) 获取执行者：优先虚拟玩家
+        Player actor = VirtualPlayerManager.obtainVirtual();
+        boolean isVirtual = actor != null;
+        if (!isVirtual) {
+            // 回退模式：使用附近真实玩家
+            actor = fallbackPlayer;
+            if (actor == null) return;
+        }
+
+        // 2) 领地保护检查：无交互权限的玩家不触发。
+        //    虚拟玩家（NPC/假玩家）的权限语义由领地插件的 NPC 组配置决定，
+        //    检查抛异常时：真实玩家按拒绝处理，虚拟玩家按放行处理（避免 NPC 组配置导致功能整体失效）
+        try {
+            if (!Slimefun.getProtectionManager().hasPermission(actor, targetBlock.getLocation(),
+                    Interaction.INTERACT_BLOCK)) {
+                return;
+            }
+        } catch (Throwable t) {
+            if (!isVirtual) return;
+        }
+
+        // 3) 虚拟玩家传送到目标方块上方（无真实玩家依附，机器人可独立于真人运行）
+        if (isVirtual) {
+            VirtualPlayerManager.moveVirtual(targetBlock.getLocation().add(0.5, 1.0, 0.5));
+        }
+
+        // 4) 模拟主手右键目标方块（手持 AIR、BlockFace.SELF，与原实现一致）
+        PlayerInteractEvent interactEvent = new PlayerInteractEvent(
+                actor,
+                Action.RIGHT_CLICK_BLOCK,
+                new ItemStack(Material.AIR),
+                targetBlock,
+                BlockFace.SELF
+        );
+        Bukkit.getPluginManager().callEvent(interactEvent);
     }
 
     /**
@@ -340,7 +374,7 @@ public class RightClickMan extends SlimefunItem implements EnergyNetComponent {
         for (int slot : controlSlots) {
             preset.addItem(slot, new CustomItemStack(BUTTON_OFF, "§7未激活", "§e点击激活"),
                     (player, slot1, item, action) -> {
-                        Block b = player.getTargetBlock(null, 5);
+                        // G3 修复：删除原此处 getTargetBlock 结果从未使用的死代码行
                         if (!(player.getOpenInventory().getTopInventory().getHolder() instanceof BlockMenu menu)) {
                             return false;
                         }

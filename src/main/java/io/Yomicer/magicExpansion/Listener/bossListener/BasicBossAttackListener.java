@@ -46,38 +46,42 @@ public class BasicBossAttackListener implements Listener {
     @EventHandler
     public void onEntityDamageByEntity(EntityDamageByEntityEvent e) {
 
-        Entity damager = e.getDamager();
-        ItemStack weapon = null;
+        // G: 短路判定①——攻击者必须是玩家，否则直接返回（原实现无条件遍历统计附近玩家，浪费性能）
+        if (!(e.getDamager() instanceof Player player)) return;
 
-        Location mobLocation = e.getEntity().getLocation();
+        // G: 短路判定②——目标必须是生物实体
+        if (!(e.getEntity() instanceof LivingEntity mob)) return;
+
+        // G: 短路判定③——目标必须带本插件 Boss 元数据标记，普通生物不再做后续统计
+        if (!mob.hasMetadata("isInvincibleWindElf")) return;
+
+        boolean isInvincibleWindElf = mob.getMetadata("isInvincibleWindElf").get(0).asBoolean();
+
+        // G: 短路判定通过后才遍历附近玩家统计（原来无论是否命中 Boss 都会执行）
+        Location mobLocation = mob.getLocation();
         World world = mobLocation.getWorld();
         double radius = 20.0; // 范围：20 方块
         double radiusSquared = radius * radius;
         int playerCount = 0;
-        for (Player player : world.getPlayers()) {
-            if (player.getLocation().distanceSquared(mobLocation) <= radiusSquared) {
+        for (Player p : world.getPlayers()) {
+            if (p.getLocation().distanceSquared(mobLocation) <= radiusSquared) {
                 playerCount++;
             }
         }
-        if (damager instanceof Player player) {
-            weapon = player.getInventory().getItemInMainHand();
-                if (e.getEntity() instanceof LivingEntity mob && mob.getType() == EntityType.ALLAY) {
-                    if (mob.hasMetadata("isInvincibleWindElf")) {
 
-                        boolean isInvincibleWindElf = mob.getMetadata("isInvincibleWindElf").get(0).asBoolean();
-
-                        if (isInvincibleWindElf || !isSword(weapon) || playerCount<2 || playerCount >5) {
-                            e.setDamage(0.0);
-                        } else {
-                            double damage = e.getDamage();
-                            double maxHealth = mob.getMaxHealth();
-                            double threshold = maxHealth * 0.33;
-                            if (damage > threshold) {
-                                e.setDamage(threshold);
-                            }
-                        }
-                    }
+        // G: 仅对风精灵 Boss（ALLAY 类型）应用伤害规则
+        if (mob.getType() == EntityType.ALLAY) {
+            ItemStack weapon = player.getInventory().getItemInMainHand();
+            if (isInvincibleWindElf || !isSword(weapon) || playerCount < 2 || playerCount > 5) {
+                e.setDamage(0.0);
+            } else {
+                double damage = e.getDamage();
+                double maxHealth = mob.getMaxHealth();
+                double threshold = maxHealth * 0.33;
+                if (damage > threshold) {
+                    e.setDamage(threshold);
                 }
+            }
         }
 
     }

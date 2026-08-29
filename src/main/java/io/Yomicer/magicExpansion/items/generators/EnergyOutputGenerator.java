@@ -213,8 +213,9 @@ public class EnergyOutputGenerator extends MenuBlock implements EnergyNetProvide
             gen = spaceLeftInMachine;
             newNowPower = nowPower - gen;
         } else {
-            gen = (int) availablePower;
-            newNowPower = 0;
+            // K 修复：先钳制到 int 上限再强转，且 gen 不会超过机器剩余容量 spaceLeftInMachine
+            gen = (int) Math.min(Math.min(availablePower, Integer.MAX_VALUE), (long) spaceLeftInMachine);
+            newNowPower = nowPower - gen;
         }
 
         int num = 3;
@@ -225,9 +226,12 @@ public class EnergyOutputGenerator extends MenuBlock implements EnergyNetProvide
         }
 
 
-        pdc.set(NowPower, PersistentDataType.LONG, newNowPower);
-        updatePowerCardLore(meta, newNowPower, maxPower,num);
-        PowerCard.setItemMeta(meta);
+        // K 修复：每 tick 状态无变化时不重写 PDC 与 lore（对比后再写），减少持久化与 NBT 写入开销
+        if (newNowPower != nowPower) {
+            pdc.set(NowPower, PersistentDataType.LONG, newNowPower);
+            updatePowerCardLore(meta, newNowPower, maxPower, num);
+            PowerCard.setItemMeta(meta);
+        }
 
         if (menu != null && menu.hasViewer()) {
             if(gen <= 0){

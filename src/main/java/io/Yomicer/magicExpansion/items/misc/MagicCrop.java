@@ -35,12 +35,21 @@ import org.bukkit.scoreboard.Scoreboard;
 import org.jetbrains.annotations.NotNull;
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 
 import static io.Yomicer.magicExpansion.utils.ColorGradient.getGradientNameVer2;
 
 public class MagicCrop extends SlimefunItem implements Listener, RecipeDisplayItem, Placeable {
+
+    // D 修复：本插件魔法作物可能占据的方块材质集合（种子物品 WHEAT_SEEDS/POTATO/CARROT/BEETROOT_SEEDS
+    // 播种后对应的小麦/土豆/胡萝卜/甜菜根方块），用于 BlockPhysicsEvent 的快速材质过滤
+    private static final Set<Material> CROP_BLOCK_MATERIALS = new HashSet<>(Arrays.asList(
+            Material.WHEAT, Material.POTATOES, Material.CARROTS, Material.BEETROOTS
+    ));
 
     private final ItemStack seedDrop;
 //    private final ItemStack[] fruitDrops;
@@ -109,6 +118,11 @@ public class MagicCrop extends SlimefunItem implements Listener, RecipeDisplayIt
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onPhysics(BlockPhysicsEvent e) {
         Block block = e.getBlock();
+        // D 修复：BlockPhysicsEvent 触发极其频繁，先按作物方块材质快速过滤，
+        // 非作物方块直接返回，避免对每个物理更新都去查询 BlockStorage（高性能开销）
+        if (!CROP_BLOCK_MATERIALS.contains(block.getType())) {
+            return;
+        }
         Block below = block.getRelative(0, -1, 0);
         SlimefunItem sfItem = StorageCacheUtils.getSfItem(block.getLocation());
         if (sfItem != MagicCrop.this) {

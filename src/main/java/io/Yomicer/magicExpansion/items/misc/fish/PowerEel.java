@@ -25,7 +25,10 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
 import static io.Yomicer.magicExpansion.utils.ColorGradient.getGradientName;
@@ -36,6 +39,9 @@ public class PowerEel extends SimpleSlimefunItem<ItemUseHandler> implements NotP
     // 定义 NamespacedKey
     private static final NamespacedKey MaxPower = new NamespacedKey(MagicExpansion.getInstance(), "max_power");
     private static final NamespacedKey NowPower = new NamespacedKey(MagicExpansion.getInstance(), "now_power");
+
+    // 修复：static 等待标记，防止同一玩家等待期间重复注册临时监听器
+    private static final Map<UUID, Boolean> WAITING_INPUT = new ConcurrentHashMap<>();
 
     public PowerEel(ItemGroup itemGroup, SlimefunItemStack item, RecipeType recipeType, ItemStack[] recipe) {
         super(itemGroup, item, recipeType, recipe);
@@ -67,6 +73,12 @@ public class PowerEel extends SimpleSlimefunItem<ItemUseHandler> implements NotP
      * 等待玩家输入最大储能值（正整数，long 范围）
      */
     private void waitForMaxPowerInput(Player player, ItemStack item) {
+        // 修复：同一玩家等待期间忽略再次触发，防止重复注册监听器（等待结束/超时移除标记）
+        if (WAITING_INPUT.putIfAbsent(player.getUniqueId(), true) != null) {
+            player.sendMessage(getRandomGradientName("[魔法2.0] 你已有一个待输入的设置请求，请先完成或输入 'cancel' 取消。"));
+            return;
+        }
+
         player.sendMessage(getRandomGradientName("[魔法2.0] 请输入一个正整数作为最大储能值（ 1 ~ "+ Long.MAX_VALUE +" ）："));
         player.sendMessage(getRandomGradientName("提示：输入 'cancel' 可取消操作。"));
 
@@ -81,6 +93,7 @@ public class PowerEel extends SimpleSlimefunItem<ItemUseHandler> implements NotP
 
                 event.setCancelled(true); // 拦截消息
 
+                // 修复：异步聊天线程中只做文本读取与解析（异步安全部分）
                 String message = event.getMessage().trim();
 
                 if ("cancel".equalsIgnoreCase(message)) {
@@ -94,17 +107,22 @@ public class PowerEel extends SimpleSlimefunItem<ItemUseHandler> implements NotP
                             return; // 不注销，继续等待
                         }
 
-                        // 成功解析，开始处理物品
-                        handlePowerConfiguration(item, maxPowerValue);
-
-                        player.sendMessage(getRandomGradientName("✔ 成功设置最大储能值为: " + maxPowerValue + " J"));
-                        player.updateInventory(); // 强制刷新
+                        // 修复：物品(PDC/Lore)修改切回主线程执行，避免异步线程操作物品
+                        final long value = maxPowerValue;
+                        org.bukkit.Bukkit.getScheduler().runTask(MagicExpansion.getInstance(), () -> {
+                            handlePowerConfiguration(item, value);
+                            player.sendMessage(getRandomGradientName("✔ 成功设置最大储能值为: " + value + " J"));
+                            player.updateInventory(); // 强制刷新
+                        });
 
                     } catch (NumberFormatException ex) {
                         player.sendMessage(getRandomGradientName("错误：'" + message + "' 不是一个有效的整数，请重新输入。"));
                         return; // 继续等待
                     }
                 }
+
+                // 修复：等待结束移除防重复标记
+                WAITING_INPUT.remove(player.getUniqueId());
 
                 // <<< 输入完成或取消：取消超时任务 >>>
                 if (timeoutTask[0] != null && !timeoutTask[0].isCancelled()) {
@@ -122,6 +140,8 @@ public class PowerEel extends SimpleSlimefunItem<ItemUseHandler> implements NotP
         // 设置 15 秒超时
         timeoutTask[0] = MagicExpansion.getInstance().getServer().getScheduler().runTaskLater(MagicExpansion.getInstance(), () -> {
             org.bukkit.event.HandlerList.unregisterAll(tempListener);
+            // 修复：超时后移除防重复标记
+            WAITING_INPUT.remove(player.getUniqueId());
             if (player.isOnline()) {
                 player.sendMessage(getRandomGradientName("[魔法2.0] ⏰ 输入超时（15秒），已自动取消。"));
             }

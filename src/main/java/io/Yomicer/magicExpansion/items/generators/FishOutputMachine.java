@@ -37,6 +37,7 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap; // A2: 缓存层所需
 
 import static io.Yomicer.magicExpansion.items.misc.fish.Fish.*;
 import static io.Yomicer.magicExpansion.utils.ColorGradient.getGradientName;
@@ -196,6 +197,10 @@ public class FishOutputMachine extends MenuBlock implements EnergyNetComponent, 
     }
     protected void tick(Block block) {
         BlockMenu inv = StorageCacheUtils.getMenu(block.getLocation());
+        // A3 修复：区块加载时序窗口内可能取不到菜单（inv == null），入口统一判空返回，避免后续 getItemInSlot 抛 NPE
+        if (inv == null) {
+            return;
+        }
 
         if (getCharge(block.getLocation()) < getEnergyConsumption()) {
             if(inv != null && inv.hasViewer()) {
@@ -250,8 +255,9 @@ public class FishOutputMachine extends MenuBlock implements EnergyNetComponent, 
                     long amount = (long) (weight * multiplier); // 使用 long 防止中间结果溢出
                     if (amount <= 0) {
                         amount = 1;
-                    } else if (amount > Integer.MAX_VALUE) {
-                        amount = Integer.MAX_VALUE; // 超过上限则截断
+                    } else if (amount > MAX_OUTPUT_PER_TICK) {
+                        // A5 修复：原处直接放行 Integer.MAX_VALUE，现按输出槽容量钳制单 tick 产出上限
+                        amount = MAX_OUTPUT_PER_TICK;
                     }
 
                     baseOutput.setAmount((int) amount);
@@ -266,7 +272,7 @@ public class FishOutputMachine extends MenuBlock implements EnergyNetComponent, 
             inv.addItem(48, new CustomItemStack(doGlow(Material.SOUL_LANTERN), getGradientName("⚡机器正在运行⚡"),
                             getGradientName("本机器会源源不断地生产，即使输出槽已经填满了"),
                             getGradientName("当前产出: ")+ ItemStackHelper.getDisplayName(outItems),
-                            getGradientName("当前效率: ")+ "§r" +getRandomGradientName(calculateRealAmount(outItems) + "个/tick")),
+                            getGradientName("当前效率: ")+ "§r" +getRandomGradientName(outItems.getAmount() + "个/tick")), // A1 修复：calculateRealAmount 返回值恒等于 getAmount()，删除冗余循环后直接取值
                     (player1, slot, item, action) -> false);
         } else {
             if (inv != null && inv.hasViewer()) {
@@ -331,7 +337,6 @@ public class FishOutputMachine extends MenuBlock implements EnergyNetComponent, 
         }
 
         if (outItems != null && inv != null) {
-            removeCharge(block.getLocation(), getEnergyConsumption());
             // 未连接量子存储：与输出格剩余容量对比，取较小值
             int fit = NetworkStorage.calculateFitAmount(inv, getOutputSlots(), outItems);
             if (outItems.getAmount() > fit) {
@@ -339,6 +344,8 @@ public class FishOutputMachine extends MenuBlock implements EnergyNetComponent, 
             }
             if (outItems.getAmount() > 0) {
                 pushAllItems(inv,outItems, getOutputSlots());
+                // A4 修复：扣电放在确认入库之后（只有实际推入产物才消耗电力）
+                removeCharge(block.getLocation(), getEnergyConsumption());
             }
         }
 
@@ -362,123 +369,124 @@ public class FishOutputMachine extends MenuBlock implements EnergyNetComponent, 
      * 检查CargoCore中是否已经有该物品
      */
     private boolean hasStoredItem(SlimefunBlockData data, ItemStack item) {
-        if (item == null || item.getType() == Material.AIR) return false;
-
-        ItemStack prototype = item.clone();
-        prototype.setAmount(1);
-
-        // 遍历所有存储槽位
-        for (int i = 0; i < MAX_STORED_ITEMS; i++) {
-            String jsonData = data.getData("item_type_" + i);
-            if (jsonData == null || jsonData.isEmpty()) continue;
-
-            try {
-                ItemStack storedItem = itemFromBase64(jsonData);
-                if (storedItem != null && storedItem.getType() != Material.AIR) {
-                    storedItem.setAmount(1); // 确保只比较类型
-
-                    // 比较物品是否相同
-                    if (SlimefunUtils.isItemSimilar(prototype, storedItem, true)) {
-                        // 检查当前数量
-                        String countStr = data.getData("item_count_" + i);
-                        if (countStr != null && !countStr.isEmpty()) {
-                            try {
-                                long count = Long.parseLong(countStr);
-                                if (count > 0) {
-                                    return true; // 有该物品且数量>0
-                                }
-                            } catch (Exception e) {
-                                continue;
-                            }
-                        }
-                    }
-                }
-            } catch (Exception e) {
-                continue;
-            }
-        }
-
-        return false;
+        // A2 修复：改为调用带缓存层的共享实现（见下方 hasStoredItemCached），避免每 tick 1145 次 Base64 反序列化
+        return hasStoredItemCached(data, item);
     }
     /**
      * 只向已有物品的槽位存储（不创建新槽位）
      */
     private void storeItemToExistingSlot(SlimefunBlockData data, ItemStack item) {
-        if (item == null || item.getType() == Material.AIR) return;
+        // A2 修复：改为调用带缓存层的共享实现（见下方 storeItemToExistingSlotCached）
+        storeItemToExistingSlotCached(data, item);
+    }
 
-        ItemStack prototype = item.clone();
-        prototype.setAmount(1);
-        int amountToStore = item.getAmount();
+    // ==================== A2 性能修复：CargoCore 槽位扫描缓存 ====================
+    // 原实现 hasStoredItem/storeItemToExistingSlot 每 tick 最多进行 2 × 1145 次 itemFromBase64 反序列化。
+    // 现按目标方块位置缓存"已解析的槽位列表 + 数量"：读走缓存；写入数量后标 dirty，下一 tick 重建，
+    // 缓存约每 20 tick（1 秒）强制刷新一次，兼顾性能与数据一致性。
+    private static final long CARGO_CACHE_TTL_MS = 1000; // 缓存刷新间隔 ≈ 20 tick
+    private static final ConcurrentHashMap<Location, CargoCoreCache> CARGO_CORE_CACHE = new ConcurrentHashMap<>();
 
-        // 查找匹配的已有槽位
+    // 单个目标 CargoCore 的槽位缓存
+    private static final class CargoCoreCache {
+        long refreshAt;                                   // 下次强制刷新时间戳
+        boolean dirty;                                    // 有写入时置 true，下一次访问时重建
+        final Map<Integer, CachedSlot> slots = new HashMap<>(); // slotIndex -> 解析结果
+    }
+
+    // 缓存的单个槽位解析结果：物品原型（数量 1）+ 当前数量 + 上限
+    private static final class CachedSlot {
+        ItemStack prototype;
+        long count;
+        long max = -1; // -1 表示无上限
+    }
+
+    // 获取（必要时重建）目标 CargoCore 的槽位缓存；供本类与 Easy/Stack 两个变体共用
+    static CargoCoreCache getCargoCoreCache(SlimefunBlockData data) {
+        Location loc = data.getLocation();
+        // 防止缓存无限增长（机器被破坏后残留的旧条目统一清理）
+        if (CARGO_CORE_CACHE.size() > 4096) {
+            CARGO_CORE_CACHE.clear();
+        }
+        long now = System.currentTimeMillis();
+        CargoCoreCache cache = CARGO_CORE_CACHE.get(loc);
+        if (cache == null || cache.dirty || now >= cache.refreshAt) {
+            cache = rebuildCargoCoreCache(data);
+            CARGO_CORE_CACHE.put(loc, cache);
+        }
+        return cache;
+    }
+
+    // 从存储数据重建槽位缓存（只解析非空槽位，通常远少于 1145 个）
+    private static CargoCoreCache rebuildCargoCoreCache(SlimefunBlockData data) {
+        CargoCoreCache cache = new CargoCoreCache();
+        cache.refreshAt = System.currentTimeMillis() + CARGO_CACHE_TTL_MS;
         for (int i = 0; i < MAX_STORED_ITEMS; i++) {
             String jsonData = data.getData("item_type_" + i);
             if (jsonData == null || jsonData.isEmpty()) continue;
-
             try {
                 ItemStack storedItem = itemFromBase64(jsonData);
-                if (storedItem != null && storedItem.getType() != Material.AIR) {
-                    storedItem.setAmount(1); // 确保只比较类型
-
-                    if (SlimefunUtils.isItemSimilar(prototype, storedItem, true)) {
-                        // 找到匹配的槽位，增加数量
-                        long currentCount = 0;
-                        String countStr = data.getData("item_count_" + i);
-                        if (countStr != null && !countStr.isEmpty()) {
-                            try {
-                                currentCount = Long.parseLong(countStr);
-                            } catch (Exception e) {
-                                continue;
-                            }
-                        }
-
-                        // 计算新数量
-                        long newCount = currentCount + amountToStore;
-                        data.setData("item_count_" + i, String.valueOf(newCount));
-
-                        // 检查是否有数量限制
-                        String maxStr = data.getData("item_max_" + i);
-                        if (maxStr != null && !maxStr.isEmpty()) {
-                            try {
-                                long maxCount = Long.parseLong(maxStr);
-                                if (maxCount != -1 && newCount > maxCount) {
-                                    // 如果超过上限，调整到上限
-                                    newCount = maxCount;
-                                    data.setData("item_count_" + i, String.valueOf(newCount));
-                                }
-                            } catch (Exception e) {
-                                // 最大数量解析失败，忽略
-                            }
-                        }
-
-                        // 存储成功，返回
-                        return;
-                    }
+                if (storedItem == null || storedItem.getType() == Material.AIR) continue;
+                storedItem.setAmount(1); // 原型只保留类型信息
+                CachedSlot slot = new CachedSlot();
+                slot.prototype = storedItem;
+                String countStr = data.getData("item_count_" + i);
+                if (countStr != null && !countStr.isEmpty()) {
+                    try { slot.count = Long.parseLong(countStr); } catch (Exception ignored) {}
                 }
-            } catch (Exception e) {
-                continue;
+                String maxStr = data.getData("item_max_" + i);
+                if (maxStr != null && !maxStr.isEmpty()) {
+                    try { slot.max = Long.parseLong(maxStr); } catch (Exception ignored) {}
+                }
+                cache.slots.put(i, slot);
+            } catch (Exception ignored) {
+                // 单条数据损坏：跳过该槽位
             }
         }
+        return cache;
+    }
 
+    // A2: 带缓存的"是否已存储该物品"查询
+    static boolean hasStoredItemCached(SlimefunBlockData data, ItemStack item) {
+        if (item == null || item.getType() == Material.AIR) return false;
+        ItemStack prototype = item.clone();
+        prototype.setAmount(1);
+        CargoCoreCache cache = getCargoCoreCache(data);
+        for (CachedSlot slot : cache.slots.values()) {
+            if (slot.count > 0 && SlimefunUtils.isItemSimilar(prototype, slot.prototype, true)) {
+                return true; // 有该物品且数量>0
+            }
+        }
+        return false;
+    }
+
+    // A2: 带缓存的"写入已有槽位"实现：写回存储数据并同步缓存计数，随后标 dirty
+    static void storeItemToExistingSlotCached(SlimefunBlockData data, ItemStack item) {
+        if (item == null || item.getType() == Material.AIR) return;
+        ItemStack prototype = item.clone();
+        prototype.setAmount(1);
+        int amountToStore = item.getAmount();
+        CargoCoreCache cache = getCargoCoreCache(data);
+        for (Map.Entry<Integer, CachedSlot> entry : cache.slots.entrySet()) {
+            CachedSlot slot = entry.getValue();
+            if (!SlimefunUtils.isItemSimilar(prototype, slot.prototype, true)) continue;
+            // 找到匹配的已有槽位：累加数量并尊重上限
+            long newCount = slot.count + amountToStore;
+            if (slot.max != -1 && newCount > slot.max) {
+                newCount = slot.max; // 超过上限则调整到上限
+            }
+            data.setData("item_count_" + entry.getKey(), String.valueOf(newCount));
+            slot.count = newCount;
+            cache.dirty = true; // A2: 写入后标记 dirty，下一 tick 重建缓存保证与存储数据一致
+            return;
+        }
         // 如果没有找到匹配的槽位，什么也不做（不存储新物品）
     }
 
     private static final int MAX_STORED_ITEMS = 1145; // 最多支持 18 种不同物品
 
-    private int calculateRealAmount(ItemStack item) {
-        int totalAmount = item.getAmount(); // 这就是原始总数量
-        int maxStackSize = 64;
-        int realAmount = 0;
-
-        // 模拟 dropItemInBatches 的分批逻辑，累加每一批的数量
-        while (totalAmount > 0) {
-            int batchSize = Math.min(totalAmount, maxStackSize);
-            realAmount += batchSize;      // 累加这一批
-            totalAmount -= batchSize;     // 减去已处理的
-        }
-
-        return realAmount;
-    }
+    // A5: 单 tick 输出上限（输出槽容量级，替代原先放行的 Integer.MAX_VALUE；包内可见供 Easy/Stack 变体共用）
+    static final int MAX_OUTPUT_PER_TICK = 6456;
 
     protected void pushAllItems(BlockMenu menu, ItemStack item, int[] outputSlots) {
         if (item == null || item.getType() == Material.AIR || item.getAmount() <= 0) {
@@ -488,13 +496,20 @@ public class FishOutputMachine extends MenuBlock implements EnergyNetComponent, 
         int totalAmount = item.getAmount();  // 总共有多少个
         int perPush = 64;                    // 每次塞64个
 
+        // A4 修复：累加 pushItem 实际接受的量，输出槽满则停止本 tick 推送，
+        // 剩余产量由下个 tick 重新生成，不再静默销毁被拒绝的部分
         while (totalAmount > 0) {
+            int batch = Math.min(totalAmount, perPush);
             ItemStack toPush = item.clone();
-            toPush.setAmount(Math.min(totalAmount, perPush));  // 最后一次可能不足64
+            toPush.setAmount(batch);
 
-            menu.pushItem(toPush, outputSlots);  // 直接塞！不管有没有被拒绝（暴力！）
+            ItemStack leftover = menu.pushItem(toPush, outputSlots); // 返回未放下的部分
+            int accepted = batch - (leftover == null ? 0 : leftover.getAmount());
+            totalAmount -= accepted;
 
-            totalAmount -= perPush;  // 每次减64，不管实际推进去多少（简单粗暴）
+            if (accepted <= 0) {
+                break; // 输出槽已满，剩余留待下 tick
+            }
         }
     }
 

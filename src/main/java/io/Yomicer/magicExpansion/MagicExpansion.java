@@ -13,6 +13,7 @@ import io.Yomicer.magicExpansion.Listener.fishingListener.PlayerFishingWaterClou
 import io.Yomicer.magicExpansion.Listener.magicItemEffectManager.ArrowHitLocationListener;
 import io.Yomicer.magicExpansion.Listener.magicItemEffectManager.ItemEffectAttackListener;
 import io.Yomicer.magicExpansion.Listener.miscListener.ItemFrameListener;
+import io.Yomicer.magicExpansion.Listener.PlayerCleanupListener;
 import io.Yomicer.magicExpansion.Listener.worldListener.Events;
 import io.Yomicer.magicExpansion.items.misc.CargoFragmentDistributor;
 import io.Yomicer.magicExpansion.items.misc.DrawMachine;
@@ -22,6 +23,7 @@ import io.Yomicer.magicExpansion.Listener.magicItemEffectManager.ItemEffectKillL
 import io.Yomicer.magicExpansion.utils.FishingGuideMenu;
 import io.Yomicer.magicExpansion.utils.Language;
 import io.Yomicer.magicExpansion.utils.WaterCloudHookManager;
+import io.Yomicer.magicExpansion.utils.VirtualPlayerManager;
 import io.Yomicer.magicExpansion.utils.aiManager.AIManager;
 import io.Yomicer.magicExpansion.utils.shop.BlackMarketManager;
 import io.Yomicer.magicExpansion.utils.shop.ShopCommand;
@@ -29,7 +31,6 @@ import io.Yomicer.magicExpansion.utils.shop.ShopGUI;
 import io.Yomicer.magicExpansion.utils.shop.ShopManager;
 import io.github.thebusybiscuit.slimefun4.api.SlimefunAddon;
 import io.github.thebusybiscuit.slimefun4.libraries.dough.config.Config;
-import lombok.SneakyThrows;
 import net.guizhanss.guizhanlibplugin.updater.GuizhanUpdater;
 import org.bukkit.plugin.java.JavaPlugin;
 import javax.annotation.Nonnull;
@@ -51,9 +52,20 @@ public class MagicExpansion extends JavaPlugin implements SlimefunAddon {
 
 
 
-    @SneakyThrows
     @Override
     public void onEnable() {
+        // 原 Lombok @SneakyThrows 已手工展开：整体 try-catch 异常隔离，
+        // 任一子模块失败时记录日志并禁用插件，避免"半启用"状态（修复方案 1 号问题）
+        try {
+            onEnableInternal();
+        } catch (Throwable t) {
+            getLogger().log(Level.SEVERE, "魔法拓展启用过程中发生严重错误，插件已自动禁用！", t);
+            getServer().getPluginManager().disablePlugin(this);
+        }
+    }
+
+    // 实际的启用逻辑（从原 onEnable 平移，保证行为不变）
+    private void onEnableInternal() throws Exception {
         // Plugin startup logic
         instance = this;
         saveDefaultConfig();
@@ -138,6 +150,8 @@ public class MagicExpansion extends JavaPlugin implements SlimefunAddon {
         getServer().getPluginManager().registerEvents(aiManager, this);
         ShopManager.load();
         getServer().getPluginManager().registerEvents(new ShopGUI(), this);
+        // 修复：注册玩家退出清理监听器，玩家下线时统一清理各模块会话数据
+        getServer().getPluginManager().registerEvents(new PlayerCleanupListener(), this);
 
         // 水云间新钓鱼系统调度(秒级状态机 + 鱼钩晃动)
         WaterCloudHookManager.startTicking(this);
@@ -177,6 +191,7 @@ public class MagicExpansion extends JavaPlugin implements SlimefunAddon {
         getLogger().info("魔法2.0-魔法祭坛 已禁用!");
         DrawMachine.cleanupAllHolograms();
         getLogger().info("已清理所有抽奖机悬浮物！");
+        VirtualPlayerManager.shutdown(); // G1v3：清理交互机器人的虚拟玩家（Citizens NPC 反生成等）
 
         if (CargoFragmentDistributor.globalTickTask != null) {
             CargoFragmentDistributor.globalTickTask.cancel();

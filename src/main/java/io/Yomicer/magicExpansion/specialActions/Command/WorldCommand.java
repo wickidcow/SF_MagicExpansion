@@ -64,18 +64,36 @@ public class WorldCommand implements CommandExecutor, TabCompleter {
                 break;
 
             case "paste":
+                // 【B1修复】paste 子命令需要 magicexpansion.world.modify 权限，无权限提示并 return
+                if (!player.hasPermission("magicexpansion.world.modify")) {
+                    player.sendMessage("§c你没有权限修改世界！(需要 magicexpansion.world.modify)");
+                    return true;
+                }
                 if (args.length < 2) {
                     player.sendMessage("§cUsage: /mxw paste <filename>");
                     return true;
                 }
                 MapUtils.pasteMap(player, args[1]);
+                // 【B3修复】记录 paste 操作日志：操作者名与所粘贴的地图文件
+                Bukkit.getLogger().info("[MagicExpansion] " + player.getName()
+                        + " pasted map file '" + args[1] + "'");
                 break;
 
             case "clear":
+                // 【B1修复】clear 子命令需要 magicexpansion.world.modify 权限，无权限提示并 return
+                if (!player.hasPermission("magicexpansion.world.modify")) {
+                    player.sendMessage("§c你没有权限修改世界！(需要 magicexpansion.world.modify)");
+                    return true;
+                }
                 clearSelectedArea(player);
                 break;
 
             case "ctrlv":
+                // 【B1修复】ctrlv 与 paste 同为粘贴/修改世界功能，同样需要 magicexpansion.world.modify 权限
+                if (!player.hasPermission("magicexpansion.world.modify")) {
+                    player.sendMessage("§c你没有权限修改世界！(需要 magicexpansion.world.modify)");
+                    return true;
+                }
                 pasteSelectedAreaToTargetBlock(player);
                 break;
 
@@ -98,6 +116,22 @@ public class WorldCommand implements CommandExecutor, TabCompleter {
             return;
         }
 
+        // 【B2修复】校验两个选点必须位于同一世界，否则提示并 return
+        if (p1.getWorld() == null || !p1.getWorld().equals(p2.getWorld())) {
+            player.sendMessage(ChatColor.RED + "The two selected points must be in the same world!");
+            return;
+        }
+
+        // 【B2修复】体积上限校验：区域尺寸不得超过 32*256*32，超限提示并 return
+        int sizeX = Math.abs(p1.getBlockX() - p2.getBlockX()) + 1;
+        int sizeY = Math.abs(p1.getBlockY() - p2.getBlockY()) + 1;
+        int sizeZ = Math.abs(p1.getBlockZ() - p2.getBlockZ()) + 1;
+        if ((long) sizeX * sizeY * sizeZ > 32L * 256L * 32L) {
+            player.sendMessage(ChatColor.RED + "Selected area too large! Max: 32x256x32, current: "
+                    + sizeX + "x" + sizeY + "x" + sizeZ);
+            return;
+        }
+
         int minX = Math.min(p1.getBlockX(), p2.getBlockX());
         int minY = Math.min(p1.getBlockY(), p2.getBlockY());
         int minZ = Math.min(p1.getBlockZ(), p2.getBlockZ());
@@ -115,6 +149,11 @@ public class WorldCommand implements CommandExecutor, TabCompleter {
         }
 
         player.sendMessage("§aCleared the selected area.");
+
+        // 【B3修复】记录清除操作日志：操作者名 + 区域坐标范围
+        Bukkit.getLogger().info("[MagicExpansion] " + player.getName() + " cleared area in world '"
+                + p1.getWorld().getName() + "' from (" + minX + "," + minY + "," + minZ
+                + ") to (" + maxX + "," + maxY + "," + maxZ + ")");
     }
 
     /**
@@ -126,6 +165,22 @@ public class WorldCommand implements CommandExecutor, TabCompleter {
 
         if (p1 == null || p2 == null) {
             player.sendMessage("§cPlease select two points first!");
+            return;
+        }
+
+        // 【B2修复】校验两个选点必须位于同一世界，否则提示并 return
+        if (p1.getWorld() == null || !p1.getWorld().equals(p2.getWorld())) {
+            player.sendMessage("§cThe two selected points must be in the same world!");
+            return;
+        }
+
+        // 【B2修复】体积上限校验：区域尺寸不得超过 32*256*32，超限提示并 return
+        int sizeX = Math.abs(p1.getBlockX() - p2.getBlockX()) + 1;
+        int sizeY = Math.abs(p1.getBlockY() - p2.getBlockY()) + 1;
+        int sizeZ = Math.abs(p1.getBlockZ() - p2.getBlockZ()) + 1;
+        if ((long) sizeX * sizeY * sizeZ > 32L * 256L * 32L) {
+            player.sendMessage("§cSelected area too large! Max: 32x256x32, current: "
+                    + sizeX + "x" + sizeY + "x" + sizeZ);
             return;
         }
 
@@ -161,6 +216,12 @@ public class WorldCommand implements CommandExecutor, TabCompleter {
         }
 
         player.sendMessage("§aPasted the selected area above the target block.");
+
+        // 【B3修复】记录粘贴操作日志：操作者名 + 源区域坐标范围与目标世界
+        Bukkit.getLogger().info("[MagicExpansion] " + player.getName() + " pasted selected region ("
+                + p1.getBlockX() + "," + p1.getBlockY() + "," + p1.getBlockZ() + ") to ("
+                + p2.getBlockX() + "," + p2.getBlockY() + "," + p2.getBlockZ() + ") from world '"
+                + p1.getWorld().getName() + "' into world '" + player.getWorld().getName() + "'");
     }
 
     /**

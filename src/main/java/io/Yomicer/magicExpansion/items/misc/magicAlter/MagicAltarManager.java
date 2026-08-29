@@ -2,6 +2,8 @@ package io.Yomicer.magicExpansion.items.misc.magicAlter;
 
 import io.Yomicer.magicExpansion.MagicExpansion;
 import io.Yomicer.magicExpansion.utils.log.Debug;
+import io.github.thebusybiscuit.slimefun4.implementation.Slimefun; // E4: 领地保护检查所需（照抄项目内 getProtectionManager 现有用法）
+import io.github.thebusybiscuit.slimefun4.libraries.dough.protection.Interaction; // E4: 交互权限枚举
 import io.github.thebusybiscuit.slimefun4.libraries.dough.items.CustomItemStack;
 import net.guizhanss.guizhanlib.minecraft.helper.inventory.ItemStackHelper;
 import org.bukkit.*;
@@ -129,7 +131,9 @@ public class MagicAltarManager {
     public boolean checkItemFrame(Location centerDispenserLoc) {
         Location frameLoc = centerDispenserLoc.clone().add(0, 1, 0);
 
-        for (org.bukkit.entity.ItemFrame itemFrame : frameLoc.getWorld().getEntitiesByClass(org.bukkit.entity.ItemFrame.class)) {
+        // E1 修复：原 getWorld().getEntitiesByClass(ItemFrame.class) 会遍历整个世界的实体，
+        // 改为参考 completeCrafting 中已有用法 getNearbyEntitiesByType，半径 2（覆盖祭坛结构实际尺寸）局部搜索
+        for (org.bukkit.entity.ItemFrame itemFrame : frameLoc.getWorld().getNearbyEntitiesByType(org.bukkit.entity.ItemFrame.class, frameLoc, 2)) {
             Location itemFrameLoc = itemFrame.getLocation();
             if (itemFrameLoc.getBlockX() == frameLoc.getBlockX() &&
                     itemFrameLoc.getBlockY() == frameLoc.getBlockY() &&
@@ -184,6 +188,13 @@ public class MagicAltarManager {
 
     // 开始合成过程 - 强制方位匹配
     public boolean startCrafting(Location centerDispenserLoc, Player player) {
+        // E4 修复：进入合成流程前先做领地保护检查（用法照抄项目内 getProtectionManager 现有写法），
+        // 无交互权限的玩家不能触发祭坛合成
+        if (!Slimefun.getProtectionManager().hasPermission(player, centerDispenserLoc, Interaction.INTERACT_BLOCK)) {
+            player.sendMessage("§c✗ 你没有权限在此处使用魔法祭坛!");
+            return false;
+        }
+
         if (activeAltars.contains(centerDispenserLoc)) {
             player.sendMessage("§c✗ 这个祭坛正在进行合成!");
             return false;
@@ -305,12 +316,12 @@ public class MagicAltarManager {
         World world = location.getWorld();
         Particle.DustOptions dustOptions = getRandomLightningColor();
 
-        // 主闪电束 - 从天空劈向地面
-        for (int y = 70; y >= 0; y--) {
+        // E3 修复：主闪电束粒子生成限制在落点上方 10 格内（原为 70 格），并降低每格粒子数（约减半）
+        for (int y = 10; y >= 0; y--) {
             Location particleLoc = location.clone().add(0, y, 0);
 
-            // 增加粒子数量
-            world.spawnParticle(Particle.REDSTONE, particleLoc, 15, 0.2, 0.2, 0.2, 0, dustOptions);
+            // 增加粒子数量（E3: 15 → 8，约减半）
+            world.spawnParticle(Particle.REDSTONE, particleLoc, 8, 0.2, 0.2, 0.2, 0, dustOptions);
 
             // 添加分支效果
             if (Math.random() < 0.4) {
@@ -319,7 +330,8 @@ public class MagicAltarManager {
 
                 for (int branch = 0; branch < 2; branch++) {
                     Location branchLoc = particleLoc.clone().add(branchX * branch, 0, branchZ * branch);
-                    world.spawnParticle(Particle.REDSTONE, branchLoc, 6, 0.15, 0.15, 0.15, 0, dustOptions);
+                    // E3: 6 → 3，约减半
+                    world.spawnParticle(Particle.REDSTONE, branchLoc, 3, 0.15, 0.15, 0.15, 0, dustOptions);
                 }
             }
 
@@ -331,8 +343,9 @@ public class MagicAltarManager {
                             (Math.random() - 0.5) * 1.5,
                             (Math.random() - 0.5) * 2
                     );
-                    world.spawnParticle(Particle.FIREWORKS_SPARK, sparkLoc, 4, 0.1, 0.1, 0.1, 0.05);
-                    world.spawnParticle(Particle.CRIT, sparkLoc, 2, 0.1, 0.1, 0.1, 0.05);
+                    // E3: 火花粒子 4 → 2、暴击粒子 2 → 1，约减半
+                    world.spawnParticle(Particle.FIREWORKS_SPARK, sparkLoc, 2, 0.1, 0.1, 0.1, 0.05);
+                    world.spawnParticle(Particle.CRIT, sparkLoc, 1, 0.1, 0.1, 0.1, 0.05);
                 }
             }
         }
@@ -524,7 +537,7 @@ public class MagicAltarManager {
                 {1, 1}    // 8: 右下
         };
 
-        // 直接重新设置所有发射器（保持朝向）
+        // 直接清空所有发射器内的配方物品（保持方块本体不动）
         for (int i = 0; i < 9; i++) {
             int[] pos = positions[i];
             Location loc = centerDispenserLoc.clone().add(pos[0], 0, pos[1]);
@@ -535,35 +548,14 @@ public class MagicAltarManager {
                 if (state instanceof Dispenser) {
                     Dispenser dispenser = (Dispenser) state;
 
-                    // 保存发射器的朝向
-                    org.bukkit.block.data.type.Dispenser dispenserData =
-                            (org.bukkit.block.data.type.Dispenser) dispenser.getBlockData();
-                    org.bukkit.block.BlockFace facing = dispenserData.getFacing();
-
-                    // 方法1: 先尝试清空物品
+                    // E2 修复：不再 setType(AIR)+setType(DISPENSER) 重建发射器——
+                    // 那会销毁方块实体导致朝向以外的数据（如其他插件写入的 NBT）丢失；
+                    // 这里仅清空物品栏即可达成“移除配方物品”的目的
                     Inventory inventory = dispenser.getInventory();
                     for (int slot = 0; slot < inventory.getSize(); slot++) {
                         inventory.setItem(slot, null);
                     }
                     dispenser.update(true, false);
-
-                    // 方法2: 如果清空失败，重新放置发射器
-                    // 临时设置为空气
-                    loc.getBlock().setType(Material.AIR);
-
-                    // 立即重新设置为发射器
-                    loc.getBlock().setType(Material.DISPENSER);
-
-                    // 获取新的发射器状态并设置朝向
-                    BlockState newState = loc.getBlock().getState();
-                    if (newState instanceof Dispenser) {
-                        Dispenser newDispenser = (Dispenser) newState;
-                        org.bukkit.block.data.type.Dispenser newData =
-                                (org.bukkit.block.data.type.Dispenser) newDispenser.getBlockData();
-                        newData.setFacing(facing);
-                        newDispenser.setBlockData(newData);
-                        newDispenser.update(true, false);
-                    }
                 }
             }
         }

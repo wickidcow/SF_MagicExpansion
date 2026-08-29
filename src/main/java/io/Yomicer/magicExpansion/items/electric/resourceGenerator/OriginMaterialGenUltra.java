@@ -147,6 +147,9 @@ public class OriginMaterialGenUltra extends AbstractElectricResourceMachine impl
 
         if (maxedSlots == getOutputSlots().length) { return null; }
 
+        // L1 修复：配方列表为空时直接返回 null，避免 recipes.get(0) 抛 IndexOutOfBoundsException
+        if (recipes == null || recipes.isEmpty()) { return null; }
+
         MachineRecipe recipe = recipes.get(0);
 
         return recipe;
@@ -171,14 +174,36 @@ public class OriginMaterialGenUltra extends AbstractElectricResourceMachine impl
         }
 
         if (output != null) {
-            for (int i = 0; i < 36; i++){
-                menu.pushItem(output.clone(), getOutputSlots());
+            // L3 修复：大批量推送（36×64）前先用 fits 逻辑计算输出槽可容纳量，
+            // 能放多少放多少，剩余留到下个生产周期，不再静默丢弃
+            int totalToPush = Math.min(36 * output.getAmount(), calcOutputFit(menu, output));
+            int remaining = totalToPush;
+            while (remaining > 0) {
+                int batch = Math.min(remaining, output.getMaxStackSize());
+                ItemStack batchStack = output.clone();
+                batchStack.setAmount(batch);
+                menu.pushItem(batchStack, getOutputSlots());
+                remaining -= batch;
             }
             updateInfoStack(menu, output);
         } else {
             ItemStack item = PROGRESS_STACK.clone();
             menu.replaceExistingItem(4, item);
         }
+    }
+
+    // L3: 计算输出槽对指定物品还能容纳多少个（空槽按最大堆叠算，同类槽按剩余空间算）
+    private int calcOutputFit(BlockMenu menu, ItemStack output) {
+        int fit = 0;
+        for (int slot : getOutputSlots()) {
+            ItemStack cur = menu.getItemInSlot(slot);
+            if (cur == null || cur.getType().isAir()) {
+                fit += output.getMaxStackSize();
+            } else if (cur.isSimilar(output)) {
+                fit += cur.getMaxStackSize() - cur.getAmount();
+            }
+        }
+        return fit;
     }
 
 

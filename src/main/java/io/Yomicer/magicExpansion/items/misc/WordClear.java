@@ -51,7 +51,11 @@ public class WordClear extends SimpleSlimefunItem<ItemUseHandler> implements Not
                 if (en.getType() == EntityType.ARMOR_STAND) {
                     ArmorStand as = (ArmorStand) en;
                     // 检查是否是全息显示用的盔甲架 (隐形、无重力、标记)
-                    if (as.isInvisible() && !as.hasGravity() && as.isMarker()) {
+                    // 修复(U)：增加 CustomName 非空校验，只清理带文字的全息盔甲架，
+                    // 避免误删其他插件/技术性的无名盔甲架。
+                    // 说明：放置侧（DrawMachine.createTextArmorStand 等）未写入插件 metadata/PDC 标记
+                    // 且该文件不在本次可修改清单中，故退化为校验"隐形 marker + 有自定义名"的本插件全息特征
+                    if (as.isInvisible() && !as.hasGravity() && as.isMarker() && as.getCustomName() != null) {
                         double distance = loc.distance(as.getLocation());
                         if (distance < nearestDistance) {
                             nearestDistance = distance;

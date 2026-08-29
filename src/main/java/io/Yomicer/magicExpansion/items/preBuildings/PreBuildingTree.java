@@ -96,31 +96,33 @@ public class PreBuildingTree extends SimpleSlimefunItem<ItemUseHandler> implemen
                 return;
             }
             if(player.isOp()){
-                Bukkit.broadcastMessage(getRandomGradientName("✨ 你是服务器的星辰，无需冷却的永恒光芒！(这段是发给"+player.getName()+"看的,不要让其他玩家看到)"));
-                Bukkit.broadcastMessage(getRandomGradientName("✨ 你的命令就是规则，冷却？那是给凡人的枷锁！(这段是发给"+player.getName()+"看的,不要让其他玩家看到)"));
-                Bukkit.broadcastMessage(getRandomGradientName("✨ 你站在服务器的巅峰，俯瞰着所有方块的律动！(这段是发给"+player.getName()+"看的,不要让其他玩家看到)"));
-                Bukkit.broadcastMessage(getRandomGradientName("⚡  无需等待，你的每一步都是瞬移般的优雅！(这段是发给"+player.getName()+"看的,不要让其他玩家看到)"));
-                Bukkit.broadcastMessage(getRandomGradientName("⚡  冷却时间？那是普通玩家的烦恼，你拥有神之权限！(这段是发给"+player.getName()+"看的,不要让其他玩家看到)"));
-                Bukkit.broadcastMessage(getRandomGradientName("⚡  你的存在就是服务器的秩序，无需冷却的永恒法则！(这段是发给"+player.getName()+"看的,不要让其他玩家看到)"));
-                Bukkit.broadcastMessage(getRandomGradientName("✨ 你掌控着维度的脉动，冷却？那是给末影人的专利！(这段是发给"+player.getName()+"看的,不要让其他玩家看到)"));
-                Bukkit.broadcastMessage(getRandomGradientName("✨ 你的指令让世界运转，冷却？那是给生存玩家的笑话！(这段是发给"+player.getName()+"看的,不要让其他玩家看到)"));
-                Bukkit.broadcastMessage(getRandomGradientName("✨ 无需冷却，你的每一次操作都是史诗级的传奇！(这段是发给"+player.getName()+"看的,不要让其他玩家看到)"));
-                Bukkit.broadcastMessage(getRandomGradientName("⚡  你站在服务器的王座，俯视着所有玩家的挣扎！(这段是发给"+player.getName()+"看的,不要让其他玩家看到)"));
-                Bukkit.broadcastMessage(getRandomGradientName("⚡  你的权限超越时间，冷却？那只是凡人的幻觉！(这段是发给"+player.getName()+"看的,不要让其他玩家看到)"));
-                Bukkit.broadcastMessage(getRandomGradientName("⚡  服务器因你而闪耀，冷却？那是给新手的安慰剂！(这段是发给"+player.getName()+"看的,不要让其他玩家看到)"));
-                Bukkit.broadcastMessage(getRandomGradientName("✨ 你让世界充满魔法，无需冷却的永恒荣耀！(这段是发给"+player.getName()+"看的,不要让其他玩家看到)"));
-                Bukkit.broadcastMessage(getRandomGradientName("✨ 你的命令即刻生效，冷却？那是给普通玩家的束缚！(这段是发给"+player.getName()+"看的,不要让其他玩家看到)"));
-                Bukkit.broadcastMessage(getRandomGradientName("✨ 你是服务器的守护神，尊贵到连时间都为你停驻！(这段是发给"+player.getName()+"看的,不要让其他玩家看到)"));
-                Bukkit.broadcastMessage(getRandomGradientName("【至高无上】管理员"+player.getName()+"已开启无冷却权限，时间在您面前臣服！"));
-                Bukkit.broadcastMessage(getRandomGradientName("【服务器之主】"+player.getName()+"的命令即刻撼动世界，无需等待！"));
-                Bukkit.broadcastMessage(getRandomGradientName("【凡人之界】"+player.getName()+"的意志，就是服务器的法则！"));
+                // 修复(O)：以下私密消息原为 Bukkit.broadcastMessage（全服可见），改为 player.sendMessage 仅自己可见
+                player.sendMessage(getRandomGradientName("✨ 你是服务器的星辰，无需冷却的永恒光芒！(这段是发给"+player.getName()+"看的,不要让其他玩家看到)"));
+                player.sendMessage(getRandomGradientName("✨ 你的命令就是规则，冷却？那是给凡人的枷锁！(这段是发给"+player.getName()+"看的,不要让其他玩家看到)"));
+                player.sendMessage(getRandomGradientName("✨ 你站在服务器的巅峰，俯瞰着所有方块的律动！(这段是发给"+player.getName()+"看的,不要让其他玩家看到)"));
+                player.sendMessage(getRandomGradientName("⚡  无需等待，你的每一步都是瞬移般的优雅！(这段是发给"+player.getName()+"看的,不要让其他玩家看到)"));
+                player.sendMessage(getRandomGradientName("⚡  冷却时间？那是普通玩家的烦恼，你拥有神之权限！(这段是发给"+player.getName()+"看的,不要让其他玩家看到)"));
+                player.sendMessage(getRandomGradientName("⚡  你的存在就是服务器的秩序，无需冷却的永恒法则！(这段是发给"+player.getName()+"看的,不要让其他玩家看到)"));
+                player.sendMessage(getRandomGradientName("✨ 你掌控着维度的脉动，冷却？那是给末影人的专利！(这段是发给"+player.getName()+"看的,不要让其他玩家看到)"));
+                player.sendMessage(getRandomGradientName("✨ 你的指令让世界运转，冷却？那是给生存玩家的笑话！(这段是发给"+player.getName()+"看的,不要让其他玩家看到)"));
+                player.sendMessage(getRandomGradientName("✨ 无需冷却，你的每一次操作都是史诗级的传奇！(这段是发给"+player.getName()+"看的,不要让其他玩家看到)"));
+                player.sendMessage(getRandomGradientName("⚡  你站在服务器的王座，俯视着所有玩家的挣扎！(这段是发给"+player.getName()+"看的,不要让其他玩家看到)"));
+                player.sendMessage(getRandomGradientName("⚡  你的权限超越时间，冷却？那只是凡人的幻觉！(这段是发给"+player.getName()+"看的,不要让其他玩家看到)"));
+                player.sendMessage(getRandomGradientName("⚡  服务器因你而闪耀，冷却？那是给新手的安慰剂！(这段是发给"+player.getName()+"看的,不要让其他玩家看到)"));
+                player.sendMessage(getRandomGradientName("✨ 你让世界充满魔法，无需冷却的永恒荣耀！(这段是发给"+player.getName()+"看的,不要让其他玩家看到)"));
+                player.sendMessage(getRandomGradientName("✨ 你的命令即刻生效，冷却？那是给普通玩家的束缚！(这段是发给"+player.getName()+"看的,不要让其他玩家看到)"));
+                player.sendMessage(getRandomGradientName("✨ 你是服务器的守护神，尊贵到连时间都为你停驻！(这段是发给"+player.getName()+"看的,不要让其他玩家看到)"));
+                player.sendMessage(getRandomGradientName("【至高无上】管理员"+player.getName()+"已开启无冷却权限，时间在您面前臣服！"));
+                player.sendMessage(getRandomGradientName("【服务器之主】"+player.getName()+"的命令即刻撼动世界，无需等待！"));
+                player.sendMessage(getRandomGradientName("【凡人之界】"+player.getName()+"的意志，就是服务器的法则！"));
                 if(!PreBuildingsTreeUtils.pasteMap(player,buildingName, originName, replaceName)){
-                    Bukkit.broadcastMessage(getRandomGradientName("【规则】 管理员"+player.getName()+"好像有点小笨笨，并没有认真阅读使用说明"));
-                    Bukkit.broadcastMessage(getRandomGradientName("【规则】 管理员"+player.getName()+"放置物品时似乎受到了奇怪规则的约束"));
+                    // 修复(O)：失败提示同样改为仅管理员本人可见
+                    player.sendMessage(getRandomGradientName("【规则】 管理员"+player.getName()+"好像有点小笨笨，并没有认真阅读使用说明"));
+                    player.sendMessage(getRandomGradientName("【规则】 管理员"+player.getName()+"放置物品时似乎受到了奇怪规则的约束"));
                     return;
                 }
+                // 修复(O)：保留一条中性成功播报（全服），删除了原第二条重复播报
                 Bukkit.broadcastMessage(getRandomGradientName("【世界播报】 管理员"+player.getName()+"成功使用了道具: "+ ItemStackHelper.getDisplayName(itemInHand)));
-                Bukkit.broadcastMessage(getRandomGradientName("【世界播报】 让我们热烈庆祝管理员"+player.getName()+"成功使用了道具: "+ ItemStackHelper.getDisplayName(itemInHand)));
                 return;
             }
 

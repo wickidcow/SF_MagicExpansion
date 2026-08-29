@@ -93,6 +93,8 @@ public class CargoCore extends SlimefunItem implements EnergyNetComponent{
 
             @Override
             public boolean isSynchronized() {
+                // F1v2 调整（按需求）：主体保持异步 tick 以减轻主线程压力；
+                // tick 内需要主线程执行的操作（BlockMenu 修改、实体生成等）已通过 runOnMain 调度回主线程
                 return false;
             }
         });
@@ -152,12 +154,14 @@ public class CargoCore extends SlimefunItem implements EnergyNetComponent{
 
 
                     // === 计算需要掉落多少碎片和每个碎片的数量 ===
+                    // F2 修复：碎片本身即"按物品类型合并堆叠"的形态（每个碎片记录 物品+数量），
+                    // 原先最多掉落 2048 个实体碎片，现合并为最多 64 个实体（单个碎片最多承载 Integer.MAX_VALUE 个物品），
+                    // 超出 64 × Integer.MAX_VALUE 的极端数量才会丢失（实际几乎不可能达到）
                     long remainingAmount = amount;
                     int fragmentCount = 0;
                     long lostAmount = 0;
 
-                    // 最多掉落128个碎片
-                    while (remainingAmount > 0 && fragmentCount < 2048) {
+                    while (remainingAmount > 0 && fragmentCount < 64) {
                         // 每个碎片最多包含 Integer.MAX_VALUE 个物品
                         int amountInFragment = (int) Math.min(remainingAmount, Integer.MAX_VALUE);
 
@@ -180,8 +184,8 @@ public class CargoCore extends SlimefunItem implements EnergyNetComponent{
                         String itemName = ItemStackHelper.getDisplayName( prototype);
                         player.sendMessage(ChatColor.RED + "警告: 由于碎片数量限制，丢失了 " +
                                 lostAmount + " 个 " + itemName);
-                        player.sendMessage("单种物品最多只能掉落2048个承载了2.14B物品的以太秘匣");
-                        player.sendMessage("单物品掉落数量上限为4,398,046,509,056");
+                        player.sendMessage("单种物品最多只能掉落64个承载了2.14B物品的以太秘匣");
+                        player.sendMessage("单物品掉落数量上限为137,438,953,408");
                     }
 
 
@@ -416,12 +420,15 @@ public class CargoCore extends SlimefunItem implements EnergyNetComponent{
         SlimefunBlockData data = StorageCacheUtils.getBlock(loc);
 
         if (menu == null || data == null) return;
-        cleanupInvalidSlots(data);
-        handleOutput(menu, data);
-        handleAllTemplateTransfers(block);
-        handleAllInputTransfers(block, data);    // 输入传输（新增）
+        cleanupInvalidSlots(data); // 纯 BlockStorage 数据读写，可安全留在异步线程
 
-        // 处理输入槽物品
+        // F1v2 调整（按需求）：以下操作涉及 BlockMenu/Inventory 修改与实体生成，
+        // 必须在主线程执行——异步 tick 中仅做调度，实际动作切回主线程按提交顺序执行
+        runOnMain(() -> handleOutput(menu, data));
+        runOnMain(() -> handleAllTemplateTransfers(block));
+        runOnMain(() -> handleAllInputTransfers(block, data));    // 输入传输（新增）
+
+        // 处理输入槽物品：PDC 读取与判定留在异步线程，"存入+消耗"动作对调度回主线程执行
         for (int slot : inputSlots) {
             ItemStack item = menu.getItemInSlot(slot);
             if (item == null || item.getType() == Material.AIR) continue;
@@ -441,13 +448,18 @@ public class CargoCore extends SlimefunItem implements EnergyNetComponent{
                     Integer amount = container.get(keyAmount, PersistentDataType.INTEGER);
 
                     if (json != null && amount != null && amount > 0) {
-                        // 反序列化原物品
+                        // 反序列化原物品（异步线程只读解析）
                         ItemStack originalItem = itemFromBase64(json);
                         if (originalItem != null) {
-                            // 存入 CargoCore
-                            storeItem(data, originalItem.clone().asQuantity(amount));
-                            // 消费这个 CargoFragment
-                            menu.consumeItem(slot, 1);
+                            // 主线程执行：存入 CargoCore + 消费这个 CargoFragment（保证原子成对）
+                            // 兼容性修复(1.20.5+): 模板(amount=1)与数量分离存储,
+                            // 大数量(>99)不再写入 ItemStack 对象, 规避 asQuantity/setAmount/序列化的数量校验异常
+                            ItemStack toStore = originalItem.clone();
+                            toStore.setAmount(1);
+                            runOnMain(() -> {
+                                storeItem(data, toStore, amount);
+                                menu.consumeItem(slot, 1);
+                            });
 //                            continue; // 处理完 fragment 就跳过后续逻辑
                         }
                     }
@@ -459,47 +471,92 @@ public class CargoCore extends SlimefunItem implements EnergyNetComponent{
                 // 如果没有PDC数据，消费整个物品但不存储      //取消删除非法物品
 //                menu.consumeItem(slot, item.getAmount());
             }else{
-                // 如果不是 CargoFragment，按普通物品存储   修改为直接消耗，不存入
-                storeItem(data, item);
-                menu.consumeItem(slot, item.getAmount());
+                // F3 修复（经核实：非 CargoFragment 物品原先确实会被无条件静默吸收存入）：
+                // 增加白名单校验——仅"普通物品"（非本插件注册的功能物品）允许被输入槽自动存入；
+                // 本插件的机器/工具等 Slimefun 物品（id 以 magic_expansion_ 开头）不再被吞，
+                // 原样保留在输入槽中由玩家手动处理，防止贵重物品被静默消耗
+                if (!isWhitelistedForDirectStore(item)) {
+                    continue;
+                }
+                // 主线程执行：存入 + 消耗（clone 快照避免异步读与主线程写竞争）
+                ItemStack toStore = item.clone();
+                int storeAmount = item.getAmount();
+                runOnMain(() -> {
+                    storeItem(data, toStore);
+                    menu.consumeItem(slot, storeAmount);
+                });
             }
         }
 
-        if(menu != null && menu.hasViewer()) {
-            // 更新存储显示
-//            updateArrowButtons(menu, data);
-
-            updateStorageDisplay(menu, data);
-            updatePageButtons(menu, data);
-            updateInputBindDisplay(menu, block); // 更新输入绑定显示（新增）
-            updateTranslateOutPut(menu, block);
+        if(menu.hasViewer()) {
+            // F1v2 调整：UI 更新涉及 Inventory 槽位修改，同样调度回主线程执行
+            runOnMain(() -> {
+                // 更新存储显示
+                updateStorageDisplay(menu, data);
+                updatePageButtons(menu, data);
+                updateInputBindDisplay(menu, block); // 更新输入绑定显示（新增）
+                updateTranslateOutPut(menu, block);
+            });
         }
 
     }
 
-    // 在 tick() 中调用 storeItem 时使用：
+    /**
+     * F1v2 新增：异步 tick 中需要主线程执行的操作统一经此调度回主线程。
+     * runTask 保证任务按提交顺序在主线程串行执行，因此"存入+消耗"等成对动作保持原子性。
+     */
+    private void runOnMain(Runnable runnable) {
+        Bukkit.getScheduler().runTask(MagicExpansion.getInstance(), runnable);
+    }
+
+    // F3: 输入槽直接吸收白名单校验——仅普通物品（非本插件注册的功能物品）返回 true；
+    // 本插件物品 id 前缀统一为 magic_expansion_（SlimefunItemStack 的 id 为注册名小写）
+    private boolean isWhitelistedForDirectStore(ItemStack item) {
+        SlimefunItem sf = SlimefunItem.getByItem(item);
+        return sf == null || sf.getId() == null || !sf.getId().startsWith("magic_expansion_");
+    }
+
+    // 在 tick() 中调用 storeItem 时使用（兼容旧签名: 数量取 item.getAmount()）：
     private void storeItem(SlimefunBlockData data, ItemStack item) {
+        if (item == null || item.getType() == Material.AIR) return;
+        int count = item.getAmount();
+        // 兼容性修复(1.20.5+): 模板化(amount=1)后委托, 大数量不再进入 ItemStack 对象
+        ItemStack template = item.clone();
+        template.setAmount(1);
+        storeItem(data, template, count);
+    }
+
+    /**
+     * 存入核心(模板+数量分离)。
+     * 兼容性修复(1.20.5+/1.21): 存储模型为 item_type_N(原型) + item_count_N(数量) 两个字段,
+     * 原型恒以 amount=1 序列化, 数量仅写入 item_count_N 纯数字字段——
+     * 大数量(>99)不再进入 ItemStack 对象, 规避 1.20.5+/1.21 的数量校验/序列化异常
+     * (实测: 首次存入 >99 数量的以太秘匣必炸并导致机器停用)。
+     *
+     * @param template 存储原型(必须为 amount=1 的物品)
+     * @param count    本次存入数量
+     */
+    private void storeItem(SlimefunBlockData data, ItemStack template, int count) {
         cleanupInvalidSlots(data);
-        int slot = findMatchingSlot(data, item);
+        if (count <= 0) return;
+        int slot = findMatchingSlot(data, template);
         if (slot != -1) {
             // 匹配到已有槽位
-            long count = 0;
+            long stored = 0;
 
             try {
-                count = Long.parseLong(data.getData("item_count_" + slot));
+                stored = Long.parseLong(data.getData("item_count_" + slot));
             } catch (Exception ignored) {}
 
-            int amount = item.getAmount();
-            if (amount <= 0) return;
-
             try {
-                count = Math.addExact(count, amount);
-                data.setData("item_count_" + slot, String.valueOf(count));
+                stored = Math.addExact(stored, count);
+                data.setData("item_count_" + slot, String.valueOf(stored));
             } catch (ArithmeticException e) {
                 // 溢出，丢弃
                 Location loc = data.getLocation();
                 if (loc != null) {
-                    loc.getWorld().dropItem(loc, item);
+                    // F1v2：生成掉落物实体必须主线程执行，经 runOnMain 调度
+                runOnMain(() -> loc.getWorld().dropItem(loc, template));
                 }
             }
 
@@ -509,17 +566,18 @@ public class CargoCore extends SlimefunItem implements EnergyNetComponent{
             if (slot == -1) {
                 Location loc = data.getLocation();
                 if (loc != null) {
-                    loc.getWorld().dropItem(loc, item);
+                    // F1v2：生成掉落物实体必须主线程执行，经 runOnMain 调度
+                runOnMain(() -> loc.getWorld().dropItem(loc, template));
                 }
                 return;
             }
 
-            // ✅ 使用 JSON 替代 Base64
-            String json = itemToBase64(item.clone());
+            // ✅ 原型恒以 amount=1 序列化, 数量单独存于 item_count_N(与版本解耦)
+            String json = itemToBase64(template.clone());
             if (json == null) return;
 
             data.setData("item_type_" + slot, json);
-            data.setData("item_count_" + slot, String.valueOf(item.getAmount()));
+            data.setData("item_count_" + slot, String.valueOf(count));
         }
     }
     // 查找是否已有相同物品
@@ -2093,14 +2151,16 @@ public class CargoCore extends SlimefunItem implements EnergyNetComponent{
 
     /**
      * 退还物品到主存储系统
+     * 兼容性修复(1.20.5+): 模板(amount=1)与数量分离传入, 大数量不再写入 ItemStack 对象
      */
     private void refundToMainStorage(@Nonnull SlimefunBlockData data, @Nonnull ItemStack template, long amount) {
         if (amount <= 0) return;
 
         // 直接调用现有的storeItem方法
         ItemStack refundStack = template.clone();
-        refundStack.setAmount((int) Math.min(amount, Integer.MAX_VALUE));
-        storeItem(data, refundStack);
+        refundStack.setAmount(1);
+        int refundCount = (int) Math.min(amount, Integer.MAX_VALUE);
+        storeItem(data, refundStack, refundCount);
     }
 
     /**

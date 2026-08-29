@@ -46,6 +46,7 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap; // C1: 模板反序列化缓存所需
 
 import static io.Yomicer.magicExpansion.utils.Utils.doGlow;
 
@@ -146,6 +147,9 @@ public class DrawMachine extends SlimefunItem implements EnergyNetComponent {
                 }
                 // 清理自动输出状态和存储的数据
                 autoOutputMap.remove(b.getLocation());
+                // C1/C2 修复：破坏机器时同步清理模板缓存与扫描节流记录，防止残留
+                TEMPLATE_CACHE.remove(b.getLocation());
+                lastDrawScanMap.remove(b.getLocation());
                 BlockStorage.addBlockInfo(b, "templateAmount", "0");
                 BlockStorage.addBlockInfo(b, "templateItemData", ""); // 清除物品数据
 
@@ -482,13 +486,39 @@ public class DrawMachine extends SlimefunItem implements EnergyNetComponent {
         }
     }
 
+    // ==================== C1 性能修复：模板物品反序列化缓存 ====================
+    // 原实现 tick 中多处（updateMenu/processDraw/updateHologram/handleAutoOutput）每 tick 各做一次
+    // Base64 反序列化。现按机器位置缓存解析结果：数据串未变化且未过期（约 20 tick）时直接复用。
+    private static final long TEMPLATE_CACHE_TTL_MS = 1000; // 缓存有效期 ≈ 20 tick
+    private static final ConcurrentHashMap<Location, CachedTemplate> TEMPLATE_CACHE = new ConcurrentHashMap<>();
+
+    // 模板缓存条目：原始序列化串 + 解析结果 + 过期时间
+    private static final class CachedTemplate {
+        String rawData;   // 缓存对应的原始序列化字符串
+        ItemStack item;   // 反序列化结果（可能为 null 表示解析失败）
+        long expireAt;    // 过期时间戳
+    }
+
     // 从BlockStorage获取原始物品数据（使用完整的反序列化方法）
     private ItemStack getStoredTemplateItemData(Block block) {
         String serializedItem = BlockStorage.getLocationInfo(block.getLocation(), "templateItemData");
         if (serializedItem == null || serializedItem.isEmpty()) {
+            // 无模板数据：清除可能残留的缓存
+            TEMPLATE_CACHE.remove(block.getLocation());
             return null;
         }
-        return itemFromBase64(serializedItem);
+        // C1 修复：命中缓存（原始串一致且未过期）时直接复用解析结果，避免每 tick 反序列化
+        long now = System.currentTimeMillis();
+        CachedTemplate cached = TEMPLATE_CACHE.get(block.getLocation());
+        if (cached == null || now >= cached.expireAt || !serializedItem.equals(cached.rawData)) {
+            cached = new CachedTemplate();
+            cached.rawData = serializedItem;
+            cached.item = itemFromBase64(serializedItem);
+            cached.expireAt = now + TEMPLATE_CACHE_TTL_MS;
+            TEMPLATE_CACHE.put(block.getLocation(), cached);
+        }
+        // 所有调用方对返回值只读或先 clone 再修改，此处可直接返回共享实例
+        return cached.item;
     }
 
     // 获取物品显示名称
@@ -986,7 +1016,19 @@ public class DrawMachine extends SlimefunItem implements EnergyNetComponent {
         ));
     }
 
+    // C2 修复：邻近实体扫描节流记录（按机器位置），约每 20 tick 扫描一次
+    private static final long DRAW_SCAN_INTERVAL_MS = 1000; // 扫描间隔 ≈ 20 tick
+    private final Map<Location, Long> lastDrawScanMap = new HashMap<>();
+
     private void processDraw(Block block, BlockMenu menu) {
+        // C2 修复：getNearbyEntities(5格) 扫描降频为每 20 tick 一次，未到间隔直接跳过
+        long now = System.currentTimeMillis();
+        Long lastScan = lastDrawScanMap.get(block.getLocation());
+        if (lastScan != null && now - lastScan < DRAW_SCAN_INTERVAL_MS) {
+            return;
+        }
+        lastDrawScanMap.put(block.getLocation(), now);
+
         // 获取原始模板物品数据
         ItemStack originalTemplateItem = getStoredTemplateItemData(block);
         if (originalTemplateItem == null) {

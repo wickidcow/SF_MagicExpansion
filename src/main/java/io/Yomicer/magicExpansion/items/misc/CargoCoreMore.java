@@ -467,10 +467,11 @@ public class CargoCoreMore extends SlimefunItem implements EnergyNetComponent{
                             // 检查可以存储多少数量
                             int amountToStore = canStoreMoreAmount(data, originalItem, amount);
                             if (amountToStore > 0) {
-                                // 存入 CargoCore
+                                // 兼容性修复(1.20.5+): 模板(amount=1)与数量分离存储——
+                                // 大数量(>99)不再写入 ItemStack 对象, 规避 setAmount/序列化的数量校验异常
                                 ItemStack toStore = originalItem.clone();
-                                toStore.setAmount(amountToStore);
-                                storeItemCargoCoreMore(data, toStore);
+                                toStore.setAmount(1);
+                                storeItemCargoCoreMore(data, toStore, amountToStore);
 
                                 // 消费这个 CargoFragment
                                 menu.consumeItem(slot, 1);
@@ -501,10 +502,10 @@ public class CargoCoreMore extends SlimefunItem implements EnergyNetComponent{
                 // 如果不是 CargoFragment，按普通物品存储
                 int amountToStore = canStoreMoreAmount(data, item, item.getAmount());
                 if (amountToStore > 0) {
-                    // 创建要存储的物品副本
+                    // 兼容性修复(1.20.5+): 模板(amount=1)与数量分离存储, 规避大数量 ItemStack 校验异常
                     ItemStack toStore = item.clone();
-                    toStore.setAmount(amountToStore);
-                    storeItemCargoCoreMore(data, toStore);
+                    toStore.setAmount(1);
+                    storeItemCargoCoreMore(data, toStore, amountToStore);
 
                     // 消耗相应数量的物品
                     if (amountToStore == item.getAmount()) {
@@ -632,30 +633,52 @@ public class CargoCoreMore extends SlimefunItem implements EnergyNetComponent{
      * 存储物品（修复版）
      * 确保不会覆盖正在输出的槽位
      */
+    /**
+     * 兼容旧签名: 按 item.getAmount() 作为存入数量。
+     * 内部先做模板化(amount=1)再委托新签名, 大数量不再进入 ItemStack 对象(1.20.5+ 兼容)。
+     */
     public void storeItemCargoCoreMore(SlimefunBlockData data, ItemStack item) {
+        if (item == null || item.getType() == Material.AIR) return;
+        int count = item.getAmount();
+        ItemStack template = item.clone();
+        template.setAmount(1);
+        storeItemCargoCoreMore(data, template, count);
+    }
+
+    /**
+     * 存入核心(模板+数量分离)。
+     * 兼容性修复(1.20.5+/1.21): 存储模型本就是 item_type_N(原型) + item_count_N(数量) 两个字段,
+     * 此前新建槽位时把带大数量的 ItemStack 直接序列化, 在 1.20.5+/1.21 上会触发
+     * ItemStack 数量校验/序列化异常(实测 >99 数量必炸, ≤99 正常), 导致整个存入失败、机器被停用。
+     * 现在原型恒以 amount=1 序列化, 数量仅存入 item_count_N 纯数字字段, 与版本解耦。
+     *
+     * @param template 存储原型(必须为 amount=1 的物品)
+     * @param count    本次存入数量
+     */
+    public void storeItemCargoCoreMore(SlimefunBlockData data, ItemStack template, int count) {
         cleanupInvalidSlots(data);
 
         // 检查可以存储多少数量
-        int amountToStore = canStoreMoreAmount(data, item, item.getAmount());
+        int amountToStore = canStoreMoreAmount(data, template, count);
         if (amountToStore <= 0) return;
 
-        int slot = findMatchingSlot(data, item);
+        int slot = findMatchingSlot(data, template);
         if (slot != -1) {
             // 匹配到已有槽位
-            long count = 0;
+            long stored = 0;
 
             try {
-                count = Long.parseLong(data.getData("item_count_" + slot));
+                stored = Long.parseLong(data.getData("item_count_" + slot));
             } catch (Exception ignored) {}
 
             try {
-                count = Math.addExact(count, amountToStore);
-                data.setData("item_count_" + slot, String.valueOf(count));
+                stored = Math.addExact(stored, amountToStore);
+                data.setData("item_count_" + slot, String.valueOf(stored));
             } catch (ArithmeticException e) {
                 // 溢出，丢弃
                 Location loc = data.getLocation();
                 if (loc != null) {
-                    loc.getWorld().dropItem(loc, item);
+                    loc.getWorld().dropItem(loc, template);
                 }
             }
 
@@ -665,32 +688,19 @@ public class CargoCoreMore extends SlimefunItem implements EnergyNetComponent{
             if (slot == -1) {
                 Location loc = data.getLocation();
                 if (loc != null) {
-                    loc.getWorld().dropItem(loc, item);
+                    loc.getWorld().dropItem(loc, template);
                 }
                 return;
             }
 
-            // ✅ 使用 JSON 替代 Base64
-            String json = itemToBase64(item.clone());
+            // 原型恒以 amount=1 序列化(数量单独存于 item_count_N, 与版本解耦)
+            String json = itemToBase64(template.clone());
             if (json == null) return;
 
             data.setData("item_type_" + slot, json);
             data.setData("item_count_" + slot, String.valueOf(amountToStore));
             // 默认不设置最大限制（-1表示无限制）
             data.setData("item_max_" + slot, "-1");
-        }
-
-        // 如果实际存储的数量小于输入的数量，将剩余物品退回
-        if (amountToStore < item.getAmount()) {
-            int remaining = item.getAmount() - amountToStore;
-            if (remaining > 0) {
-                ItemStack remainingItems = item.clone();
-                remainingItems.setAmount(remaining);
-                Location loc = data.getLocation();
-                if (loc != null) {
-                    loc.getWorld().dropItem(loc, remainingItems);
-                }
-            }
         }
     }
 

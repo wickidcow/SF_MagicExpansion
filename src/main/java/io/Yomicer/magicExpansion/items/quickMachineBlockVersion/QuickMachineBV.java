@@ -49,6 +49,8 @@ public class QuickMachineBV extends SlimefunItem implements EnergyNetComponent {
     private final int[] iBorder = {46,47,48,50,51,52};
     private final List<Map<String, Integer>> receivedMBRecipes;
     private final RecipeType recipeTypeQuick;
+    // G1: 输入槽点击刷新去抖标记——同一 tick 内多次点击只调度一次刷新，回调中重置
+    private boolean refreshPending = false;
 
     public QuickMachineBV(ItemGroup category, SlimefunItemStack item, RecipeType recipeType, ItemStack[] recipe, String displayName, List<Map<String, Integer>> receivedMBRecipes,RecipeType recipeTypeQuick) {
         super(category, item, recipeType, recipe);
@@ -153,17 +155,25 @@ public class QuickMachineBV extends SlimefunItem implements EnergyNetComponent {
                 public boolean onClick(InventoryClickEvent e, Player p, int slot, ItemStack cursor, ClickAction action) {
 
                         if (e.getAction() != InventoryAction.NOTHING){
-                        Block block = ((BlockMenu) e.getInventory().getHolder()).getBlock();
-                        if (block != null) {
-                            Bukkit.getScheduler().runTaskLater(MagicExpansion.getInstance(), () -> {
-                                BlockMenu menu = StorageCacheUtils.getMenu(block.getLocation());
-                                if (menu != null) {
-                                    addAvailableRecipesToMenu(menu, receivedMBRecipes, recipeTypeQuick);
+                            // G2: 强转前加 instanceof 判断，防止 holder 不是 BlockMenu 时抛 ClassCastException
+                            if (e.getInventory().getHolder() instanceof BlockMenu) {
+                                Block block = ((BlockMenu) e.getInventory().getHolder()).getBlock();
+                                if (block != null) {
+                                    // G1: 去抖——同一 tick 内多次点击只调度一次刷新任务，回调里重置标记
+                                    if (!refreshPending) {
+                                        refreshPending = true;
+                                        Bukkit.getScheduler().runTaskLater(MagicExpansion.getInstance(), () -> {
+                                            refreshPending = false;
+                                            BlockMenu menu = StorageCacheUtils.getMenu(block.getLocation());
+                                            if (menu != null) {
+                                                addAvailableRecipesToMenu(menu, receivedMBRecipes, recipeTypeQuick);
+                                            }
+                                        }, 1L);
+                                    }
                                 }
-                            }, 1L);
+                            }
                         }
-                    }
-                    return true;
+                        return true;
                 }
             });
         }

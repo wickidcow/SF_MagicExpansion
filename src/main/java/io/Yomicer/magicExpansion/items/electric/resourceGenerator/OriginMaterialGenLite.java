@@ -70,7 +70,14 @@ public class OriginMaterialGenLite extends AbstractElectricResourceMachine imple
         if (drop == null || !drop.hasItemMeta()) return;
         ItemMeta meta = drop.getItemMeta();
         if (meta != null) {
-            Material material = Material.valueOf(materialName);
+            // L2 修复：Material.valueOf 在数据损坏时抛异常会导致整个 onBreak 中断、机器物品消失；
+            // 改用 matchMaterial，解析失败时原样掉落机器本体，不吞机器
+            Material material = Material.matchMaterial(materialName);
+            if (material == null) {
+                loc.getWorld().dropItemNaturally(loc, drop);
+                data.removeData("origin_material");
+                return;
+            }
             String n = ItemStackHelper.getName(new ItemStack(material));
             String originalName = meta.getDisplayName();
             meta.setDisplayName(originalName + " - " + n);
@@ -120,6 +127,9 @@ public class OriginMaterialGenLite extends AbstractElectricResourceMachine imple
         }
 
         if (maxedSlots == getOutputSlots().length) { return null; }
+
+        // L1 修复：配方列表为空时直接返回 null，避免 recipes.get(0) 抛 IndexOutOfBoundsException
+        if (recipes == null || recipes.isEmpty()) { return null; }
 
         MachineRecipe recipe = recipes.get(0);
         return recipe;

@@ -6,6 +6,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -37,7 +38,12 @@ public class MxEnchantCommand implements TabExecutor {
 
         switch (args[0].toLowerCase()) {
             case "guide":
-                player.getInventory().addItem(plugin.getPluginInitializer().getRecipeBookManager().createRecipeBook());
+                // 修复(N)：addItem 返回剩余物品时掉落地面，背包满不吞物品
+                java.util.Map<Integer, ItemStack> overflow =
+                        player.getInventory().addItem(plugin.getPluginInitializer().getRecipeBookManager().createRecipeBook());
+                for (ItemStack rest : overflow.values()) {
+                    player.getWorld().dropItemNaturally(player.getLocation(), rest);
+                }
                 player.sendMessage("§a已获得魔法祭坛配方指南!");
                 break;
 

@@ -23,6 +23,9 @@ import static io.Yomicer.magicExpansion.utils.ColorGradient.getGradientName;
 
 public class ResourceRandomOneMachine extends AbstractElectricResourceMachine {
 
+    // L4 修复：共享 static final Random，避免每次随机都新建 Random 实例
+    private static final Random RANDOM = new Random();
+
     private static final int[] BACKGROUND_SLOTS = new int[] { 0, 4, 8, 9, 13, 17 };
     private static final int[] OUTPUT_BORDER_SLOTS = new int[] { 10, 11, 12, 14, 15, 16};
     private static final int[] INPUT_BORDER_SLOTS = new int[] {1, 2, 3, 5, 6, 7};
@@ -71,8 +74,8 @@ public class ResourceRandomOneMachine extends AbstractElectricResourceMachine {
             if (validOutputs.size() == 1) {
                 menu.pushItem(validOutputs.get(0).clone(), getOutputSlots());
             } else {
-                // 否则随机选一个
-                ItemStack randomOutput = validOutputs.get(new Random().nextInt(validOutputs.size()));
+                // 否则随机选一个（L4 修复：使用共享 static final Random，不再每次 new）
+                ItemStack randomOutput = validOutputs.get(RANDOM.nextInt(validOutputs.size()));
                 menu.pushItem(randomOutput.clone(), getOutputSlots());
             }
         }
@@ -90,6 +93,9 @@ public class ResourceRandomOneMachine extends AbstractElectricResourceMachine {
         }
 
         if (maxedSlots == getOutputSlots().length) { return null; }
+
+        // L1 修复：配方列表为空时直接返回 null，避免 recipes.get(0) 抛 IndexOutOfBoundsException
+        if (recipes == null || recipes.isEmpty()) { return null; }
 
         MachineRecipe recipe = recipes.get(0);
 

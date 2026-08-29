@@ -37,6 +37,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Type;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class CustomSequenceTool extends SimpleSlimefunItem<ItemUseHandler> implements NotPlaceable, Listener {
 
@@ -63,10 +64,24 @@ public class CustomSequenceTool extends SimpleSlimefunItem<ItemUseHandler> imple
     private static final Gson gson = new GsonBuilder().create();
 
     // 存储正在运行的序列任务
-    private final Map<UUID, SequenceTask> runningTasks = new HashMap<>();
+    // 修复：改为 static ConcurrentHashMap（本物品为单例注册），支持静态 cleanup 清理
+    private static final Map<UUID, SequenceTask> runningTasks = new ConcurrentHashMap<>();
 
     // 存储等待输入的玩家
-    private final Map<UUID, InputRequest> waitingForInput = new HashMap<>();
+    // 修复：改为 static ConcurrentHashMap，支持静态 cleanup 清理
+    private static final Map<UUID, InputRequest> waitingForInput = new ConcurrentHashMap<>();
+
+    /**
+     * 修复：玩家退出时清理该玩家的会话数据：
+     * 取消正在运行的序列任务并移除等待输入记录，防止内存泄漏与离线任务空跑
+     */
+    public static void cleanup(UUID uuid) {
+        SequenceTask task = runningTasks.remove(uuid);
+        if (task != null) {
+            task.cancel(); // 取消该玩家未停止的序列任务
+        }
+        waitingForInput.remove(uuid);
+    }
 
     @Override
     public @NotNull ItemUseHandler getItemHandler() {

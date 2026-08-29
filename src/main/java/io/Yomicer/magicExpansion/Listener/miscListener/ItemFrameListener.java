@@ -13,7 +13,7 @@ import org.bukkit.entity.ItemFrame;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BlockStateMeta;
 
-import javax.swing.*;
+// E3: 删除了 import javax.swing.*（GUI 库不应出现在 Bukkit 插件中）
 
 public class ItemFrameListener implements Listener {
 
@@ -27,7 +27,8 @@ public class ItemFrameListener implements Listener {
 
             ItemStack itemInside = itemFrame.getItem();
 //            SlimefunItem sfItem = SlimefunItem.getByItem(itemInside);
-            if (itemInside.hasItemMeta()) {
+            // E1: 先判空/空气，再调 hasItemMeta()，防止 itemInside 为 null 时 NPE
+            if (itemInside != null && !itemInside.getType().isAir() && itemInside.hasItemMeta()) {
                 e.setCancelled(true);
                 ItemStack doubleDrop = itemInside.clone();
                 itemFrame.getWorld().dropItemNaturally(itemFrame.getLocation(), doubleDrop);
@@ -39,8 +40,12 @@ public class ItemFrameListener implements Listener {
 
             if (null != itemInside && !itemInside.getType().isAir()) {
                 e.setCancelled(true);
-                float dropChance = itemFrame.getItemDropChance();
-                boolean willDrop = Math.random() < dropChance;
+                // E2: 不再读 itemFrame.getItemDropChance()——其他途径放置的展示框默认 1.0（必双倍）。
+                // 改为读取展示框上本插件的薛定谔标记（SchrodingerFrame 以同名 key 写入 metadata：
+                // "schrodinger_frame" / "schrodinger_frame_infinite"，即下方 hasTapeTag/hasInfiniteTag 同 key），
+                // 有标记按设计概率 0.5 判定；无标记同样按固定 0.5 概率，保证双倍概率恒定可控
+                boolean hasSchrodingerMark = hasTapeTag(itemFrame) || hasInfiniteTag(itemFrame);
+                boolean willDrop = Math.random() < (hasSchrodingerMark ? 0.5f : 0.5f);
                 if (willDrop) {
                     ItemStack doubleDrop = itemInside.clone();
                     doubleDrop.setAmount(itemInside.getAmount() * 2);

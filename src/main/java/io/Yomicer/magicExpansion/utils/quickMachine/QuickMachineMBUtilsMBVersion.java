@@ -98,7 +98,25 @@ public class QuickMachineMBUtilsMBVersion {
         return totalAmount > 0 ? new CustomItemStack(item, totalAmount) : null;
     }
 
+    /**
+     * D1: 统一返回值语义——成功=true，失败=false（原实现为"失败=true"，已反转）
+     * D2: 消耗材料原子化——先快照输入区(0~35)槽位内容，整体校验足够后才逐条移除，
+     * 中途失败按快照回滚，保证材料不凭空丢失
+     */
     private static boolean consumeMaterials(Player player, Map<String, Integer> recipe, int amount,BlockMenu menu) {
+
+        // D2: 快照输入槽区间 0~35 的物品（深克隆），用于失败回滚
+        ItemStack[] snapshotCopy = new ItemStack[36];
+        for (int i = 0; i < 36; i++) {
+            ItemStack it = menu.getItemInSlot(i);
+            snapshotCopy[i] = it == null ? null : it.clone();
+        }
+
+        // D2: 第一步——整体预检机器内材料是否足够，不足直接失败且不修改机器
+        if (!hasEnoughMaterials(getInventoryItems(menu), recipe, amount)) {
+            player.sendMessage("§c机器内材料不足，请检查你的机器！");
+            return false;
+        }
 
         for (Map.Entry<String, Integer> requiredEntry : recipe.entrySet()) {
             String requiredKey = requiredEntry.getKey();
@@ -112,7 +130,10 @@ public class QuickMachineMBUtilsMBVersion {
                     ItemStack targetItem = new ItemStack(material);
                     if (!removeVanillaItemsFromMenu(menu, targetItem, totalRequiredAmount)) {
                         player.sendMessage("§c未能移除足够的原版材料，请检查你的机器！");
-                        return true;
+                        // D2: 中途失败——按快照回滚已移除的材料
+                        restoreMenuSnapshot(menu, snapshotCopy);
+                        // D1: 反转返回值——失败=false
+                        return false;
                     }
                 }
             } else if (requiredKey.startsWith("sf:")) {
@@ -123,14 +144,28 @@ public class QuickMachineMBUtilsMBVersion {
                     ItemStack targetItem = slimefunItem.getItem().clone();
                     if (!removeSlimefunItemsFromMenu(menu, targetItem, totalRequiredAmount)) {
                         player.sendMessage("§c未能移除足够的Slimefun材料，请检查你的机器！");
-                        return true;
+                        // D2: 中途失败——按快照回滚已移除的材料
+                        restoreMenuSnapshot(menu, snapshotCopy);
+                        // D1: 反转返回值——失败=false
+                        return false;
                     }
                 }
             }
         }
 
         // 所有材料都已成功移除
-        return false;
+        // D1: 反转返回值——成功=true
+        return true;
+    }
+
+    /**
+     * D2: 按快照回滚机器输入区(0~35)槽位的物品
+     */
+    private static void restoreMenuSnapshot(BlockMenu menu, ItemStack[] snapshotCopy) {
+        for (int i = 0; i < snapshotCopy.length; i++) {
+            // 用快照克隆恢复，避免回滚引用被后续操作再次修改
+            menu.replaceExistingItem(i, snapshotCopy[i] == null ? null : snapshotCopy[i].clone());
+        }
     }
 
     /**
@@ -144,8 +179,8 @@ public class QuickMachineMBUtilsMBVersion {
     private static boolean removeVanillaItemsFromMenu(BlockMenu menu, ItemStack targetItem, int amount) {
         int remainingAmount = amount; // 剩余需要移除的数量
 
-        // 遍历 BlockMenu 的所有槽位
-        for (int slot = 0; slot < menu.getSize() && remainingAmount > 0; slot++) {
+        // D5: 只遍历输入槽位区间 0~35，不得吃掉 36~53 的装饰/翻页槽位物品
+        for (int slot = 0; slot <= 35 && remainingAmount > 0; slot++) {
             ItemStack itemInSlot = menu.getItemInSlot(slot); // 获取当前槽位的物品
 
             // 检查槽位中是否有符合条件的物品
@@ -178,8 +213,8 @@ public class QuickMachineMBUtilsMBVersion {
     private static boolean removeSlimefunItemsFromMenu(BlockMenu menu, ItemStack targetItem, int amount) {
         int remainingAmount = amount; // 剩余需要移除的数量
 
-        // 遍历 BlockMenu 的所有槽位
-        for (int slot = 0; slot < menu.getSize() && remainingAmount > 0; slot++) {
+        // D5: 只遍历输入槽位区间 0~35，不得吃掉 36~53 的装饰/翻页槽位物品
+        for (int slot = 0; slot <= 35 && remainingAmount > 0; slot++) {
             ItemStack itemInSlot = menu.getItemInSlot(slot); // 获取当前槽位的物品
 
             // 检查槽位中是否有符合条件的 Slimefun 物品
@@ -412,7 +447,8 @@ public class QuickMachineMBUtilsMBVersion {
 
 
     // 用于存储每个 BlockMenu 的当前页码
-    private static final Map<BlockMenu, Integer> currentPageMap = new LinkedHashMap<>();
+    // D3: 改用 WeakHashMap——BlockMenu 关闭/卸载后 entry 可被 GC，防止静态 Map 长期强引用 BlockMenu 导致内存泄漏
+    private static final Map<BlockMenu, Integer> currentPageMap = new WeakHashMap<>();
     /**
      * 将符合条件的配方添加到菜单中，并支持分页
      * 刷新逻辑
@@ -535,7 +571,8 @@ public class QuickMachineMBUtilsMBVersion {
                     }
                 } else if (!action.isRightClicked() && !action.isShiftClicked()) {
                     // 左键点击：消耗一份材料并给予一份产品
-                    if (consumeMaterials(p, recipe, 1, menu)) {
+                    // D1: consumeMaterials 已统一为"成功=true"，判断取反
+                    if (!consumeMaterials(p, recipe, 1, menu)) {
                         p.sendMessage("§c材料不足或数据错误！");
                         return false;
                     }
@@ -564,13 +601,16 @@ public class QuickMachineMBUtilsMBVersion {
                         return false;
                     }
 
-                    if (consumeMaterials(p, recipe, maxCraftable,menu)) {
+                    // D1: consumeMaterials 已统一为"成功=true"，判断取反
+                    if (!consumeMaterials(p, recipe, maxCraftable,menu)) {
                         p.sendMessage("§c材料不足或数据错误！");
                         return false;
                     }
 
-                    // 计算总输出量
-                    int totalOutput = maxCraftable * outputAmountPerCraft;
+                    // D4: 改用 long 计算防止 maxCraftable * outputAmountPerCraft 的 int 溢出，
+                    // 并钳制到 0..2304（单组物品数量的合理上限）
+                    long totalOutputLong = Math.max(0L, Math.min(2304L, (long) maxCraftable * outputAmountPerCraft));
+                    int totalOutput = (int) totalOutputLong;
 
                     // 克隆结果物品并设置数量为总输出量
                     ItemStack resultItemClone = resultItem.clone();
@@ -594,13 +634,15 @@ public class QuickMachineMBUtilsMBVersion {
                         return false;
                     }
 
-                    if (consumeMaterials(p, recipe, requiredCrafts,menu)) {
+                    // D1: consumeMaterials 已统一为"成功=true"，判断取反
+                    if (!consumeMaterials(p, recipe, requiredCrafts,menu)) {
                         p.sendMessage("§c材料不足或数据错误！");
                         return false;
                     }
 
-                    // 计算总输出量
-                    int totalOutput = requiredCrafts * outputAmountPerCraft;
+                    // D4: 改用 long 计算并钳制到 0..2304，防止 int 溢出/超上限数量
+                    long totalOutputLong = Math.max(0L, Math.min(2304L, (long) requiredCrafts * outputAmountPerCraft));
+                    int totalOutput = (int) totalOutputLong;
 
                     // 克隆结果物品并设置数量为总输出量
                     ItemStack resultItemClone = resultItem.clone();

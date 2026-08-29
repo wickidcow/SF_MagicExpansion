@@ -54,7 +54,7 @@ import static io.Yomicer.magicExpansion.utils.Utils.doGlow;
 /**
  * 魔法2.0 自绘分类页 + 三级菜单
  * UI 完全仿照原生粘液书页面:顶部 createHeader,槽1 返回,槽9~44 分组图标(每页36个),槽46/52 翻页
- * 返回链:每打开一层都写入 GuideHistory,返回按钮左键逐级返回(goBack)、Shift 回主菜单
+ * 返回链:每"进入新层级"才写入 GuideHistory(同层翻页不压栈, 避免逐页回退),返回按钮左键逐级返回(goBack)、Shift 回主菜单
  */
 public final class GuideCategoryMenu {
 
@@ -129,13 +129,11 @@ public final class GuideCategoryMenu {
     /** 开发者 magicsolo 头颅材质(与贡献组的 MAGIC_EXPANSION_AUTHOR 一致) */
     private static final ItemStack DEVELOPER_HEAD = CustomHead.getHead("8adb25ab9976d89d0bd8118d72c1c06bb907060c1e02a729b652d1e86b1ebbbc");
 
-    /** 1-5 阶魔法糖 */
+    /** 1-3 阶魔法糖(神奇小按钮随机奖励范围, 由 1-5 阶下调) */
     private static final ItemStack[] MAGIC_SUGARS = {
             MagicExpansionItems.MAGIC_EXPANSION_MAGIC_SUGAR_1,
             MagicExpansionItems.MAGIC_EXPANSION_MAGIC_SUGAR_2,
-            MagicExpansionItems.MAGIC_EXPANSION_MAGIC_SUGAR_3,
-            MagicExpansionItems.MAGIC_EXPANSION_MAGIC_SUGAR_4,
-            MagicExpansionItems.MAGIC_EXPANSION_MAGIC_SUGAR_5
+            MagicExpansionItems.MAGIC_EXPANSION_MAGIC_SUGAR_3
     };
 
     /** 无名字的染色玻璃板(隐藏原版名称, 用单个空格代替) */
@@ -259,9 +257,24 @@ public final class GuideCategoryMenu {
             default -> { }
         }
     }
-    /** 一级菜单:点击魔法2.0进入 */
+    /** 一级菜单:点击魔法2.0进入(入口调用, 记录历史) */
     public static void openCategoryPage(Player player, PlayerProfile profile, SlimefunGuideMode mode, int page) {
-        addHistory(profile, mode, MagicExpansionItemSetup.magicexpansion, page);
+        openCategoryPage(player, profile, mode, page, true);
+    }
+
+    /**
+     * 一级菜单打开逻辑。
+     * 翻页修复: 仅"进入该层级"时写入 GuideHistory, 同层翻页(trackHistory=false)只重绘不压栈,
+     * 使返回按钮一次即可回到上级菜单, 而不是逐页回退历史翻页操作。
+     * 防御性自愈: 一级菜单是魔法2.0 的顶层入口, 进入时清空历史栈后仅保留自身条目——
+     * 清除外部组件(如 JEG 搜索翻页的"弹1压1"失衡)留下的残留条目,
+     * 避免残留的魔法2.0 旧条目被重开导致界面意外跳转。
+     */
+    public static void openCategoryPage(Player player, PlayerProfile profile, SlimefunGuideMode mode, int page, boolean trackHistory) {
+        if (trackHistory) {
+            profile.getGuideHistory().clear(); // 自愈: 顶层入口重置历史, 隔离外部残留
+            addHistory(profile, mode, MagicExpansionItemSetup.magicexpansion, page);
+        }
 
         ChestMenu menu = createMainMenu(player, mode);
 
@@ -328,7 +341,8 @@ public final class GuideCategoryMenu {
             menu.addItem(27, ChestMenuUtils.getPreviousButton(player, page, pages));
             menu.addMenuClickHandler(27, (p, s, it, a) -> {
                 p.playSound(p.getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1.0f);
-                openCategoryPage(p, profile, mode, page - 1);
+                // 翻页修复: trackHistory=false, 同层翻页不写入历史栈
+                openCategoryPage(p, profile, mode, page - 1, false);
                 return false;
             });
         } else {
@@ -338,7 +352,8 @@ public final class GuideCategoryMenu {
             menu.addItem(35, ChestMenuUtils.getNextButton(player, page, pages));
             menu.addMenuClickHandler(35, (p, s, it, a) -> {
                 p.playSound(p.getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1.0f);
-                openCategoryPage(p, profile, mode, page + 1);
+                // 翻页修复: trackHistory=false, 同层翻页不写入历史栈
+                openCategoryPage(p, profile, mode, page + 1, false);
                 return false;
             });
         } else {
@@ -441,13 +456,16 @@ public final class GuideCategoryMenu {
     public static void openContainer(Player player, PlayerProfile profile, SlimefunGuideMode mode, String id) {
         VirtualGuideGroup anchor = GuideMenuGroups.getAnchor(id);
         if (anchor == null) return;
-        openSecondLevel(player, profile, mode, 1, anchor, GuideMenuGroups.getChildren(id));
+        // 入口调用: 记录历史(压栈), 返回按钮可回到上级
+        openSecondLevel(player, profile, mode, 1, anchor, GuideMenuGroups.getChildren(id), true);
     }
 
-    /** 二级菜单:容器组点开后的页面(54格大箱子) */
+    /** 二级菜单:容器组点开后的页面(54格大箱子)。入口(openContainer)压栈, 同层翻页不压栈 */
     private static void openSecondLevel(Player player, PlayerProfile profile, SlimefunGuideMode mode, int page,
-                                        ItemGroup historyAnchor, List<ItemGroup> groups) {
-        addHistory(profile, mode, historyAnchor, page);
+                                        ItemGroup historyAnchor, List<ItemGroup> groups, boolean trackHistory) {
+        if (trackHistory) {
+            addHistory(profile, mode, historyAnchor, page);
+        }
         ChestMenu menu = createMainMenu(player, mode);
 
         // 固定装饰
@@ -464,8 +482,9 @@ public final class GuideCategoryMenu {
             menu.addItem(slot, plainPane(Material.MAGENTA_STAINED_GLASS_PANE), ChestMenuUtils.getEmptyClickHandler());
         }
 
-        // 1槽:返回(上一级)
-        addBack(menu, profile, mode);
+        // 1槽:返回上一级(确定性:直接重开魔法2.0一级菜单, 不依赖历史栈)
+        addDeterministicBack(menu, player, profile, mode,
+                () -> openCategoryPage(player, profile, mode, 1, true));
 
         // 4槽:作者头颅(纯展示,无点击)
         menu.addItem(4, new CustomItemStack(DEVELOPER_HEAD, getGradientNameVer2("magicsolo"), getGradientNameVer2("这是魔法作者")), ChestMenuUtils.getEmptyClickHandler());
@@ -509,7 +528,8 @@ public final class GuideCategoryMenu {
             menu.addItem(46, plainPane(Material.LIME_STAINED_GLASS_PANE));
             menu.addMenuClickHandler(46, (p, s, it, a) -> {
                 p.playSound(p.getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1.0f);
-                openSecondLevel(p, profile, mode, page - 1, historyAnchor, groups);
+                // 翻页修复: 同层翻页不写入历史栈
+                openSecondLevel(p, profile, mode, page - 1, historyAnchor, groups, false);
                 return false;
             });
         } else {
@@ -519,7 +539,8 @@ public final class GuideCategoryMenu {
             menu.addItem(52, plainPane(Material.LIME_STAINED_GLASS_PANE));
             menu.addMenuClickHandler(52, (p, s, it, a) -> {
                 p.playSound(p.getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1.0f);
-                openSecondLevel(p, profile, mode, page + 1, historyAnchor, groups);
+                // 翻页修复: 同层翻页不写入历史栈
+                openSecondLevel(p, profile, mode, page + 1, historyAnchor, groups, false);
                 return false;
             });
         } else {
@@ -537,10 +558,12 @@ public final class GuideCategoryMenu {
         menu.open(player);
     }
 
-    /** 三级菜单:嵌套容器组(织梦者/水云间等)页面, 风格与二级菜单一致 */
+    /** 三级菜单:嵌套容器组(织梦者/水云间等)页面, 风格与二级菜单一致。入口压栈, 同层翻页不压栈 */
     private static void openThirdLevel(Player player, PlayerProfile profile, SlimefunGuideMode mode, int page,
-                                       ItemGroup historyAnchor, List<ItemGroup> groups) {
-        addHistory(profile, mode, historyAnchor, page);
+                                       ItemGroup historyAnchor, List<ItemGroup> groups, boolean trackHistory) {
+        if (trackHistory) {
+            addHistory(profile, mode, historyAnchor, page);
+        }
         ChestMenu menu = createMainMenu(player, mode);
 
         // 固定装饰(与二级菜单一致: 白/粉/淡蓝/品红)
@@ -557,8 +580,9 @@ public final class GuideCategoryMenu {
             menu.addItem(slot, plainPane(Material.MAGENTA_STAINED_GLASS_PANE), ChestMenuUtils.getEmptyClickHandler());
         }
 
-        // 1槽:返回上一级
-        addBack(menu, profile, mode);
+        // 1槽:返回上一级(确定性:直接重开魔法2.0一级菜单, 不依赖历史栈)
+        addDeterministicBack(menu, player, profile, mode,
+                () -> openCategoryPage(player, profile, mode, 1, true));
 
         // 4槽:作者头颅(纯展示)
         menu.addItem(4, new CustomItemStack(DEVELOPER_HEAD, getGradientNameVer2("magicsolo"), getGradientNameVer2("这是魔法作者")), ChestMenuUtils.getEmptyClickHandler());
@@ -602,7 +626,8 @@ public final class GuideCategoryMenu {
             menu.addItem(46, plainPane(Material.LIME_STAINED_GLASS_PANE));
             menu.addMenuClickHandler(46, (p, s, it, a) -> {
                 p.playSound(p.getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1.0f);
-                openThirdLevel(p, profile, mode, page - 1, historyAnchor, groups);
+                // 翻页修复: 同层翻页不写入历史栈
+                openThirdLevel(p, profile, mode, page - 1, historyAnchor, groups, false);
                 return false;
             });
         } else {
@@ -612,7 +637,8 @@ public final class GuideCategoryMenu {
             menu.addItem(52, plainPane(Material.LIME_STAINED_GLASS_PANE));
             menu.addMenuClickHandler(52, (p, s, it, a) -> {
                 p.playSound(p.getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1.0f);
-                openThirdLevel(p, profile, mode, page + 1, historyAnchor, groups);
+                // 翻页修复: 同层翻页不写入历史栈
+                openThirdLevel(p, profile, mode, page + 1, historyAnchor, groups, false);
                 return false;
             });
         } else {
@@ -632,8 +658,17 @@ public final class GuideCategoryMenu {
 
     /* ==================== 四级菜单: 平铺组物品列表页(4x7) ==================== */
 
-    /** 四级菜单:平铺组点开后的物品列表页, 风格延续二、三级, 淡蓝边框包裹 4x7 物品格 */
+    /** 四级菜单:平铺组点开后的物品列表页(入口调用, 记录历史) */
     public static void openItemGroupPage(Player player, PlayerProfile profile, SlimefunGuideMode mode, ItemGroup group, int page) {
+        openItemGroupPage(player, profile, mode, group, page, true);
+    }
+
+    /**
+     * 四级菜单打开逻辑。风格延续二、三级, 淡蓝边框包裹 4x7 物品格。
+     * 翻页修复: 仅"进入该层级"时写入 GuideHistory, 同层翻页(trackHistory=false)只重绘不压栈,
+     * 使返回按钮一次即可回到上级菜单。
+     */
+    private static void openItemGroupPage(Player player, PlayerProfile profile, SlimefunGuideMode mode, ItemGroup group, int page, boolean trackHistory) {
         if (group == null) return;
         if (group instanceof FlexItemGroup) {
             // 兜底: 容器/虚拟组没有物品列表, 交还原生调度(FlexItemGroup.open -> 自绘子级页)
@@ -641,7 +676,9 @@ public final class GuideCategoryMenu {
             return;
         }
 
-        addHistory(profile, mode, itemPageAnchor(group, page, player), page);
+        if (trackHistory) {
+            addHistory(profile, mode, itemPageAnchor(group, page, player), page);
+        }
 
         String title = group.getDisplayName(player);
         ChestMenu menu = new ChestMenu(title == null ? "物品列表" : title);
@@ -661,8 +698,15 @@ public final class GuideCategoryMenu {
             menu.addItem(slot, plainPane(Material.PINK_STAINED_GLASS_PANE), ChestMenuUtils.getEmptyClickHandler());
         }
 
-        // 1槽:返回上一级
-        addBack(menu, profile, mode);
+        // 1槽:返回上一级(确定性:反查平铺组的父容器, 回到父容器的子分类页; 一级平铺组则回魔法2.0一级菜单)
+        addDeterministicBack(menu, player, profile, mode, () -> {
+            String parentId = GuideMenuGroups.getParentContainerId(group.getKey().getKey());
+            if (parentId != null) {
+                openContainer(player, profile, mode, parentId);
+            } else {
+                openCategoryPage(player, profile, mode, 1, true);
+            }
+        });
 
         // 4槽:作者头颅(纯展示)
         menu.addItem(4, new CustomItemStack(DEVELOPER_HEAD, getGradientNameVer2("magicsolo"), getGradientNameVer2("这是魔法作者")), ChestMenuUtils.getEmptyClickHandler());
@@ -678,7 +722,6 @@ public final class GuideCategoryMenu {
             });
             return false;
         });
-
         // 可见物品过滤(与原版一致: 禁用/隐藏/分组不可访问的不显示)
         List<SlimefunItem> visible = new ArrayList<>();
         for (SlimefunItem item : group.getItems()) {
@@ -719,7 +762,8 @@ public final class GuideCategoryMenu {
             menu.addItem(46, plainPane(Material.LIME_STAINED_GLASS_PANE));
             menu.addMenuClickHandler(46, (p, s, it, a) -> {
                 p.playSound(p.getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1.0f);
-                openItemGroupPage(p, profile, mode, group, currentPage - 1);
+                // 翻页修复: 同层翻页不写入历史栈
+                openItemGroupPage(p, profile, mode, group, currentPage - 1, false);
                 return false;
             });
         } else {
@@ -729,7 +773,8 @@ public final class GuideCategoryMenu {
             menu.addItem(52, plainPane(Material.LIME_STAINED_GLASS_PANE));
             menu.addMenuClickHandler(52, (p, s, it, a) -> {
                 p.playSound(p.getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1.0f);
-                openItemGroupPage(p, profile, mode, group, currentPage + 1);
+                // 翻页修复: 同层翻页不写入历史栈
+                openItemGroupPage(p, profile, mode, group, currentPage + 1, false);
                 return false;
             });
         } else {
@@ -789,6 +834,27 @@ public final class GuideCategoryMenu {
         if (mode == SlimefunGuideMode.SURVIVAL_MODE) {
             profile.getGuideHistory().add(group, page);
         }
+    }
+
+    /**
+     * 确定性返回按钮: 不依赖 GuideHistory 栈的 goBack(外部 JEG 搜索翻页可能污染栈导致误回主界面),
+     * 返回动作由调用方显式指定(直接调用上级界面的打开方法), Shift + 点击仍回粘液书主界面。
+     */
+    private static void addDeterministicBack(ChestMenu menu, Player player, PlayerProfile profile,
+                                             SlimefunGuideMode mode, Runnable backAction) {
+        menu.addItem(1, new CustomItemStack(ChestMenuUtils.getBackButton(player),
+                "",
+                "§f点击: §7返回上一级",
+                "§fShift + 点击: §7返回主菜单"));
+        menu.addMenuClickHandler(1, (p, slot, item, clickAction) -> {
+            if (clickAction.isShiftClicked()) {
+                // Shift + 点击: 回粘液书主界面(使用原版实现, 不经过 JEG 等替换引导)
+                new SurvivalSlimefunGuide().openMainMenu(profile, profile.getGuideHistory().getMainMenuPage());
+            } else {
+                backAction.run(); // 确定性返回上级
+            }
+            return false;
+        });
     }
 
     private static void addBack(ChestMenu menu, PlayerProfile profile, SlimefunGuideMode mode) {

@@ -20,13 +20,15 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class HolyPie extends SimpleSlimefunItem<ItemConsumptionHandler> implements Listener {
 
-    private static final Set<UUID> holyProtectedPlayers = ConcurrentHashMap.newKeySet();
+    // 修复(R)：改为 uuid -> 庇护到期时间戳(毫秒)。连续食用时新时间戳覆盖旧值，
+    // 移除任务只在自己时间戳一致时清除，防止连续食用互相撤销庇护
+    private static final Map<UUID, Long> holyProtectedPlayers = new ConcurrentHashMap<>();
 
     public HolyPie(ItemGroup itemGroup, SlimefunItemStack item, RecipeType recipeType, ItemStack[] recipe) {
         super(itemGroup, item, recipeType, recipe);
@@ -44,13 +46,20 @@ public class HolyPie extends SimpleSlimefunItem<ItemConsumptionHandler> implemen
             p.setHealth(Math.min(p.getHealth() + 12.0, maxHealth)); // 回 6 颗心
             p.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 30, 254));
             removeNegativeEffects(p);
-            holyProtectedPlayers.add(p.getUniqueId());
+            // 修复(R)：记录庇护到期时间戳（30 ticks = 1500ms）；连续食用会覆盖为新时间戳
+            long expireAt = System.currentTimeMillis() + 1500L;
+            holyProtectedPlayers.put(p.getUniqueId(), expireAt);
             new BukkitRunnable() {
                 @Override
                 public void run() {
-                    holyProtectedPlayers.remove(p.getUniqueId());
-                    if (p.isOnline()) {
-                        p.sendMessage(ChatColor.GRAY + "§7神圣庇护已消散...");
+                    // 修复(R)：仅当记录的到期时间戳与本次任务一致时才清除，
+                    // 防止连续食用第二颗时被第一颗的过期任务提前撤销庇护
+                    Long current = holyProtectedPlayers.get(p.getUniqueId());
+                    if (current != null && current == expireAt) {
+                        holyProtectedPlayers.remove(p.getUniqueId());
+                        if (p.isOnline()) {
+                            p.sendMessage(ChatColor.GRAY + "§7神圣庇护已消散...");
+                        }
                     }
                 }
             }.runTaskLater(MagicExpansion.getInstance(), 30L);
@@ -72,13 +81,14 @@ public class HolyPie extends SimpleSlimefunItem<ItemConsumptionHandler> implemen
         world.spawnParticle(Particle.HEART, loc, 15, 0.4, 0.4, 0.4, 0.1);
         world.spawnParticle(Particle.VILLAGER_HAPPY, loc, 20, 0.5, 0.5, 0.5, 0.1);
         new BukkitRunnable() {
-            int ticks = 0;
-            @Override
-            public void run() {
-                if (!p.isOnline() || !holyProtectedPlayers.contains(p.getUniqueId())) {
-                    this.cancel();
-                    return;
-                }
+                int ticks = 0;
+                @Override
+                public void run() {
+                    // 修复(R)：集合类型改为 Map，使用 containsKey 判断庇护是否有效
+                    if (!p.isOnline() || !holyProtectedPlayers.containsKey(p.getUniqueId())) {
+                        this.cancel();
+                        return;
+                    }
                 Location currentLoc = p.getLocation().add(0, 1.5, 0);
                 // 画圈
                 for (double angle = 0; angle < 360; angle += 45) {
@@ -110,9 +120,13 @@ public class HolyPie extends SimpleSlimefunItem<ItemConsumptionHandler> implemen
 
     private boolean isNegative(PotionEffectType type) {
         String name = type.getName();
+        // 修复(R)：显式排除缓降(SLOW_FALLING)——它包含 SLOW 关键字但属于增益效果，不应被清除
+        if (name.contains("SLOW")) {
+            return !name.contains("SLOW_FALLING");
+        }
         return name.contains("POISON") || name.contains("WITHER") || name.contains("BLINDNESS")
                 || name.contains("CONFUSION") || name.contains("HUNGER") || name.contains("WEAKNESS")
-                || name.contains("SLOW") || name.contains("DIGGING") || name.contains("LEVITATION")
+                || name.contains("DIGGING") || name.contains("LEVITATION")
                 || name.contains("UNLUCK") || name.contains("BAD_OMEN") || name.contains("DARKNESS");
     }
 
@@ -120,11 +134,13 @@ public class HolyPie extends SimpleSlimefunItem<ItemConsumptionHandler> implemen
     public void onEntityDamage(EntityDamageEvent event) {
         if (!(event.getEntity() instanceof Player)) return;
         Player p = (Player) event.getEntity();
-        if (holyProtectedPlayers.contains(p.getUniqueId())) {
-            event.setCancelled(true);
-            if (event.getCause() != EntityDamageEvent.DamageCause.VOID) {
-                p.getWorld().spawnParticle(Particle.CLOUD, p.getLocation().add(0, 0.5, 0), 5, 0.2, 0.2, 0.2, 0.01);
+        if (holyProtectedPlayers.containsKey(p.getUniqueId())) {
+            // 修复(R)：VOID 伤害不取消（否则庇护期间悬空会不死、卡死虚空），仅取消其他伤害
+            if (event.getCause() == EntityDamageEvent.DamageCause.VOID) {
+                return;
             }
+            event.setCancelled(true);
+            p.getWorld().spawnParticle(Particle.CLOUD, p.getLocation().add(0, 0.5, 0), 5, 0.2, 0.2, 0.2, 0.01);
         }
     }
 

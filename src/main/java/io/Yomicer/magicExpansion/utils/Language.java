@@ -1,5 +1,6 @@
 package io.Yomicer.magicExpansion.utils;
 
+import io.Yomicer.magicExpansion.MagicExpansion;
 import io.Yomicer.magicExpansion.utils.itemUtils.newItem;
 import io.github.thebusybiscuit.slimefun4.libraries.dough.config.Config;
 
@@ -7,7 +8,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
-import java.util.logging.Logger;
 
 public class Language {
 
@@ -41,7 +41,8 @@ public class Language {
         }
 
         // 打印日志并返回 true
-        Logger.getLogger("MagicExpansion语言配置加载完毕~");
+        // 修复(Q)：Logger.getLogger("消息文本") 误用（参数是 logger 名称不是消息），改为主类 logger 输出
+        MagicExpansion.getInstance().getLogger().info("MagicExpansion语言配置加载完毕~");
         return true;
     }
 

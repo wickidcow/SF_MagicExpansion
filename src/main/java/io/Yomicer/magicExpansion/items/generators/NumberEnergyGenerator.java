@@ -102,6 +102,10 @@ public class NumberEnergyGenerator extends MenuBlock implements EnergyNetProvide
     public int getGeneratedOutput(Location l, SlimefunBlockData data) {
 
         BlockMenu inv = StorageCacheUtils.getMenu(l);
+        // H 修复：区块加载时序窗口内 inv 可能为 null，立即按发电量 0 返回，避免下方 getItemInSlot 抛 NPE
+        if (inv == null) {
+            return 0;
+        }
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i <= 8; i++) {
             if (inv.getItemInSlot(i) != null && inv.getItemInSlot(i).getType() != Material.AIR) {

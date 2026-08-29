@@ -6,7 +6,9 @@ import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItemStack;
 import io.github.thebusybiscuit.slimefun4.api.recipes.RecipeType;
 import io.github.thebusybiscuit.slimefun4.core.attributes.NotPlaceable;
 import io.github.thebusybiscuit.slimefun4.core.handlers.ItemUseHandler;
+import io.github.thebusybiscuit.slimefun4.implementation.Slimefun; // 【C修复】领地保护检查所需（照抄项目内现有用法）
 import io.github.thebusybiscuit.slimefun4.implementation.items.SimpleSlimefunItem;
+import io.github.thebusybiscuit.slimefun4.libraries.dough.protection.Interaction; // 【C修复】领地交互动作枚举
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -27,6 +29,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+
+import static io.Yomicer.magicExpansion.utils.ItemPermissionUtils.hasPermissionRe; // 【C修复】复用项目内基础权限判断
 
 public class FiveElementTouch extends SimpleSlimefunItem<ItemUseHandler> implements NotPlaceable {
 
@@ -49,6 +53,8 @@ public class FiveElementTouch extends SimpleSlimefunItem<ItemUseHandler> impleme
             if (e.getHand() != EquipmentSlot.HAND) {
                 return;
             }
+            // 【C修复】补充原有基础权限判断（原代码缺失，与 VoidTouch 等物品保持一致）
+            if (!hasPermissionRe(player)) return;
 
             ItemStack item = e.getItem();
             ItemMeta meta = item.getItemMeta();
@@ -100,6 +106,12 @@ public class FiveElementTouch extends SimpleSlimefunItem<ItemUseHandler> impleme
 
                 if (targetLoc != null) {
                     Block targetBlock = targetLoc.getBlock();
+
+                    // 【C修复】远程交互前检查目标方块领地保护权限（照抄项目内 getProtectionManager 现有写法），无权限则提示并终止
+                    if (!Slimefun.getProtectionManager().hasPermission(player, targetLoc, Interaction.INTERACT_BLOCK)) {
+                        player.sendMessage("§c你没有权限与该位置的方块交互！");
+                        return;
+                    }
 
                     // 模拟右键点击该方块
                     PlayerInteractEvent interactEvent = new PlayerInteractEvent(

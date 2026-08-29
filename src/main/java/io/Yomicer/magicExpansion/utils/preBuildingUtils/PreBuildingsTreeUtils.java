@@ -21,9 +21,22 @@ public class PreBuildingsTreeUtils {
     private static final Gson gson = new Gson();
 
     /**
+     * 修复(Z)：建筑文件名白名单校验 [a-zA-Z0-9_-]，防止路径穿越读取任意资源
+     */
+    private static boolean isValidFileName(String fileName) {
+        return fileName != null && fileName.matches("[a-zA-Z0-9_-]+");
+    }
+
+    /**
      * 粘贴地图到玩家注视的目标方块上方
      */
     public static boolean pasteMap(Player player, String fileName, String originName, String replaceName) {
+        // 修复(Z)：文件名白名单校验，非法文件名直接拒绝
+        if (!isValidFileName(fileName)) {
+            player.sendMessage("§c非法的文件名，请不要随意修改插件设置!");
+            return false;
+        }
+
         // 从 resources/buildings 文件夹中读取 JSON 文件
         InputStream inputStream = PreBuildingsTreeUtils.class.getClassLoader().getResourceAsStream("buildings/" + fileName + ".json");
 
@@ -45,6 +58,12 @@ public class PreBuildingsTreeUtils {
         try (InputStreamReader reader = new InputStreamReader(inputStream)) {
             Type listType = new TypeToken<List<BlockData>>() {}.getType();
             List<BlockData> blocks = gson.fromJson(reader, listType);
+
+            // 修复(Z)：gson.fromJson 可能返回 null（空文件/非法 JSON），判空防止 NPE
+            if (blocks == null) {
+                player.sendMessage("§c建筑数据为空或格式错误: " + fileName + ".json");
+                return false;
+            }
 
             if (!(originName == null) && !(replaceName == null)) {
                 // 替换 "OAK" 为 "CHERRY"
@@ -94,6 +113,10 @@ public class PreBuildingsTreeUtils {
             player.sendMessage("§cFailed to create: " + e.getMessage());
             e.printStackTrace();
             return false; // 发生异常，返回 false
+        } catch (com.google.gson.JsonParseException e) {
+            // 修复(Z)：捕获 JSON 解析异常（含 JsonSyntaxException），避免损坏文件导致未捕获异常
+            player.sendMessage("§c建筑文件已损坏或不是合法 JSON: " + fileName + ".json");
+            return false;
         }
     }
 
@@ -188,6 +211,11 @@ public class PreBuildingsTreeUtils {
      * @return int[]{xSize, ySize, zSize}，如果文件不存在或出错返回 null
      */
     public static int[] getBuildingDimensions(String fileName) {
+        // 修复(Z)：文件名白名单校验，非法文件名返回 null
+        if (!isValidFileName(fileName)) {
+            return null;
+        }
+
         InputStream inputStream = PreBuildingsTreeUtils.class.getClassLoader().getResourceAsStream("buildings/" + fileName + ".json");
         if (inputStream == null) {
             return null;

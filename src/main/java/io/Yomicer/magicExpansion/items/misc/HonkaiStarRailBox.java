@@ -24,6 +24,9 @@ import static io.Yomicer.magicExpansion.Listener.SlimefunRegistryGiftBox.itemMap
 
 public class HonkaiStarRailBox extends SimpleSlimefunItem<ItemUseHandler> implements NotPlaceable {
 
+    // 修复(M)：Random 改为共享静态实例，避免每次开盒新建 Random
+    private static final Random RANDOM = new Random();
+
     public HonkaiStarRailBox(ItemGroup itemGroup, SlimefunItemStack item, RecipeType recipeType, ItemStack[] recipe) {
         super(itemGroup, item, recipeType, recipe);
     }
@@ -39,7 +42,8 @@ public class HonkaiStarRailBox extends SimpleSlimefunItem<ItemUseHandler> implem
         Collection<SlimefunItem> values = itemMap.values();
         List<SlimefunItem> list = new ArrayList<>(values);
 
-        SlimefunItem randomItem = list.get(new Random().nextInt(list.size()));
+        // 修复(M)：使用共享静态 Random
+        SlimefunItem randomItem = list.get(RANDOM.nextInt(list.size()));
         return randomItem.getItem().clone();
     }
 
@@ -60,13 +64,21 @@ public class HonkaiStarRailBox extends SimpleSlimefunItem<ItemUseHandler> implem
         return (e) -> {
             e.cancel();
             e.getClickedBlock().ifPresent((block) -> {
+                // 修复(M)：先判奖池非空再消耗盲盒，防止奖池为空时吞掉物品
+                ItemStack gift = getRandomItemStack(itemMapMihoyoHonkai);
+                if (gift == null) {
+                    e.getPlayer().sendMessage("§c奖池为空，盲盒未消耗，无法开出物品！");
+                    return;
+                }
+
                 if (e.getPlayer().getGameMode() != GameMode.CREATIVE) {
                     ItemUtils.consumeItem(e.getItem(), false);
                 }
 
                 FireworkUtils.launchRandom(e.getPlayer(), 3);
                 Block b = block.getRelative(e.getClickedFace());
-                spawnRandomItem(b.getLocation(), e.getPlayer());
+                SlimefunUtils.spawnItem(b.getLocation(), gift, ItemSpawnReason.CHRISTMAS_PRESENT_OPENED, true, e.getPlayer());
+                e.getPlayer().sendMessage("§a恭喜你，从打开 Honkai: Star Rail 盲盒中开出了" + gift.getItemMeta().getDisplayName() + "！");
 
             });
         };

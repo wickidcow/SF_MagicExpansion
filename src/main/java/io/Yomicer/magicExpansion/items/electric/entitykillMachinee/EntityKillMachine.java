@@ -75,24 +75,43 @@ public class EntityKillMachine extends SlimefunItem implements EnergyNetComponen
         });
     }
 
+    // F2: 实体扫描节流计数器——每 20 tick 才执行一次 getNearbyEntities(19,19,19) 清除逻辑
+    private int scanTickCounter = 0;
+
     protected void tick(Block block) {
 
         BlockMenu menu = StorageCacheUtils.getMenu(block.getLocation());
-        if(menu != null && menu.hasViewer()) {
-        if (getCharge(block.getLocation()) < getEnergyConsumption()) {
-            //电量不足
-            menu.addItem(13, new CustomItemStack(new ItemStack (Material.GHAST_TEAR), "§c电量不足"),
-                    (p, slot, item, action) -> false);
+
+        // F3: 同一 tick 内的 getCharge 调用合并为一次局部变量，避免重复查询
+        int charge = getCharge(block.getLocation());
+
+        // F1: 电量检查移到 hasViewer() 判断之外——电量不足时无论是否有观察者都不清除实体，
+        // 防止"没人看 UI 就免费清除实体"的漏洞；仅在有观察者时更新 UI 提示
+        if (charge < getEnergyConsumption()) {
+            if (menu != null && menu.hasViewer()) {
+                menu.addItem(13, new CustomItemStack(new ItemStack (Material.GHAST_TEAR), "§c电量不足"),
+                        (p, slot, item, action) -> false);
+            }
             return;
         }
-            //电量不足
+
+        // UI 状态提示仍每 tick 更新（仅有观察者时），复用 F3 的局部变量 charge
+        if (menu != null && menu.hasViewer()) {
             menu.addItem(13, new CustomItemStack(new ItemStack(Material.BLUE_BED), "§b抑制中",
                             "§b类型：§e" + name,
                             "§b耗电速度：§e" + getEnergyConsumption() * 2 + " J/s",
-                            "§b电量存储：§e" + getCharge(block.getLocation()) + " J"),
+                            "§b电量存储：§e" + charge + " J"),
                     (p, slot, item, action) -> false);
 
         }
+
+        // F2: 实体扫描节流——每 20 tick 才执行一次清除逻辑，UI 更新不受影响
+        scanTickCounter++;
+        if (scanTickCounter < 20) {
+            return;
+        }
+        scanTickCounter = 0;
+
         Location center = block.getLocation();
         int radius = 19;
 

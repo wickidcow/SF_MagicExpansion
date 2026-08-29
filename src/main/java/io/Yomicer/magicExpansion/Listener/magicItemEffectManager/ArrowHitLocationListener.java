@@ -6,6 +6,7 @@ import net.guizhanss.guizhanlib.minecraft.helper.entity.EntityHelper;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
+import org.bukkit.block.Block;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -31,7 +32,14 @@ public class ArrowHitLocationListener implements Listener {
             // 获取射出箭的玩家（如果有的话）
             if (arrow.getShooter() instanceof Player player) {
 
-                ItemStack item = player.getInventory().getItemInMainHand().clone();
+                // 修复(W1)：最小改动方案 —— 命中事件里校验主手仍为弓类物品（同类魔法弓）才生效，
+                // 防止射箭后切换手持导致读取到其他物品的属性串用（未采用箭PDC记录方案以减小改动）
+                ItemStack held = player.getInventory().getItemInMainHand();
+                if (held == null || (held.getType() != Material.BOW && held.getType() != Material.CROSSBOW)) {
+                    return;
+                }
+
+                ItemStack item = held.clone();
                 // 获取物品的 PDC
                 ItemMeta meta = item.getItemMeta();
                 if (meta != null && meta.getPersistentDataContainer() != null) {
@@ -82,8 +90,15 @@ public class ArrowHitLocationListener implements Listener {
                     // 将玩家传送到箭的落点位置
                     if (hitLocation != null) {
                         hitLocation.add(0,1,0);
-                        player.teleport(hitLocation);
-                        player.sendMessage("§b你传送到了箭的落点位置");
+                        // 修复(W2)：传送前校验落点上下两格均为空气才传送，不安全则取消并提示玩家（防卡方块/窒息）
+                        Block feet = hitLocation.getBlock();
+                        Block head = hitLocation.clone().add(0, 1, 0).getBlock();
+                        if (feet.getType().isAir() && head.getType().isAir()) {
+                            player.teleport(hitLocation);
+                            player.sendMessage("§b你传送到了箭的落点位置");
+                        } else {
+                            player.sendMessage("§c箭的落点不安全，传送已取消！");
+                        }
                     }
 
 

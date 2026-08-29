@@ -1,6 +1,7 @@
 package io.Yomicer.magicExpansion.Listener;
 
 import io.Yomicer.magicExpansion.MagicExpansionItemSetup;
+import io.Yomicer.magicExpansion.utils.GuideMenuGroups;
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItem;
 import io.Yomicer.magicExpansion.utils.GuideCategoryMenu;
 import io.github.thebusybiscuit.slimefun4.api.player.PlayerProfile;
@@ -22,13 +23,20 @@ import org.bukkit.inventory.ItemStack;
  */
 public class GuideVirtualGroupClickListener implements Listener {
 
-    /** 兜底拦截:即使原生点击处理先打开了容器组物品页,打开瞬间也会被替换为自绘三级菜单 */
+    /**
+     * 兜底拦截:即使原生点击处理先打开了容器组物品页,打开瞬间也会被替换为自绘三级菜单。
+     * 收窄修复:仅当界面标题为容器组页面(标题 = 容器组显示名)时才劫持——
+     * 排除 JEG 搜索结果页等无关界面,防止搜索结果里出现"xxx · 入口"占位物品
+     * (名字含组名, 会被"鱼"等关键词搜索命中)时,翻页打开新界面被误劫持跳转到虚拟菜单。
+     */
     @EventHandler(priority = EventPriority.LOWEST)
     public void onOpen(InventoryOpenEvent e) {
         if (!(e.getPlayer() instanceof Player player)) return;
         Inventory inv = e.getInventory();
         String vid = findVirtualId(inv);
         if (vid == null) return;
+        // 收窄:非容器组页面的界面(如搜索结果页)不劫持,原样放行
+        if (!GuideMenuGroups.isContainerGroupPageTitle(e.getView().getTitle())) return;
         e.setCancelled(true);
         openVirtualMenu(player, vid);
     }

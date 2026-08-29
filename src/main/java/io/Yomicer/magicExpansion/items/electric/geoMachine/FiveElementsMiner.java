@@ -30,6 +30,7 @@ import me.mrCookieSlime.Slimefun.Objects.handlers.BlockTicker;
 import me.mrCookieSlime.Slimefun.api.inventory.BlockMenu;
 import me.mrCookieSlime.Slimefun.api.inventory.BlockMenuPreset;
 import me.mrCookieSlime.Slimefun.api.item_transport.ItemTransportFlow;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.block.Block;
@@ -43,7 +44,9 @@ import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.OptionalInt;
 
 import static io.Yomicer.magicExpansion.core.MagicExpansionItems.*;
@@ -188,17 +191,52 @@ public class FiveElementsMiner extends AContainer implements RecipeDisplayItem ,
     }
 
 
+    // ==================== B1 性能修复：区块资源数据缓存 ====================
+    // 原实现每 tick 都发起一次 getChunkDataAsync 异步查询；现按 "世界UUID:区块Key" 缓存
+    // "区块是否有数据" 的结果，约每 100 tick（5 秒）才重新查询一次，大幅降低 IO 与调度开销。
+    private static final long CHUNK_CACHE_TTL_MS = 5000; // 缓存刷新间隔 ≈ 100 tick
+    // 使用 ConcurrentHashMap：异步 tick 线程读取、主线程回调写入
+    private final Map<String, ChunkCache> chunkDataCache = new java.util.concurrent.ConcurrentHashMap<>();
+
+    // 区块数据缓存条目：是否有数据 + 过期时间
+    private static final class ChunkCache {
+        final boolean hasData;
+        final long expireAt;
+
+        ChunkCache(boolean hasData, long expireAt) {
+            this.hasData = hasData;
+            this.expireAt = expireAt;
+        }
+    }
+
     protected void tick(Block b) {
+        // B1: 先查缓存，命中且未过期则不再发起异步查询
+        String cacheKey = b.getWorld().getUID() + ":" + b.getChunk().getChunkKey();
+        long now = System.currentTimeMillis();
+        ChunkCache cached = chunkDataCache.get(cacheKey);
+        if (cached != null && now < cached.expireAt) {
+            if (cached.hasData) {
+                // B2 修复：缓存命中路径同样只做判断与标记，startTick 调度回主线程执行
+                Bukkit.getScheduler().runTask(MagicExpansion.getInstance(), () -> startTick(b));
+            } else {
+                updateHologram(b, "&4需要先进行地形扫描!");
+            }
+            return;
+        }
 
         Slimefun.getDatabaseManager()
                 .getBlockDataController()
                 .getChunkDataAsync(b.getChunk(), new IAsyncReadCallback<>() {
                     @Override
                     public void onResult(SlimefunChunkData result) {
-                        if (result.getAllData().isEmpty()) {
+                        // B2 修复：异步回调中只做判断与缓存标记，不再直接操作 BlockMenu
+                        boolean hasData = !result.getAllData().isEmpty();
+                        chunkDataCache.put(cacheKey, new ChunkCache(hasData, System.currentTimeMillis() + CHUNK_CACHE_TTL_MS));
+                        if (!hasData) {
                             updateHologram(b, "&4需要先进行地形扫描!");
-                        }else{
-                            startTick(b);
+                        } else {
+                            // B2 修复：操作 BlockMenu 的 startTick 通过 runTask 调度回主线程
+                            Bukkit.getScheduler().runTask(MagicExpansion.getInstance(), () -> startTick(b));
                         }
                     }
                 });
@@ -206,6 +244,10 @@ public class FiveElementsMiner extends AContainer implements RecipeDisplayItem ,
 
     private void startTick(Block b){
         BlockMenu inv = StorageCacheUtils.getMenu(b.getLocation());
+        // B3 修复：区块加载时序窗口内可能取不到菜单，判空防御后再使用
+        if (inv == null) {
+            return;
+        }
         CraftingOperation currentOperation = processor.getOperation(b);
 
         if (currentOperation != null) {
@@ -296,9 +338,12 @@ public class FiveElementsMiner extends AContainer implements RecipeDisplayItem ,
                     return recipe;
                 } else {
                     // 资源不足，把空桶之类的东西移到输出槽，避免重复尝试（防卡顿）
+                    // B4 修复：pushItem 前先用 fits 检查输出槽是否放得下，放不下则把材料放回原输入槽，绝不丢弃
                     ItemStack item = itemInSlot.clone();
-                    inv.replaceExistingItem(slot, null);
-                    inv.pushItem(item, getOutputSlots());
+                    if (inv.fits(item, getOutputSlots())) {
+                        inv.replaceExistingItem(slot, null);
+                        inv.pushItem(item, getOutputSlots());
+                    }
                     this.updateHologram(b, resourceType.getName()+ "&7 开采完成");
                     return null;
                 }

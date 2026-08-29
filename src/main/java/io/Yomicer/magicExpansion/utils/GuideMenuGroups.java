@@ -31,6 +31,7 @@ public final class GuideMenuGroups {
     private static final Map<String, VirtualGuideGroup> ANCHORS = new LinkedHashMap<>();
     private static final Map<String, List<ItemGroup>> CHILDREN = new LinkedHashMap<>();
     private static final Map<String, String> NAMES = new LinkedHashMap<>();
+    private static final Map<String, String> PARENT = new LinkedHashMap<>();
     private static final List<ItemGroup> TOP_LEVEL = new ArrayList<>();
     private static final List<SubItemGroup> TOP_LEVEL_CONTAINERS = new ArrayList<>();
     private static HiddenNestedItemGroup hiddenContainer;
@@ -208,15 +209,15 @@ public final class GuideMenuGroups {
     }
 
     /** 注册平铺组(parentId 为 null 时是一级平铺组, 直接进四级物品列表页) */
-    private static SubItemGroup flat(String parentId, String id, ItemStack icon) {
+    private static void flat(String parentId, String id, ItemStack icon) {
         SubItemGroup group = createGroup(id, icon, 0);
         GROUPS.put(id, group);
         if (parentId == null) {
             TOP_LEVEL.add(group);
         } else {
             children(parentId).add(group);
+            PARENT.put(id, parentId); // 记录父容器: 四级物品列表页确定性返回时反查上级
         }
-        return group;
     }
 
     private static SubItemGroup createGroup(String id, ItemStack icon, int tier) {
@@ -230,6 +231,14 @@ public final class GuideMenuGroups {
     /** 按 id 取分组对象(供物品注册代码引用) */
     public static SubItemGroup get(String id) {
         return GROUPS.get(id);
+    }
+
+    /**
+     * 反查平铺组(四级物品列表页)的父容器 id, 作为确定性返回目标。
+     * 返回 null 表示该平铺组是一级平铺组(如魔法锻造), 上级即魔法2.0 一级菜单。
+     */
+    public static String getParentContainerId(String flatId) {
+        return PARENT.get(flatId);
     }
 
     /** 取容器组的历史锚点 */
@@ -262,9 +271,31 @@ public final class GuideMenuGroups {
                     new CustomItemStack(Material.PAPER,
                             ColorGradient.getGradientName(name + " · 入口"),
                             ColorGradient.getGradientName("点击查看子分类")));
-            new UnplaceableBlock(group, placeholder, RecipeType.NULL,
-                    new ItemStack[]{null, null, null, null, null, null, null, null, null})
-                    .register(plugin);
+            UnplaceableBlock entry = new UnplaceableBlock(group, placeholder, RecipeType.NULL,
+                    new ItemStack[]{null, null, null, null, null, null, null, null, null});
+            entry.register(plugin);
+            // 搜索误命中修复: 占位物品显示名含组名(如"钓鱼佬 · 入口"), 会被"鱼"等关键词搜索命中,
+            // 出现在搜索结果页后触发虚拟组监听器的 onOpen 兜底劫持, 导致界面跳转。
+            // setHidden 使其从指南与搜索中排除(点击拦截由 onClick 主路径负责, 不受影响)
+            entry.setHidden(true);
         }
+    }
+
+    /**
+     * 判断界面标题是否为某容器组的原生物品列表页(标题 = 容器组显示名, 忽略颜色码)。
+     * 供虚拟组点击监听器收窄 onOpen 劫持范围: 只劫持"原生打开容器组页面"的场景,
+     * 排除 JEG 搜索结果页(标题为"你正在搜索: xxx")等无关界面,
+     * 防止搜索结果中出现 VIRTUAL_ENTRY 占位物品(名字含组名, 可被搜索命中)时被误劫持跳转。
+     */
+    public static boolean isContainerGroupPageTitle(String title) {
+        if (title == null) return false;
+        String stripped = ChatColor.stripColor(title).trim();
+        if (stripped.isEmpty()) return false;
+        for (String name : NAMES.values()) {
+            if (stripped.equals(ChatColor.stripColor(name).trim())) {
+                return true;
+            }
+        }
+        return false;
     }
 }

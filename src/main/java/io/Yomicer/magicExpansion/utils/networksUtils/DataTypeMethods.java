@@ -1,7 +1,6 @@
 package io.Yomicer.magicExpansion.utils.networksUtils;
 
 import io.github.thebusybiscuit.slimefun4.libraries.dough.data.persistent.PersistentDataAPI;
-import lombok.experimental.UtilityClass;
 import org.bukkit.NamespacedKey;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataHolder;
@@ -11,8 +10,14 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 
-@UtilityClass
-public class DataTypeMethods {
+/**
+ * PDC 数据读写工具类（原 Lombok @UtilityClass 改为手工实现：final 类 + 私有构造，禁止实例化）
+ */
+public final class DataTypeMethods {
+
+    // 私有构造器：工具类不允许创建实例
+    private DataTypeMethods() {
+    }
 
     /**
      * Get an object based on the provided {@link PersistentDataType} in a {@link PersistentDataContainer}, if the key doesn't exist it returns null.

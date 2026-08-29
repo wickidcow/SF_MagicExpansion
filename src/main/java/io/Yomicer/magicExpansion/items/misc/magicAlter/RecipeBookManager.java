@@ -18,15 +18,23 @@ import org.bukkit.persistence.PersistentDataType;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class RecipeBookManager {
 
     private final MagicExpansion plugin;
-    private final HashMap<UUID, String> currentRecipeIds;
+    // 修复：改为 static ConcurrentHashMap，支持静态 cleanup 清理离线玩家会话数据
+    private static final ConcurrentHashMap<UUID, String> currentRecipeIds = new ConcurrentHashMap<>();
 
     public RecipeBookManager(MagicExpansion plugin) {
         this.plugin = plugin;
-        this.currentRecipeIds = new HashMap<>();
+    }
+
+    /**
+     * 修复：玩家退出时清理该玩家的当前配方ID记录，防止内存泄漏
+     */
+    public static void cleanup(UUID uuid) {
+        currentRecipeIds.remove(uuid);
     }
 
     // 创建配方书物品
@@ -110,18 +118,8 @@ public class RecipeBookManager {
 
     // 计算真实数量的方法
     private int calculateRealAmount(ItemStack item) {
-        int totalAmount = item.getAmount(); // 这就是原始总数量
-        int maxStackSize = 64;
-        int realAmount = 0;
-
-        // 模拟 dropItemInBatches 的分批逻辑，累加每一批的数量
-        while (totalAmount > 0) {
-            int batchSize = Math.min(totalAmount, maxStackSize);
-            realAmount += batchSize;      // 累加这一批
-            totalAmount -= batchSize;     // 减去已处理的
-        }
-
-        return realAmount;
+        // 修复：原分批模拟循环只是把 amount 重复累加一遍，结果恒等于 item.getAmount()，直接返回消除冗余
+        return item.getAmount();
     }
 
     // 打开配方详情界面

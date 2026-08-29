@@ -24,6 +24,11 @@ public class FishModeCommand implements CommandExecutor {
     @Override
     public boolean onCommand(@Nonnull CommandSender sender, @Nonnull Command command,
                              @Nonnull String label, @Nonnull String[] args) {
+        // 【A修复】权限检查：控制台(ConsoleCommandSender)等非玩家发送者直接允许；玩家需拥有 magicexpansion.fishmode 权限
+        if ((sender instanceof Player) && !sender.hasPermission("magicexpansion.fishmode")) {
+            sender.sendMessage("§c你没有权限使用此命令！(需要 magicexpansion.fishmode)");
+            return true;
+        }
         if (args.length != 1) {
             sender.sendMessage("§e用法: /mxfishmode <true|false>");
             sender.sendMessage("§7true  = 开启水云间新钓鱼系统(状态机判定)");

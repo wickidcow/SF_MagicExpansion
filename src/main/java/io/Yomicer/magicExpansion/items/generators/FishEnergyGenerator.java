@@ -126,8 +126,9 @@ public class FishEnergyGenerator extends MenuBlock implements EnergyNetProvider,
         ItemMeta meta = null;
         if (inv != null) {
             fish = inv.getItemInSlot(13);
-            if (fish != null && !fish.getType().isAir()) {
-                fish = fish.clone();
+            // I 修复：只读场景不再每 tick clone 一份鱼物品，直接对原物品读取 meta
+            if (fish != null && fish.getType().isAir()) {
+                fish = null;
             }
         }
         if(fish != null) {
@@ -158,7 +159,14 @@ public class FishEnergyGenerator extends MenuBlock implements EnergyNetProvider,
                 Integer basePower = FISH_POWER_MAP.get(fishType);
                 if (basePower != null) {
                     double multiplier = Fish.WeightRarity.getMultiplierByName(weightRarityName);
-                    gen = (int) (basePower * weight * multiplier);
+                    // I 修复：用 long 计算后钳制到 [0, Integer.MAX_VALUE]，避免 double→int 直接强转溢出为负数
+                    long genLong = (long) (basePower * weight * multiplier);
+                    if (genLong < 0) {
+                        genLong = 0;
+                    } else if (genLong > Integer.MAX_VALUE) {
+                        genLong = Integer.MAX_VALUE;
+                    }
+                    gen = (int) genLong;
                 }
             }
         }

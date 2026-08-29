@@ -18,13 +18,15 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
 import java.util.Random;
+import java.util.UUID;
 
 import static io.Yomicer.magicExpansion.items.enchantMachine.EnchantingTable.ATTRIBUTE_POOL;
 import static io.Yomicer.magicExpansion.utils.ItemPermissionUtils.hasPermissionOnAttack;
 
 public class ItemEffectAttackListener implements Listener {
 
-    @EventHandler
+    // 修复(X1)：增加 ignoreCancelled = true，已取消的攻击事件（如无敌区域保护）不再重复触发效果
+    @EventHandler(ignoreCancelled = true)
     public void onPlayerAttack(EntityDamageByEntityEvent event) {
         if (event.getDamager() instanceof Player) {
             Player player = (Player) event.getDamager();
@@ -57,9 +59,7 @@ public class ItemEffectAttackListener implements Listener {
         switch (attribute) {
             case "MagicExpansion.Knockback": // 击退效果
                 if (value instanceof Integer knockbackStrength) {
-                    Location location = livingTarget.getLocation();
-                    location.setY(location.getY() + knockbackStrength*2);
-                    livingTarget.teleport(location);
+                    // 修复(X3)：去掉 teleport 抬升目标的实现（会造成瞬移闪烁/异步不安全），仅保留 setVelocity 击退
                     double knockbackStrengthDouble = (double) knockbackStrength;
                     Vector velocity = calculateKnockbackVelocity(livingTarget, knockbackStrengthDouble);
 
@@ -85,6 +85,10 @@ public class ItemEffectAttackListener implements Listener {
                 if (value instanceof Boolean attractionEnabled && attractionEnabled) {
                     Location targetLoc = target.getLocation();
                     Location playerLoc = player.getLocation();
+                    // 修复(X2)：距离 < 0.5 时跳过 —— 过近距离下 normalize 归一化会产生 NaN 速度，导致客户端异常踢人
+                    if (targetLoc.distance(playerLoc) < 0.5) {
+                        break;
+                    }
                     target.setVelocity(playerLoc.toVector().subtract(targetLoc.toVector()).normalize().multiply(2));
                 }
                 break;
@@ -160,6 +164,14 @@ public class ItemEffectAttackListener implements Listener {
 
         // 发送消息给玩家
         player.sendMessage("§b你与目标的位置已互换！");
+    }
+
+    /**
+     * 修复(X4)：玩家退出清理接口 —— 本类当前无 per-player 静态 Map，
+     * 保留空实现供 PlayerCleanupListener 统一调用（未来新增会话数据时在此清理）
+     */
+    public static void cleanup(UUID uuid) {
+        // 当前无 per-player 状态需要清理
     }
 
 }

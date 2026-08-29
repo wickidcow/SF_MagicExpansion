@@ -6,16 +6,22 @@ import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItem;
 import io.github.thebusybiscuit.slimefun4.implementation.Slimefun;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static io.Yomicer.magicExpansion.core.MagicExpansionItems.*;
 
 public class BlackMarketManager {
 
-    private static final Map<UUID, List<BlackMarketTrade>> playerTrades = new HashMap<>();
+    // 修复：改为 ConcurrentHashMap（异步/并发访问保护）
+    private static final Map<UUID, List<BlackMarketTrade>> playerTrades = new ConcurrentHashMap<>();
     private static long lastRefreshTime = 0;
     private static final long REFRESH_INTERVAL = 4 * 60 * 60 * 1000L; // 4小时(毫秒)
 
@@ -32,8 +38,13 @@ public class BlackMarketManager {
     // 消耗物池
     private static List<ItemStack> costItemPool = new ArrayList<>();
 
-    private static Map<UUID, Set<Integer>> dailyPurchases = new HashMap<>();
-    private static Map<UUID, Set<Integer>> revealedSlots = new HashMap<>();
+    // 修复：改为 ConcurrentHashMap（每日已购记录需并发访问），并支持持久化
+    private static final Map<UUID, Set<Integer>> dailyPurchases = new ConcurrentHashMap<>();
+    // 修复：改为 ConcurrentHashMap
+    private static final Map<UUID, Set<Integer>> revealedSlots = new ConcurrentHashMap<>();
+
+    // 修复：每日已购数据持久化文件（blackmarket_data.yml），重启后不丢失限购记录
+    private static File dataFile;
 
     public static class BlackMarketTrade {
         public ItemStack result;
@@ -49,6 +60,10 @@ public class BlackMarketManager {
         costItemPool.clear();
 
         MagicExpansion.getInstance().getLogger().info("正在初始化黑市物品池...");
+
+        // 修复：初始化持久化文件并加载已保存的每日限购数据
+        dataFile = new File(MagicExpansion.getInstance().getDataFolder(), "blackmarket_data.yml");
+        loadPurchasesData();
 
         simpleRewardPool.add(new ItemStack(Material.IRON_BLOCK));
         simpleRewardPool.add(new ItemStack(Material.GOLD_BLOCK));
@@ -256,6 +271,65 @@ public class BlackMarketManager {
         lastRefreshTime = System.currentTimeMillis();
         dailyPurchases.clear();
         revealedSlots.clear();
+        // 修复：强制刷新时清空持久化数据文件内容（已购记录随刷新作废）
+        clearDataFile();
+    }
+
+    /**
+     * 修复：每日已购数据持久化 —— 保存 dailyPurchases（uuid -> 已购索引列表）与刷新时间
+     */
+    private static void savePurchasesData() {
+        if (dataFile == null) return;
+        try {
+            YamlConfiguration yml = new YamlConfiguration();
+            yml.set("lastRefreshTime", lastRefreshTime);
+            for (Map.Entry<UUID, Set<Integer>> entry : dailyPurchases.entrySet()) {
+                yml.set("dailyPurchases." + entry.getKey(), new ArrayList<>(entry.getValue()));
+            }
+            yml.save(dataFile);
+        } catch (IOException e) {
+            MagicExpansion.getInstance().getLogger().warning("黑市每日限购数据保存失败: " + e.getMessage());
+        }
+    }
+
+    /**
+     * 修复：初始化时从 blackmarket_data.yml 加载每日限购数据
+     */
+    private static void loadPurchasesData() {
+        if (dataFile == null || !dataFile.exists()) return;
+        try {
+            YamlConfiguration yml = YamlConfiguration.loadConfiguration(dataFile);
+            // 恢复上次刷新时间，保证重启后刷新周期连续
+            long savedTime = yml.getLong("lastRefreshTime", 0L);
+            if (savedTime > 0) {
+                lastRefreshTime = savedTime;
+            }
+            ConfigurationSection sec = yml.getConfigurationSection("dailyPurchases");
+            if (sec == null) return;
+            for (String key : sec.getKeys(false)) {
+                try {
+                    UUID uuid = UUID.fromString(key);
+                    List<Integer> indexes = sec.getIntegerList(key);
+                    dailyPurchases.computeIfAbsent(uuid, k -> ConcurrentHashMap.newKeySet()).addAll(indexes);
+                } catch (IllegalArgumentException ignored) {
+                    // 非法 UUID 跳过
+                }
+            }
+        } catch (Throwable t) {
+            MagicExpansion.getInstance().getLogger().warning("黑市每日限购数据加载失败: " + t.getMessage());
+        }
+    }
+
+    /**
+     * 修复：清空数据文件内容（写入空配置）
+     */
+    private static void clearDataFile() {
+        if (dataFile == null) return;
+        try {
+            new YamlConfiguration().save(dataFile);
+        } catch (IOException e) {
+            MagicExpansion.getInstance().getLogger().warning("黑市数据文件清空失败: " + e.getMessage());
+        }
     }
 
     public static String getTimeRemaining() {
@@ -379,7 +453,9 @@ public class BlackMarketManager {
     }
 
     public static void recordPurchase(UUID uuid, int index) {
-        dailyPurchases.computeIfAbsent(uuid, k -> new HashSet<>()).add(index);
+        dailyPurchases.computeIfAbsent(uuid, k -> ConcurrentHashMap.newKeySet()).add(index);
+        // 修复：购买后立即写盘持久化，防止重启后限购记录丢失
+        savePurchasesData();
     }
 
     public static boolean isRevealed(UUID uuid, int index) {
@@ -387,6 +463,15 @@ public class BlackMarketManager {
     }
 
     public static void reveal(UUID uuid, int index) {
-        revealedSlots.computeIfAbsent(uuid, k -> new HashSet<>()).add(index);
+        revealedSlots.computeIfAbsent(uuid, k -> ConcurrentHashMap.newKeySet()).add(index);
+    }
+
+    /**
+     * 修复：玩家退出时清理该玩家的黑市会话数据，防止内存泄漏
+     */
+    public static void cleanup(UUID uuid) {
+        playerTrades.remove(uuid);
+        dailyPurchases.remove(uuid);
+        revealedSlots.remove(uuid);
     }
 }

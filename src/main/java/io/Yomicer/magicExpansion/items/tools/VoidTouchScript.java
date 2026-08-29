@@ -6,7 +6,9 @@ import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItemStack;
 import io.github.thebusybiscuit.slimefun4.api.recipes.RecipeType;
 import io.github.thebusybiscuit.slimefun4.core.attributes.NotPlaceable;
 import io.github.thebusybiscuit.slimefun4.core.handlers.ItemUseHandler;
+import io.github.thebusybiscuit.slimefun4.implementation.Slimefun; // 【D修复】领地保护检查所需（照抄项目内现有用法）
 import io.github.thebusybiscuit.slimefun4.implementation.items.SimpleSlimefunItem;
+import io.github.thebusybiscuit.slimefun4.libraries.dough.protection.Interaction; // 【D修复】领地交互动作枚举
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -48,6 +50,8 @@ public class VoidTouchScript extends SimpleSlimefunItem<ItemUseHandler> implemen
             if (e.getHand() != EquipmentSlot.HAND) {
                 return;
             }
+            // 【D修复】补充调用 hasPermissionRe 基础权限判断（原代码已 static import 但未调用，与 VoidTouch 保持一致）
+            if (!hasPermissionRe(player)) return;
 
             ItemStack item = e.getItem();
             ItemMeta meta = item.getItemMeta();
@@ -111,6 +115,11 @@ public class VoidTouchScript extends SimpleSlimefunItem<ItemUseHandler> implemen
                     if (distance > 250) {
                         player.sendMessage("⚠️ 目标位置距离过远（超过 100坤 方块），无法交互！");
                         player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1.0f, 1.0f);
+                        return;
+                    }
+                    // 【D修复】远程交互前检查目标方块领地保护权限（照抄项目内 getProtectionManager 现有写法），无权限则提示并终止
+                    if (!Slimefun.getProtectionManager().hasPermission(player, targetLoc, Interaction.INTERACT_BLOCK)) {
+                        player.sendMessage("§c你没有权限与该位置的方块交互！");
                         return;
                     }
                     Block targetBlock = targetLoc.getBlock();

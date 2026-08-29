@@ -45,6 +45,9 @@ import java.util.Set;
  */
 public class PlayerFishingWaterCloudListener implements Listener {
 
+    // D(C5): 共享静态随机数实例，避免每次钓获都新建 Random
+    private static final Random RANDOM = new Random();
+
     public PlayerFishingWaterCloudListener() {
         // 蓄满自动收竿回调: 由新系统管理器触发
         WaterCloudHookManager.setAutoReelHandler(this::onAutoReel);
@@ -244,7 +247,7 @@ public class PlayerFishingWaterCloudListener implements Listener {
             return;
         }
         int rodLevel = WaterCloudRodProficiency.getLevel(rod);
-        Random random = new Random();
+        Random random = RANDOM; // D(C5): 改用共享随机数实例
 
         // 4. 钓获(旧版杂物降低: 池中原版物品=杂物, 权重削减)
         ItemStack drop = getCaughtDrop(player, fishingRod, activeLure, rodLevel, true);
@@ -306,7 +309,7 @@ public class PlayerFishingWaterCloudListener implements Listener {
     private void processCatch(Player player, FishingRodWaterCloud fishingRod, Location hookLocation, boolean fullCharge) {
         Set<String> supportedKeys = fishingRod.getLootTable().keySet();
         int rodLevel = WaterCloudRodProficiency.getLevel(player.getInventory().getItemInMainHand());
-        Random random = new Random();
+        Random random = RANDOM; // D(C5): 改用共享随机数实例
 
         // 1. 锁定鱼饵(袋优先只读探测; 消耗延后, 袋子中途丢失不影响本次鱼获池)
         String bagKey = BaitBagMenu.peekFromBag(player, supportedKeys);
@@ -455,8 +458,15 @@ public class PlayerFishingWaterCloudListener implements Listener {
     }
 
     private ItemStack getRandomItemFromWeightedPool(List<WeightedItem> pool) {
+        // D(C2): 池为空或总权重 <= 0 时返回 null，防止 nextInt(0) 抛异常（调用方均已有 null 兜底）
+        if (pool == null || pool.isEmpty()) {
+            return null;
+        }
         int total = pool.stream().mapToInt(WeightedItem::getWeight).sum();
-        int r = new Random().nextInt(total), current = 0;
+        if (total <= 0) {
+            return null;
+        }
+        int r = RANDOM.nextInt(total), current = 0; // D(C5): 改用共享随机数实例
         for (WeightedItem w : pool) if ((current += w.getWeight()) > r) return w.getItem().clone();
         return pool.get(0).getItem().clone();
     }
@@ -514,11 +524,13 @@ public class PlayerFishingWaterCloudListener implements Listener {
             if (item != null && SlimefunUtils.isItemSimilar(item, requiredItem, true)) {
                 if (item.getAmount() > 1) {
                     item.setAmount(item.getAmount() - 1);
-                    String prefix = SHUIYUNJIAN_CONSUME_PHRASES.get(new Random().nextInt(SHUIYUNJIAN_CONSUME_PHRASES.size()));
+                    // D(C5): 改用共享随机数实例
+                    String prefix = SHUIYUNJIAN_CONSUME_PHRASES.get(RANDOM.nextInt(SHUIYUNJIAN_CONSUME_PHRASES.size()));
                     player.sendMessage(ColorGradient.getRandomGradientName(prefix) + " §r" + ItemStackHelper.getDisplayName(item) + ColorGradient.getRandomGradientName(" ！"));
                 } else {
                     inv.setItem(i, null);
-                    String suffix = SHUIYUNJIAN_LAST_PHRASES.get(new Random().nextInt(SHUIYUNJIAN_LAST_PHRASES.size()));
+                    // D(C5): 改用共享随机数实例
+                    String suffix = SHUIYUNJIAN_LAST_PHRASES.get(RANDOM.nextInt(SHUIYUNJIAN_LAST_PHRASES.size()));
                     player.sendMessage(ItemStackHelper.getDisplayName(item) + ColorGradient.getRandomGradientName(suffix));
                 }
                 player.updateInventory();
@@ -533,7 +545,8 @@ public class PlayerFishingWaterCloudListener implements Listener {
     private void handleNormalCatch(Player player, ItemStack drop) {
         // 原版获得经验音效
         player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f);
-        String message = SHUIYUNJIAN_PHRASES.get(new Random().nextInt(SHUIYUNJIAN_PHRASES.size()));
+        // D(C5): 改用共享随机数实例
+        String message = SHUIYUNJIAN_PHRASES.get(RANDOM.nextInt(SHUIYUNJIAN_PHRASES.size()));
         player.sendMessage(ColorGradient.getRandomGradientName(message) + " §r" + ItemStackHelper.getDisplayName(drop) + ColorGradient.getRandomGradientName(" ！！"));
     }
 
@@ -627,7 +640,8 @@ public class PlayerFishingWaterCloudListener implements Listener {
         player.playSound(player.getLocation(), Sound.BLOCK_END_PORTAL_SPAWN, 1.0f, 1.0f);
         // 从玩家脚底发射一枚无伤害的庆祝烟花
         spawnCelebrationFirework(player);
-        String message = SHUIYUNJIAN_SPECIAL_PHRASES.get(new Random().nextInt(SHUIYUNJIAN_SPECIAL_PHRASES.size()));
+        // D(C5): 改用共享随机数实例
+        String message = SHUIYUNJIAN_SPECIAL_PHRASES.get(RANDOM.nextInt(SHUIYUNJIAN_SPECIAL_PHRASES.size()));
         player.sendMessage(ColorGradient.getRandomGradientName(message) + " §r" + ItemStackHelper.getDisplayName(drop) + ColorGradient.getRandomGradientName(" ！！"));
     }
 

@@ -11,6 +11,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class MagicAltarCommand implements TabExecutor {
 
@@ -35,7 +36,11 @@ public class MagicAltarCommand implements TabExecutor {
         }
 
         if (args[0].equalsIgnoreCase("wand") && player.hasPermission("mxwand.wand")) {
-            player.getInventory().addItem(createAltarWand());
+            // 修复(N)：addItem 返回剩余物品时掉落地面，背包满不吞物品
+            Map<Integer, ItemStack> overflow = player.getInventory().addItem(createAltarWand());
+            for (ItemStack rest : overflow.values()) {
+                player.getWorld().dropItemNaturally(player.getLocation(), rest);
+            }
             player.sendMessage("§a已获得魔法祭坛法杖!");
             return true;
         }

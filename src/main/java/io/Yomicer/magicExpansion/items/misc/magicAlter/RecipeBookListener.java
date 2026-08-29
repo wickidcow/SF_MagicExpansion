@@ -5,6 +5,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.block.Action; // 【E修复】用于判定右键动作类型
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
@@ -62,7 +63,10 @@ public class RecipeBookListener implements Listener {
 
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent event) {
+        // 【E修复】仅处理主手(HAND)的右键操作；左键挖掘/攻击、副手等其他情况直接放行，不取消事件
         if (event.getHand() != EquipmentSlot.HAND) return;
+        Action action = event.getAction();
+        if (action != Action.RIGHT_CLICK_AIR && action != Action.RIGHT_CLICK_BLOCK) return;
 
         Player player = event.getPlayer();
 

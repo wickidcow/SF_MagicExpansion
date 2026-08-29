@@ -53,20 +53,32 @@ public class RandomBoxMachine extends AbstractElectricRecipeMachine {
 
     }
 
+    // E2: 开盒节流计数器——每 10 tick 最多执行一次开盒逻辑，避免每 tick 高频开盒
+    private int openBoxTickCounter = 0;
+
     @Override
     public void tick(BlockMenu menu, Block b) {
 
+        // E2: 节流——每 10 tick 最多开 1 盒
+        openBoxTickCounter++;
+        if (openBoxTickCounter < 10) {
+            return;
+        }
+        openBoxTickCounter = 0;
+
+        // E1: 电力检查——电量不足(或未配置耗电)时本 tick 不工作，防止无耗电产出
+        if (!takeCharge(b.getLocation())) {
+            return;
+        }
+
         int slot = containsTargetItem(menu, MagicExpansionItems.HONKAI_STAR_RAIL_BOX);
-        int slot2 = containsTargetItem(menu, MagicExpansionItems.HONKAI_STAR_RAIL_BOX);
+        // E3: 删除复制粘贴产生的死分支——原第二个 containsTargetItem 查询的仍是同一种盒子
+        // (HONKAI_STAR_RAIL_BOX)，类与 MagicExpansionItems 中均不存在第二种盒子常量，
+        // else if 分支永远不可达，故整体移除
         if(slot!=-1){
             ItemStack gift = getRandomItemFromGroup.getRandomItemStack(itemMapMihoyoHonkai);
             if (gift != null && menu.fits(gift, getOutputSlots())) {
                 craft(gift, menu, slot);
-            }
-        }else if (slot2 != -1){
-            ItemStack gift = getRandomItemFromGroup.getRandomItemStack(itemMapMihoyoHonkai);
-            if (gift != null && menu.fits(gift, getOutputSlots())) {
-                craft(gift, menu, slot2);
             }
         }
 

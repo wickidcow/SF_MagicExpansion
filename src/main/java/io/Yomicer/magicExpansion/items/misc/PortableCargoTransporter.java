@@ -365,11 +365,15 @@ public class PortableCargoTransporter extends SlimefunItem implements Listener {
         ItemStack singleItem = item.clone();
         singleItem.setAmount(1);
 
+        // 修复(V)：统一使用 getStorageContents() 主存储区（36格）进行填充循环与空间计算，
+        // 原getSize()为41格（含盔甲槽/副手索引），存在物品被写入盔甲槽的风险
+        ItemStack[] storage = player.getInventory().getStorageContents();
+
         // 先填充已有物品的槽位
-        for (int i = 0; i < player.getInventory().getSize(); i++) {
+        for (int i = 0; i < storage.length; i++) {
             if (totalGiven >= maxAmount) break;
 
-            ItemStack slotItem = player.getInventory().getItem(i);
+            ItemStack slotItem = storage[i];
             if (slotItem != null && !slotItem.getType().isAir() &&
                     SlimefunUtils.isItemSimilar(slotItem, singleItem, true) &&
                     slotItem.getAmount() < slotItem.getMaxStackSize()) {
@@ -378,15 +382,16 @@ public class PortableCargoTransporter extends SlimefunItem implements Listener {
                 int toAdd = Math.min(space, maxAmount - totalGiven);
 
                 slotItem.setAmount(slotItem.getAmount() + toAdd);
+                player.getInventory().setItem(i, slotItem); // 修复(V)：显式写回主存储区槽位
                 totalGiven += toAdd;
             }
         }
 
         // 再填充空槽位
-        for (int i = 0; i < player.getInventory().getSize(); i++) {
+        for (int i = 0; i < storage.length; i++) {
             if (totalGiven >= maxAmount) break;
 
-            ItemStack slotItem = player.getInventory().getItem(i);
+            ItemStack slotItem = storage[i];
             if (slotItem == null || slotItem.getType().isAir()) {
                 int toAdd = Math.min(item.getMaxStackSize(), maxAmount - totalGiven);
 

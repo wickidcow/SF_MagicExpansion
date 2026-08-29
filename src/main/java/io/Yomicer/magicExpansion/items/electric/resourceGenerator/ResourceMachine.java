@@ -67,6 +67,9 @@ public class ResourceMachine extends AbstractElectricResourceMachine {
 
         if (maxedSlots == getOutputSlots().length) { return null; }
 
+        // L1 修复：配方列表为空时直接返回 null，避免 recipes.get(0) 抛 IndexOutOfBoundsException
+        if (recipes == null || recipes.isEmpty()) { return null; }
+
         MachineRecipe recipe = recipes.get(0);
 
         return recipe;

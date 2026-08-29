@@ -27,6 +27,20 @@ public class QuickMachineUtils {
     public static boolean consumeMaterials(Player player, Map<String, Integer> recipe, int amount) {
         PlayerInventory inventory = player.getInventory();
 
+        // D2: 消耗材料原子化——先深克隆背包存储内容作为快照，
+        // 中途移除失败时按快照整体回滚，保证材料不凭空丢失
+        ItemStack[] storageSnapshot = inventory.getStorageContents();
+        ItemStack[] snapshotCopy = new ItemStack[storageSnapshot.length];
+        for (int i = 0; i < storageSnapshot.length; i++) {
+            snapshotCopy[i] = storageSnapshot[i] == null ? null : storageSnapshot[i].clone();
+        }
+
+        // D2: 第一步——整体预检所有材料是否足够，不足直接失败且不修改背包
+        if (!hasEnoughMaterials(getPlayerInventoryItems(player), recipe, amount)) {
+            player.sendMessage("§c材料不足，请检查你的背包！");
+            return false;
+        }
+
         for (Map.Entry<String, Integer> requiredEntry : recipe.entrySet()) {
             String requiredKey = requiredEntry.getKey();
             int requiredAmountPerCraft = requiredEntry.getValue();
@@ -39,6 +53,8 @@ public class QuickMachineUtils {
                     ItemStack targetItem = new ItemStack(material);
                     if (!removeVanillaItemsFromInventory(inventory, targetItem, totalRequiredAmount)) {
                         player.sendMessage("§c未能移除足够的原版材料，请检查你的背包！");
+                        // D2: 中途失败——按快照回滚已移除的材料
+                        inventory.setStorageContents(snapshotCopy);
                         return false;
                     }
                 }
@@ -50,6 +66,8 @@ public class QuickMachineUtils {
                     ItemStack targetItem = slimefunItem.getItem().clone();
                     if (!removeSlimefunItemsFromInventory(inventory, targetItem, totalRequiredAmount)) {
                         player.sendMessage("§c未能移除足够的Slimefun材料，请检查你的背包！");
+                        // D2: 中途失败——按快照回滚已移除的材料
+                        inventory.setStorageContents(snapshotCopy);
                         return false;
                     }
                 }

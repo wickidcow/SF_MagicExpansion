@@ -1,7 +1,5 @@
 package io.Yomicer.magicExpansion.utils.networksUtils;
 
-import lombok.Getter;
-import lombok.Setter;
 import net.guizhanss.guizhanlib.minecraft.helper.inventory.ItemStackHelper;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -19,8 +17,12 @@ public class QuantumCache extends ItemStackCache {
 
     private final boolean supportsCustomMaxAmount;
 
-    @Setter
+    // 原 Lombok @Setter 手工展开：写入库存上限
     private long limit;
+
+    public void setLimit(long limit) {
+        this.limit = limit;
+    }
 
     public int getLimit() {
         return limit > Integer.MAX_VALUE ? Integer.MAX_VALUE : (int) limit;
@@ -30,8 +32,12 @@ public class QuantumCache extends ItemStackCache {
         return limit;
     }
 
-    @Getter
+    // 原 Lombok @Getter 手工展开：读取当前库存数量
     private long amount;
+
+    public long getAmount() {
+        return amount;
+    }
 
     public int getAmountInt() {
         return amount > Integer.MAX_VALUE ? Integer.MAX_VALUE : (int) amount;
@@ -41,9 +47,16 @@ public class QuantumCache extends ItemStackCache {
         return amount;
     }
 
-    @Setter
-    @Getter
+    // 原 Lombok @Setter/@Getter 手工展开：超出上限的溢出标记
     private boolean voidExcess;
+
+    public boolean isVoidExcess() {
+        return voidExcess;
+    }
+
+    public void setVoidExcess(boolean voidExcess) {
+        this.voidExcess = voidExcess;
+    }
 
     public QuantumCache(
             @Nullable ItemStack storedItem,
