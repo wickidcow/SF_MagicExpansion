@@ -1,3 +1,15 @@
+# 1.1.2 - Upstream Release 10 / Build 90 Port (2026-09-01)
+
+- Ported upstream MagicExpansion commit `6d78c65eb8b60e785daa8a27dd606dc7993375a1` while preserving the Legacy fork's English presentation and compatibility work.
+- Added the Generation 2 fish attribute and breeding systems, including the Fish Breeding Pool.
+- Added the Hanjiang and Xiyu Water Cloud fishing progression, their new lures, and progression catches.
+- Added the five-page Page Chest with Slimefun cargo-compatible storage behavior.
+- Added acceleration-fish machine buff registration and retained the upstream five-minute in-memory buff model.
+- Added Release 10 storage/output fixes for large quantities, quantum storage, Cargo Core handling, leftovers, and duplicate energy deductions.
+- Added tighter Magic guide/menu event scoping and the special-catch clone fix.
+- Kept GuizhanLibPlugin optional by routing the new display-name use through the fork's bundled compatibility helper.
+- Retained Java 21 bytecode and the 1.21.11 through Paper/Purpur 26.2 compatibility target.
+
 # 1.1.0 - Upstream Build 84 Port (2026-08-04)
 
 - Ported the important changes from Yomicer/MagicExpansion upstream commit `b56aad4`.

@@ -199,6 +199,8 @@ public class FishOutputMachine extends MenuBlock implements EnergyNetComponent, 
         if (inv == null) {
             return;
         }
+        // 电力标记：外部存储已扣电则输出槽回落时不再重复扣（防止存满回落时双重扣电）
+        boolean chargeTaken = false;
 
         if (getCharge(block.getLocation()) < getEnergyConsumption()) {
             if(inv != null && inv.hasViewer()) {
@@ -278,8 +280,15 @@ public class FishOutputMachine extends MenuBlock implements EnergyNetComponent, 
                 if (leftover < outItems.getAmount()) {
                     inv.replaceExistingItem(VoidTouchSlot, VoidTouchSlotItem);
                     removeCharge(block.getLocation(), getEnergyConsumption());
+                    chargeTaken = true; // 外部存储已扣电
                 }
-                return; // 已连接外部存储：只走存储，不做输出格限制、不回落输出格
+                // 外部存储已存满：把剩余(leftover)回落到输出槽输出，不再丢弃
+                if (leftover > 0) {
+                    outItems.setAmount((int) Math.min(leftover, Integer.MAX_VALUE));
+                    // 不 return，继续走下方输出槽分支
+                } else {
+                    return; // 全部存入，无剩余
+                }
             }
             // 虚空之触 → 魔法存储终端（原逻辑不变）
             SlimefunItem VoidTouchItem = SlimefunItem.getByItem(VoidTouchSlotItem);
@@ -314,8 +323,15 @@ public class FishOutputMachine extends MenuBlock implements EnergyNetComponent, 
                                     long leftover = NetworkStorage.storeToQuantumStorageBlock(targetLocation, outItems);
                                     if (leftover < outItems.getAmount()) {
                                         removeCharge(block.getLocation(), getEnergyConsumption());
+                                        chargeTaken = true; // 外部存储已扣电
                                     }
-                                    return; // 已连接外部存储：不回落到输出格
+                                    // 外部存储已存满：剩余(leftover)回落到输出槽输出，不再丢弃
+                                    if (leftover > 0) {
+                                        outItems.setAmount((int) Math.min(leftover, Integer.MAX_VALUE));
+                                        // 不 return，继续走下方输出槽分支
+                                    } else {
+                                        return; // 全部存入，无剩余
+                                    }
                                 }
                             }
                         }
@@ -455,6 +471,36 @@ public class FishOutputMachine extends MenuBlock implements EnergyNetComponent, 
         }
 
         // 如果没有找到匹配的槽位,什么也不做(不存储新物品)
+    }
+
+    // Long-safe write used by large-output machines. It intentionally reuses the
+    // fork's direct CargoCore storage format instead of the upstream cache layer.
+    static void storeItemToExistingSlotCachedLong(SlimefunBlockData data, ItemStack item, long amountToStore) {
+        if (item == null || item.getType() == Material.AIR || amountToStore <= 0) return;
+        ItemStack prototype = item.clone();
+        prototype.setAmount(1);
+        for (int i = 0; i < MAX_STORED_ITEMS; i++) {
+            String jsonData = data.getData("item_type_" + i);
+            if (jsonData == null || jsonData.isEmpty()) continue;
+            try {
+                ItemStack storedItem = itemFromBase64(jsonData);
+                if (storedItem == null || storedItem.getType() == Material.AIR) continue;
+                storedItem.setAmount(1);
+                if (!SlimefunUtils.isItemSimilar(prototype, storedItem, true)) continue;
+                long current = 0L;
+                String countStr = data.getData("item_count_" + i);
+                if (countStr != null && !countStr.isEmpty()) current = Long.parseLong(countStr);
+                long next = current > Long.MAX_VALUE - amountToStore ? Long.MAX_VALUE : current + amountToStore;
+                String maxStr = data.getData("item_max_" + i);
+                if (maxStr != null && !maxStr.isEmpty()) {
+                    long max = Long.parseLong(maxStr);
+                    if (max != -1L && next > max) next = max;
+                }
+                data.setData("item_count_" + i, String.valueOf(next));
+                return;
+            } catch (Exception ignored) {
+            }
+        }
     }
 
     private static final int MAX_STORED_ITEMS = 1145; // 最多支持 18 种不同物品

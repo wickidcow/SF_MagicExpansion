@@ -1,5 +1,6 @@
 package io.Yomicer.magicExpansion;
 
+import io.Yomicer.magicExpansion.items.electric.FishBreedPool;
 import io.Yomicer.magicExpansion.items.electric.entitykillMachinee.EntityKillMachine;
 import io.Yomicer.magicExpansion.items.electric.geoMachine.FiveElementsMiner;
 import io.Yomicer.magicExpansion.items.electric.geoMachine.RSCMagicMiner;
@@ -14,6 +15,7 @@ import io.Yomicer.magicExpansion.items.misc.FishWeightEnhancer;
 import io.Yomicer.magicExpansion.items.misc.fish.CommonFish;
 import io.Yomicer.magicExpansion.items.misc.fish.CommonFishHidden;
 import io.Yomicer.magicExpansion.items.misc.fish.FishingBook;
+import io.Yomicer.magicExpansion.items.misc.fish.Gen2Fish;
 import io.Yomicer.magicExpansion.items.misc.fish.PowerEel;
 import io.Yomicer.magicExpansion.items.misc.magicAlter.MagicWand;
 import io.Yomicer.magicExpansion.items.misc.weapon.StarShardsSword;
@@ -1591,7 +1593,7 @@ public final class MagicExpansionItemSetup {
                                 new WeightedItem(new ItemStack(Material.SAND,15), 667),
                                 new WeightedItem(new ItemStack(Material.STRING,15), 667),
                                 new WeightedItem(new ItemStack(Material.BONE,15), 667),
-                                new WeightedItem(FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_CUIXIA, 10)
+                                new WeightedItem(MagicExpansionItems.REED_TASSEL, 40)
                         ),
                         // Motes
                         "WeiChen", List.of(
@@ -1610,7 +1612,7 @@ public final class MagicExpansionItemSetup {
                                 new WeightedItem(new ItemStack(Material.SAND,15), 1110),
                                 new WeightedItem(new ItemStack(Material.STRING,15), 1110),
                                 new WeightedItem(new ItemStack(Material.BONE,15), 1110),
-                                new WeightedItem(FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_WEICHEN, 10)
+                                new WeightedItem(MagicExpansionItems.REED_TASSEL, 40)
                         ),
                         // Molten Flame
                         "RongHuo", List.of(
@@ -1628,7 +1630,7 @@ public final class MagicExpansionItemSetup {
                                 new WeightedItem(new ItemStack(Material.SAND,15), 1154),
                                 new WeightedItem(new ItemStack(Material.STRING,15), 1154),
                                 new WeightedItem(new ItemStack(Material.BONE,15), 1154),
-                                new WeightedItem(FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_RONGHUO, 28)
+                                new WeightedItem(MagicExpansionItems.REED_TASSEL, 40)
 
                         ),
                         // Leaping Gold
@@ -1650,7 +1652,7 @@ public final class MagicExpansionItemSetup {
                                 new WeightedItem(new ItemStack(Material.SAND,15), 1030),
                                 new WeightedItem(new ItemStack(Material.STRING,15), 1030),
                                 new WeightedItem(new ItemStack(Material.BONE,15), 1030),
-                                new WeightedItem(FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_YUEJIN, 25)
+                                new WeightedItem(MagicExpansionItems.REED_TASSEL, 40)
                         ),
                         // Star Core
                         "XingHe", List.of(
@@ -1671,13 +1673,182 @@ public final class MagicExpansionItemSetup {
                                 new WeightedItem(new ItemStack(Material.SAND,15), 1030),
                                 new WeightedItem(new ItemStack(Material.STRING,15), 1030),
                                 new WeightedItem(new ItemStack(Material.BONE,15), 1030),
-                                new WeightedItem(FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_XINGHE, 25)
+                                new WeightedItem(MagicExpansionItems.REED_TASSEL, 40)
                         )
                 ),
                 Arrays.asList(FISH_LURE_BETWEEN_WATER_CLOUD_CUIXIA,FISH_LURE_BETWEEN_WATER_CLOUD_WEICHEN,FISH_LURE_BETWEEN_WATER_CLOUD_RONGHUO,
                         FISH_LURE_BETWEEN_WATER_CLOUD_YUEJIN,FISH_LURE_BETWEEN_WATER_CLOUD_XINGHE)).register(plugin);
 
 
+
+        // Release 10: Reedflower / Snowy River / Fine Rain progression
+        // The fork keeps the original IDs but uses English guide presentation.
+        new UnplaceableBlock(magicexpansionfishing, REED_TASSEL, RecipeType.NULL, new ItemStack[] {
+                null, null, null, null, new ItemStack(Material.SUGAR_CANE), null, null, null, null
+        }).register(plugin);
+
+        new UnplaceableBlock(magicexpansionfishing, FISH_LURE_BETWEEN_WATER_CLOUD_REED_JIANJIA, RecipeType.ENHANCED_CRAFTING_TABLE, new ItemStack[] {
+                SlimefunItems.MAGIC_SUGAR, SlimefunItems.MAGIC_SUGAR, SlimefunItems.MAGIC_SUGAR,
+                SlimefunItems.MAGIC_SUGAR, new ItemStack(Material.BOOK), SlimefunItems.MAGIC_SUGAR,
+                SlimefunItems.MAGIC_SUGAR, SlimefunItems.MAGIC_SUGAR, SlimefunItems.MAGIC_SUGAR
+        }, sfItemAmount(FISH_LURE_BETWEEN_WATER_CLOUD_REED_JIANJIA, 64)).register(plugin);
+        new UnplaceableBlock(magicexpansionfishing, FISH_LURE_BETWEEN_WATER_CLOUD_REED_LUXUE, RecipeType.ENHANCED_CRAFTING_TABLE, new ItemStack[] {
+                SlimefunItems.MAGIC_SUGAR, SlimefunItems.MAGIC_SUGAR, SlimefunItems.MAGIC_SUGAR,
+                SlimefunItems.MAGIC_SUGAR, new ItemStack(Material.SNOWBALL), SlimefunItems.MAGIC_SUGAR,
+                SlimefunItems.MAGIC_SUGAR, SlimefunItems.MAGIC_SUGAR, SlimefunItems.MAGIC_SUGAR
+        }, sfItemAmount(FISH_LURE_BETWEEN_WATER_CLOUD_REED_LUXUE, 64)).register(plugin);
+        new UnplaceableBlock(magicexpansionfishing, FISH_LURE_BETWEEN_WATER_CLOUD_REED_WEILU, RecipeType.ENHANCED_CRAFTING_TABLE, new ItemStack[] {
+                SlimefunItems.MAGIC_SUGAR, SlimefunItems.MAGIC_SUGAR, SlimefunItems.MAGIC_SUGAR,
+                SlimefunItems.MAGIC_SUGAR, new ItemStack(Material.GLASS_BOTTLE), SlimefunItems.MAGIC_SUGAR,
+                SlimefunItems.MAGIC_SUGAR, SlimefunItems.MAGIC_SUGAR, SlimefunItems.MAGIC_SUGAR
+        }, sfItemAmount(FISH_LURE_BETWEEN_WATER_CLOUD_REED_WEILU, 64)).register(plugin);
+        new UnplaceableBlock(magicexpansionfishing, FISH_LURE_BETWEEN_WATER_CLOUD_REED_BAILU, RecipeType.ENHANCED_CRAFTING_TABLE, new ItemStack[] {
+                SlimefunItems.MAGIC_SUGAR, SlimefunItems.MAGIC_SUGAR, SlimefunItems.MAGIC_SUGAR,
+                SlimefunItems.MAGIC_SUGAR, new ItemStack(Material.WHITE_DYE), SlimefunItems.MAGIC_SUGAR,
+                SlimefunItems.MAGIC_SUGAR, SlimefunItems.MAGIC_SUGAR, SlimefunItems.MAGIC_SUGAR
+        }, sfItemAmount(FISH_LURE_BETWEEN_WATER_CLOUD_REED_BAILU, 64)).register(plugin);
+        new UnplaceableBlock(magicexpansionfishing, FISH_LURE_BETWEEN_WATER_CLOUD_REED_LUYA, RecipeType.ENHANCED_CRAFTING_TABLE, new ItemStack[] {
+                SlimefunItems.MAGIC_SUGAR, SlimefunItems.MAGIC_SUGAR, SlimefunItems.MAGIC_SUGAR,
+                SlimefunItems.MAGIC_SUGAR, new ItemStack(Material.BAMBOO), SlimefunItems.MAGIC_SUGAR,
+                SlimefunItems.MAGIC_SUGAR, SlimefunItems.MAGIC_SUGAR, SlimefunItems.MAGIC_SUGAR
+        }, sfItemAmount(FISH_LURE_BETWEEN_WATER_CLOUD_REED_LUYA, 64)).register(plugin);
+
+        new UnplaceableBlock(magicexpansionfishing, FISH_LURE_BETWEEN_WATER_CLOUD_HANJIANG_NINGSHUANG, RecipeType.ENHANCED_CRAFTING_TABLE, new ItemStack[] {
+                SlimefunItems.MAGIC_SUGAR, SlimefunItems.MAGIC_SUGAR, SlimefunItems.MAGIC_SUGAR,
+                SlimefunItems.MAGIC_SUGAR, new ItemStack(Material.SNOWBALL), SlimefunItems.MAGIC_SUGAR,
+                SlimefunItems.MAGIC_SUGAR, SlimefunItems.MAGIC_SUGAR, SlimefunItems.MAGIC_SUGAR
+        }, sfItemAmount(FISH_LURE_BETWEEN_WATER_CLOUD_HANJIANG_NINGSHUANG, 64)).register(plugin);
+        new UnplaceableBlock(magicexpansionfishing, FISH_LURE_BETWEEN_WATER_CLOUD_HANJIANG_LUOXU, RecipeType.ENHANCED_CRAFTING_TABLE, new ItemStack[] {
+                SlimefunItems.MAGIC_SUGAR, SlimefunItems.MAGIC_SUGAR, SlimefunItems.MAGIC_SUGAR,
+                SlimefunItems.MAGIC_SUGAR, new ItemStack(Material.FEATHER), SlimefunItems.MAGIC_SUGAR,
+                SlimefunItems.MAGIC_SUGAR, SlimefunItems.MAGIC_SUGAR, SlimefunItems.MAGIC_SUGAR
+        }, sfItemAmount(FISH_LURE_BETWEEN_WATER_CLOUD_HANJIANG_LUOXU, 64)).register(plugin);
+        new UnplaceableBlock(magicexpansionfishing, FISH_LURE_BETWEEN_WATER_CLOUD_HANJIANG_BINGPO, RecipeType.ENHANCED_CRAFTING_TABLE, new ItemStack[] {
+                SlimefunItems.MAGIC_SUGAR, SlimefunItems.MAGIC_SUGAR, SlimefunItems.MAGIC_SUGAR,
+                SlimefunItems.MAGIC_SUGAR, new ItemStack(Material.ICE), SlimefunItems.MAGIC_SUGAR,
+                SlimefunItems.MAGIC_SUGAR, SlimefunItems.MAGIC_SUGAR, SlimefunItems.MAGIC_SUGAR
+        }, sfItemAmount(FISH_LURE_BETWEEN_WATER_CLOUD_HANJIANG_BINGPO, 64)).register(plugin);
+        new UnplaceableBlock(magicexpansionfishing, FISH_LURE_BETWEEN_WATER_CLOUD_HANJIANG_CHUJI, RecipeType.ENHANCED_CRAFTING_TABLE, new ItemStack[] {
+                SlimefunItems.MAGIC_SUGAR, SlimefunItems.MAGIC_SUGAR, SlimefunItems.MAGIC_SUGAR,
+                SlimefunItems.MAGIC_SUGAR, new ItemStack(Material.LIGHT_BLUE_DYE), SlimefunItems.MAGIC_SUGAR,
+                SlimefunItems.MAGIC_SUGAR, SlimefunItems.MAGIC_SUGAR, SlimefunItems.MAGIC_SUGAR
+        }, sfItemAmount(FISH_LURE_BETWEEN_WATER_CLOUD_HANJIANG_CHUJI, 64)).register(plugin);
+        new UnplaceableBlock(magicexpansionfishing, FISH_LURE_BETWEEN_WATER_CLOUD_HANJIANG_CHUILUN, RecipeType.ENHANCED_CRAFTING_TABLE, new ItemStack[] {
+                SlimefunItems.MAGIC_SUGAR, SlimefunItems.MAGIC_SUGAR, SlimefunItems.MAGIC_SUGAR,
+                SlimefunItems.MAGIC_SUGAR, new ItemStack(Material.STICK), SlimefunItems.MAGIC_SUGAR,
+                SlimefunItems.MAGIC_SUGAR, SlimefunItems.MAGIC_SUGAR, SlimefunItems.MAGIC_SUGAR
+        }, sfItemAmount(FISH_LURE_BETWEEN_WATER_CLOUD_HANJIANG_CHUILUN, 64)).register(plugin);
+
+        new UnplaceableBlock(magicexpansionfishing, FISH_LURE_BETWEEN_WATER_CLOUD_XIYU_FENGSI, RecipeType.ENHANCED_CRAFTING_TABLE, new ItemStack[] {
+                SlimefunItems.MAGIC_SUGAR, SlimefunItems.MAGIC_SUGAR, SlimefunItems.MAGIC_SUGAR,
+                SlimefunItems.MAGIC_SUGAR, new ItemStack(Material.STRING), SlimefunItems.MAGIC_SUGAR,
+                SlimefunItems.MAGIC_SUGAR, SlimefunItems.MAGIC_SUGAR, SlimefunItems.MAGIC_SUGAR
+        }, sfItemAmount(FISH_LURE_BETWEEN_WATER_CLOUD_XIYU_FENGSI, 64)).register(plugin);
+        new UnplaceableBlock(magicexpansionfishing, FISH_LURE_BETWEEN_WATER_CLOUD_XIYU_YANYU, RecipeType.ENHANCED_CRAFTING_TABLE, new ItemStack[] {
+                SlimefunItems.MAGIC_SUGAR, SlimefunItems.MAGIC_SUGAR, SlimefunItems.MAGIC_SUGAR,
+                SlimefunItems.MAGIC_SUGAR, new ItemStack(Material.GRAY_DYE), SlimefunItems.MAGIC_SUGAR,
+                SlimefunItems.MAGIC_SUGAR, SlimefunItems.MAGIC_SUGAR, SlimefunItems.MAGIC_SUGAR
+        }, sfItemAmount(FISH_LURE_BETWEEN_WATER_CLOUD_XIYU_YANYU, 64)).register(plugin);
+        new UnplaceableBlock(magicexpansionfishing, FISH_LURE_BETWEEN_WATER_CLOUD_XIYU_LIANBAI, RecipeType.ENHANCED_CRAFTING_TABLE, new ItemStack[] {
+                SlimefunItems.MAGIC_SUGAR, SlimefunItems.MAGIC_SUGAR, SlimefunItems.MAGIC_SUGAR,
+                SlimefunItems.MAGIC_SUGAR, new ItemStack(Material.LILY_PAD), SlimefunItems.MAGIC_SUGAR,
+                SlimefunItems.MAGIC_SUGAR, SlimefunItems.MAGIC_SUGAR, SlimefunItems.MAGIC_SUGAR
+        }, sfItemAmount(FISH_LURE_BETWEEN_WATER_CLOUD_XIYU_LIANBAI, 64)).register(plugin);
+        new UnplaceableBlock(magicexpansionfishing, FISH_LURE_BETWEEN_WATER_CLOUD_XIYU_XIAOFENG, RecipeType.ENHANCED_CRAFTING_TABLE, new ItemStack[] {
+                SlimefunItems.MAGIC_SUGAR, SlimefunItems.MAGIC_SUGAR, SlimefunItems.MAGIC_SUGAR,
+                SlimefunItems.MAGIC_SUGAR, new ItemStack(Material.FEATHER), SlimefunItems.MAGIC_SUGAR,
+                SlimefunItems.MAGIC_SUGAR, SlimefunItems.MAGIC_SUGAR, SlimefunItems.MAGIC_SUGAR
+        }, sfItemAmount(FISH_LURE_BETWEEN_WATER_CLOUD_XIYU_XIAOFENG, 64)).register(plugin);
+        new UnplaceableBlock(magicexpansionfishing, FISH_LURE_BETWEEN_WATER_CLOUD_XIYU_XIEYING, RecipeType.ENHANCED_CRAFTING_TABLE, new ItemStack[] {
+                SlimefunItems.MAGIC_SUGAR, SlimefunItems.MAGIC_SUGAR, SlimefunItems.MAGIC_SUGAR,
+                SlimefunItems.MAGIC_SUGAR, new ItemStack(Material.OAK_SAPLING), SlimefunItems.MAGIC_SUGAR,
+                SlimefunItems.MAGIC_SUGAR, SlimefunItems.MAGIC_SUGAR, SlimefunItems.MAGIC_SUGAR
+        }, sfItemAmount(FISH_LURE_BETWEEN_WATER_CLOUD_XIYU_XIEYING, 64)).register(plugin);
+
+        // Catch-only progression items are registered so commands/guide lookups can resolve their IDs.
+        new BaiLuYu(magicexpansionfishing, FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_BAILUYU, RecipeType.NULL,
+                new ItemStack[] {null, null, null, null, REED_TASSEL, null, null, null, null}).register(plugin);
+        new XuePaoZhu(magicexpansionfishing, FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_HANJIANG_XUEPOZHU, RecipeType.NULL,
+                new ItemStack[] {null, null, null, null, FISHING_ROD_BETWEEN_WATER_CLOUD_HANJIANG, null, null, null, null}).register(plugin);
+        new YuPiZhen(magicexpansionfishing, FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_XIYU_YUPIZHEN, RecipeType.NULL,
+                new ItemStack[] {null, null, null, null, FISHING_ROD_BETWEEN_WATER_CLOUD_XIYU, null, null, null, null}).register(plugin);
+
+        new FishingRodWaterCloud(magicexpansionfishing, FISHING_ROD_BETWEEN_WATER_CLOUD_REED, RecipeType.ENHANCED_CRAFTING_TABLE, new ItemStack[] {
+                null, null, REED_TASSEL,
+                null, FISHING_ROD_BETWEEN_WATER_CLOUD_CYAN_BAMBOO, new ItemStack(Material.STRING),
+                REED_TASSEL, null, MAGIC_EXPANSION_MAGIC_SUGAR_1
+        }, new HashMap<>() {{
+            put(Enchantment.LUCK_OF_THE_SEA, 2);
+            put(Enchantment.LURE, 2);
+        }}, false, 1,
+                Map.of(
+                        "JianJia", List.of(new WeightedItem(SlimefunItems.MAGIC_LUMP_1, 222), new WeightedItem(REED_TASSEL, 40)),
+                        "LuXue", FishingRodWaterCloud.buildLootTable("LuXue", Gen2Fish.LUXUE, Gen2Fish.LUWEIYING,
+                                Arrays.asList(FishingRodWaterCloud.elementMaterial(new ItemStack(Material.SNOWBALL), 300), FishingRodWaterCloud.elementMaterial(new ItemStack(Material.WHITE_DYE), 304)), FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_BAILUYU),
+                        "WeiLu", FishingRodWaterCloud.buildLootTable("WeiLu", Gen2Fish.WEILU, Gen2Fish.CHENLULIN,
+                                Arrays.asList(FishingRodWaterCloud.elementMaterial(new ItemStack(Material.GLASS_BOTTLE), 300), FishingRodWaterCloud.elementMaterial(new ItemStack(Material.LILY_PAD), 304)), FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_BAILUYU),
+                        "BaiLu", FishingRodWaterCloud.buildLootTable("BaiLu", Gen2Fish.BAILU, Gen2Fish.SHUANGBAILIAN,
+                                Arrays.asList(FishingRodWaterCloud.elementMaterial(new ItemStack(Material.SNOWBALL), 300), FishingRodWaterCloud.elementMaterial(new ItemStack(Material.FEATHER), 304)), FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_BAILUYU),
+                        "LuYa", FishingRodWaterCloud.buildLootTable("LuYa", Gen2Fish.LUYA, Gen2Fish.XINHUANG,
+                                Arrays.asList(FishingRodWaterCloud.elementMaterial(new ItemStack(Material.BAMBOO), 300), FishingRodWaterCloud.elementMaterial(new ItemStack(Material.LILY_PAD), 304)), FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_BAILUYU)
+                ), Arrays.asList(FISH_LURE_BETWEEN_WATER_CLOUD_REED_JIANJIA, FISH_LURE_BETWEEN_WATER_CLOUD_REED_LUXUE,
+                        FISH_LURE_BETWEEN_WATER_CLOUD_REED_WEILU, FISH_LURE_BETWEEN_WATER_CLOUD_REED_BAILU, FISH_LURE_BETWEEN_WATER_CLOUD_REED_LUYA)).register(plugin);
+
+        new FishingRodWaterCloud(magicexpansionfishing, FISHING_ROD_BETWEEN_WATER_CLOUD_HANJIANG, RecipeType.ENHANCED_CRAFTING_TABLE, new ItemStack[] {
+                null, null, FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_BAILUYU,
+                null, FISHING_ROD_BETWEEN_WATER_CLOUD_REED, new ItemStack(Material.STRING),
+                FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_BAILUYU, null, MAGIC_EXPANSION_MAGIC_SUGAR_1
+        }, new HashMap<>() {{
+            put(Enchantment.LUCK_OF_THE_SEA, 3);
+            put(Enchantment.LURE, 3);
+        }}, false, 2,
+                Map.of(
+                        "NingShuang", FishingRodWaterCloud.buildLootTable("NingShuang", Gen2Fish.SHUANGJIAO, Gen2Fish.NINGBOJING,
+                                Arrays.asList(FishingRodWaterCloud.elementMaterial(new ItemStack(Material.SNOWBALL), 300), FishingRodWaterCloud.elementMaterial(new ItemStack(Material.SNOW_BLOCK), 304)), FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_HANJIANG_XUEPOZHU),
+                        "LuoXu", FishingRodWaterCloud.buildLootTable("LuoXu", Gen2Fish.XUXUE, Gen2Fish.CHENXULIN,
+                                Arrays.asList(FishingRodWaterCloud.elementMaterial(new ItemStack(Material.FEATHER), 300), FishingRodWaterCloud.elementMaterial(new ItemStack(Material.WHITE_WOOL), 304)), FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_HANJIANG_XUEPOZHU),
+                        "BingPo", FishingRodWaterCloud.buildLootTable("BingPo", Gen2Fish.BINGPO, Gen2Fish.XUANBINGLI,
+                                Arrays.asList(FishingRodWaterCloud.elementMaterial(new ItemStack(Material.ICE), 300), FishingRodWaterCloud.elementMaterial(new ItemStack(Material.PACKED_ICE), 304)), FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_HANJIANG_XUEPOZHU),
+                        "ChuJi", FishingRodWaterCloud.buildLootTable("ChuJi", Gen2Fish.JIGUANG, Gen2Fish.NUANYANGLIN,
+                                Arrays.asList(FishingRodWaterCloud.elementMaterial(new ItemStack(Material.GOLD_NUGGET), 300), FishingRodWaterCloud.elementMaterial(new ItemStack(Material.GLOWSTONE_DUST), 304)), FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_HANJIANG_XUEPOZHU),
+                        "ChuiLun", FishingRodWaterCloud.buildLootTable("ChuiLun", Gen2Fish.SUODIAO, Gen2Fish.GUZHOU,
+                                Arrays.asList(FishingRodWaterCloud.elementMaterial(new ItemStack(Material.STICK), 300), FishingRodWaterCloud.elementMaterial(new ItemStack(Material.INK_SAC), 304)), FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_HANJIANG_XUEPOZHU)
+                ), Arrays.asList(FISH_LURE_BETWEEN_WATER_CLOUD_HANJIANG_NINGSHUANG, FISH_LURE_BETWEEN_WATER_CLOUD_HANJIANG_LUOXU,
+                        FISH_LURE_BETWEEN_WATER_CLOUD_HANJIANG_BINGPO, FISH_LURE_BETWEEN_WATER_CLOUD_HANJIANG_CHUJI, FISH_LURE_BETWEEN_WATER_CLOUD_HANJIANG_CHUILUN)).register(plugin);
+
+        new FishingRodWaterCloud(magicexpansionfishing, FISHING_ROD_BETWEEN_WATER_CLOUD_XIYU, RecipeType.ENHANCED_CRAFTING_TABLE, new ItemStack[] {
+                null, null, FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_HANJIANG_XUEPOZHU,
+                null, FISHING_ROD_BETWEEN_WATER_CLOUD_HANJIANG, new ItemStack(Material.STRING),
+                FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_HANJIANG_XUEPOZHU, null, MAGIC_EXPANSION_MAGIC_SUGAR_1
+        }, new HashMap<>() {{
+            put(Enchantment.LUCK_OF_THE_SEA, 4);
+            put(Enchantment.LURE, 4);
+        }}, false, 3,
+                Map.of(
+                        "FengSi", FishingRodWaterCloud.buildLootTable("FengSi", Gen2Fish.YOUSI, Gen2Fish.FENGXIAO,
+                                Arrays.asList(FishingRodWaterCloud.elementMaterial(new ItemStack(Material.STRING), 300), FishingRodWaterCloud.elementMaterial(new ItemStack(Material.COBWEB), 304)), FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_XIYU_YUPIZHEN),
+                        "YanYu", FishingRodWaterCloud.buildLootTable("YanYu", Gen2Fish.YANYU, Gen2Fish.WUYINLU,
+                                Arrays.asList(FishingRodWaterCloud.elementMaterial(new ItemStack(Material.GRAY_DYE), 300), FishingRodWaterCloud.elementMaterial(new ItemStack(Material.LILY_PAD), 304)), FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_XIYU_YUPIZHEN),
+                        "LianBai", FishingRodWaterCloud.buildLootTable("LianBai", Gen2Fish.LIANBAI, Gen2Fish.YINGBO,
+                                Arrays.asList(FishingRodWaterCloud.elementMaterial(new ItemStack(Material.WHITE_DYE), 300), FishingRodWaterCloud.elementMaterial(new ItemStack(Material.LILY_PAD), 304)), FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_XIYU_YUPIZHEN),
+                        "XiaoFeng", FishingRodWaterCloud.buildLootTable("XiaoFeng", Gen2Fish.XIAOFENG, Gen2Fish.POXIAOLIN,
+                                Arrays.asList(FishingRodWaterCloud.elementMaterial(new ItemStack(Material.FEATHER), 300), FishingRodWaterCloud.elementMaterial(new ItemStack(Material.CLOCK), 304)), FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_XIYU_YUPIZHEN),
+                        "XieYing", FishingRodWaterCloud.buildLootTable("XieYing", Gen2Fish.XIEYING, Gen2Fish.ANLIU,
+                                Arrays.asList(FishingRodWaterCloud.elementMaterial(new ItemStack(Material.OAK_SAPLING), 300), FishingRodWaterCloud.elementMaterial(new ItemStack(Material.INK_SAC), 304)), FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_XIYU_YUPIZHEN)
+                ), Arrays.asList(FISH_LURE_BETWEEN_WATER_CLOUD_XIYU_FENGSI, FISH_LURE_BETWEEN_WATER_CLOUD_XIYU_YANYU,
+                        FISH_LURE_BETWEEN_WATER_CLOUD_XIYU_LIANBAI, FISH_LURE_BETWEEN_WATER_CLOUD_XIYU_XIAOFENG, FISH_LURE_BETWEEN_WATER_CLOUD_XIYU_XIEYING)).register(plugin);
+
+        new FishBreedPool(magicexpansionrecipemachine, FISH_BREED_POOL, RecipeType.ENHANCED_CRAFTING_TABLE, new ItemStack[] {
+                new ItemStack(Material.GLASS), new ItemStack(Material.GLASS), new ItemStack(Material.GLASS),
+                new ItemStack(Material.GLASS), new ItemStack(Material.WATER_BUCKET), new ItemStack(Material.GLASS),
+                new ItemStack(Material.GLASS), new ItemStack(Material.GLASS), new ItemStack(Material.GLASS)
+        }).register(plugin);
+
+        new PageChest(magicexpansionspecialitem, PAGE_CHEST, RecipeType.ENHANCED_CRAFTING_TABLE, new ItemStack[] {
+                new ItemStack(Material.CHEST), MAGIC_EXPANSION_MAGIC_SUGAR_1, new ItemStack(Material.CHEST),
+                MAGIC_EXPANSION_MAGIC_SUGAR_1, MAGIC_EXPANSION_TO_MAGIC_ITEM_BASIC, MAGIC_EXPANSION_MAGIC_SUGAR_1,
+                new ItemStack(Material.CHEST), MAGIC_EXPANSION_MAGIC_SUGAR_1, new ItemStack(Material.CHEST)
+        }).register(plugin);
 
         //星辰木
         new UnplaceableBlock(magicexpansionresource, FISHING_STICK_STAR_IRON, RecipeType.ENHANCED_CRAFTING_TABLE, new ItemStack[] {
