@@ -1,11 +1,14 @@
 package io.Yomicer.magicExpansion;
 
+import io.Yomicer.magicExpansion.Listener.AccelerationUseListener;
+import io.Yomicer.magicExpansion.Listener.GuideVirtualGroupClickListener;
 import io.Yomicer.magicExpansion.Listener.RecipePreLoader;
 import io.Yomicer.magicExpansion.Listener.SlimefunRegistryFinalized;
 import io.Yomicer.magicExpansion.Listener.SlimefunRegistryGiftBox;
 import io.Yomicer.magicExpansion.Listener.SlimefunRegistryListener;
 import io.Yomicer.magicExpansion.Listener.bossListener.BasicBossAttackListener;
 import io.Yomicer.magicExpansion.Listener.bossListener.BasicBossDropListener;
+import io.Yomicer.magicExpansion.Listener.fishingListener.GuidePoolButtonListener;
 import io.Yomicer.magicExpansion.Listener.fishingListener.PlayerFishingListener;
 import io.Yomicer.magicExpansion.Listener.fishingListener.PlayerFishingWaterCloudListener;
 import io.Yomicer.magicExpansion.Listener.magicItemEffectManager.ArrowHitLocationListener;
@@ -110,6 +113,9 @@ public class MagicExpansion extends JavaPlugin implements SlimefunAddon {
         getServer().getPluginManager().registerEvents(new BasicBossDropListener(), this);
         getServer().getPluginManager().registerEvents(new PlayerFishingListener(), this);
         getServer().getPluginManager().registerEvents(new PlayerFishingWaterCloudListener(), this);
+        getServer().getPluginManager().registerEvents(new GuidePoolButtonListener(), this);
+        getServer().getPluginManager().registerEvents(new GuideVirtualGroupClickListener(), this);
+        getServer().getPluginManager().registerEvents(new AccelerationUseListener(), this);
         getServer().getPluginManager().registerEvents(new Events(), this);
         getServer().getPluginManager().registerEvents(new ItemFrameListener(), this);
         getServer().getPluginManager().registerEvents(new PageChestListener(), this);

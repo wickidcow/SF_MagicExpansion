@@ -516,6 +516,34 @@ public final class NetworkStorage {
         }
     }
 
+    /** Store a long quantity into a reflected Networks quantum-storage block. */
+    public static long storeToQuantumStorageBlock(@NotNull Location location, @NotNull ItemStack prototype, long outputAmount) {
+        if (outputAmount <= 0) return 0;
+        try {
+            Class<?> cls = Class.forName(QUANTUM_STORAGE_BLOCK_CLASS);
+            Object cache = ((Map<?, ?>) cls.getMethod("getCaches").invoke(null)).get(location);
+            if (cache == null) return outputAmount;
+            ItemStack stored = (ItemStack) cache.getClass().getMethod("getItemStack").invoke(cache);
+            if (stored == null || stored.getType().isAir() || !SlimefunUtils.isItemSimilar(prototype, stored, true)) return outputAmount;
+            long remaining = outputAmount;
+            while (remaining > 0) {
+                int batch = (int) Math.min(remaining, Integer.MAX_VALUE);
+                ItemStack[] input = new ItemStack[]{prototype.clone()};
+                input[0].setAmount(batch);
+                cls.getMethod("tryInputItem", Location.class, ItemStack[].class, cache.getClass()).invoke(null, location, input, cache);
+                ItemStack leftover = input[0];
+                int notStored = leftover == null ? 0 : leftover.getAmount();
+                long storedThisBatch = (long) batch - notStored;
+                if (storedThisBatch <= 0) break;
+                remaining -= storedThisBatch;
+            }
+            cls.getMethod("syncBlock", Location.class, cache.getClass()).invoke(null, location, cache);
+            return remaining;
+        } catch (Throwable ignored) {
+            return outputAmount;
+        }
+    }
+
     /**
      * 向量子存储物品中存入产物（最大值保护 / 数据溢出保护）。
      * <p>
@@ -641,7 +669,7 @@ public final class NetworkStorage {
         return emptySlots > Integer.MAX_VALUE / 64 ? Integer.MAX_VALUE : emptySlots * 64;
     }
 
-    private static void refreshLore(@NotNull ItemMeta meta, @NotNull QuantumCache cache) {
+    public static void refreshLore(@NotNull ItemMeta meta, @NotNull QuantumCache cache) {
         try {
             cache.updateMetaLore(meta);
         } catch (Throwable t) {

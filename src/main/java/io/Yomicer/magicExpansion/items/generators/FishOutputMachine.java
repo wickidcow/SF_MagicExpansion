@@ -473,28 +473,34 @@ public class FishOutputMachine extends MenuBlock implements EnergyNetComponent, 
         // 如果没有找到匹配的槽位,什么也不做(不存储新物品)
     }
 
-    // A2: long 版本写入（供以太生态阵列等大数量场景使用）：
-    // 不依赖 ItemStack#getAmount()（int 上限），而是把待存数量以 long 传入，可突破 21 亿
+    // Long-safe write used by large-output machines. It intentionally reuses the
+    // fork's direct CargoCore storage format instead of the upstream cache layer.
     static void storeItemToExistingSlotCachedLong(SlimefunBlockData data, ItemStack item, long amountToStore) {
         if (item == null || item.getType() == Material.AIR || amountToStore <= 0) return;
         ItemStack prototype = item.clone();
         prototype.setAmount(1);
-        CargoCoreCache cache = getCargoCoreCache(data);
-        for (Map.Entry<Integer, CachedSlot> entry : cache.slots.entrySet()) {
-            CachedSlot slot = entry.getValue();
-            if (!SlimefunUtils.isItemSimilar(prototype, slot.prototype, true)) continue;
-            // 找到匹配的已有槽位：累加数量并尊重上限（均使用 long 防溢出）
-            long newCount = slot.count > Long.MAX_VALUE - amountToStore
-                    ? Long.MAX_VALUE : slot.count + amountToStore;
-            if (slot.max != -1 && newCount > slot.max) {
-                newCount = slot.max; // 超过上限则调整到上限
+        for (int i = 0; i < MAX_STORED_ITEMS; i++) {
+            String jsonData = data.getData("item_type_" + i);
+            if (jsonData == null || jsonData.isEmpty()) continue;
+            try {
+                ItemStack storedItem = itemFromBase64(jsonData);
+                if (storedItem == null || storedItem.getType() == Material.AIR) continue;
+                storedItem.setAmount(1);
+                if (!SlimefunUtils.isItemSimilar(prototype, storedItem, true)) continue;
+                long current = 0L;
+                String countStr = data.getData("item_count_" + i);
+                if (countStr != null && !countStr.isEmpty()) current = Long.parseLong(countStr);
+                long next = current > Long.MAX_VALUE - amountToStore ? Long.MAX_VALUE : current + amountToStore;
+                String maxStr = data.getData("item_max_" + i);
+                if (maxStr != null && !maxStr.isEmpty()) {
+                    long max = Long.parseLong(maxStr);
+                    if (max != -1L && next > max) next = max;
+                }
+                data.setData("item_count_" + i, String.valueOf(next));
+                return;
+            } catch (Exception ignored) {
             }
-            data.setData("item_count_" + entry.getKey(), String.valueOf(newCount));
-            slot.count = newCount;
-            cache.dirty = true; // A2: 写入后标记 dirty，下一 tick 重建缓存保证与存储数据一致
-            return;
         }
-        // 如果没有找到匹配的槽位，什么也不做（不存储新物品）
     }
 
     private static final int MAX_STORED_ITEMS = 1145; // 最多支持 18 种不同物品

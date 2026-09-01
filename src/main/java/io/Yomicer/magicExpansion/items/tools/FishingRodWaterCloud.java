@@ -49,6 +49,18 @@ public class FishingRodWaterCloud extends SlimefunItem implements RecipeDisplayI
      * @param glow         是否显示附魔光效（true=发光，false=隐藏附魔）
      * @param weightBoost  二代鱼属性区间系数(0~4 档，青竹最低太公最高)
      */
+    /** Backward-compatible constructor used by pre-Release-10 rod registrations. */
+    public FishingRodWaterCloud(ItemGroup itemGroup,
+                                SlimefunItemStack item,
+                                RecipeType recipeType,
+                                ItemStack[] recipe,
+                                Map<Enchantment, Integer> enchantments,
+                                boolean glow,
+                                Map<String, List<WeightedItem>> lootTable,
+                                List<ItemStack> USABLE_LURES) {
+        this(itemGroup, item, recipeType, recipe, enchantments, glow, 0.0D, lootTable, USABLE_LURES);
+    }
+
     public FishingRodWaterCloud(ItemGroup itemGroup,
                                 SlimefunItemStack item,
                                 RecipeType recipeType,

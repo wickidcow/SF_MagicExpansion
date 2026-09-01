@@ -198,12 +198,11 @@ public class PlayerFishingWaterCloudListener implements Listener {
      * 蓄满分支/双倍鱼获会 setAmount 修改 drop, 直接返回单例会被污染并随掉落物扩散。
      */
     private ItemStack getSpecialCatchForLure(Lure lure) {
-        return switch (lure.getKey()) {
-            case "CuiXia"  -> MagicExpansionItems.FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_CUIXIA;  // 淬霞
-            case "WeiChen" -> MagicExpansionItems.FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_WEICHEN; // 微尘
-            case "RongHuo" -> MagicExpansionItems.FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_RONGHUO; // 熔火
-            case "YueJin"  -> MagicExpansionItems.FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_YUEJIN;  // 跃金
-            case "XingHe"  -> MagicExpansionItems.FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_XINGHE;  // 星核
+        ItemStack special = switch (lure.getKey()) {
+            case "CuiXia", "WeiChen", "RongHuo", "YueJin", "XingHe" -> MagicExpansionItems.REED_TASSEL;
+            case "JianJia", "LuXue", "WeiLu", "BaiLu", "LuYa" -> MagicExpansionItems.FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_BAILUYU;
+            case "NingShuang", "LuoXu", "BingPo", "ChuJi", "ChuiLun" -> MagicExpansionItems.FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_HANJIANG_XUEPOZHU;
+            case "FengSi", "YanYu", "LianBai", "XiaoFeng", "XieYing" -> MagicExpansionItems.FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_XIYU_YUPIZHEN;
             default -> null;
         };
         return special != null ? special.clone() : null;
