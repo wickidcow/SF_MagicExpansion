@@ -870,6 +870,96 @@ en_US:
       - Cut from green bamboo beside a quiet stream.
       - Its line rests lightly between cloud and water.
       - Sit with the river; the catch is only part of the journey.
+    FISHING_ROD_BETWEEN_WATER_CLOUD_REED:
+      Name: Between Water and Clouds - Reedflower Rod
+      Lore:
+      - A second-tier Water Cloud rod woven from reed tassels.
+      - Unlocks Generation 2 fishing and the path toward Snowy River.
+    FISHING_ROD_BETWEEN_WATER_CLOUD_HANJIANG:
+      Name: Between Water and Clouds - Snowy River Rod
+      Lore:
+      - A cold-water rod refined with the White Reed Feather.
+      - Improves Generation 2 fish quality and unlocks winter lures.
+    FISHING_ROD_BETWEEN_WATER_CLOUD_XIYU:
+      Name: Between Water and Clouds - Fine Rain · Slanting Wind
+      Lore:
+      - A high-tier Water Cloud rod refined with a Snow-Soul Pearl.
+      - Draws rarer Generation 2 fish from rain and mist.
+    REED_TASSEL:
+      Name: Reed Tassel
+      Lore:
+      - A special catch from the Cyan Bamboo Rod.
+      - Used to craft the Reedflower Rod.
+    FISH_LURE_BETWEEN_WATER_CLOUD_REED_JIANJIA:
+      Name: Reedbank Lure
+      Lore: [A Reedflower Rod lure for magical materials.]
+    FISH_LURE_BETWEEN_WATER_CLOUD_REED_LUXUE:
+      Name: Reed Snow
+      Lore: [A Reedflower Rod lure attuned to wind and snow.]
+    FISH_LURE_BETWEEN_WATER_CLOUD_REED_WEILU:
+      Name: Reed Dew
+      Lore: [A Reedflower Rod lure attuned to morning dew.]
+    FISH_LURE_BETWEEN_WATER_CLOUD_REED_BAILU:
+      Name: White Dew
+      Lore: [A Reedflower Rod lure attuned to frost-white waters.]
+    FISH_LURE_BETWEEN_WATER_CLOUD_REED_LUYA:
+      Name: Reed Sprout
+      Lore: [A Reedflower Rod lure carrying the scent of new reeds.]
+    FISH_LURE_BETWEEN_WATER_CLOUD_HANJIANG_NINGSHUANG:
+      Name: Frostfall
+      Lore: [A Snowy River lure attuned to forming frost.]
+    FISH_LURE_BETWEEN_WATER_CLOUD_HANJIANG_LUOXU:
+      Name: Falling Flakes
+      Lore: [A Snowy River lure light enough to drift on cold water.]
+    FISH_LURE_BETWEEN_WATER_CLOUD_HANJIANG_BINGPO:
+      Name: Ice Soul
+      Lore: [A Snowy River lure carrying deep frozen energy.]
+    FISH_LURE_BETWEEN_WATER_CLOUD_HANJIANG_CHUJI:
+      Name: First Clearing
+      Lore: [A Snowy River lure warmed by the first light after snow.]
+    FISH_LURE_BETWEEN_WATER_CLOUD_HANJIANG_CHUILUN:
+      Name: Lone Line
+      Lore: [A Snowy River lure for quiet, patient fishing.]
+    FISH_LURE_BETWEEN_WATER_CLOUD_XIYU_FENGSI:
+      Name: Wind Thread
+      Lore: [A Fine Rain lure carried by thin strands of wind.]
+    FISH_LURE_BETWEEN_WATER_CLOUD_XIYU_YANYU:
+      Name: Mist Rain
+      Lore: [A Fine Rain lure for fog-covered waters.]
+    FISH_LURE_BETWEEN_WATER_CLOUD_XIYU_LIANBAI:
+      Name: White Ripple
+      Lore: [A Fine Rain lure that leaves a pale ripple on the surface.]
+    FISH_LURE_BETWEEN_WATER_CLOUD_XIYU_XIAOFENG:
+      Name: Dawn Wind
+      Lore: [A Fine Rain lure for the first breeze of morning.]
+    FISH_LURE_BETWEEN_WATER_CLOUD_XIYU_XIEYING:
+      Name: Slanting Shadow
+      Lore: [A Fine Rain lure made for broken reflections and hidden currents.]
+    FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_BAILUYU:
+      Name: White Reed Feather
+      Lore:
+      - A rare Reedflower Rod catch.
+      - Required to craft the Snowy River Rod.
+    FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_HANJIANG_XUEPOZHU:
+      Name: Snow-Soul Pearl
+      Lore:
+      - A rare Snowy River catch.
+      - Required to craft the Fine Rain · Slanting Wind rod.
+    FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_XIYU_YUPIZHEN:
+      Name: Raincloak Needle
+      Lore:
+      - A rare Fine Rain · Slanting Wind catch.
+      - A key material for the next Water Cloud progression tier.
+    FISH_BREED_POOL:
+      Name: Fish Breeding Pool
+      Lore:
+      - Breed two Generation 2 fish into one offspring.
+      - Offspring inherit species, elements, quality, and traits.
+    PAGE_CHEST:
+      Name: Page Chest
+      Lore:
+      - Five pages of storage in a single Slimefun cargo-compatible chest.
+      - Click outside the inventory window to change pages.
     FISHING_STICK_STAR_IRON:
       Name: Fishing Stick Star Iron
       Lore:

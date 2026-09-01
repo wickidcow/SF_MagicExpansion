@@ -32,7 +32,8 @@ public class GuidePoolButtonListener implements Listener {
         // 收窄守卫: 鱼饵池按钮仅存在于水云间鱼竿的粘液书配方页(标题含"水云间")。
         // 第三方机器菜单标题不含"水云间", 直接放行, 避免对所有打开的菜单无差别扫描/移动按钮。
         String title = e.getView().getTitle();
-        if (title == null || !ChatColor.stripColor(title).contains("水云间")) {
+        String strippedTitle = title == null ? null : ChatColor.stripColor(title);
+        if (strippedTitle == null || !(strippedTitle.contains("水云间") || strippedTitle.contains("Between Water and Clouds") || strippedTitle.contains("Water Cloud"))) {
             return;
         }
         Inventory inv = e.getInventory();

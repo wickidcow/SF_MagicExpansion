@@ -19,136 +19,136 @@ public enum Gen2Fish {
 
     // ==================== 通用鱼(三区共享一套) ====================
     // 火·水·雷·风·地
-    YUNYIN("云隐鱼", Rarity.COMMON, Material.COD_BUCKET,
+    YUNYIN("Cloudveil Fish", Rarity.COMMON, Material.COD_BUCKET,
             new double[]{0.05, 0.50, 0.15, 0.15, 0.15}, true, Trait.ACCEL,
-            "藏身云底，身形似有若无，于水面时隐时现"),
-    LANGXI("浪息鱼", Rarity.COMMON, Material.SALMON_BUCKET,
+            "Hidden beneath the clouds, it flickers in and out of sight at the surface."),
+    LANGXI("Wavebreath Fish", Rarity.COMMON, Material.SALMON_BUCKET,
             new double[]{0.05, 0.25, 0.10, 0.50, 0.10}, true, Trait.SYNTH,
-            "逐浪而栖，尾鳍过处，波澜渐息"),
-    HENBO("痕波鱼", Rarity.RARE, Material.PUFFERFISH_BUCKET,
+            "It follows the waves, leaving calm water behind its tail."),
+    HENBO("Rippletrace Fish", Rarity.RARE, Material.PUFFERFISH_BUCKET,
             new double[]{0.05, 0.30, 0.45, 0.15, 0.05}, true, Trait.ACCEL,
-            "游过即留一圈电光水痕，转瞬即逝"),
-    WUYU("雾屿鱼", Rarity.RARE, Material.TROPICAL_FISH_BUCKET,
+            "Its passing leaves a brief ring of electric light across the water."),
+    WUYU("Mist Isle Fish", Rarity.RARE, Material.TROPICAL_FISH_BUCKET,
             new double[]{0.05, 0.20, 0.10, 0.20, 0.45}, true, Trait.SYNTH,
-            "栖于雾绕的礁屿，鳞染夜露，沉静如石"),
+            "It rests around misty reefs, its scales darkened by night dew."),
 
     // ==================== 芦花钓 · 芦雪(专用) ====================
-    LUXUE("芦雪鱼", Rarity.COMMON, Material.COD_BUCKET,
+    LUXUE("Reed-Snow Fish", Rarity.COMMON, Material.COD_BUCKET,
             new double[]{0.05, 0.25, 0.05, 0.55, 0.10}, false, Trait.ACCEL,
-            "芦花似雪纷落处，此鱼悄然而至"),
-    LUWEIYING("芦苇影", Rarity.RARE, Material.PUFFERFISH_BUCKET,
+            "It appears quietly where reed flowers fall like snow."),
+    LUWEIYING("Reed Shadow", Rarity.RARE, Material.PUFFERFISH_BUCKET,
             new double[]{0.05, 0.50, 0.05, 0.25, 0.15}, false, Trait.SYNTH,
-            "影藏芦苇丛底，人近则潜，风起则现"),
+            "It hides beneath reeds, vanishing from people and appearing with the wind."),
 
     // ==================== 芦花钓 · 苇露(专用) ====================
-    WEILU("苇露鱼", Rarity.COMMON, Material.COD_BUCKET,
+    WEILU("Reed-Dew Fish", Rarity.COMMON, Material.COD_BUCKET,
             new double[]{0.05, 0.55, 0.05, 0.15, 0.20}, false, Trait.SYNTH,
-            "栖于苇叶凝露处，晨光中背沾露珠"),
-    CHENLULIN("晨露鳞", Rarity.RARE, Material.PUFFERFISH_BUCKET,
+            "It gathers beneath dew-covered reeds, sparkling in the morning light."),
+    CHENLULIN("Morning Dewscale", Rarity.RARE, Material.PUFFERFISH_BUCKET,
             new double[]{0.05, 0.50, 0.25, 0.15, 0.05}, false, Trait.ACCEL,
-            "晓露垂苇，鳞映朝光，晶莹剔透"),
+            "Morning dew and sunrise turn its scales crystal-bright."),
 
     // ==================== 芦花钓 · 白露(专用) ====================
-    BAILU("白露鱼", Rarity.RARE, Material.PUFFERFISH_BUCKET,
+    BAILU("White Dew Fish", Rarity.RARE, Material.PUFFERFISH_BUCKET,
             new double[]{0.05, 0.25, 0.05, 0.15, 0.50}, false, Trait.ACCEL,
-            "白露凝江时现世，鳞色皎白如霜"),
-    SHUANGBAILIAN("霜白鲢", Rarity.EPIC, Material.AXOLOTL_BUCKET,
+            "It appears when white dew settles on the river, with frost-pale scales."),
+    SHUANGBAILIAN("Frostwhite Carp", Rarity.EPIC, Material.AXOLOTL_BUCKET,
             new double[]{0.05, 0.60, 0.05, 0.10, 0.20}, false, Trait.SYNTH,
-            "露凝为霜，鲢身素白，游若浮云"),
+            "Frost-white and weightless in motion, it drifts like a cloud."),
 
     // ==================== 芦花钓 · 芦芽(专用) ====================
-    LUYA("芦芽鱼", Rarity.COMMON, Material.COD_BUCKET,
+    LUYA("Reed-Sprout Fish", Rarity.COMMON, Material.COD_BUCKET,
             new double[]{0.05, 0.25, 0.05, 0.50, 0.15}, false, Trait.SYNTH,
-            "循初生芦芽香气而来，尚带春意"),
-    XINHUANG("新篁鲈", Rarity.RARE, Material.PUFFERFISH_BUCKET,
+            "Drawn by fresh reed shoots, it carries the feeling of spring."),
+    XINHUANG("New Bamboo Perch", Rarity.RARE, Material.PUFFERFISH_BUCKET,
             new double[]{0.05, 0.20, 0.10, 0.15, 0.50}, false, Trait.ACCEL,
-            "栖于新篁水畔，鳞染竹色，清冷自持"),
+            "It lives beside new bamboo, wearing a cool green cast."),
 
     // ==================== 寒江雪 · 凝霜(专用) ====================
-    SHUANGJIAO("霜鲛", Rarity.RARE, Material.PUFFERFISH_BUCKET,
+    SHUANGJIAO("Frostfin", Rarity.RARE, Material.PUFFERFISH_BUCKET,
             new double[]{0.05, 0.60, 0.05, 0.20, 0.10}, false, Trait.ACCEL,
-            "生于霜色初凝的江水，鳞面皆结细霜"),
-    NINGBOJING("凝波晶", Rarity.EPIC, Material.AXOLOTL_BUCKET,
+            "Born in the first frost of the river, its scales carry fine ice."),
+    NINGBOJING("Stillwave Crystal", Rarity.EPIC, Material.AXOLOTL_BUCKET,
             new double[]{0.05, 0.55, 0.05, 0.10, 0.25}, false, Trait.SYNTH,
-            "寒波凝成冰晶，冻结处鱼影驻足"),
+            "Cold waves crystallize around it as though the water pauses."),
 
     // ==================== 寒江雪 · 落絮(专用) ====================
-    XUXUE("絮雪鱼", Rarity.COMMON, Material.COD_BUCKET,
+    XUXUE("Drifting Snow Fish", Rarity.COMMON, Material.COD_BUCKET,
             new double[]{0.05, 0.25, 0.05, 0.55, 0.10}, false, Trait.SYNTH,
-            "随落絮飘入寒江，轻若无物"),
-    CHENXULIN("沉絮鳞", Rarity.RARE, Material.PUFFERFISH_BUCKET,
+            "It drifts into the cold river with falling flakes, almost weightless."),
+    CHENXULIN("Sunken Flakefin", Rarity.RARE, Material.PUFFERFISH_BUCKET,
             new double[]{0.05, 0.30, 0.05, 0.10, 0.50}, false, Trait.ACCEL,
-            "絮尽而后沉，负满江雪色归于江底"),
+            "When the drifting snow ends, it sinks carrying the river winter with it."),
 
     // ==================== 寒江雪 · 冰魄(专用) ====================
-    BINGPO("冰魄鱼", Rarity.EPIC, Material.AXOLOTL_BUCKET,
+    BINGPO("Ice-Soul Fish", Rarity.EPIC, Material.AXOLOTL_BUCKET,
             new double[]{0.05, 0.65, 0.05, 0.10, 0.15}, false, Trait.ACCEL,
-            "魄寄水心千年，寒气透骨，鱼目如冰"),
-    XUANBINGLI("玄冰鲤", Rarity.RARE, Material.PUFFERFISH_BUCKET,
+            "Its icy gaze carries a chill said to have rested in the river for ages."),
+    XUANBINGLI("Dark-Ice Carp", Rarity.RARE, Material.PUFFERFISH_BUCKET,
             new double[]{0.05, 0.60, 0.25, 0.05, 0.05}, false, Trait.SYNTH,
-            "鲤身覆一层玄冰，游动时粼光如练"),
+            "Dark ice coats this carp, flashing as it moves."),
 
     // ==================== 寒江雪 · 初霁(专用) ====================
-    JIGUANG("霁光鱼", Rarity.RARE, Material.PUFFERFISH_BUCKET,
+    JIGUANG("Clearsky Gleam Fish", Rarity.RARE, Material.PUFFERFISH_BUCKET,
             new double[]{0.45, 0.30, 0.05, 0.15, 0.05}, false, Trait.SYNTH,
-            "雪后初晴，霁光映鳞，暖意暗藏"),
-    NUANYANGLIN("暖阳鳞", Rarity.COMMON, Material.COD_BUCKET,
+            "After snow, clear sunlight glints across its scales with hidden warmth."),
+    NUANYANGLIN("Warm Sunscale", Rarity.COMMON, Material.COD_BUCKET,
             new double[]{0.50, 0.20, 0.05, 0.15, 0.10}, false, Trait.ACCEL,
-            "借一缕晴阳回暖水面，游鱼竞逐"),
+            "It follows the first warm sunlight returning to the water."),
 
     // ==================== 寒江雪 · 垂纶(专用) ====================
-    SUODIAO("蓑钓鱼", Rarity.COMMON, Material.COD_BUCKET,
+    SUODIAO("Raincloak Fish", Rarity.COMMON, Material.COD_BUCKET,
             new double[]{0.05, 0.50, 0.05, 0.15, 0.25}, false, Trait.ACCEL,
-            "惯于蓑衣孤钓处盘旋，似与人同守寒江"),
-    GUZHOU("孤舟影", Rarity.EPIC, Material.AXOLOTL_BUCKET,
+            "It circles lonely fishing spots as if keeping watch over the winter river."),
+    GUZHOU("Lone Boat Shadow", Rarity.EPIC, Material.AXOLOTL_BUCKET,
             new double[]{0.05, 0.30, 0.05, 0.50, 0.10}, false, Trait.SYNTH,
-            "一竿垂纶、千山暮雪，影随孤舟而远"),
+            "Its shadow follows a lone boat beneath distant evening snow."),
 
     // ==================== 细雨·斜风 · 风丝(专用) ====================
-    YOUSI("游丝鱼", Rarity.COMMON, Material.COD_BUCKET,
+    YOUSI("Wispthread Fish", Rarity.COMMON, Material.COD_BUCKET,
             new double[]{0.05, 0.20, 0.10, 0.60, 0.05}, false, Trait.SYNTH,
-            "循风丝而来，牵一尾涟漪入水"),
-    FENGXIAO("风绡鳞", Rarity.RARE, Material.PUFFERFISH_BUCKET,
+            "It follows threads of wind, pulling a fine ripple behind it."),
+    FENGXIAO("Wind-Silk Scale", Rarity.RARE, Material.PUFFERFISH_BUCKET,
             new double[]{0.05, 0.15, 0.20, 0.55, 0.05}, false, Trait.ACCEL,
-            "鳞薄如绡，风过即舞，似无形之丝"),
+            "Its silk-thin scales dance whenever the wind passes."),
 
     // ==================== 细雨·斜风 · 烟雨(专用) ====================
-    YANYU("烟雨鲤", Rarity.COMMON, Material.COD_BUCKET,
+    YANYU("Mist-Rain Carp", Rarity.COMMON, Material.COD_BUCKET,
             new double[]{0.05, 0.50, 0.05, 0.30, 0.10}, false, Trait.ACCEL,
-            "惯破烟雨而出，鳞染一江雾色"),
-    WUYINLU("雾隐鲈", Rarity.EPIC, Material.AXOLOTL_BUCKET,
+            "It breaks through misty rain with scales colored by the river fog."),
+    WUYINLU("Mistveil Perch", Rarity.EPIC, Material.AXOLOTL_BUCKET,
             new double[]{0.05, 0.55, 0.20, 0.15, 0.05}, false, Trait.SYNTH,
-            "雾锁长天时方见其形，行藏莫测"),
+            "It appears only beneath heavy mist and never stays where expected."),
 
     // ==================== 细雨·斜风 · 涟白(专用) ====================
-    LIANBAI("涟白鱼", Rarity.RARE, Material.PUFFERFISH_BUCKET,
+    LIANBAI("White Ripple Fish", Rarity.RARE, Material.PUFFERFISH_BUCKET,
             new double[]{0.05, 0.60, 0.20, 0.10, 0.05}, false, Trait.SYNTH,
-            "波心一圈白光浮过，游鱼皆探首"),
-    YINGBO("映波鳞", Rarity.COMMON, Material.COD_BUCKET,
+            "A pale ring of light crosses the water whenever it surfaces."),
+    YINGBO("Waveglint Scale", Rarity.COMMON, Material.COD_BUCKET,
             new double[]{0.05, 0.50, 0.15, 0.25, 0.05}, false, Trait.ACCEL,
-            "细雨斜织，鳞光与波影交映"),
+            "Fine rain weaves across its scales and the reflected waves."),
 
     // ==================== 细雨·斜风 · 晓风(专用) ====================
-    XIAOFENG("晓风鱼", Rarity.COMMON, Material.COD_BUCKET,
+    XIAOFENG("Dawnwind Fish", Rarity.COMMON, Material.COD_BUCKET,
             new double[]{0.05, 0.25, 0.05, 0.55, 0.10}, false, Trait.ACCEL,
-            "破晓风起时结群而出，衔岸草香"),
-    POXIAOLIN("破晓鳞", Rarity.RARE, Material.PUFFERFISH_BUCKET,
+            "Schools emerge with the dawn wind, carrying the scent of shore grass."),
+    POXIAOLIN("Daybreak Scale", Rarity.RARE, Material.PUFFERFISH_BUCKET,
             new double[]{0.45, 0.10, 0.05, 0.35, 0.05}, false, Trait.SYNTH,
-            "天色初明，一缕暖光先于点过水面"),
+            "A warm glimmer touches its scales just before sunrise."),
 
     // ==================== 细雨·斜风 · 斜影(专用) ====================
-    XIEYING("斜影鱼", Rarity.EPIC, Material.AXOLOTL_BUCKET,
+    XIEYING("Slantshadow Fish", Rarity.EPIC, Material.AXOLOTL_BUCKET,
             new double[]{0.05, 0.50, 0.20, 0.10, 0.15}, false, Trait.SYNTH,
-            "疏影落水、虚实难辨，诱鱼往往在影"),
-    ANLIU("暗流鲷", Rarity.RARE, Material.PUFFERFISH_BUCKET,
+            "It blends with broken reflections until fish and shadow are hard to separate."),
+    ANLIU("Undercurrent Bream", Rarity.RARE, Material.PUFFERFISH_BUCKET,
             new double[]{0.05, 0.35, 0.10, 0.05, 0.45}, false, Trait.ACCEL,
-            "栖于水面下暗流，静候落影入水");
+            "It waits in underwater currents for shadows to fall across the surface.");
 
     /** 稀有度(二代鱼独立，不依赖织梦者 Fish.Rarity) */
     public enum Rarity {
-        COMMON("§f凡品", "§f", Material.COD_BUCKET),
-        RARE("§e奇珍", "§e", Material.PUFFERFISH_BUCKET),
-        EPIC("§d史诗", "§d", Material.AXOLOTL_BUCKET);
+        COMMON("§fCommon", "§f", Material.COD_BUCKET),
+        RARE("§eRare", "§e", Material.PUFFERFISH_BUCKET),
+        EPIC("§dEpic", "§d", Material.AXOLOTL_BUCKET);
         private final String displayName;
         private final String colorCode;
         private final Material defaultMaterial;
@@ -164,8 +164,8 @@ public enum Gen2Fish {
 
     /** 基因型(决定功能流向): 加速种 → 机器加速消耗; 合成种 → 育种/附魔合成消耗 */
     public enum Trait {
-        ACCEL("§d加速种", "§d"),
-        SYNTH("§a合成种", "§a");
+        ACCEL("§dAcceleration", "§d"),
+        SYNTH("§aSynthesis", "§a");
         private final String displayName;
         private final String colorCode;
         Trait(String displayName, String colorCode) {

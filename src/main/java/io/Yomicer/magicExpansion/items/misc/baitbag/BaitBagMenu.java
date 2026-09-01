@@ -39,7 +39,7 @@ import static io.Yomicer.magicExpansion.utils.SameItemJudge.itemFromBase64;
 import static io.Yomicer.magicExpansion.utils.SameItemJudge.itemToBase64;
 
 /**
- * 饵料袋菜单: 固定槽位存储织梦者/水云间/记忆碎片鱼饵, 支持优先级与外部存储输入
+ * 饵料袋菜单: 固定槽位存储Dreamweaver/Between Water and Clouds/Memory Fragment鱼饵, 支持优先级与外部存储输入
  */
 public final class BaitBagMenu {
 
@@ -48,32 +48,32 @@ public final class BaitBagMenu {
     }
 
     private static final List<BaitEntry> BAITS = List.of(
-            new BaitEntry("fishlurebasic", "fishLureBasic", "织梦者", MagicExpansionItems.FISH_LURE_BASIC),
-            new BaitEntry("fishluredust", "fishLureDust", "织梦者", MagicExpansionItems.FISH_LURE_DUST),
-            new BaitEntry("fishlureore", "fishLureOre", "织梦者", MagicExpansionItems.FISH_LURE_ORE),
-            new BaitEntry("fishlurealloy", "fishLureAlloyIngot", "织梦者", MagicExpansionItems.FISH_LURE_ALLOY_INGOT),
-            new BaitEntry("cuixia", "CuiXia", "水云间", MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_CUIXIA),
-            new BaitEntry("weichen", "WeiChen", "水云间", MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_WEICHEN),
-            new BaitEntry("ronghuo", "RongHuo", "水云间", MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_RONGHUO),
-            new BaitEntry("yuejin", "YueJin", "水云间", MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_YUEJIN),
-            new BaitEntry("xinghe", "XingHe", "水云间", MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_XINGHE),
-            new BaitEntry("memory", "fishLureFinal", "记忆碎片", memoryFragment()),
-            new BaitEntry("jianjia", "JianJia", "芦花", MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_REED_JIANJIA),
-            new BaitEntry("luxue", "LuXue", "芦花", MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_REED_LUXUE),
-            new BaitEntry("weilu", "WeiLu", "芦花", MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_REED_WEILU),
-            new BaitEntry("bailu", "BaiLu", "芦花", MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_REED_BAILU),
-            new BaitEntry("luya", "LuYa", "芦花", MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_REED_LUYA),
-            new BaitEntry("ningshuang", "NingShuang", "寒江雪", MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_HANJIANG_NINGSHUANG),
-            new BaitEntry("luoxu", "LuoXu", "寒江雪", MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_HANJIANG_LUOXU),
-            new BaitEntry("bingpo", "BingPo", "寒江雪", MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_HANJIANG_BINGPO),
-            new BaitEntry("chuji", "ChuJi", "寒江雪", MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_HANJIANG_CHUJI),
-            new BaitEntry("chuilun", "ChuiLun", "寒江雪", MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_HANJIANG_CHUILUN),
-            new BaitEntry("fengsi", "FengSi", "细雨·斜风", MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_XIYU_FENGSI),
-            new BaitEntry("yanyu", "YanYu", "细雨·斜风", MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_XIYU_YANYU),
-            new BaitEntry("lianbai", "LianBai", "细雨·斜风", MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_XIYU_LIANBAI),
-            new BaitEntry("xiaofeng", "XiaoFeng", "细雨·斜风", MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_XIYU_XIAOFENG),
-            new BaitEntry("xieying", "XieYing", "细雨·斜风", MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_XIYU_XIEYING),
-            new BaitEntry("magicsugar", "magic_sugar", "织梦者", SlimefunItems.MAGIC_SUGAR)
+            new BaitEntry("fishlurebasic", "fishLureBasic", "Dreamweaver", MagicExpansionItems.FISH_LURE_BASIC),
+            new BaitEntry("fishluredust", "fishLureDust", "Dreamweaver", MagicExpansionItems.FISH_LURE_DUST),
+            new BaitEntry("fishlureore", "fishLureOre", "Dreamweaver", MagicExpansionItems.FISH_LURE_ORE),
+            new BaitEntry("fishlurealloy", "fishLureAlloyIngot", "Dreamweaver", MagicExpansionItems.FISH_LURE_ALLOY_INGOT),
+            new BaitEntry("cuixia", "CuiXia", "Between Water and Clouds", MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_CUIXIA),
+            new BaitEntry("weichen", "WeiChen", "Between Water and Clouds", MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_WEICHEN),
+            new BaitEntry("ronghuo", "RongHuo", "Between Water and Clouds", MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_RONGHUO),
+            new BaitEntry("yuejin", "YueJin", "Between Water and Clouds", MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_YUEJIN),
+            new BaitEntry("xinghe", "XingHe", "Between Water and Clouds", MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_XINGHE),
+            new BaitEntry("memory", "fishLureFinal", "Memory Fragment", memoryFragment()),
+            new BaitEntry("jianjia", "JianJia", "Reedflower", MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_REED_JIANJIA),
+            new BaitEntry("luxue", "LuXue", "Reedflower", MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_REED_LUXUE),
+            new BaitEntry("weilu", "WeiLu", "Reedflower", MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_REED_WEILU),
+            new BaitEntry("bailu", "BaiLu", "Reedflower", MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_REED_BAILU),
+            new BaitEntry("luya", "LuYa", "Reedflower", MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_REED_LUYA),
+            new BaitEntry("ningshuang", "NingShuang", "Snowy River", MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_HANJIANG_NINGSHUANG),
+            new BaitEntry("luoxu", "LuoXu", "Snowy River", MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_HANJIANG_LUOXU),
+            new BaitEntry("bingpo", "BingPo", "Snowy River", MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_HANJIANG_BINGPO),
+            new BaitEntry("chuji", "ChuJi", "Snowy River", MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_HANJIANG_CHUJI),
+            new BaitEntry("chuilun", "ChuiLun", "Snowy River", MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_HANJIANG_CHUILUN),
+            new BaitEntry("fengsi", "FengSi", "Fine Rain · Slanting Wind", MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_XIYU_FENGSI),
+            new BaitEntry("yanyu", "YanYu", "Fine Rain · Slanting Wind", MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_XIYU_YANYU),
+            new BaitEntry("lianbai", "LianBai", "Fine Rain · Slanting Wind", MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_XIYU_LIANBAI),
+            new BaitEntry("xiaofeng", "XiaoFeng", "Fine Rain · Slanting Wind", MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_XIYU_XIAOFENG),
+            new BaitEntry("xieying", "XieYing", "Fine Rain · Slanting Wind", MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_XIYU_XIEYING),
+            new BaitEntry("magicsugar", "magic_sugar", "Dreamweaver", SlimefunItems.MAGIC_SUGAR)
     );
 
     // ==================== 4×7 布局数据模型(系列 → 鱼竿 → 鱼饵, 数据驱动, 新增鱼竿在此登记即可自动排版) ====================
@@ -164,20 +164,20 @@ public final class BaitBagMenu {
 
     /** 系列 → 鱼竿 → 鱼饵 布局(新增鱼竿按此处登记, 自动排版) */
     private static final List<SeriesLayout> LAYOUT = List.of(
-            new SeriesLayout("织梦者", Material.GHAST_TEAR, List.of(
-                    new RodLayout("萌新鱼竿/风语者之竿", MagicExpansionItems.FISHING_ROD_WIND_SPEAKER,
+            new SeriesLayout("Dreamweaver", Material.GHAST_TEAR, List.of(
+                    new RodLayout("Starter Rod / Wind Speaker Rod", MagicExpansionItems.FISHING_ROD_WIND_SPEAKER,
                             List.of("fishLureBasic", "fishLureDust", "fishLureOre", "fishLureAlloyIngot", "magic_sugar")),
-                    new RodLayout("纠缠之节：终焉之丝·悖论为钩", MagicExpansionItems.FISHING_ROD_FINAL_STICK,
+                    new RodLayout("Entangled Knot: Final Thread · Paradox Hook", MagicExpansionItems.FISHING_ROD_FINAL_STICK,
                             List.of("fishLureFinal"))
             )),
-            new SeriesLayout("水云间", Material.CYAN_DYE, List.of(
-                    new RodLayout("青竹竿", MagicExpansionItems.FISHING_ROD_BETWEEN_WATER_CLOUD_CYAN_BAMBOO,
+            new SeriesLayout("Between Water and Clouds", Material.CYAN_DYE, List.of(
+                    new RodLayout("Cyan Bamboo Rod", MagicExpansionItems.FISHING_ROD_BETWEEN_WATER_CLOUD_CYAN_BAMBOO,
                             List.of("CuiXia", "WeiChen", "RongHuo", "YueJin", "XingHe")),
-                    new RodLayout("芦花钓", FISHING_ROD_BETWEEN_WATER_CLOUD_REED,
+                    new RodLayout("Reedflower钓", FISHING_ROD_BETWEEN_WATER_CLOUD_REED,
                             List.of("JianJia", "LuXue", "WeiLu", "BaiLu", "LuYa")),
-                    new RodLayout("寒江雪", MagicExpansionItems.FISHING_ROD_BETWEEN_WATER_CLOUD_HANJIANG,
+                    new RodLayout("Snowy River", MagicExpansionItems.FISHING_ROD_BETWEEN_WATER_CLOUD_HANJIANG,
                             List.of("NingShuang", "LuoXu", "BingPo", "ChuJi", "ChuiLun")),
-                    new RodLayout("细雨·斜风", MagicExpansionItems.FISHING_ROD_BETWEEN_WATER_CLOUD_XIYU,
+                    new RodLayout("Fine Rain · Slanting Wind", MagicExpansionItems.FISHING_ROD_BETWEEN_WATER_CLOUD_XIYU,
                             List.of("FengSi", "YanYu", "LianBai", "XiaoFeng", "XieYing"))
             ))
     );
@@ -259,11 +259,11 @@ public final class BaitBagMenu {
     private BaitBagMenu() {
     }
 
-    // ==================== 记忆碎片(直接沿用钓鱼池里的生成方式) ====================
+    // ==================== Memory Fragment(直接沿用钓鱼池里的生成方式) ====================
 
     private static ItemStack memoryFragment() {
         return new CustomItemStack(new ItemStack(Material.PRISMARINE_SHARD),
-                getGradientNameVer2("鱼饵·记忆碎片"),
+                getGradientNameVer2("鱼饵·Memory Fragment"),
                 "§f这个鱼饵可以钓到任何物品",
                 "§f他存在于过去或者是未来",
                 "§f你现在看到的他并非真正的他");
@@ -403,7 +403,7 @@ public final class BaitBagMenu {
                 int pa = getPriority(bag, a);
                 int pb = getPriority(bag, b);
                 if (pa != pb) return Integer.compare(pa, pb); // 优先级数值小的先消耗
-                return Integer.compare(BAITS.indexOf(a), BAITS.indexOf(b)); // 同级按 织梦者→水云间→记忆碎片
+                return Integer.compare(BAITS.indexOf(a), BAITS.indexOf(b)); // 同级按 Dreamweaver→Between Water and Clouds→Memory Fragment
             });
 
             BaitEntry chosen = candidates.get(0);
@@ -435,7 +435,7 @@ public final class BaitBagMenu {
                 int pa = getPriority(bag, a);
                 int pb = getPriority(bag, b);
                 if (pa != pb) return Integer.compare(pa, pb); // 优先级数值小的先消耗
-                return Integer.compare(BAITS.indexOf(a), BAITS.indexOf(b)); // 同级按 织梦者→水云间→记忆碎片
+                return Integer.compare(BAITS.indexOf(a), BAITS.indexOf(b)); // 同级按 Dreamweaver→Between Water and Clouds→Memory Fragment
             });
             return candidates.get(0).key();
         }

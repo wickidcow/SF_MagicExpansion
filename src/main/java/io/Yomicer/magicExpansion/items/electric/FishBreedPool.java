@@ -40,7 +40,7 @@ public class FishBreedPool extends MenuBlock {
     // 第二行第3格 / 第7格: 输入槽(放置父鱼/母鱼), 均为空槽可放鱼
     private static final int SLOT_PARENT_1 = 11;
     private static final int SLOT_PARENT_2 = 15;
-    // 第二行第5格: 杂交按钮(点击开始育种), 材质=原版钟
+    // 第二行第5格: 杂交按钮(点击Start Breeding), 材质=原版钟
     private static final int SLOT_BUTTON = 13;
     // 第三行第5格: 输出槽(取出子代)
     private static final int SLOT_OUTPUT = 22;
@@ -70,17 +70,17 @@ public class FishBreedPool extends MenuBlock {
 
         // ===== 第一行第5格 (下标4): 信息栏 —— 杂交方式 + 系数公式 =====
         preset.addItem(SLOT_INFO, new CustomItemStack(doGlow(Material.BOOK),
-                        getGradientNameVer2("育种池·杂交规则"),
-                        getGradientNameVer2("子代元素 = 父①×0.4 + 父②×0.4"),
-                        getGradientNameVer2("20% 概率逐维 ±5% 变异偏移"),
-                        getGradientNameVer2("子代品质 = 父母均值 ±0.05"),
-                        getGradientNameVer2("基因型: 30% 继承父母一方, 70% 随机"),
-                        getGradientNameVer2("子代鱼种随机取父本或母本一方")),
+                        getGradientNameVer2("Breeding Pool · Crossbreeding Rules"),
+                        getGradientNameVer2("Offspring elements = Parent 1×0.4 + Parent 2×0.4"),
+                        getGradientNameVer2("20% chance per element for a ±5% mutation"),
+                        getGradientNameVer2("Offspring quality = parent average ±0.05"),
+                        getGradientNameVer2("Trait: 30% inherited, 70% random"),
+                        getGradientNameVer2("Offspring species is inherited from either parent")),
                 (p, s, i, a) -> false);
 
         // 说明 lore 每行用 getGradientNameVer2 包成"魔法2代渐变色"
         preset.addItem(SLOT_DECOR_A, new CustomItemStack(Material.LIGHT_BLUE_STAINED_GLASS_PANE,
-                        getGradientNameVer2("父鱼①"),
+                        getGradientNameVer2("Parent Fish 1"),
                         getGradientNameVer2("")),
                 (p, s, i, a) -> false);
         preset.addItem(SLOT_DECOR_B, new CustomItemStack(Material.LIGHT_BLUE_STAINED_GLASS_PANE,
@@ -88,7 +88,7 @@ public class FishBreedPool extends MenuBlock {
                         getGradientNameVer2("")),
                 (p, s, i, a) -> false);
         preset.addItem(SLOT_DECOR_C, new CustomItemStack(Material.BLUE_STAINED_GLASS_PANE,
-                        getGradientNameVer2("父鱼②"),
+                        getGradientNameVer2("Parent Fish 2"),
                         getGradientNameVer2("")),
                 (p, s, i, a) -> false);
         preset.addItem(SLOT_DECOR_D, new CustomItemStack(Material.BLUE_STAINED_GLASS_PANE,
@@ -108,9 +108,9 @@ public class FishBreedPool extends MenuBlock {
 
         // ===== 第二行第5格 (下标13): 杂交按钮 = 原版钟 =====
         preset.addItem(SLOT_BUTTON, new CustomItemStack(doGlow(Material.BELL),
-                        getGradientNameVer2("开始育种"),
-                        getGradientNameVer2("消耗两条父鱼, 产出一条子代鱼"),
-                        getGradientNameVer2("制作时间 2 秒")),
+                        getGradientNameVer2("Start Breeding"),
+                        getGradientNameVer2("Consumes two parent fish and produces one offspring"),
+                        getGradientNameVer2("Processing time: 2 seconds")),
                 (p, s, item, a) -> {
                     onBreedClick(p);
                     return false;
@@ -141,14 +141,14 @@ public class FishBreedPool extends MenuBlock {
         ItemStack f1 = menu.getItemInSlot(SLOT_PARENT_1);
         ItemStack f2 = menu.getItemInSlot(SLOT_PARENT_2);
         if (!FishAttributeGenerator.isGen2Fish(f1) || !FishAttributeGenerator.isGen2Fish(f2)) {
-            player.sendMessage(getGradientNameVer2("育种池：需要放入两条二代鱼"));
+            player.sendMessage(getGradientNameVer2("Breeding Pool: insert two Generation 2 fish."));
             return;
         }
 
         // 输出槽为空才能开始制作
         ItemStack occupied = menu.getItemInSlot(SLOT_OUTPUT);
         if (occupied != null && !occupied.getType().isAir()) {
-            player.sendMessage(getGradientNameVer2("育种池：输出槽已满, 请先取出子代"));
+            player.sendMessage(getGradientNameVer2("Breeding Pool: output slot is full; remove the offspring first."));
             return;
         }
 
@@ -156,7 +156,7 @@ public class FishBreedPool extends MenuBlock {
 
         // 锁定按钮为"制作中", 防止 2 秒内重复点击
         menu.replaceExistingItem(SLOT_BUTTON, craftingItem());
-        player.sendMessage(getGradientNameVer2("育种中... 请稍候 2 秒"));
+        player.sendMessage(getGradientNameVer2("Breeding... processing for 2 seconds."));
 
         // 2 秒(40 tick)后执行真正杂交
         Bukkit.getScheduler().runTaskLater(MagicExpansion.getInstance(), () -> {
@@ -165,7 +165,7 @@ public class FishBreedPool extends MenuBlock {
             ItemStack cur2 = menu.getItemInSlot(SLOT_PARENT_2);
             BlockMenu fresh = menu;
             if (!FishAttributeGenerator.isGen2Fish(cur1) || !FishAttributeGenerator.isGen2Fish(cur2)) {
-                player.sendMessage(getGradientNameVer2("育种池：制作期间父鱼被移走, 已取消"));
+                player.sendMessage(getGradientNameVer2("Breeding Pool: a parent fish was removed; breeding cancelled."));
                 resetButton(fresh);
                 return;
             }
@@ -176,17 +176,17 @@ public class FishBreedPool extends MenuBlock {
     /** 制作中的按钮图标 */
     private CustomItemStack craftingItem() {
         return new CustomItemStack(doGlow(Material.CLOCK),
-                getGradientNameVer2("育种中..."),
-                getGradientNameVer2("请稍候 2 秒"));
+                getGradientNameVer2("Breeding..."),
+                getGradientNameVer2("Processing for 2 seconds"));
     }
 
     /** 还原按钮为初始状态 */
     private void resetButton(BlockMenu menu) {
         menu.replaceExistingItem(SLOT_BUTTON, new CustomItemStack(doGlow(Material.BELL),
-                getGradientNameVer2("开始育种"),
-                getGradientNameVer2("消耗两条父鱼, 产出一条子代鱼"),
-                getGradientNameVer2("输出槽为空时才能育种"),
-                getGradientNameVer2("点击后需等待 2 秒制作")));
+                getGradientNameVer2("Start Breeding"),
+                getGradientNameVer2("Consumes two parent fish and produces one offspring"),
+                getGradientNameVer2("The output slot must be empty to breed."),
+                getGradientNameVer2("Breeding completes 2 seconds after clicking.")));
     }
 
     /** 真正执行杂交: 读取两条父鱼 → 计算子代 → 放入输出槽 → 清空输入槽 → 还原按钮 */
@@ -196,7 +196,7 @@ public class FishBreedPool extends MenuBlock {
         double[] e1 = FishAttributeGenerator.getElements(f1);
         double[] e2 = FishAttributeGenerator.getElements(f2);
         if (type1 == null || type2 == null || e1 == null || e2 == null) {
-            player.sendMessage(getGradientNameVer2("育种池：父鱼数据异常, 无法育种"));
+            player.sendMessage(getGradientNameVer2("Breeding Pool: invalid parent data; breeding cancelled."));
             resetButton(menu);
             return;
         }
@@ -234,7 +234,7 @@ public class FishBreedPool extends MenuBlock {
         // 输出槽再次确认仍为空(制作期间可能被占用)
         ItemStack occupied = menu.getItemInSlot(SLOT_OUTPUT);
         if (occupied != null && !occupied.getType().isAir()) {
-            player.sendMessage(getGradientNameVer2("育种池：输出槽已满, 请先取出子代"));
+            player.sendMessage(getGradientNameVer2("Breeding Pool: output slot is full; remove the offspring first."));
             resetButton(menu);
             return;
         }
@@ -246,6 +246,6 @@ public class FishBreedPool extends MenuBlock {
         menu.replaceExistingItem(SLOT_PARENT_1, null);
         menu.replaceExistingItem(SLOT_PARENT_2, null);
         resetButton(menu);
-        player.sendMessage(getGradientNameVer2("育种完成！"));
+        player.sendMessage(getGradientNameVer2("Breeding complete!"));
     }
 }

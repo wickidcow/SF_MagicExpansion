@@ -112,18 +112,18 @@ public class FishAttributeGenerator {
         List<String> lore = new ArrayList<>();
         lore.add("");
         // 品级：前缀品红(§d)，后缀随稀有度变色(凡品§f白/奇珍§e黄/史诗§d品红)，与一代鱼"鱼种稀有度"行同款布局
-        lore.add("§d品级·" + type.getRarity().getDisplayName());
+        lore.add("§dGrade · " + type.getRarity().getDisplayName());
         // 品质系数：前缀绿(§a)，与一代鱼"重量"行同款
-        lore.add("§a品质系数: §r§f" + String.format("%.2f", quality));
+        lore.add("§aQuality: §r§f" + String.format("%.2f", quality));
         // 元素：百分比格式，五行各用醒目颜色区分(火红/水蓝/雷紫/风绿/地金)；
         // 后续杂交机器以 元素实值 × 品质系数 累加五种 算出最终值(此处仅展示，数值仍存于 PDC)
-        lore.add("§e元素: §c火 " + pct(elements[0])
-                + " §b水 " + pct(elements[1])
-                + " §d雷 " + pct(elements[2])
-                + " §a风 " + pct(elements[3])
-                + " §6地 " + pct(elements[4]));
+        lore.add("§eElements: §cFire " + pct(elements[0])
+                + " §bWater " + pct(elements[1])
+                + " §dLightning " + pct(elements[2])
+                + " §aWind " + pct(elements[3])
+                + " §6Earth " + pct(elements[4]));
         // 基因型：前缀青蓝(§b)，后缀随基因型变色(加速种§d粉/合成种§a绿)，决定功能流向
-        lore.add("§b基因型: " + effectiveTrait.getColorCode() + effectiveTrait.getDisplayName());
+        lore.add("§bTrait: " + effectiveTrait.getColorCode() + effectiveTrait.getDisplayName());
         lore.add("");
         lore.add(ColorGradient.getGradientNameVer2(type.getLore()));
         // 亲本追溯：仅育种子代显示, 野生鱼不显示；以鱼种中文名展示(不显示内部 ID)
@@ -131,10 +131,10 @@ public class FishAttributeGenerator {
             String n1 = fishNameOf(parent1Id);
             String n2 = fishNameOf(parent2Id);
             lore.add("");
-            lore.add("§7亲本: §r§f" + n1 + " §7× §r§f" + n2);
+            lore.add("§7Parents: §r§f" + n1 + " §7× §r§f" + n2);
         }
         lore.add("");
-        lore.add(ColorGradient.getGradientNameVer2("可作 育种 / 元素附魔 材料"));
+        lore.add(ColorGradient.getGradientNameVer2("Usable for breeding / elemental enchanting"));
 
         // 关键：用 Slimefun 的 CustomItemStack 构造（与一代鱼 RANDOM_FISH_* 一致的方式）。
         // 鱼桶材质(COD_BUCKET/PUFFERFISH_BUCKET 等)若用"裸 new ItemStack + setItemMeta"，

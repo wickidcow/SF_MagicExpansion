@@ -60,7 +60,7 @@ public class AccelerationUseListener implements Listener {
         MachineBuffManager.apply(clicked.getLocation(), MachineBuffManager.DEFAULT_DURATION_SECONDS, multiplier);
 
         e.setCancelled(true); // 阻止打开机器菜单/放置, 视为一次"注入"交互
-        player.sendMessage("§b[鱼能] §r已向 §f" + ItemStackHelper.getDisplayName(target.getItem())
-                + " §r注入加速鱼能（倍率 ×" + String.format("%.2f", multiplier) + "，持续 5 分钟）");
+        player.sendMessage("§b[Fish Energy] §rInjected §f" + ItemStackHelper.getDisplayName(target.getItem())
+                + " §rwith an acceleration buff (×" + String.format("%.2f", multiplier) + ", 5 minutes)");
     }
 }

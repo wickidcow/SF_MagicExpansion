@@ -137,7 +137,7 @@ public class PageChest extends AbstractContainer {
     }
 
     private static String title(int page) {
-        return getRandomGradientName("跃迁储物箱 · 第 " + page + "/" + TOTAL_PAGES + " 页 (左键上一页 右键下一页)");
+        return getRandomGradientName("Page Chest · Page " + page + "/" + TOTAL_PAGES + " (left click: previous · right click: next)");
     }
 
     // ===================== 页码 =====================
