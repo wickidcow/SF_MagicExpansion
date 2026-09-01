@@ -52,6 +52,9 @@ public class GuideVirtualGroupClickListener implements Listener {
     @EventHandler(priority = EventPriority.LOWEST)
     public void onClick(InventoryClickEvent e) {
         if (!(e.getWhoClicked() instanceof Player player)) return;
+        // 收窄修复: 仅当界面是魔法2.0自绘菜单(标题=复用的原版主页标题)时才劫持。
+        // 第三方机器菜单(标题为机器名)内若残留 guide_virtual 标记物品, 点击应原样放行, 避免被劫持打开主页。
+        if (!GuideCategoryMenu.isGuideMenuTitle(player, e.getView().getTitle())) return;
         ItemStack clicked = e.getCurrentItem();
         if (clicked == null) return;
         String vid = GuideCategoryMenu.getVirtualGroupId(clicked);

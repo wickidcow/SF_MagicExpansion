@@ -2,6 +2,8 @@ package io.Yomicer.magicExpansion.Listener.fishingListener;
 
 import io.Yomicer.magicExpansion.MagicExpansion;
 import io.Yomicer.magicExpansion.core.MagicExpansionItems;
+import io.Yomicer.magicExpansion.items.misc.fish.FishAttributeGenerator;
+import io.Yomicer.magicExpansion.items.misc.fish.Gen2Fish;
 import io.Yomicer.magicExpansion.items.misc.Lure;
 import io.Yomicer.magicExpansion.items.misc.WeightedItem;
 import io.Yomicer.magicExpansion.items.misc.baitbag.BaitBagMenu;
@@ -32,6 +34,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.FireworkMeta;
+import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
@@ -66,7 +69,9 @@ public class PlayerFishingWaterCloudListener implements Listener {
 
     // 拥有熟练度系统的水云间鱼竿 ID(后续新竿按需加入)
     private static final Set<String> PROFICIENCY_ROD_IDS = Set.of(
-            "FISHING_ROD_BETWEEN_WATER_CLOUD_REED"
+            "FISHING_ROD_BETWEEN_WATER_CLOUD_REED",
+            "FISHING_ROD_BETWEEN_WATER_CLOUD_HANJIANG",
+            "FISHING_ROD_BETWEEN_WATER_CLOUD_XIYU"
     );
 
     // 水云间系列鱼饵(当前鱼饵作为特殊事件判定依据)
@@ -80,7 +85,17 @@ public class PlayerFishingWaterCloudListener implements Listener {
             new MoreLure(MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_REED_LUXUE, "LuXue"),   // 芦雪(占位)
             new MoreLure(MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_REED_WEILU, "WeiLu"),   // 苇露(占位)
             new MoreLure(MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_REED_BAILU, "BaiLu"),   // 白露(占位)
-            new MoreLure(MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_REED_LUYA, "LuYa")     // 芦芽(占位)
+            new MoreLure(MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_REED_LUYA, "LuYa"),     // 芦芽(占位)
+            new MoreLure(MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_HANJIANG_NINGSHUANG, "NingShuang"), // 凝霜(寒江雪专用)
+            new MoreLure(MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_HANJIANG_LUOXU, "LuoXu"),           // 落絮(寒江雪专用)
+            new MoreLure(MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_HANJIANG_BINGPO, "BingPo"),         // 冰魄(寒江雪专用)
+            new MoreLure(MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_HANJIANG_CHUJI, "ChuJi"),           // 初霁(寒江雪专用)
+            new MoreLure(MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_HANJIANG_CHUILUN, "ChuiLun"),       // 垂纶(寒江雪专用)
+            new MoreLure(MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_XIYU_FENGSI, "FengSi"),             // 风丝(细雨·斜风专用)
+            new MoreLure(MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_XIYU_YANYU, "YanYu"),               // 烟雨(细雨·斜风专用)
+            new MoreLure(MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_XIYU_LIANBAI, "LianBai"),           // 涟白(细雨·斜风专用)
+            new MoreLure(MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_XIYU_XIAOFENG, "XiaoFeng"),         // 晓风(细雨·斜风专用)
+            new MoreLure(MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_XIYU_XIEYING, "XieYing")            // 斜影(细雨·斜风专用)
     );
 
     // 水云间专属钓获提示词(普通钓物)
@@ -442,7 +457,31 @@ public class PlayerFishingWaterCloudListener implements Listener {
                 pool = adjusted;
             }
         }
-        return getRandomItemFromWeightedPool(pool);
+        return applyGen2Attributes(getRandomItemFromWeightedPool(pool), fishingRod);
+    }
+
+    /**
+     * 二代鱼属性注入：若钓获物是二代鱼种子，则按当前鱼竿稀有度档位生成带属性的成品；
+     * 非二代鱼原样返回。属性由 {@link FishAttributeGenerator} 统一生成。
+     */
+    private ItemStack applyGen2Attributes(ItemStack item, FishingRodWaterCloud fishingRod) {
+        if (item == null || item.getType() == Material.AIR) {
+            return item;
+        }
+        // 仅有 PDC 标记的二代鱼种子才会被识别（普通物品/特殊钓物不参与）
+        if (!FishAttributeGenerator.isGen2Fish(item)) {
+            return item;
+        }
+        // 根据鱼竿 weightBoost 映射到属性生成档位(0~4)
+        int boostIndex = Math.max(0, Math.min(4, (int) Math.round(fishingRod.getWeightBoost())));
+        // 读取种子类型id
+        String typeId = item.getItemMeta().getPersistentDataContainer()
+                .get(FishAttributeGenerator.GEN2_TYPE, PersistentDataType.STRING);
+        Gen2Fish type = Gen2Fish.byId(typeId);
+        if (type == null) {
+            return item;
+        }
+        return FishAttributeGenerator.generate(type, boostIndex);
     }
 
     /**
@@ -480,21 +519,22 @@ public class PlayerFishingWaterCloudListener implements Listener {
 
     /**
      * 当前鱼饵对应的特殊钓物(显式映射,即被标记为特殊事件入口的物品)
+     * 修复: 返回 clone 而非 MagicExpansionItems 的 static 单例——
+     * 蓄满分支/双倍鱼获会 setAmount 修改 drop, 直接返回单例会被污染并随掉落物扩散。
      */
     private ItemStack getSpecialCatchForLure(Lure lure) {
-        return switch (lure.getKey()) {
+        ItemStack special = switch (lure.getKey()) {
             case "CuiXia"  -> MagicExpansionItems.REED_TASSEL;  // 淬霞 → 芦穗(特殊钓物, 青竹竿钓取)
             case "WeiChen" -> MagicExpansionItems.REED_TASSEL;  // 微尘 → 芦穗
             case "RongHuo" -> MagicExpansionItems.REED_TASSEL;  // 熔火 → 芦穗
             case "YueJin"  -> MagicExpansionItems.REED_TASSEL;  // 跃金 → 芦穗
             case "XingHe"  -> MagicExpansionItems.REED_TASSEL;  // 星核 → 芦穗
-            case "JianJia" -> MagicExpansionItems.FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_REED_JIANJIA; // 蒹葭特殊钓物(占位)
-            case "LuXue" -> MagicExpansionItems.FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_REED_LUXUE;   // 芦雪特殊钓物(占位)
-            case "WeiLu" -> MagicExpansionItems.FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_REED_WEILU;   // 苇露特殊钓物(占位)
-            case "BaiLu" -> MagicExpansionItems.FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_REED_BAILU;   // 白露特殊钓物(占位)
-            case "LuYa"  -> MagicExpansionItems.FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_REED_LUYA;    // 芦芽特殊钓物(占位)
+            case "JianJia", "LuXue", "WeiLu", "BaiLu", "LuYa" -> MagicExpansionItems.FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_BAILUYU; // 芦花钓各饵 → 白芦羽(专属特殊钓物)
+            case "NingShuang", "LuoXu", "BingPo", "ChuJi", "ChuiLun" -> MagicExpansionItems.FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_HANJIANG_XUEPOZHU; // 寒江雪各饵 → 雪魄珠
+            case "FengSi", "YanYu", "LianBai", "XiaoFeng", "XieYing" -> MagicExpansionItems.FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_XIYU_YUPIZHEN;      // 细雨·斜风各饵 → 雨披针
             default -> null;
         };
+        return special != null ? special.clone() : null;
     }
 
     /**

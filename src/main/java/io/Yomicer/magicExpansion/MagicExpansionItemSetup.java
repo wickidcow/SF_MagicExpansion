@@ -1,5 +1,6 @@
 package io.Yomicer.magicExpansion;
 
+import io.Yomicer.magicExpansion.items.electric.FishBreedPool;
 import io.Yomicer.magicExpansion.items.electric.entitykillMachinee.EntityKillMachine;
 import io.Yomicer.magicExpansion.items.electric.geoMachine.FiveElementsMiner;
 import io.Yomicer.magicExpansion.items.electric.geoMachine.RSCMagicMiner;
@@ -16,6 +17,7 @@ import io.Yomicer.magicExpansion.items.misc.fish.CommonFish;
 import io.Yomicer.magicExpansion.items.misc.fish.CommonFishHidden;
 import io.Yomicer.magicExpansion.items.misc.fish.FishingBook;
 import io.Yomicer.magicExpansion.items.misc.fish.FishingBookWaterCloud;
+import io.Yomicer.magicExpansion.items.misc.fish.Gen2Fish;
 import io.Yomicer.magicExpansion.items.misc.fish.PowerEel;
 import io.Yomicer.magicExpansion.items.misc.magicAlter.MagicWand;
 import io.Yomicer.magicExpansion.items.misc.weapon.StarShardsSword;
@@ -218,6 +220,30 @@ public final class MagicExpansionItemSetup {
             new CustomItemStack(Material.FISHING_ROD,
                     getGradientNameVer2("青竹竿"),
                     getGradientNameVer2("通过 青竹竿 钓鱼获取")),
+            (input, output) -> {});
+
+    /** 雪魄珠获取方式(配方类型图标 = 寒江雪竿, 配方中间 = 寒江雪鱼饵说明) */
+    public static final RecipeType XUEPOZHU_OBTAIN = new RecipeType(
+            new NamespacedKey(MagicExpansion.getInstance(), "magicexpansion_xuepo_zhu_obtain"),
+            new CustomItemStack(Material.FISHING_ROD,
+                    getGradientNameVer2("寒江雪"),
+                    getGradientNameVer2("通过 寒江雪 钓鱼获取")),
+            (input, output) -> {});
+
+    /** 白芦羽获取方式(配方类型图标 = 芦花钓竿, 配方中间 = 芦花钓鱼饵说明) */
+    public static final RecipeType BAILUYU_OBTAIN = new RecipeType(
+            new NamespacedKey(MagicExpansion.getInstance(), "magicexpansion_bailuyu_obtain"),
+            new CustomItemStack(Material.FISHING_ROD,
+                    getGradientNameVer2("芦花钓"),
+                    getGradientNameVer2("通过 芦花钓 钓鱼获取")),
+            (input, output) -> {});
+
+    /** 雨披针获取方式(配方类型图标 = 细雨·斜风竿, 配方中间 = 细雨·斜风鱼饵说明) */
+    public static final RecipeType YUPIZHEN_OBTAIN = new RecipeType(
+            new NamespacedKey(MagicExpansion.getInstance(), "magicexpansion_yupizhen_obtain"),
+            new CustomItemStack(Material.FISHING_ROD,
+                    getGradientNameVer2("细雨·斜风"),
+                    getGradientNameVer2("通过 细雨·斜风 钓鱼获取")),
             (input, output) -> {});
 
     private MagicExpansionItemSetup() {
@@ -1556,7 +1582,7 @@ public final class MagicExpansionItemSetup {
         }, new HashMap<>() {{
             put(Enchantment.LUCK, 1);
             put(Enchantment.LURE, 2);
-        }}, false,
+        }}, false, 0,
                 Map.of(
                         // 淬霞
                         "CuiXia", List.of(
@@ -1687,40 +1713,46 @@ public final class MagicExpansionItemSetup {
         }, new HashMap<>() {{
             put(Enchantment.LUCK, 2);
             put(Enchantment.LURE, 2);
-        }}, false,
-                Map.of(
-                        // 蒹葭(芦花钓专用·魔法秘材)
-                        "JianJia", List.of(
-                                new WeightedItem(SlimefunItems.MAGIC_LUMP_1, 222),
-                                new WeightedItem(SlimefunItems.MAGIC_LUMP_2, 222),
-                                new WeightedItem(SlimefunItems.MAGIC_LUMP_3, 222),
-                                new WeightedItem(SlimefunItems.ENDER_LUMP_1, 222),
-                                new WeightedItem(SlimefunItems.ENDER_LUMP_2, 222),
-                                new WeightedItem(SlimefunItems.ENDER_LUMP_3, 222),
-                                new WeightedItem(SlimefunItems.MAGIC_SUGAR, 222),
-                                new WeightedItem(SlimefunItems.AIR_RUNE, 222),
-                                new WeightedItem(SlimefunItems.WATER_RUNE, 222),
-                                new WeightedItem(SlimefunItems.FIRE_RUNE, 222),
-                                new WeightedItem(SlimefunItems.EARTH_RUNE, 222),
-                                new WeightedItem(new ItemStack(Material.EXPERIENCE_BOTTLE), 222),
-                                new WeightedItem(new ItemStack(Material.GLOWSTONE_DUST), 222),
-                                new WeightedItem(new ItemStack(Material.BLAZE_POWDER), 222),
-                                new WeightedItem(new ItemStack(Material.NETHER_STAR), 80),
-                                new WeightedItem(new ItemStack(Material.DIRT,15), 667),
-                                new WeightedItem(new ItemStack(Material.STONE,15), 667),
-                                new WeightedItem(new ItemStack(Material.SANDSTONE,15), 667),
-                                new WeightedItem(new ItemStack(Material.RED_SAND,15), 667),
-                                new WeightedItem(new ItemStack(Material.CACTUS,15), 667),
-                                new WeightedItem(new ItemStack(Material.LILY_PAD,15), 667),
-                                new WeightedItem(MagicExpansionItems.FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_REED_JIANJIA, 40)
-                        )
-                ),
+        }}, false, 1,
+                buildReedLootTable(),
                 Arrays.asList(FISH_LURE_BETWEEN_WATER_CLOUD_REED_JIANJIA,
                         FISH_LURE_BETWEEN_WATER_CLOUD_REED_LUXUE,FISH_LURE_BETWEEN_WATER_CLOUD_REED_WEILU,
                         FISH_LURE_BETWEEN_WATER_CLOUD_REED_BAILU,FISH_LURE_BETWEEN_WATER_CLOUD_REED_LUYA)).register(plugin);
 
+        //水云间·寒江雪(二代鱼竿, 承接芦花钓: 芦花钓 + 白芦羽 + 魔法线 → 寒江雪)
+        new FishingRodWaterCloud(magicexpansionwatercloudrod, MagicExpansionItems.FISHING_ROD_BETWEEN_WATER_CLOUD_HANJIANG, RecipeType.ENHANCED_CRAFTING_TABLE, new ItemStack[] {
+                null,null,MagicExpansionItems.FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_BAILUYU,
+                null,MagicExpansionItems.FISHING_ROD_BETWEEN_WATER_CLOUD_REED,MagicExpansionItems.MAGIC_THREAD,
+                MagicExpansionItems.FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_BAILUYU,null,MAGIC_EXPANSION_MAGIC_SUGAR_1
+        }, new HashMap<>() {{
+            put(Enchantment.LUCK, 3);
+            put(Enchantment.LURE, 3);
+        }}, false, 2,
+                buildHanjiangLootTable(),
+                Arrays.asList(FISH_LURE_BETWEEN_WATER_CLOUD_HANJIANG_NINGSHUANG,
+                        FISH_LURE_BETWEEN_WATER_CLOUD_HANJIANG_LUOXU,FISH_LURE_BETWEEN_WATER_CLOUD_HANJIANG_BINGPO,
+                        FISH_LURE_BETWEEN_WATER_CLOUD_HANJIANG_CHUJI,FISH_LURE_BETWEEN_WATER_CLOUD_HANJIANG_CHUILUN)).register(plugin);
 
+        //水云间·细雨·斜风(二代鱼竿, 承接寒江雪: 寒江雪 + 雪魄珠 + 魔法线 → 细雨·斜风)
+        new FishingRodWaterCloud(magicexpansionwatercloudrod, MagicExpansionItems.FISHING_ROD_BETWEEN_WATER_CLOUD_XIYU, RecipeType.ENHANCED_CRAFTING_TABLE, new ItemStack[] {
+                null,null,MagicExpansionItems.FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_HANJIANG_XUEPOZHU,
+                null,MagicExpansionItems.FISHING_ROD_BETWEEN_WATER_CLOUD_HANJIANG,MagicExpansionItems.MAGIC_THREAD,
+                MagicExpansionItems.FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_HANJIANG_XUEPOZHU,null,MAGIC_EXPANSION_MAGIC_SUGAR_1
+        }, new HashMap<>() {{
+            put(Enchantment.LUCK, 4);
+            put(Enchantment.LURE, 4);
+        }}, false, 3,
+                buildXiyuLootTable(),
+                Arrays.asList(FISH_LURE_BETWEEN_WATER_CLOUD_XIYU_FENGSI,
+                        FISH_LURE_BETWEEN_WATER_CLOUD_XIYU_YANYU,FISH_LURE_BETWEEN_WATER_CLOUD_XIYU_LIANBAI,
+                        FISH_LURE_BETWEEN_WATER_CLOUD_XIYU_XIAOFENG,FISH_LURE_BETWEEN_WATER_CLOUD_XIYU_XIEYING)).register(plugin);
 
+        //水云间·育种池(第二层: 消耗两条二代鱼 → 一条子代鱼, 杂交算法见 FishBreedPool)
+        new FishBreedPool(magicexpansionrecipemachine, MagicExpansionItems.FISH_BREED_POOL, RecipeType.ENHANCED_CRAFTING_TABLE, new ItemStack[] {
+                new ItemStack(Material.GLASS), new ItemStack(Material.GLASS), new ItemStack(Material.GLASS),
+                new ItemStack(Material.GLASS), new ItemStack(Material.WATER_BUCKET), new ItemStack(Material.GLASS),
+                new ItemStack(Material.GLASS), new ItemStack(Material.GLASS), new ItemStack(Material.GLASS)
+        }).register(plugin);
 
         //星辰木
         new UnplaceableBlock(magicexpansionresource, FISHING_STICK_STAR_IRON, RecipeType.ENHANCED_CRAFTING_TABLE, new ItemStack[] {
@@ -1996,13 +2028,110 @@ public final class MagicExpansionItemSetup {
                 SlimefunItems.MAGIC_SUGAR,new ItemStack(Material.GLISTERING_MELON_SLICE),SlimefunItems.MAGIC_SUGAR,
                 SlimefunItems.MAGIC_SUGAR,SlimefunItems.MAGIC_SUGAR,SlimefunItems.MAGIC_SUGAR
         },sfItemAmount(FISH_LURE_BETWEEN_WATER_CLOUD_XINGHE,64)).register(plugin);
-
-        //水云间·芦花钓专用鱼饵·蒹葭(魔法糖×8 + 书 → 64, 注册在青竹竿五饵之后保持粘液书同竿相邻)
+        //水云间·芦花钓专用鱼饵·蒹葭(魔法糖×8 + 书 → 64, 注册在青竹竿五饵之后保持粘液书同竿相邻)
         new UnplaceableBlock(magicexpansionwatercloudlure, FISH_LURE_BETWEEN_WATER_CLOUD_REED_JIANJIA, RecipeType.ENHANCED_CRAFTING_TABLE, new ItemStack[] {
                 SlimefunItems.MAGIC_SUGAR,SlimefunItems.MAGIC_SUGAR,SlimefunItems.MAGIC_SUGAR,
                 SlimefunItems.MAGIC_SUGAR,new ItemStack(Material.BOOK),SlimefunItems.MAGIC_SUGAR,
                 SlimefunItems.MAGIC_SUGAR,SlimefunItems.MAGIC_SUGAR,SlimefunItems.MAGIC_SUGAR
         },sfItemAmount(FISH_LURE_BETWEEN_WATER_CLOUD_REED_JIANJIA,64)).register(plugin);
+
+        //水云间·芦花钓专用鱼饵·芦雪(魔法糖×8 + 雪球 → 64, 主题材料呼应"风雪")
+        new UnplaceableBlock(magicexpansionwatercloudlure, FISH_LURE_BETWEEN_WATER_CLOUD_REED_LUXUE, RecipeType.ENHANCED_CRAFTING_TABLE, new ItemStack[] {
+                SlimefunItems.MAGIC_SUGAR,SlimefunItems.MAGIC_SUGAR,SlimefunItems.MAGIC_SUGAR,
+                SlimefunItems.MAGIC_SUGAR,new ItemStack(Material.SNOWBALL),SlimefunItems.MAGIC_SUGAR,
+                SlimefunItems.MAGIC_SUGAR,SlimefunItems.MAGIC_SUGAR,SlimefunItems.MAGIC_SUGAR
+        },sfItemAmount(FISH_LURE_BETWEEN_WATER_CLOUD_REED_LUXUE,64)).register(plugin);
+
+        //水云间·芦花钓专用鱼饵·苇露(魔法糖×8 + 玻璃瓶 → 64, 主题材料呼应"晨露")
+        new UnplaceableBlock(magicexpansionwatercloudlure, FISH_LURE_BETWEEN_WATER_CLOUD_REED_WEILU, RecipeType.ENHANCED_CRAFTING_TABLE, new ItemStack[] {
+                SlimefunItems.MAGIC_SUGAR,SlimefunItems.MAGIC_SUGAR,SlimefunItems.MAGIC_SUGAR,
+                SlimefunItems.MAGIC_SUGAR,new ItemStack(Material.GLASS_BOTTLE),SlimefunItems.MAGIC_SUGAR,
+                SlimefunItems.MAGIC_SUGAR,SlimefunItems.MAGIC_SUGAR,SlimefunItems.MAGIC_SUGAR
+        },sfItemAmount(FISH_LURE_BETWEEN_WATER_CLOUD_REED_WEILU,64)).register(plugin);
+
+        //水云间·芦花钓专用鱼饵·白露(魔法糖×8 + 羽毛 → 64, 主题材料呼应"霜白")
+        new UnplaceableBlock(magicexpansionwatercloudlure, FISH_LURE_BETWEEN_WATER_CLOUD_REED_BAILU, RecipeType.ENHANCED_CRAFTING_TABLE, new ItemStack[] {
+                SlimefunItems.MAGIC_SUGAR,SlimefunItems.MAGIC_SUGAR,SlimefunItems.MAGIC_SUGAR,
+                SlimefunItems.MAGIC_SUGAR,new ItemStack(Material.FEATHER),SlimefunItems.MAGIC_SUGAR,
+                SlimefunItems.MAGIC_SUGAR,SlimefunItems.MAGIC_SUGAR,SlimefunItems.MAGIC_SUGAR
+        },sfItemAmount(FISH_LURE_BETWEEN_WATER_CLOUD_REED_BAILU,64)).register(plugin);
+
+        //水云间·芦花钓专用鱼饵·芦芽(魔法糖×8 + 竹子 → 64, 主题材料呼应"新篁")
+        new UnplaceableBlock(magicexpansionwatercloudlure, FISH_LURE_BETWEEN_WATER_CLOUD_REED_LUYA, RecipeType.ENHANCED_CRAFTING_TABLE, new ItemStack[] {
+                SlimefunItems.MAGIC_SUGAR,SlimefunItems.MAGIC_SUGAR,SlimefunItems.MAGIC_SUGAR,
+                SlimefunItems.MAGIC_SUGAR,new ItemStack(Material.BAMBOO),SlimefunItems.MAGIC_SUGAR,
+                SlimefunItems.MAGIC_SUGAR,SlimefunItems.MAGIC_SUGAR,SlimefunItems.MAGIC_SUGAR
+        },sfItemAmount(FISH_LURE_BETWEEN_WATER_CLOUD_REED_LUYA,64)).register(plugin);
+
+        //水云间·寒江雪(第二代)专用鱼饵·凝霜(魔法糖×8 + 雪球 → 64, 主题"霜")
+        new UnplaceableBlock(magicexpansionwatercloudlure, FISH_LURE_BETWEEN_WATER_CLOUD_HANJIANG_NINGSHUANG, RecipeType.ENHANCED_CRAFTING_TABLE, new ItemStack[] {
+                SlimefunItems.MAGIC_SUGAR,SlimefunItems.MAGIC_SUGAR,SlimefunItems.MAGIC_SUGAR,
+                SlimefunItems.MAGIC_SUGAR,new ItemStack(Material.SNOWBALL),SlimefunItems.MAGIC_SUGAR,
+                SlimefunItems.MAGIC_SUGAR,SlimefunItems.MAGIC_SUGAR,SlimefunItems.MAGIC_SUGAR
+        },sfItemAmount(FISH_LURE_BETWEEN_WATER_CLOUD_HANJIANG_NINGSHUANG,64)).register(plugin);
+
+        //水云间·寒江雪专用鱼饵·落絮(魔法糖×8 + 羽毛 → 64, 主题"絮")
+        new UnplaceableBlock(magicexpansionwatercloudlure, FISH_LURE_BETWEEN_WATER_CLOUD_HANJIANG_LUOXU, RecipeType.ENHANCED_CRAFTING_TABLE, new ItemStack[] {
+                SlimefunItems.MAGIC_SUGAR,SlimefunItems.MAGIC_SUGAR,SlimefunItems.MAGIC_SUGAR,
+                SlimefunItems.MAGIC_SUGAR,new ItemStack(Material.FEATHER),SlimefunItems.MAGIC_SUGAR,
+                SlimefunItems.MAGIC_SUGAR,SlimefunItems.MAGIC_SUGAR,SlimefunItems.MAGIC_SUGAR
+        },sfItemAmount(FISH_LURE_BETWEEN_WATER_CLOUD_HANJIANG_LUOXU,64)).register(plugin);
+
+        //水云间·寒江雪专用鱼饵·冰魄(魔法糖×8 + 冰 → 64, 主题"冰")
+        new UnplaceableBlock(magicexpansionwatercloudlure, FISH_LURE_BETWEEN_WATER_CLOUD_HANJIANG_BINGPO, RecipeType.ENHANCED_CRAFTING_TABLE, new ItemStack[] {
+                SlimefunItems.MAGIC_SUGAR,SlimefunItems.MAGIC_SUGAR,SlimefunItems.MAGIC_SUGAR,
+                SlimefunItems.MAGIC_SUGAR,new ItemStack(Material.ICE),SlimefunItems.MAGIC_SUGAR,
+                SlimefunItems.MAGIC_SUGAR,SlimefunItems.MAGIC_SUGAR,SlimefunItems.MAGIC_SUGAR
+        },sfItemAmount(FISH_LURE_BETWEEN_WATER_CLOUD_HANJIANG_BINGPO,64)).register(plugin);
+
+        //水云间·寒江雪专用鱼饵·初霁(魔法糖×8 + 萤石粉 → 64, 主题"霁光")
+        new UnplaceableBlock(magicexpansionwatercloudlure, FISH_LURE_BETWEEN_WATER_CLOUD_HANJIANG_CHUJI, RecipeType.ENHANCED_CRAFTING_TABLE, new ItemStack[] {
+                SlimefunItems.MAGIC_SUGAR,SlimefunItems.MAGIC_SUGAR,SlimefunItems.MAGIC_SUGAR,
+                SlimefunItems.MAGIC_SUGAR,new ItemStack(Material.GLOWSTONE_DUST),SlimefunItems.MAGIC_SUGAR,
+                SlimefunItems.MAGIC_SUGAR,SlimefunItems.MAGIC_SUGAR,SlimefunItems.MAGIC_SUGAR
+        },sfItemAmount(FISH_LURE_BETWEEN_WATER_CLOUD_HANJIANG_CHUJI,64)).register(plugin);
+
+        //水云间·寒江雪专用鱼饵·垂纶(魔法糖×8 + 木棍 → 64, 主题"孤钓")
+        new UnplaceableBlock(magicexpansionwatercloudlure, FISH_LURE_BETWEEN_WATER_CLOUD_HANJIANG_CHUILUN, RecipeType.ENHANCED_CRAFTING_TABLE, new ItemStack[] {
+                SlimefunItems.MAGIC_SUGAR,SlimefunItems.MAGIC_SUGAR,SlimefunItems.MAGIC_SUGAR,
+                SlimefunItems.MAGIC_SUGAR,new ItemStack(Material.STICK),SlimefunItems.MAGIC_SUGAR,
+                SlimefunItems.MAGIC_SUGAR,SlimefunItems.MAGIC_SUGAR,SlimefunItems.MAGIC_SUGAR
+        },sfItemAmount(FISH_LURE_BETWEEN_WATER_CLOUD_HANJIANG_CHUILUN,64)).register(plugin);
+
+        //水云间·细雨·斜风专用鱼饵·风丝(魔法糖×8 + 线 → 64, 主题"丝")
+        new UnplaceableBlock(magicexpansionwatercloudlure, FISH_LURE_BETWEEN_WATER_CLOUD_XIYU_FENGSI, RecipeType.ENHANCED_CRAFTING_TABLE, new ItemStack[] {
+                SlimefunItems.MAGIC_SUGAR,SlimefunItems.MAGIC_SUGAR,SlimefunItems.MAGIC_SUGAR,
+                SlimefunItems.MAGIC_SUGAR,new ItemStack(Material.STRING),SlimefunItems.MAGIC_SUGAR,
+                SlimefunItems.MAGIC_SUGAR,SlimefunItems.MAGIC_SUGAR,SlimefunItems.MAGIC_SUGAR
+        },sfItemAmount(FISH_LURE_BETWEEN_WATER_CLOUD_XIYU_FENGSI,64)).register(plugin);
+
+        //水云间·细雨·斜风专用鱼饵·烟雨(魔法糖×8 + 灰染料 → 64, 主题"烟雨")
+        new UnplaceableBlock(magicexpansionwatercloudlure, FISH_LURE_BETWEEN_WATER_CLOUD_XIYU_YANYU, RecipeType.ENHANCED_CRAFTING_TABLE, new ItemStack[] {
+                SlimefunItems.MAGIC_SUGAR,SlimefunItems.MAGIC_SUGAR,SlimefunItems.MAGIC_SUGAR,
+                SlimefunItems.MAGIC_SUGAR,new ItemStack(Material.GRAY_DYE),SlimefunItems.MAGIC_SUGAR,
+                SlimefunItems.MAGIC_SUGAR,SlimefunItems.MAGIC_SUGAR,SlimefunItems.MAGIC_SUGAR
+        },sfItemAmount(FISH_LURE_BETWEEN_WATER_CLOUD_XIYU_YANYU,64)).register(plugin);
+
+        //水云间·细雨·斜风专用鱼饵·涟白(魔法糖×8 + 睡莲 → 64, 主题"涟")
+        new UnplaceableBlock(magicexpansionwatercloudlure, FISH_LURE_BETWEEN_WATER_CLOUD_XIYU_LIANBAI, RecipeType.ENHANCED_CRAFTING_TABLE, new ItemStack[] {
+                SlimefunItems.MAGIC_SUGAR,SlimefunItems.MAGIC_SUGAR,SlimefunItems.MAGIC_SUGAR,
+                SlimefunItems.MAGIC_SUGAR,new ItemStack(Material.LILY_PAD),SlimefunItems.MAGIC_SUGAR,
+                SlimefunItems.MAGIC_SUGAR,SlimefunItems.MAGIC_SUGAR,SlimefunItems.MAGIC_SUGAR
+        },sfItemAmount(FISH_LURE_BETWEEN_WATER_CLOUD_XIYU_LIANBAI,64)).register(plugin);
+
+        //水云间·细雨·斜风专用鱼饵·晓风(魔法糖×8 + 羽毛 → 64, 主题"晓")
+        new UnplaceableBlock(magicexpansionwatercloudlure, FISH_LURE_BETWEEN_WATER_CLOUD_XIYU_XIAOFENG, RecipeType.ENHANCED_CRAFTING_TABLE, new ItemStack[] {
+                SlimefunItems.MAGIC_SUGAR,SlimefunItems.MAGIC_SUGAR,SlimefunItems.MAGIC_SUGAR,
+                SlimefunItems.MAGIC_SUGAR,new ItemStack(Material.FEATHER),SlimefunItems.MAGIC_SUGAR,
+                SlimefunItems.MAGIC_SUGAR,SlimefunItems.MAGIC_SUGAR,SlimefunItems.MAGIC_SUGAR
+        },sfItemAmount(FISH_LURE_BETWEEN_WATER_CLOUD_XIYU_XIAOFENG,64)).register(plugin);
+
+        //水云间·细雨·斜风专用鱼饵·斜影(魔法糖×8 + 橡树苗 → 64, 主题"影")
+        new UnplaceableBlock(magicexpansionwatercloudlure, FISH_LURE_BETWEEN_WATER_CLOUD_XIYU_XIEYING, RecipeType.ENHANCED_CRAFTING_TABLE, new ItemStack[] {
+                SlimefunItems.MAGIC_SUGAR,SlimefunItems.MAGIC_SUGAR,SlimefunItems.MAGIC_SUGAR,
+                SlimefunItems.MAGIC_SUGAR,new ItemStack(Material.OAK_SAPLING),SlimefunItems.MAGIC_SUGAR,
+                SlimefunItems.MAGIC_SUGAR,SlimefunItems.MAGIC_SUGAR,SlimefunItems.MAGIC_SUGAR
+        },sfItemAmount(FISH_LURE_BETWEEN_WATER_CLOUD_XIYU_XIEYING,64)).register(plugin);
 
         //水云间材料·青竹节
         new UnplaceableBlock(magicexpansionwatercloudmaterial, MagicExpansionItems.BAMBOO_JOINT, RecipeType.ENHANCED_CRAFTING_TABLE, new ItemStack[] {
@@ -2019,6 +2148,34 @@ public final class MagicExpansionItemSetup {
                         getGradientNameVer2("使用 淬霞、微尘 等鱼饵获取")),null,
                 null,null,null
         }).register(plugin);
+
+        //水云间·特殊钓物·白芦羽(不可合成, 芦花钓各饵钓获; 为合成寒江雪竿关键材料)
+        new BaiLuYu(magicexpansionwatercloudmaterial, MagicExpansionItems.FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_BAILUYU, BAILUYU_OBTAIN, new ItemStack[] {
+                null,null,null,
+                null,new CustomItemStack(Material.FEATHER,
+                        getGradientNameVer2("芦花钓鱼饵"),
+                        getGradientNameVer2("使用 蒹葭、芦雪 等鱼饵获取")),null,
+                null,null,null
+        }).register(plugin);
+
+        //水云间·特殊钓物·雪魄珠(不可合成, 由寒江雪各饵钓获; 为合成细雨·斜风竿关键材料)
+        new XuePaoZhu(magicexpansionwatercloudmaterial, MagicExpansionItems.FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_HANJIANG_XUEPOZHU, XUEPOZHU_OBTAIN, new ItemStack[] {
+                null,null,null,
+                null,new CustomItemStack(Material.GHAST_TEAR,
+                        getGradientNameVer2("寒江雪鱼饵"),
+                        getGradientNameVer2("使用 凝霜、落絮 等鱼饵获取")),null,
+                null,null,null
+        }).register(plugin);
+
+        //水云间·特殊钓物·雨披针(不可合成, 由细雨·斜风各饵钓获; 为合成太公钓竿关键材料)
+        new YuPiZhen(magicexpansionwatercloudmaterial, MagicExpansionItems.FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_XIYU_YUPIZHEN, YUPIZHEN_OBTAIN, new ItemStack[] {
+                null,null,null,
+                null,new CustomItemStack(Material.BLAZE_ROD,
+                        getGradientNameVer2("细雨·斜风鱼饵"),
+                        getGradientNameVer2("使用 风丝、烟雨 等鱼饵获取")),null,
+                null,null,null
+        }).register(plugin);
+
         //水云间材料·魔法线
         new UnplaceableBlock(magicexpansionwatercloudmaterial, MagicExpansionItems.MAGIC_THREAD, RecipeType.ENHANCED_CRAFTING_TABLE, new ItemStack[] {
                 SlimefunItems.MAGIC_LUMP_1,MAGIC_EXPANSION_MAGIC_SUGAR_1,SlimefunItems.MAGIC_LUMP_1,
@@ -2712,6 +2869,12 @@ public final class MagicExpansionItemSetup {
                 new ItemStack(Material.CHEST),REDSTONE,new ItemStack(Material.CHEST),
                 null, null, null,
                 null, null, null,
+        }).register(plugin);
+        //翻页储物箱
+        new PageChest(magicexpansionspecialitem, MagicExpansionItems.PAGE_CHEST, RecipeType.ENHANCED_CRAFTING_TABLE, new ItemStack[] {
+                new ItemStack(Material.CHEST), MAGIC_EXPANSION_MAGIC_SUGAR_1, new ItemStack(Material.CHEST),
+                MAGIC_EXPANSION_MAGIC_SUGAR_1, MAGIC_EXPANSION_TO_MAGIC_ITEM_BASIC, MAGIC_EXPANSION_MAGIC_SUGAR_1,
+                new ItemStack(Material.CHEST), MAGIC_EXPANSION_MAGIC_SUGAR_1, new ItemStack(Material.CHEST),
         }).register(plugin);
         //以太秘匣提取器
         new CargoFragmentExtract(magicexpansionspecialitem, CARGO_FRAGMENT_EXTRACT, RecipeType.ENHANCED_CRAFTING_TABLE, new ItemStack[] {
@@ -4580,5 +4743,169 @@ public final class MagicExpansionItemSetup {
                 .register(plugin);
     }
 
+
+    /**
+     * 芦花钓(水云间二代)钓物池。
+     * 蒹葭沿用原"魔法秘材"池；芦雪/苇露/白露/芦芽(二代)走共享通用池 + 专属鱼 + 元素素材 + 特殊钓物。
+     */
+    private static Map<String, List<WeightedItem>> buildReedLootTable() {
+        Map<String, List<WeightedItem>> table = new HashMap<>();
+        // 蒹葭(一代·魔法秘材, 保持原样)
+        table.put("JianJia", Arrays.asList(
+                new WeightedItem(SlimefunItems.MAGIC_LUMP_1, 222),
+                new WeightedItem(SlimefunItems.MAGIC_LUMP_2, 222),
+                new WeightedItem(SlimefunItems.MAGIC_LUMP_3, 222),
+                new WeightedItem(SlimefunItems.ENDER_LUMP_1, 222),
+                new WeightedItem(SlimefunItems.ENDER_LUMP_2, 222),
+                new WeightedItem(SlimefunItems.ENDER_LUMP_3, 222),
+                new WeightedItem(SlimefunItems.MAGIC_SUGAR, 222),
+                new WeightedItem(SlimefunItems.AIR_RUNE, 222),
+                new WeightedItem(SlimefunItems.WATER_RUNE, 222),
+                new WeightedItem(SlimefunItems.FIRE_RUNE, 222),
+                new WeightedItem(SlimefunItems.EARTH_RUNE, 222),
+                new WeightedItem(new ItemStack(Material.EXPERIENCE_BOTTLE), 222),
+                new WeightedItem(new ItemStack(Material.GLOWSTONE_DUST), 222),
+                new WeightedItem(new ItemStack(Material.BLAZE_POWDER), 222),
+                new WeightedItem(new ItemStack(Material.NETHER_STAR), 80),
+                new WeightedItem(new ItemStack(Material.DIRT, 15), 667),
+                new WeightedItem(new ItemStack(Material.STONE, 15), 667),
+                new WeightedItem(new ItemStack(Material.SANDSTONE, 15), 667),
+                new WeightedItem(new ItemStack(Material.RED_SAND, 15), 667),
+                new WeightedItem(new ItemStack(Material.CACTUS, 15), 667),
+                new WeightedItem(new ItemStack(Material.LILY_PAD, 15), 667),
+                new WeightedItem(MagicExpansionItems.FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_BAILUYU, 40)
+        ));
+        // 芦雪(二代·风雪)
+        table.put("LuXue", FishingRodWaterCloud.buildLootTable("LuXue",
+                Gen2Fish.LUXUE, Gen2Fish.LUWEIYING,
+                Arrays.asList(
+                        FishingRodWaterCloud.elementMaterial(new ItemStack(Material.SNOWBALL), 300),
+                        FishingRodWaterCloud.elementMaterial(new ItemStack(Material.WHITE_DYE), 304)
+                ),
+                MagicExpansionItems.FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_BAILUYU));
+        // 苇露(二代·晨露)
+        table.put("WeiLu", FishingRodWaterCloud.buildLootTable("WeiLu",
+                Gen2Fish.WEILU, Gen2Fish.CHENLULIN,
+                Arrays.asList(
+                        FishingRodWaterCloud.elementMaterial(new ItemStack(Material.GLASS_BOTTLE), 300),
+                        FishingRodWaterCloud.elementMaterial(new ItemStack(Material.LILY_PAD), 304)
+                ),
+                MagicExpansionItems.FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_BAILUYU));
+        // 白露(二代·霜白)
+        table.put("BaiLu", FishingRodWaterCloud.buildLootTable("BaiLu",
+                Gen2Fish.BAILU, Gen2Fish.SHUANGBAILIAN,
+                Arrays.asList(
+                        FishingRodWaterCloud.elementMaterial(new ItemStack(Material.SNOWBALL), 300),
+                        FishingRodWaterCloud.elementMaterial(new ItemStack(Material.FEATHER), 304)
+                ),
+                MagicExpansionItems.FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_BAILUYU));
+        // 芦芽(二代·新篁)
+        table.put("LuYa", FishingRodWaterCloud.buildLootTable("LuYa",
+                Gen2Fish.LUYA, Gen2Fish.XINHUANG,
+                Arrays.asList(
+                        FishingRodWaterCloud.elementMaterial(new ItemStack(Material.BAMBOO), 300),
+                        FishingRodWaterCloud.elementMaterial(new ItemStack(Material.LILY_PAD), 304)
+                ),
+                MagicExpansionItems.FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_BAILUYU));
+        return table;
+    }
+
+    /**
+     * 寒江雪(二代)钓物池。
+     * 各饵走共享通用池 + 专属鱼 + 元素素材 + 特殊钓物(雪魄珠)。
+     */
+    private static Map<String, List<WeightedItem>> buildHanjiangLootTable() {
+        Map<String, List<WeightedItem>> table = new HashMap<>();
+        // 凝霜(二代·霜)
+        table.put("NingShuang", FishingRodWaterCloud.buildLootTable("NingShuang",
+                Gen2Fish.SHUANGJIAO, Gen2Fish.NINGBOJING,
+                Arrays.asList(
+                        FishingRodWaterCloud.elementMaterial(new ItemStack(Material.SNOWBALL), 300),
+                        FishingRodWaterCloud.elementMaterial(new ItemStack(Material.SNOW_BLOCK), 304)
+                ),
+                MagicExpansionItems.FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_HANJIANG_XUEPOZHU));
+        // 落絮(二代·絮)
+        table.put("LuoXu", FishingRodWaterCloud.buildLootTable("LuoXu",
+                Gen2Fish.XUXUE, Gen2Fish.CHENXULIN,
+                Arrays.asList(
+                        FishingRodWaterCloud.elementMaterial(new ItemStack(Material.FEATHER), 300),
+                        FishingRodWaterCloud.elementMaterial(new ItemStack(Material.WHITE_WOOL), 304)
+                ),
+                MagicExpansionItems.FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_HANJIANG_XUEPOZHU));
+        // 冰魄(二代·冰)
+        table.put("BingPo", FishingRodWaterCloud.buildLootTable("BingPo",
+                Gen2Fish.BINGPO, Gen2Fish.XUANBINGLI,
+                Arrays.asList(
+                        FishingRodWaterCloud.elementMaterial(new ItemStack(Material.ICE), 300),
+                        FishingRodWaterCloud.elementMaterial(new ItemStack(Material.PACKED_ICE), 304)
+                ),
+                MagicExpansionItems.FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_HANJIANG_XUEPOZHU));
+        // 初霁(二代·霁)
+        table.put("ChuJi", FishingRodWaterCloud.buildLootTable("ChuJi",
+                Gen2Fish.JIGUANG, Gen2Fish.NUANYANGLIN,
+                Arrays.asList(
+                        FishingRodWaterCloud.elementMaterial(new ItemStack(Material.GOLD_NUGGET), 300),
+                        FishingRodWaterCloud.elementMaterial(new ItemStack(Material.GLOWSTONE_DUST), 304)
+                ),
+                MagicExpansionItems.FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_HANJIANG_XUEPOZHU));
+        // 垂纶(二代·孤钓)
+        table.put("ChuiLun", FishingRodWaterCloud.buildLootTable("ChuiLun",
+                Gen2Fish.SUODIAO, Gen2Fish.GUZHOU,
+                Arrays.asList(
+                        FishingRodWaterCloud.elementMaterial(new ItemStack(Material.STICK), 300),
+                        FishingRodWaterCloud.elementMaterial(new ItemStack(Material.INK_SAC), 304)
+                ),
+                MagicExpansionItems.FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_HANJIANG_XUEPOZHU));
+        return table;
+    }
+
+    /**
+     * 细雨·斜风(二代)钓物池。
+     * 各饵走共享通用池 + 专属鱼 + 元素素材 + 特殊钓物(雨披针)。
+     */
+    private static Map<String, List<WeightedItem>> buildXiyuLootTable() {
+        Map<String, List<WeightedItem>> table = new HashMap<>();
+        // 风丝(二代·丝)
+        table.put("FengSi", FishingRodWaterCloud.buildLootTable("FengSi",
+                Gen2Fish.YOUSI, Gen2Fish.FENGXIAO,
+                Arrays.asList(
+                        FishingRodWaterCloud.elementMaterial(new ItemStack(Material.STRING), 300),
+                        FishingRodWaterCloud.elementMaterial(new ItemStack(Material.COBWEB), 304)
+                ),
+                MagicExpansionItems.FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_XIYU_YUPIZHEN));
+        // 烟雨(二代·雨)
+        table.put("YanYu", FishingRodWaterCloud.buildLootTable("YanYu",
+                Gen2Fish.YANYU, Gen2Fish.WUYINLU,
+                Arrays.asList(
+                        FishingRodWaterCloud.elementMaterial(new ItemStack(Material.GRAY_DYE), 300),
+                        FishingRodWaterCloud.elementMaterial(new ItemStack(Material.LILY_PAD), 304)
+                ),
+                MagicExpansionItems.FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_XIYU_YUPIZHEN));
+        // 涟白(二代·涟)
+        table.put("LianBai", FishingRodWaterCloud.buildLootTable("LianBai",
+                Gen2Fish.LIANBAI, Gen2Fish.YINGBO,
+                Arrays.asList(
+                        FishingRodWaterCloud.elementMaterial(new ItemStack(Material.WHITE_DYE), 300),
+                        FishingRodWaterCloud.elementMaterial(new ItemStack(Material.LILY_PAD), 304)
+                ),
+                MagicExpansionItems.FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_XIYU_YUPIZHEN));
+        // 晓风(二代·晓)
+        table.put("XiaoFeng", FishingRodWaterCloud.buildLootTable("XiaoFeng",
+                Gen2Fish.XIAOFENG, Gen2Fish.POXIAOLIN,
+                Arrays.asList(
+                        FishingRodWaterCloud.elementMaterial(new ItemStack(Material.FEATHER), 300),
+                        FishingRodWaterCloud.elementMaterial(new ItemStack(Material.CLOCK), 304)
+                ),
+                MagicExpansionItems.FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_XIYU_YUPIZHEN));
+        // 斜影(二代·影)
+        table.put("XieYing", FishingRodWaterCloud.buildLootTable("XieYing",
+                Gen2Fish.XIEYING, Gen2Fish.ANLIU,
+                Arrays.asList(
+                        FishingRodWaterCloud.elementMaterial(new ItemStack(Material.OAK_SAPLING), 300),
+                        FishingRodWaterCloud.elementMaterial(new ItemStack(Material.INK_SAC), 304)
+                ),
+                MagicExpansionItems.FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_XIYU_YUPIZHEN));
+        return table;
+    }
 
 }

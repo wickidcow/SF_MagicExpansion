@@ -201,6 +201,8 @@ public class FishOutputMachineEasy extends MenuBlock implements EnergyNetCompone
         if (inv == null) {
             return;
         }
+        // 电力标记：外部存储已扣电则输出槽回落时不再重复扣（防止存满回落时双重扣电）
+        boolean chargeTaken = false;
 
         if (getCharge(block.getLocation()) < getEnergyConsumption()) {
             if(inv != null && inv.hasViewer()) {
@@ -258,9 +260,9 @@ public class FishOutputMachineEasy extends MenuBlock implements EnergyNetCompone
                     long amount = (long) (weight * multiplier); // 使用 long 防止中间结果溢出
                     if (amount <= 0) {
                         amount = 1;
-                    } else if (amount > MAX_OUTPUT_PER_TICK) {
-                        // A5 修复：原处直接放行 Integer.MAX_VALUE，现按输出槽容量钳制单 tick 产出上限
-                        amount = MAX_OUTPUT_PER_TICK;
+                    } else if (amount > Integer.MAX_VALUE) {
+                        // 原始全量产出；仅当超出 ItemStack 数量上限(int)时钳制，避免大数量构造异常(1.20.5+ 校验)
+                        amount = Integer.MAX_VALUE;
                     }
 
                     baseOutput.setAmount((int) amount);
@@ -292,8 +294,15 @@ public class FishOutputMachineEasy extends MenuBlock implements EnergyNetCompone
                 if (leftover < outItems.getAmount()) {
                     inv.replaceExistingItem(VoidTouchSlot, VoidTouchSlotItem);
                     removeCharge(block.getLocation(), getEnergyConsumption());
+                    chargeTaken = true; // 外部存储已扣电
                 }
-                return; // 已连接外部存储：只走存储，不做输出格限制、不回落输出格
+                // 外部存储已存满：把剩余(leftover)回落到输出槽输出，不再丢弃
+                if (leftover > 0) {
+                    outItems.setAmount((int) Math.min(leftover, Integer.MAX_VALUE));
+                    // 不 return，继续走下方输出槽分支
+                } else {
+                    return; // 全部存入，无剩余
+                }
             }
             // 虚空之触 → 魔法存储终端（原逻辑不变）
             SlimefunItem VoidTouchItem = SlimefunItem.getByItem(VoidTouchSlotItem);
@@ -328,8 +337,15 @@ public class FishOutputMachineEasy extends MenuBlock implements EnergyNetCompone
                                     long leftover = NetworkStorage.storeToQuantumStorageBlock(targetLocation, outItems);
                                     if (leftover < outItems.getAmount()) {
                                         removeCharge(block.getLocation(), getEnergyConsumption());
+                                        chargeTaken = true; // 外部存储已扣电
                                     }
-                                    return; // 已连接外部存储：不回落到输出格
+                                    // 外部存储已存满：剩余(leftover)回落到输出槽输出，不再丢弃
+                                    if (leftover > 0) {
+                                        outItems.setAmount((int) Math.min(leftover, Integer.MAX_VALUE));
+                                        // 不 return，继续走下方输出槽分支
+                                    } else {
+                                        return; // 全部存入，无剩余
+                                    }
                                 }
                             }
                         }
@@ -347,7 +363,10 @@ public class FishOutputMachineEasy extends MenuBlock implements EnergyNetCompone
             if (outItems.getAmount() > 0) {
                 pushAllItems(inv,outItems, getOutputSlots());
                 // A4 修复：扣电放在确认入库之后（只有实际推入产物才消耗电力）
-                removeCharge(block.getLocation(), getEnergyConsumption());
+                // 外部存储回落时已扣电，此处不再重复扣
+                if (!chargeTaken) {
+                    removeCharge(block.getLocation(), getEnergyConsumption());
+                }
             }
         }
 

@@ -35,9 +35,24 @@ public class WaterCloudPoolMenu {
     /** 每个掉落物页展示的条目数(分页,4 行 × 7 列) */
     private static final int ITEMS_PER_PAGE = 28;
 
-    private static final String[] BAIT_KEYS = {"CuiXia", "WeiChen", "RongHuo", "YueJin", "XingHe", "JianJia", "LuXue", "WeiLu", "BaiLu", "LuYa"};
-    private static final String[] BAIT_NAMES = {"淬霞", "微尘", "熔火", "跃金", "星核", "蒹葭", "芦雪", "苇露", "白露", "芦芽"};
-    private static final String[] BAIT_COLORS = {"§c", "§7", "§4", "§6", "§d", "§b", "§f", "§3", "§e", "§a"};
+    private static final String[] BAIT_KEYS = {
+            "CuiXia", "WeiChen", "RongHuo", "YueJin", "XingHe",                    // 青竹竿 5 饵
+            "JianJia", "LuXue", "WeiLu", "BaiLu", "LuYa",                          // 芦花钓 5 饵
+            "NingShuang", "LuoXu", "BingPo", "ChuJi", "ChuiLun",                   // 寒江雪 5 饵
+            "FengSi", "YanYu", "LianBai", "XiaoFeng", "XieYing"                    // 细雨·斜风 5 饵
+    };
+    private static final String[] BAIT_NAMES = {
+            "淬霞", "微尘", "熔火", "跃金", "星核",
+            "蒹葭", "芦雪", "苇露", "白露", "芦芽",
+            "凝霜", "落絮", "冰魄", "初霁", "垂纶",
+            "风丝", "烟雨", "涟白", "晓风", "斜影"
+    };
+    private static final String[] BAIT_COLORS = {
+            "§c", "§7", "§4", "§6", "§d",
+            "§b", "§f", "§3", "§e", "§a",
+            "§f", "§b", "§3", "§e", "§8",
+            "§7", "§d", "§f", "§b", "§9"
+    };
     private static final ItemStack[] BAIT_ICONS = {
             MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_CUIXIA,
             MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_WEICHEN,
@@ -48,7 +63,17 @@ public class WaterCloudPoolMenu {
             MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_REED_LUXUE,
             MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_REED_WEILU,
             MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_REED_BAILU,
-            MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_REED_LUYA
+            MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_REED_LUYA,
+            MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_HANJIANG_NINGSHUANG,
+            MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_HANJIANG_LUOXU,
+            MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_HANJIANG_BINGPO,
+            MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_HANJIANG_CHUJI,
+            MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_HANJIANG_CHUILUN,
+            MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_XIYU_FENGSI,
+            MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_XIYU_YANYU,
+            MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_XIYU_LIANBAI,
+            MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_XIYU_XIAOFENG,
+            MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_XIYU_XIEYING
     };
     private static final ItemStack[] SPECIAL_ICONS = {
             MagicExpansionItems.REED_TASSEL,  // 淬霞特殊钓物 = 芦穗
@@ -56,11 +81,21 @@ public class WaterCloudPoolMenu {
             MagicExpansionItems.REED_TASSEL,  // 熔火特殊钓物 = 芦穗
             MagicExpansionItems.REED_TASSEL,  // 跃金特殊钓物 = 芦穗
             MagicExpansionItems.REED_TASSEL,  // 星核特殊钓物 = 芦穗
-            MagicExpansionItems.FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_REED_JIANJIA, // 蒹葭特殊钓物(占位)
-            MagicExpansionItems.FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_REED_LUXUE,   // 芦雪特殊钓物(占位)
-            MagicExpansionItems.FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_REED_WEILU,   // 苇露特殊钓物(占位)
-            MagicExpansionItems.FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_REED_BAILU,   // 白露特殊钓物(占位)
-            MagicExpansionItems.FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_REED_LUYA     // 芦芽特殊钓物(占位)
+            MagicExpansionItems.FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_BAILUYU, // 蒹葭/芦雪/苇露/白露/芦芽特殊钓物(芦花钓统一=白芦羽)
+            MagicExpansionItems.FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_BAILUYU,
+            MagicExpansionItems.FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_BAILUYU,
+            MagicExpansionItems.FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_BAILUYU,
+            MagicExpansionItems.FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_BAILUYU,
+            MagicExpansionItems.FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_HANJIANG_XUEPOZHU, // 寒江雪各饵特殊钓物 = 雪魄珠
+            MagicExpansionItems.FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_HANJIANG_XUEPOZHU,
+            MagicExpansionItems.FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_HANJIANG_XUEPOZHU,
+            MagicExpansionItems.FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_HANJIANG_XUEPOZHU,
+            MagicExpansionItems.FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_HANJIANG_XUEPOZHU,
+            MagicExpansionItems.FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_XIYU_YUPIZHEN, // 细雨·斜风各饵特殊钓物 = 雨披针
+            MagicExpansionItems.FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_XIYU_YUPIZHEN,
+            MagicExpansionItems.FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_XIYU_YUPIZHEN,
+            MagicExpansionItems.FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_XIYU_YUPIZHEN,
+            MagicExpansionItems.FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_XIYU_YUPIZHEN
     };
 
     private WaterCloudPoolMenu() {
@@ -101,11 +136,12 @@ public class WaterCloudPoolMenu {
         menu.setPlayerInventoryClickable(false);
 
         Map<String, List<WeightedItem>> table = rod.getLootTable();
-        int[] slots = {10, 11, 12, 13, 14};
+        // 鱼饵选择槽位(4 行 × 7 列, 最多 28 个; 当前最多 20 饵, 单页足够)
+        int[] slots = {10, 11, 12, 13, 14, 15, 16, 19, 20, 21, 22, 23, 24, 25, 28, 29, 30, 31, 32, 33, 34, 37, 38, 39, 40, 41, 42, 43};
         int slotIdx = 0;
 
         for (int i = 0; i < BAIT_KEYS.length && slotIdx < slots.length; i++) {
-            // 只显示该鱼竿实际拥有的鱼饵池(芦花钓只有蒹葭, 青竹竿为五饵)
+            // 只显示该鱼竿实际拥有的鱼饵池
             if (!table.containsKey(BAIT_KEYS[i])) continue;
             final int fi = i;
             int baitSlot = slots[slotIdx];

@@ -21,6 +21,7 @@ import io.github.thebusybiscuit.slimefun4.implementation.guide.SurvivalSlimefunG
 import io.github.thebusybiscuit.slimefun4.libraries.dough.items.CustomItemStack;
 import io.github.thebusybiscuit.slimefun4.utils.ChestMenuUtils;
 import me.mrCookieSlime.CSCoreLibPlugin.general.Inventory.ChestMenu;
+import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
 import org.bukkit.Location;
@@ -377,6 +378,14 @@ public final class GuideCategoryMenu {
         menu.setEmptySlotsClickable(false);
         menu.addMenuOpeningHandler(p -> p.playSound(p.getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1.0f));
         return menu;
+    }
+
+    /** 判断界面标题是否为魔法2.0自绘菜单标题(即复用了原版主页标题 guide.title.main)。
+     *  用于收窄全局点击监听器的劫持范围：第三方机器菜单的标题不是这个, 直接放行。 */
+    public static boolean isGuideMenuTitle(Player player, String title) {
+        if (title == null) return false;
+        String expected = Slimefun.getLocalization().getMessage(player, "guide.title.main");
+        return ChatColor.stripColor(title).trim().equals(ChatColor.stripColor(expected).trim());
     }
 
     /** 彩虹玻璃板:蛇形渐变环绕, 每2 tick 顺时针挪一格 */

@@ -678,8 +678,8 @@ zh_CN:
         - ''
         - '测试&wiki'
         - '粘液大蛇'
-        - '对于魔法了解颇深'
-        - '有什么不懂的都可以问他'
+        - '纯懒狗一个'
+        - ''
     KOMU_A:
       Name: 'Komu_A'
       Lore:
@@ -1725,46 +1725,118 @@ zh_CN:
         - '新芦破水，生机初醒'
         - '由竹而生，承青竹竿之余韵'
         - '嫩芽入水，万物逢春'
-    FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_REED_JIANJIA:
-      Name: '水云间-特殊事件-蒹葭'
+    FISH_LURE_BETWEEN_WATER_CLOUD_HANJIANG_NINGSHUANG:
+      Name: '凝霜'
       Lore:
         - ''
-        - '不需要描述'
-        - '不需要描述'
-        - '不需要描述'
-        - '不需要描述'
-    FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_REED_LUXUE:
-      Name: '水云间-特殊事件-芦雪'
+        - '掬晨江一痕霜色，薄凝于水面'
+        - '霜痕过处，波面皆白'
+        - '莫问寒意几许，凝住便是永恒'
+        - '一痕白霜，压尽半江秋水'
+    FISH_LURE_BETWEEN_WATER_CLOUD_HANJIANG_LUOXU:
+      Name: '落絮'
       Lore:
         - ''
-        - '不需要描述'
-        - '不需要描述'
-        - '不需要描述'
-        - '不需要描述'
-    FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_REED_WEILU:
-      Name: '水云间-特殊事件-苇露'
+        - '撷天际一羽飞絮，落入寒江成玉'
+        - '雪落无声，江水慢流'
+        - '莫嫌此物轻如尘，满江皆染絮色'
+        - '絮沉江底，碧水凝凝'
+    FISH_LURE_BETWEEN_WATER_CLOUD_HANJIANG_BINGPO:
+      Name: '冰魄'
       Lore:
         - ''
-        - '不需要描述'
-        - '不需要描述'
-        - '不需要描述'
-        - '不需要描述'
-    FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_REED_BAILU:
-      Name: '水云间-特殊事件-白露'
+        - '留江底一截千年寒冰，魄寄水心'
+        - '冰封之时，鱼影驻足'
+        - '莫掬它入口，寒气透骨'
+        - '冰魄沉处，江色如镜'
+    FISH_LURE_BETWEEN_WATER_CLOUD_HANJIANG_CHUJI:
+      Name: '初霁'
       Lore:
         - ''
-        - '不需要描述'
-        - '不需要描述'
-        - '不需要描述'
-        - '不需要描述'
-    FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_REED_LUYA:
-      Name: '水云间-特殊事件-芦芽'
+        - '借雪后一缕霁光，照散满江寒雾'
+        - '云开雪止，天色初晴'
+        - '莫叹冬去太早，霁光自藏暖意'
+        - '一点晴色，融尽深潭积雪'
+    FISH_LURE_BETWEEN_WATER_CLOUD_HANJIANG_CHUILUN:
+      Name: '垂纶'
       Lore:
         - ''
-        - '不需要描述'
-        - '不需要描述'
-        - '不需要描述'
-        - '不需要描述'
+        - '此饵取寒江孤钓之意，蓑笠静待归舟'
+        - '雪覆蓑衣，线垂深水'
+        - '莫问钓得何物，此心已在江雪之间'
+        - '一竿垂纶，千山暮雪'
+    FISH_LURE_BETWEEN_WATER_CLOUD_XIYU_FENGSI:
+      Name: '风丝'
+      Lore:
+        - ''
+        - '捻斜风一缕游丝，织进水面波纹'
+        - '风过无声，却牵涟漪'
+        - '莫寻丝线来处，它本无形'
+        - '风丝一垂，满湖皆动'
+    FISH_LURE_BETWEEN_WATER_CLOUD_XIYU_YANYU:
+      Name: '烟雨'
+      Lore:
+        - ''
+        - '织濛濛一片烟雨，笼作江上轻纱'
+        - '雨打浮标，雾锁长天'
+        - '莫愁视野朦胧，雾中方见真章'
+        - '烟雨一蓑，钓尽江南'
+    FISH_LURE_BETWEEN_WATER_CLOUD_XIYU_LIANBAI:
+      Name: '涟白'
+      Lore:
+        - ''
+        - '引雨点一痕波纹，白光浮于水面'
+        - '细雨斜织，波面生纹'
+        - '莫数水圈几层，一圈便是一饵'
+        - '涟白过处，游鱼探首'
+    FISH_LURE_BETWEEN_WATER_CLOUD_XIYU_XIAOFENG:
+      Name: '晓风'
+      Lore:
+        - ''
+        - '唤破晓一袖清风，吹醒昨夜雨声'
+        - '风止雨霁，天色初明'
+        - '莫嫌风轻，正载饵香入水'
+        - '晓风微度，游鱼竞逐'
+    FISH_LURE_BETWEEN_WATER_CLOUD_XIYU_XIEYING:
+      Name: '斜影'
+      Lore:
+        - ''
+        - '拢雨下一道疏影，落于水心'
+        - '风斜雨细，影动波心'
+        - '莫道影是虚妄，虚影亦能诱鱼'
+        - '斜影沉处，暗流涌动'
+    FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_BAILUYU:
+      Name: '白芦羽'
+      Lore:
+        - ''
+        - '风起时，从苇丛里飘出来的'
+        - '不是雪，是某尾鱼吐的梦'
+        - ''
+        - '「拈来系线，寒江自有应答」'
+    FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_HANJIANG_XUEPOZHU:
+      Name: '雪魄珠'
+      Lore:
+        - ''
+        - '千山暮雪，凝作一丸寒魄'
+        - '握于掌心，犹带江上霜风'
+        - ''
+        - '「此珠悬线，可引斜风细雨之竿」'
+    FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_XIYU_YUPIZHEN:
+      Name: '雨披针'
+      Lore:
+        - ''
+        - '斜风梳雨，织成一缕流光'
+        - '针尖犹悬昨夜未干的烟色'
+        - ''
+        - '「此针沉水，可钩太公垂纶之愿」'
+    FISH_BREED_POOL:
+      Name: '水云间·育种池'
+      Lore:
+        - ''
+        - '一方浅池，养的不是水草，是血脉'
+        - '放入两条鱼，池水便替它们写下后代的模样'
+        - ''
+        - '「子承父鳞，母传骨相，偶有异变」'
     FISHING_BOOK_BETWEEN_WATER_CLOUD:
       Name: '水云间钓鱼指南'
       Lore:
@@ -1842,6 +1914,28 @@ zh_CN:
         - ''
         - '「不惊池鱼，只惊一湾芦花'
         - '   芦花落尽时，人比秋水闲」'
+        - ''
+
+    FISHING_ROD_BETWEEN_WATER_CLOUD_HANJIANG:
+      Name: '水云间·寒江雪'
+      Lore:
+        - ' '
+        - '拾一段寒江冻雪，缕作竿身'
+        - '竿悬霜线，垂入千山暮雪之下'
+        - ''
+        - '「独钓寒江，无意问归程'
+        - '   雪满蓑衣时，江色与心境俱澄」'
+        - ''
+
+    FISHING_ROD_BETWEEN_WATER_CLOUD_XIYU:
+      Name: '水云间·细雨·斜风'
+      Lore:
+        - ' '
+        - '折一缕斜风系作钓丝，织细雨为饵'
+        - '竿影疏落，点在濛濛烟雨之间'
+        - ''
+        - '「斜风细雨不须归'
+        - '    一竿钓尽烟水色」'
         - ''
 
     FISHING_STICK_STAR_IRON:
