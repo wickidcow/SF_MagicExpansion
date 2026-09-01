@@ -1,0 +1,33 @@
+name: Release 10 Integration Fix v3
+
+on:
+  push:
+    branches: [ "release-1.1.2-merge" ]
+    paths:
+      - ".github/workflows/fix-release10-integration-v3.yml"
+      - ".github/scripts/fix_release10_v2.py"
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - name: Apply integration patch
+        run: python3 .github/scripts/fix_release10_v2.py
+      - name: Commit integration patch
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/main/java
+          git commit -m "Integrate Release 10 with Legacy compatibility"
+          git push origin HEAD:release-1.1.2-merge
+      - name: Compile 1.21.11 baseline
+        run: mvn --batch-mode --no-transfer-progress -DskipTests clean package
+      - name: Compile Paper/Purpur 26.2
+        run: mvn --batch-mode --no-transfer-progress -DskipTests -Dpaper.version=26.2.build.111-stable clean package
