@@ -24,7 +24,26 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git remote add upstream https://github.com/Yomicer/MagicExpansion.git || true
           git fetch upstream 6d78c65eb8b60e785daa8a27dd606dc7993375a1
+
+          set +e
           git cherry-pick -X ours 6d78c65eb8b60e785daa8a27dd606dc7993375a1
+          result=$?
+          set -e
+
+          if [[ $result -ne 0 ]]; then
+            # These five files were intentionally absent from the Legacy fork but
+            # Release 10 now depends on their updated implementations. For these
+            # modify/delete conflicts, accept the Release 10 versions left in the tree.
+            git add \
+              src/main/java/io/Yomicer/magicExpansion/Listener/GuideVirtualGroupClickListener.java \
+              src/main/java/io/Yomicer/magicExpansion/Listener/fishingListener/GuidePoolButtonListener.java \
+              src/main/java/io/Yomicer/magicExpansion/items/misc/baitbag/BaitBagMenu.java \
+              src/main/java/io/Yomicer/magicExpansion/utils/GuideCategoryMenu.java \
+              src/main/java/io/Yomicer/magicExpansion/utils/WaterCloudPoolMenu.java
+            git diff --name-only --diff-filter=U
+            test -z "$(git diff --name-only --diff-filter=U)"
+            GIT_EDITOR=true git cherry-pick --continue
+          fi
       - name: Keep the fork independent of GuizhanLibPlugin
         shell: bash
         run: |
