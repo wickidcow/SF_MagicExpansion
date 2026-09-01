@@ -2,10 +2,10 @@ name: magicexpansion
 main: io.Yomicer.magicExpansion.MagicExpansion
 version: ${project.version}
 author: Yomicer
-api-version: '26.2'
+api-version: '1.21.11'
 depend: [Slimefun]
 softdepend: [RykenSlimeCustomizer, Networks, NetworksExpansion]
-description: English-first MagicExpansion build for Slimefun Legacy with United and Gugu compatibility.
+description: English-first MagicExpansion build for Slimefun Legacy on Minecraft 1.21.11 through 26.2.
 
 commands:
   magicexpansion:

@@ -11,8 +11,12 @@ permissions:
   contents: write
 
 env:
-  LEGACY_ARTIFACT_VERSION: "1.0.0"
-  OUTPUT_NAME: "SF_MagicExpansion1.0.0.jar"
+  LEGACY_ARTIFACT_VERSION: "1.1.1"
+  OUTPUT_NAME: "SF_MagicExpansion1.1.1.jar"
+
+concurrency:
+  group: magicexpansion-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build:
@@ -26,17 +30,30 @@ jobs:
           distribution: temurin
           java-version: "25"
           cache: maven
-      - name: Build
+      - name: Verify compatibility metadata
+        shell: bash
+        run: |
+          set -euo pipefail
+          grep -Fq '<version>1.1.1</version>' pom.xml
+          grep -Fq '<paper.version>1.21.11-R0.1-SNAPSHOT</paper.version>' pom.xml
+          grep -Fq '<maven.compiler.release>21</maven.compiler.release>' pom.xml
+          grep -Fq "api-version: '1.21.11'" src/main/resources/plugin.yml
+      - name: Verify Paper/Purpur 1.21.11 compilation
         run: mvn --batch-mode --no-transfer-progress -DskipTests clean package
+      - name: Verify Paper/Purpur 26.2 compilation
+        run: mvn --batch-mode --no-transfer-progress -DskipTests -Dpaper.version=26.2.build.111-stable clean package
+      - name: Build universal release JAR from 1.21.11 baseline
+        run: mvn --batch-mode --no-transfer-progress -DskipTests -Dpaper.version=1.21.11-R0.1-SNAPSHOT clean package
       - name: Stage versioned JAR
         shell: bash
         run: |
           set -euo pipefail
           mkdir -p dist
-          JAR="$(find target -maxdepth 1 -type f -name 'MagicExpansion-Legacy-English-*.jar' ! -name 'original-*' -print -quit)"
-          test -n "$JAR"
+          JAR="target/MagicExpansion-Legacy-English-1.1.1.jar"
+          test -s "$JAR"
           cp "$JAR" "dist/${OUTPUT_NAME}"
-          test -s "dist/${OUTPUT_NAME}"
+          unzip -p "dist/${OUTPUT_NAME}" plugin.yml | grep -Fq "api-version: '1.21.11'"
+          javap -verbose -classpath "dist/${OUTPUT_NAME}" io.Yomicer.magicExpansion.MagicExpansion | grep -Fq 'major version: 65'
           sha256sum "dist/${OUTPUT_NAME}"
       - name: Upload raw JAR artifact
         uses: actions/upload-artifact@v7
@@ -53,8 +70,9 @@ jobs:
           set -euo pipefail
           if [[ "$GITHUB_REF" == refs/tags/v* ]]; then TAG="$GITHUB_REF_NAME"; else TAG="v${LEGACY_ARTIFACT_VERSION}"; fi
           JAR="dist/${OUTPUT_NAME}"
+          NOTES="Compatibility release for Minecraft/Purpur 1.21.11 through Paper/Purpur 26.2. The released JAR emits Java 21 bytecode and retains the current English-first MagicExpansion fixes and guide protections."
           if gh release view "$TAG" >/dev/null 2>&1; then
             gh release upload "$TAG" "$JAR" --clobber
           else
-            gh release create "$TAG" "$JAR" --target "$GITHUB_SHA" --generate-notes --title "SF_MagicExpansion $TAG"
+            gh release create "$TAG" "$JAR" --target "$GITHUB_SHA" --notes "$NOTES" --title "SF_MagicExpansion $TAG"
           fi
