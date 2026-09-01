@@ -200,6 +200,8 @@ public class FishOutputMachineEasy extends MenuBlock implements EnergyNetCompone
         if (inv == null) {
             return;
         }
+        // 电力标记：外部存储已扣电则输出槽回落时不再重复扣（防止存满回落时双重扣电）
+        boolean chargeTaken = false;
 
         if (getCharge(block.getLocation()) < getEnergyConsumption()) {
             if(inv != null && inv.hasViewer()) {
@@ -281,8 +283,15 @@ public class FishOutputMachineEasy extends MenuBlock implements EnergyNetCompone
                 if (leftover < outItems.getAmount()) {
                     inv.replaceExistingItem(VoidTouchSlot, VoidTouchSlotItem);
                     removeCharge(block.getLocation(), getEnergyConsumption());
+                    chargeTaken = true; // 外部存储已扣电
                 }
-                return; // 已连接外部存储：只走存储，不做输出格限制、不回落输出格
+                // 外部存储已存满：把剩余(leftover)回落到输出槽输出，不再丢弃
+                if (leftover > 0) {
+                    outItems.setAmount((int) Math.min(leftover, Integer.MAX_VALUE));
+                    // 不 return，继续走下方输出槽分支
+                } else {
+                    return; // 全部存入，无剩余
+                }
             }
             // 虚空之触 → 魔法存储终端（原逻辑不变）
             SlimefunItem VoidTouchItem = SlimefunItem.getByItem(VoidTouchSlotItem);
@@ -317,8 +326,15 @@ public class FishOutputMachineEasy extends MenuBlock implements EnergyNetCompone
                                     long leftover = NetworkStorage.storeToQuantumStorageBlock(targetLocation, outItems);
                                     if (leftover < outItems.getAmount()) {
                                         removeCharge(block.getLocation(), getEnergyConsumption());
+                                        chargeTaken = true; // 外部存储已扣电
                                     }
-                                    return; // 已连接外部存储：不回落到输出格
+                                    // 外部存储已存满：剩余(leftover)回落到输出槽输出，不再丢弃
+                                    if (leftover > 0) {
+                                        outItems.setAmount((int) Math.min(leftover, Integer.MAX_VALUE));
+                                        // 不 return，继续走下方输出槽分支
+                                    } else {
+                                        return; // 全部存入，无剩余
+                                    }
                                 }
                             }
                         }

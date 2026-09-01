@@ -199,6 +199,8 @@ public class FishOutputMachine extends MenuBlock implements EnergyNetComponent, 
         if (inv == null) {
             return;
         }
+        // 电力标记：外部存储已扣电则输出槽回落时不再重复扣（防止存满回落时双重扣电）
+        boolean chargeTaken = false;
 
         if (getCharge(block.getLocation()) < getEnergyConsumption()) {
             if(inv != null && inv.hasViewer()) {
@@ -278,8 +280,15 @@ public class FishOutputMachine extends MenuBlock implements EnergyNetComponent, 
                 if (leftover < outItems.getAmount()) {
                     inv.replaceExistingItem(VoidTouchSlot, VoidTouchSlotItem);
                     removeCharge(block.getLocation(), getEnergyConsumption());
+                    chargeTaken = true; // 外部存储已扣电
                 }
-                return; // 已连接外部存储：只走存储，不做输出格限制、不回落输出格
+                // 外部存储已存满：把剩余(leftover)回落到输出槽输出，不再丢弃
+                if (leftover > 0) {
+                    outItems.setAmount((int) Math.min(leftover, Integer.MAX_VALUE));
+                    // 不 return，继续走下方输出槽分支
+                } else {
+                    return; // 全部存入，无剩余
+                }
             }
             // 虚空之触 → 魔法存储终端（原逻辑不变）
             SlimefunItem VoidTouchItem = SlimefunItem.getByItem(VoidTouchSlotItem);
@@ -314,8 +323,15 @@ public class FishOutputMachine extends MenuBlock implements EnergyNetComponent, 
                                     long leftover = NetworkStorage.storeToQuantumStorageBlock(targetLocation, outItems);
                                     if (leftover < outItems.getAmount()) {
                                         removeCharge(block.getLocation(), getEnergyConsumption());
+                                        chargeTaken = true; // 外部存储已扣电
                                     }
-                                    return; // 已连接外部存储：不回落到输出格
+                                    // 外部存储已存满：剩余(leftover)回落到输出槽输出，不再丢弃
+                                    if (leftover > 0) {
+                                        outItems.setAmount((int) Math.min(leftover, Integer.MAX_VALUE));
+                                        // 不 return，继续走下方输出槽分支
+                                    } else {
+                                        return; // 全部存入，无剩余
+                                    }
                                 }
                             }
                         }
@@ -455,6 +471,30 @@ public class FishOutputMachine extends MenuBlock implements EnergyNetComponent, 
         }
 
         // 如果没有找到匹配的槽位,什么也不做(不存储新物品)
+    }
+
+    // A2: long 版本写入（供以太生态阵列等大数量场景使用）：
+    // 不依赖 ItemStack#getAmount()（int 上限），而是把待存数量以 long 传入，可突破 21 亿
+    static void storeItemToExistingSlotCachedLong(SlimefunBlockData data, ItemStack item, long amountToStore) {
+        if (item == null || item.getType() == Material.AIR || amountToStore <= 0) return;
+        ItemStack prototype = item.clone();
+        prototype.setAmount(1);
+        CargoCoreCache cache = getCargoCoreCache(data);
+        for (Map.Entry<Integer, CachedSlot> entry : cache.slots.entrySet()) {
+            CachedSlot slot = entry.getValue();
+            if (!SlimefunUtils.isItemSimilar(prototype, slot.prototype, true)) continue;
+            // 找到匹配的已有槽位：累加数量并尊重上限（均使用 long 防溢出）
+            long newCount = slot.count > Long.MAX_VALUE - amountToStore
+                    ? Long.MAX_VALUE : slot.count + amountToStore;
+            if (slot.max != -1 && newCount > slot.max) {
+                newCount = slot.max; // 超过上限则调整到上限
+            }
+            data.setData("item_count_" + entry.getKey(), String.valueOf(newCount));
+            slot.count = newCount;
+            cache.dirty = true; // A2: 写入后标记 dirty，下一 tick 重建缓存保证与存储数据一致
+            return;
+        }
+        // 如果没有找到匹配的槽位，什么也不做（不存储新物品）
     }
 
     private static final int MAX_STORED_ITEMS = 1145; // 最多支持 18 种不同物品

@@ -1,6 +1,8 @@
 package io.Yomicer.magicExpansion.Listener.fishingListener;
 
 import io.Yomicer.magicExpansion.core.MagicExpansionItems;
+import io.Yomicer.magicExpansion.items.misc.fish.FishAttributeGenerator;
+import io.Yomicer.magicExpansion.items.misc.fish.Gen2Fish;
 import io.Yomicer.magicExpansion.items.misc.Lure;
 import io.Yomicer.magicExpansion.items.misc.WeightedItem;
 import io.Yomicer.magicExpansion.items.misc.moreLure.MoreLure;
@@ -24,6 +26,7 @@ import org.bukkit.event.player.PlayerFishEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.FireworkMeta;
+import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.util.Vector;
 
 import java.util.List;
@@ -191,6 +194,8 @@ public class PlayerFishingWaterCloudListener implements Listener {
 
     /**
      * 当前鱼饵对应的特殊钓物(显式映射,即被标记为特殊事件入口的物品)
+     * 修复: 返回 clone 而非 MagicExpansionItems 的 static 单例——
+     * 蓄满分支/双倍鱼获会 setAmount 修改 drop, 直接返回单例会被污染并随掉落物扩散。
      */
     private ItemStack getSpecialCatchForLure(Lure lure) {
         return switch (lure.getKey()) {
@@ -201,6 +206,7 @@ public class PlayerFishingWaterCloudListener implements Listener {
             case "XingHe"  -> MagicExpansionItems.FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_XINGHE;  // 星核
             default -> null;
         };
+        return special != null ? special.clone() : null;
     }
 
     /**

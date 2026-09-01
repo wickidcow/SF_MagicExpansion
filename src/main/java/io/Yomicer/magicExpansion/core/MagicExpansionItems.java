@@ -113,6 +113,21 @@ public class MagicExpansionItems {
             "",
             getGradientName("Right-click to summon a random entity.")
     );
+//翻页储物箱
+    public static final SlimefunItemStack PAGE_CHEST = themedVer2Vertical(
+            "PAGE_CHEST",
+            doGlow(Material.CHEST),
+            "跃迁储物箱",
+            "",
+            "将跃迁储物箱放置在安全位置",
+            "不会与其他箱子合并",
+            "共 5 页, 边框显示当前页码",
+            "兼容粘液货运(输入/输出节点)",
+            "界面外的空白处点击翻页",
+            "左键: 上一页    右键: 下一页",
+            "翻过首尾自动循环",
+            "Shift+右键可放置粘液货运节点"
+    );
 
     public static final SlimefunItemStack MAGIC_EXPANSION_MINERAL_CAVE = new SlimefunItemStack(
             "MAGIC_EXPANSION_MINERAL_CAVE",

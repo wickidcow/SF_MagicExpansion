@@ -345,6 +345,21 @@ public final class NetworkStorage {
             return 0;
         }
 
+        // long 版本：支持超过 int 上限的批量存入（供以太生态阵列等大数量场景使用）
+        // 返回本次因超过容量上限而未能写入的数量（voidExcess=true 时返回 0，表示全部吃掉）
+        public long increaseAmount(long amount) {
+            long total = this.amount + amount;
+            if (total > this.limit) {
+                this.amount = this.limit;
+                if (!this.voidExcess) {
+                    return total - this.limit;
+                }
+            } else {
+                this.amount = this.amount + amount;
+            }
+            return 0;
+        }
+
         public void reduceAmount(int amount) {
             this.amount = this.amount - amount;
         }
@@ -549,6 +564,59 @@ public final class NetworkStorage {
         storageItem.setItemMeta(meta);
 
         return output.getAmount() - toAdd;
+    }
+
+    /**
+     * 向量子存储物品中存入产物，以"物品模板 + long 数量"的方式批量存入，
+     * 突破 ItemStack 单次 int 上限（1.20.5+ 大数量构造校验）。
+     * <p>
+     * 与 {@link #store(ItemStack, ItemStack)} 相比，本方法不依赖 ItemStack#getAmount()（int 上限），
+     * 而是把总数量以 long 传入，支持超过 21 亿的批量产出（以太生态阵列场景）；
+     * 内部仍做容量封顶与溢出保护，写入后同步刷新物品 Lore。
+     *
+     * @param storageItem 量子存储物品（调用方需要把写入后的物品放回槽位）
+     * @param prototype   物品模板（数量随意，仅用于比对物品类型）
+     * @param outputAmount 本次待存的总数量（long，可超过 int 上限）
+     * @return 未能存入的剩余数量；0 表示全部存入成功
+     */
+    public static long store(@NotNull ItemStack storageItem, @NotNull ItemStack prototype, long outputAmount) {
+        if (outputAmount <= 0) {
+            return 0;
+        }
+        if (!storageItem.hasItemMeta()) {
+            return outputAmount;
+        }
+        ItemMeta meta = storageItem.getItemMeta();
+        NamespacedKey key = findStorageKey(meta);
+        if (key == null) {
+            return outputAmount;
+        }
+        QuantumCache cache = getCustom(meta, key, QUANTUM_STORAGE_TYPE);
+        if (cache == null || cache.getItemStack() == null) {
+            return outputAmount;
+        }
+        // 物品类型不一致时无法存入
+        if (!SlimefunUtils.isItemSimilar(prototype, cache.getItemStack(), true)) {
+            return outputAmount;
+        }
+
+        long stored = cache.getAmountLong();
+        long limit = cache.getLimitLong();
+
+        // 最大值保护：剩余空间不为负数
+        long remaining = limit > stored ? limit - stored : 0L;
+        // 只写入剩余空间以内的数量
+        long toAdd = Math.min(outputAmount, remaining);
+        if (toAdd <= 0) {
+            return outputAmount;
+        }
+
+        cache.increaseAmount(toAdd);
+        setCustom(meta, key, QUANTUM_STORAGE_TYPE, cache);
+        refreshLore(meta, cache);
+        storageItem.setItemMeta(meta);
+
+        return outputAmount - toAdd;
     }
 
     /**

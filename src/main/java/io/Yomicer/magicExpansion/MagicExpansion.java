@@ -14,6 +14,7 @@ import io.Yomicer.magicExpansion.Listener.magicItemEffectManager.ItemEffectKillL
 import io.Yomicer.magicExpansion.Listener.miscListener.ItemFrameListener;
 import io.Yomicer.magicExpansion.Listener.worldListener.Events;
 import io.Yomicer.magicExpansion.items.misc.CargoFragmentDistributor;
+import io.Yomicer.magicExpansion.items.misc.PageChestListener;
 import io.Yomicer.magicExpansion.items.misc.DrawMachine;
 import io.Yomicer.magicExpansion.items.misc.magicAlter.PluginInitializer;
 import io.Yomicer.magicExpansion.specialActions.Command.*;
@@ -111,6 +112,7 @@ public class MagicExpansion extends JavaPlugin implements SlimefunAddon {
         getServer().getPluginManager().registerEvents(new PlayerFishingWaterCloudListener(), this);
         getServer().getPluginManager().registerEvents(new Events(), this);
         getServer().getPluginManager().registerEvents(new ItemFrameListener(), this);
+        getServer().getPluginManager().registerEvents(new PageChestListener(), this);
         getServer().getPluginManager().registerEvents(aiManager, this);
 
         ShopManager.load();
