@@ -5,7 +5,7 @@ import io.Yomicer.magicExpansion.items.misc.fish.FishAttributeGenerator;
 import io.Yomicer.magicExpansion.items.misc.fish.Gen2Fish;
 import io.Yomicer.magicExpansion.utils.MachineBuffManager;
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItem;
-import net.guizhanss.guizhanlib.minecraft.helper.inventory.ItemStackHelper;
+import io.Yomicer.magicExpansion.utils.compat.ItemStackHelper;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
