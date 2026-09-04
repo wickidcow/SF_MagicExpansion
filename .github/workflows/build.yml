@@ -11,8 +11,8 @@ permissions:
   contents: write
 
 env:
-  LEGACY_ARTIFACT_VERSION: "1.1.2"
-  OUTPUT_NAME: "SF_MagicExpansion1.1.2.jar"
+  LEGACY_ARTIFACT_VERSION: "1.1.3"
+  OUTPUT_NAME: "SF_MagicExpansion1.1.3.jar"
 
 concurrency:
   group: magicexpansion-${{ github.workflow }}-${{ github.ref }}
@@ -34,7 +34,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          grep -Fq '<version>1.1.2</version>' pom.xml
+          grep -Fq '<version>1.1.3</version>' pom.xml
           grep -Fq '<paper.version>1.21.11-R0.1-SNAPSHOT</paper.version>' pom.xml
           grep -Fq '<maven.compiler.release>21</maven.compiler.release>' pom.xml
           grep -Fq "api-version: '1.21.11'" src/main/resources/plugin.yml
@@ -49,7 +49,7 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p dist
-          JAR="target/MagicExpansion-Legacy-English-1.1.2.jar"
+          JAR="target/MagicExpansion-Legacy-English-1.1.3.jar"
           test -s "$JAR"
           cp "$JAR" "dist/${OUTPUT_NAME}"
           unzip -p "dist/${OUTPUT_NAME}" plugin.yml | grep -Fq "api-version: '1.21.11'"
@@ -70,7 +70,7 @@ jobs:
           set -euo pipefail
           if [[ "$GITHUB_REF" == refs/tags/v* ]]; then TAG="$GITHUB_REF_NAME"; else TAG="v${LEGACY_ARTIFACT_VERSION}"; fi
           JAR="dist/${OUTPUT_NAME}"
-          NOTES="MagicExpansion Release 10 / Build 90 port for Slimefun Legacy. Adds Generation 2 fishing and breeding, Hanjiang and Xiyu Water Cloud progression, the five-page Page Chest, acceleration-fish buffs, and large-output storage fixes while retaining the English-first fork, Java 21 bytecode, and Minecraft/Purpur 1.21.11 through Paper/Purpur 26.2 compatibility."
+          NOTES="MagicExpansion Release 11 / Build 91 port for Slimefun Legacy. Ports the upstream fishing fixes, requires Water Cloud catches to have the hook in water, keeps normal fishing events uncancelled, and completes an English player-facing cleanup across Water Cloud menus, guide categories, lure names, and bait-bag messages. Retains Java 21 bytecode and Minecraft/Purpur 1.21.11 through Paper/Purpur 26.2 compatibility."
           if gh release view "$TAG" >/dev/null 2>&1; then
             gh release upload "$TAG" "$JAR" --clobber
           else
