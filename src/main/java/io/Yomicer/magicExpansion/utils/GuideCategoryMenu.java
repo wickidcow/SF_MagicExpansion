@@ -153,11 +153,11 @@ public final class GuideCategoryMenu {
         switch (random.nextInt(10)) {
             case 0 -> {
                 player.addPotionEffect(new PotionEffect(PotionEffectType.LEVITATION, 100, 0));
-                player.sendMessage(getGradientNameVer2("MC人能飞！"));
+                player.sendMessage(getGradientNameVer2("Minecraft players can fly!"));
             }
             case 1 -> {
                 player.setHealth(0.0);
-                player.sendMessage(getGradientNameVer2(player.getName() + " 感受到了魔法"));
+                player.sendMessage(getGradientNameVer2(player.getName() + " felt the magic."));
             }
             case 2 -> {
                 ItemStack sugar = MAGIC_SUGARS[random.nextInt(MAGIC_SUGARS.length)].clone();
@@ -165,18 +165,18 @@ public final class GuideCategoryMenu {
                 if (!left.isEmpty()) {
                     player.getWorld().dropItem(player.getLocation(), left.get(0));
                 }
-                player.sendMessage(getGradientNameVer2("来吃点糖吧"));
+                player.sendMessage(getGradientNameVer2("Have some sugar."));
             }
             case 3 -> {
                 player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 100, 0));
-                player.sendMessage(getGradientNameVer2("堕入黑暗吧！"));
+                player.sendMessage(getGradientNameVer2("Fall into the darkness!"));
             }
             case 4 -> {
                 // 饱餐一顿
                 player.setFoodLevel(20);
                 player.setSaturation(20.0f);
                 player.addPotionEffect(new PotionEffect(PotionEffectType.SATURATION, 60, 0));
-                player.sendMessage(getGradientNameVer2("烟火入腹，人间忽而温柔。"));
+                player.sendMessage(getGradientNameVer2("Fireworks within, and the world suddenly feels gentler."));
             }
             case 5 -> {
                 // 空间错位: 周围 5~15 格随机传送(落点取安全高度)
@@ -187,7 +187,7 @@ public final class GuideCategoryMenu {
                 double z = loc.getZ() + Math.sin(angle) * dist;
                 int y = loc.getWorld().getHighestBlockYAt((int) Math.floor(x), (int) Math.floor(z)) + 1;
                 player.teleport(new Location(loc.getWorld(), x + 0.5, y, z + 0.5, loc.getYaw(), loc.getPitch()));
-                player.sendMessage(getGradientNameVer2("袖底生风，山河退让半步。"));
+                player.sendMessage(getGradientNameVer2("Wind gathers at your sleeve, and the mountains yield a step."));
             }
             case 6 -> {
                 // 放一场烟花
@@ -207,24 +207,24 @@ public final class GuideCategoryMenu {
                         firework.detonate();
                     }
                 }.runTaskLater(MagicExpansion.getInstance(), 2L);
-                player.sendMessage(getGradientNameVer2("万籁俱寂，独此一瞬盛放。"));
+                player.sendMessage(getGradientNameVer2("All falls silent as this one moment blooms."));
             }
             case 7 -> {
                 // 音效合唱: 从原版全部音效里随机播一种
                 Sound[] sounds = Sound.values();
                 Sound sound = sounds[random.nextInt(sounds.length)];
                 player.playSound(player.getLocation(), sound, 1.0f, 1.0f + random.nextFloat());
-                player.sendMessage(getGradientNameVer2("哪来的B动静？"));
+                player.sendMessage(getGradientNameVer2("What was that noise?"));
             }
             case 8 -> {
                 // 按钮低语: 只低语一句, 不再额外提示
                 String[] whispers = {
-                        "你踩到了时间的衣角。",
-                        "今晚的月亮是甜的。",
-                        "风把某个名字，吹到了你耳边。",
-                        "有些门，只为回头的人开着。",
-                        "它记得，你上一世也按过它。",
-                        "海在很远的地方，替你翻了个身。"
+                        "You stepped on the hem of time.",
+                        "Tonight's moon tastes sweet.",
+                        "The wind carried a name to your ear.",
+                        "Some doors open only for those who look back.",
+                        "It remembers that you pressed it in another life.",
+                        "Far away, the sea turned over in your stead."
                 };
                 player.sendMessage(getGradientNameVer2(whispers[random.nextInt(whispers.length)]));
             }
@@ -253,7 +253,7 @@ public final class GuideCategoryMenu {
                         player.getWorld().dropItem(player.getLocation(), left.get(0));
                     }
                 }
-                player.sendMessage(getGradientNameVer2("这是钓鱼佬的馈赠"));
+                player.sendMessage(getGradientNameVer2("A gift from the angler."));
             }
             default -> { }
         }
@@ -308,7 +308,7 @@ public final class GuideCategoryMenu {
         });
 
         // 4槽:附属信息(开发者头颅材质,点击由监听器打开二级菜单)
-        menu.addItem(4, createVirtualIcon(DEVELOPER_HEAD, ColorGradient.getRandomGradientName("附属信息"), "点击查看贡献与更新日志", "attachmentinfo"));
+        menu.addItem(4, createVirtualIcon(DEVELOPER_HEAD, ColorGradient.getRandomGradientName("Addon Information"), "Click to view credits and the changelog", "attachmentinfo"));
         menu.addMenuClickHandler(4, (p, s, it, a) -> {
             p.playSound(p.getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1.0f);
             return false;
@@ -331,7 +331,7 @@ public final class GuideCategoryMenu {
                     return false;
                 });
             } else {
-                menu.addItem(slot, new CustomItemStack(Material.BARRIER, getGradientNameVer2("敬请期待")), ChestMenuUtils.getEmptyClickHandler());
+                menu.addItem(slot, new CustomItemStack(Material.BARRIER, getGradientNameVer2("Coming Soon")), ChestMenuUtils.getEmptyClickHandler());
             }
         }
 
@@ -361,7 +361,7 @@ public final class GuideCategoryMenu {
             menu.addItem(35, plainPane(Material.WHITE_STAINED_GLASS_PANE), ChestMenuUtils.getEmptyClickHandler());
         }
         // 49槽:神器小按钮(功能待定,后续单独文件存放)
-        menu.addItem(49, new CustomItemStack(Material.NETHER_STAR, getGradientNameVer2("神奇的小按钮"), getGradientNameVer2("点一下会发生什么？")));
+        menu.addItem(49, new CustomItemStack(Material.NETHER_STAR, getGradientNameVer2("Mysterious Little Button"), getGradientNameVer2("What happens if you click it?")));
         menu.addMenuClickHandler(49, (p, s, it, a) -> {
             triggerMysteryButton(p);
             p.playSound(p.getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1.0f);
@@ -496,7 +496,7 @@ public final class GuideCategoryMenu {
                 () -> openCategoryPage(player, profile, mode, 1, true));
 
         // 4槽:作者头颅(纯展示,无点击)
-        menu.addItem(4, new CustomItemStack(DEVELOPER_HEAD, getGradientNameVer2("magicsolo"), getGradientNameVer2("这是魔法作者")), ChestMenuUtils.getEmptyClickHandler());
+        menu.addItem(4, new CustomItemStack(DEVELOPER_HEAD, getGradientNameVer2("magicsolo"), getGradientNameVer2("Author of MagicExpansion")), ChestMenuUtils.getEmptyClickHandler());
 
         // 7槽:原版搜索
         menu.addItem(7, ChestMenuUtils.getSearchButton(player));
@@ -527,7 +527,7 @@ public final class GuideCategoryMenu {
                     return false;
                 });
             } else {
-                menu.addItem(slot, new CustomItemStack(Material.BARRIER, getGradientNameVer2("敬请期待")), ChestMenuUtils.getEmptyClickHandler());
+                menu.addItem(slot, new CustomItemStack(Material.BARRIER, getGradientNameVer2("Coming Soon")), ChestMenuUtils.getEmptyClickHandler());
             }
         }
 
@@ -557,7 +557,7 @@ public final class GuideCategoryMenu {
         }
 
         // 49槽:神秘按钮(与一级一致,功能待定)
-        menu.addItem(49, new CustomItemStack(Material.NETHER_STAR, getGradientNameVer2("神奇的小按钮"), getGradientNameVer2("点一下会发生什么？")));
+        menu.addItem(49, new CustomItemStack(Material.NETHER_STAR, getGradientNameVer2("Mysterious Little Button"), getGradientNameVer2("What happens if you click it?")));
         menu.addMenuClickHandler(49, (p, s, it, a) -> {
             triggerMysteryButton(p);
             p.playSound(p.getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1.0f);
@@ -594,7 +594,7 @@ public final class GuideCategoryMenu {
                 () -> openCategoryPage(player, profile, mode, 1, true));
 
         // 4槽:作者头颅(纯展示)
-        menu.addItem(4, new CustomItemStack(DEVELOPER_HEAD, getGradientNameVer2("magicsolo"), getGradientNameVer2("这是魔法作者")), ChestMenuUtils.getEmptyClickHandler());
+        menu.addItem(4, new CustomItemStack(DEVELOPER_HEAD, getGradientNameVer2("magicsolo"), getGradientNameVer2("Author of MagicExpansion")), ChestMenuUtils.getEmptyClickHandler());
 
         // 7槽:原版搜索
         menu.addItem(7, ChestMenuUtils.getSearchButton(player));
@@ -625,7 +625,7 @@ public final class GuideCategoryMenu {
                     return false;
                 });
             } else {
-                menu.addItem(slot, new CustomItemStack(Material.BARRIER, getGradientNameVer2("敬请期待")), ChestMenuUtils.getEmptyClickHandler());
+                menu.addItem(slot, new CustomItemStack(Material.BARRIER, getGradientNameVer2("Coming Soon")), ChestMenuUtils.getEmptyClickHandler());
             }
         }
 
@@ -655,7 +655,7 @@ public final class GuideCategoryMenu {
         }
 
         // 49槽:神奇的小按钮(与一二级一致)
-        menu.addItem(49, new CustomItemStack(Material.NETHER_STAR, getGradientNameVer2("神奇的小按钮"), getGradientNameVer2("点一下会发生什么？")));
+        menu.addItem(49, new CustomItemStack(Material.NETHER_STAR, getGradientNameVer2("Mysterious Little Button"), getGradientNameVer2("What happens if you click it?")));
         menu.addMenuClickHandler(49, (p, s, it, a) -> {
             triggerMysteryButton(p);
             p.playSound(p.getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1.0f);
@@ -690,7 +690,7 @@ public final class GuideCategoryMenu {
         }
 
         String title = group.getDisplayName(player);
-        ChestMenu menu = new ChestMenu(title == null ? "物品列表" : title);
+        ChestMenu menu = new ChestMenu(title == null ? "Item List" : title);
         menu.setEmptySlotsClickable(false);
         menu.addMenuOpeningHandler(p -> p.playSound(p.getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1.0f));
 
@@ -718,7 +718,7 @@ public final class GuideCategoryMenu {
         });
 
         // 4槽:作者头颅(纯展示)
-        menu.addItem(4, new CustomItemStack(DEVELOPER_HEAD, getGradientNameVer2("magicsolo"), getGradientNameVer2("这是魔法作者")), ChestMenuUtils.getEmptyClickHandler());
+        menu.addItem(4, new CustomItemStack(DEVELOPER_HEAD, getGradientNameVer2("magicsolo"), getGradientNameVer2("Author of MagicExpansion")), ChestMenuUtils.getEmptyClickHandler());
 
         // 7槽:原版搜索
         menu.addItem(7, ChestMenuUtils.getSearchButton(player));
@@ -791,7 +791,7 @@ public final class GuideCategoryMenu {
         }
 
         // 49槽:神奇的小按钮(与一二级一致)
-        menu.addItem(49, new CustomItemStack(Material.NETHER_STAR, getGradientNameVer2("神奇的小按钮"), getGradientNameVer2("点一下会发生什么？")));
+        menu.addItem(49, new CustomItemStack(Material.NETHER_STAR, getGradientNameVer2("Mysterious Little Button"), getGradientNameVer2("What happens if you click it?")));
         menu.addMenuClickHandler(49, (p, s, it, a) -> {
             triggerMysteryButton(p);
             p.playSound(p.getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1.0f);
@@ -832,7 +832,7 @@ public final class GuideCategoryMenu {
             lore.addAll(Slimefun.getPermissionsService().getLore(item));
         }
         if (item.getResearch() != null && !profile.hasUnlocked(item.getResearch())) {
-            lore.add("§7需要研究解锁: §e" + item.getResearch().getName(player));
+            lore.add("§7Research required: §e" + item.getResearch().getName(player));
         }
         return new CustomItemStack(ChestMenuUtils.getNoPermissionItem(), item.getItemName(), lore.toArray(new String[0]));
     }
@@ -853,8 +853,8 @@ public final class GuideCategoryMenu {
                                              SlimefunGuideMode mode, Runnable backAction) {
         menu.addItem(1, new CustomItemStack(ChestMenuUtils.getBackButton(player),
                 "",
-                "§f点击: §7返回上一级",
-                "§fShift + 点击: §7返回主菜单"));
+                "§fClick: §7Back one level",
+                "§fShift + Click: §7Return to main menu"));
         menu.addMenuClickHandler(1, (p, slot, item, clickAction) -> {
             if (clickAction.isShiftClicked()) {
                 // Shift + 点击: 回粘液书主界面(使用原版实现, 不经过 JEG 等替换引导)
@@ -876,8 +876,8 @@ public final class GuideCategoryMenu {
         if (mode == SlimefunGuideMode.SURVIVAL_MODE && history.size() > 1) {
             menu.addItem(1, new CustomItemStack(ChestMenuUtils.getBackButton(player),
                     "",
-                    "§f点击: §7返回上一页",
-                    "§fShift + 点击: §7返回主菜单"));
+                    "§fClick: §7Previous page",
+                    "§fShift + Click: §7Return to main menu"));
             menu.addMenuClickHandler(1, (p, slot, item, clickAction) -> {
                 if (clickAction.isShiftClicked()) {
                     guide.openMainMenu(profile, history.getMainMenuPage());
@@ -889,7 +889,7 @@ public final class GuideCategoryMenu {
         } else {
             menu.addItem(1, new CustomItemStack(ChestMenuUtils.getBackButton(player),
                     "",
-                    "§7返回主菜单"));
+                    "§7Return to main menu"));
             menu.addMenuClickHandler(1, (p, slot, item, clickAction) -> {
                 guide.openMainMenu(profile, history.getMainMenuPage());
                 return false;

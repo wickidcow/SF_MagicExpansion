@@ -47,129 +47,129 @@ public final class GuideMenuGroups {
         );
 
         // ===== 一级(特殊槽位): 附属信息, 固定显示在第一行第4格, 不进一级主页 =====
-        specialContainer("attachmentinfo", "附属信息",
+        specialContainer("attachmentinfo", "Addon Information",
                 GuideCategoryMenu.createVirtualIcon(Utils.doGlow(Material.PAPER),
-                        ColorGradient.getRandomGradientName("附属信息"),
-                        "点击查看贡献与更新日志", "attachmentinfo"), 0);
+                        ColorGradient.getRandomGradientName("Addon Information"),
+                        "Click to view credits and the changelog", "attachmentinfo"), 0);
         flat("attachmentinfo", "contribution",
-                new CustomItemStack(Utils.doGlow(Material.COMMAND_BLOCK), ColorGradient.getGradientNameVer2("贡献")));
+                new CustomItemStack(Utils.doGlow(Material.COMMAND_BLOCK), ColorGradient.getGradientNameVer2("Credits")));
         flat("attachmentinfo", "updateinfo",
-                new CustomItemStack(Utils.doGlow(Material.PAPER), ColorGradient.getRandomGradientName("更新日志")));
+                new CustomItemStack(Utils.doGlow(Material.PAPER), ColorGradient.getRandomGradientName("Changelog")));
 
         // ===== 一级: 材料 =====
-        topContainer("material", "材料",
+        topContainer("material", "Materials",
                 GuideCategoryMenu.createVirtualIcon(Utils.doGlow(Material.SNOWBALL),
-                        ColorGradient.getGradientName("材料"),
-                        "点击查看资源与补丁材料", "material"), 1);
+                        ColorGradient.getGradientName("Materials"),
+                        "Click to view resources and patch materials", "material"), 1);
         flat("material", "resource",
-                new CustomItemStack(Utils.doGlow(Material.SNOWBALL), ColorGradient.getGradientName("资源")));
+                new CustomItemStack(Utils.doGlow(Material.SNOWBALL), ColorGradient.getGradientName("Resources")));
         flat("material", "resourcedlc",
-                new CustomItemStack(Utils.doGlow(Material.TOTEM_OF_UNDYING), ColorGradient.getGradientName("补丁材料")));
+                new CustomItemStack(Utils.doGlow(Material.TOTEM_OF_UNDYING), ColorGradient.getGradientName("Patch Materials")));
 
         // ===== 一级: 特殊物品 =====
-        topContainer("special", "特殊物品",
+        topContainer("special", "Special Items",
                 GuideCategoryMenu.createVirtualIcon(Utils.doGlow(Material.SHEARS),
-                        ColorGradient.getGradientName("特殊物品"),
-                        "点击查看特殊道具与联动分类", "special"), 2);
+                        ColorGradient.getGradientName("Special Items"),
+                        "Click to view special items and integrations", "special"), 2);
         flat("special", "specialitem",
-                new CustomItemStack(Utils.doGlow(Material.SHEARS), ColorGradient.getGradientName("特殊道具")));
+                new CustomItemStack(Utils.doGlow(Material.SHEARS), ColorGradient.getGradientName("Special Tools")));
         flat("special", "honkai",
                 new CustomItemStack(CustomHead.SILVER_WOLF.getItem(),
                         ColorGradient.getRandomGradientName("Honkai: Star Rail")));
         flat("special", "skyblock",
                 new CustomItemStack(CustomHead.getHead("7948942fed672ded57f8cdb169a5076062586e77002ee30e07693c025e6f0db5"),
-                        ColorGradient.getGradientName("魔法-SkyBlock")));
+                        ColorGradient.getGradientName("Magic-SkyBlock")));
         flat("special", "commemorate",
-                new CustomItemStack(Utils.doGlow(Material.FIREWORK_ROCKET), ColorGradient.getRandomGradientName("纪念品")));
+                new CustomItemStack(Utils.doGlow(Material.FIREWORK_ROCKET), ColorGradient.getRandomGradientName("Souvenirs")));
 
         // ===== 一级: 特殊机器 =====
-        topContainer("machine", "特殊机器",
+        topContainer("machine", "Special Machines",
                 GuideCategoryMenu.createVirtualIcon(Utils.doGlow(Material.MAGENTA_GLAZED_TERRACOTTA),
-                        ColorGradient.getGradientName("特殊机器"),
-                        "点击查看机器分类", "machine"), 3);
+                        ColorGradient.getGradientName("Special Machines"),
+                        "Click to view machine categories", "machine"), 3);
         flat("machine", "quickmachine",
-                new CustomItemStack(Utils.doGlow(Material.MAGENTA_GLAZED_TERRACOTTA), ColorGradient.getGradientName("快捷机器")));
+                new CustomItemStack(Utils.doGlow(Material.MAGENTA_GLAZED_TERRACOTTA), ColorGradient.getGradientName("Quick Machines")));
         flat("machine", "energy",
-                new CustomItemStack(Utils.doGlow(Material.SOUL_LANTERN), ColorGradient.getGradientName("特殊机器")));
+                new CustomItemStack(Utils.doGlow(Material.SOUL_LANTERN), ColorGradient.getGradientName("Special Machines")));
         flat("machine", "power",
                 new CustomItemStack(CustomHead.getHead("24378b986e358555ee73f09b210d49ec13719de5ea88d75523770d31163f3aef"),
-                        ColorGradient.getGradientName("发电机")));
+                        ColorGradient.getGradientName("Generators")));
         flat("machine", "electric_bot",
-                new CustomItemStack(CustomHead.BOT_PINK.getItem(), ColorGradient.getGradientName("电力机器人")));
+                new CustomItemStack(CustomHead.BOT_PINK.getItem(), ColorGradient.getGradientName("Electric Robots")));
         flat("machine", "rscmagic",
                 new CustomItemStack(CustomHead.MAGICSOLO.getItem(),
-                        ColorGradient.getRandomGradientName("魔法-1.21修复/优化~物品/机器")));
+                        ColorGradient.getRandomGradientName("Magic - 1.21 Fixes/Optimizations ~ Items/Machines")));
 
         // ===== 一级: 功能机器 =====
-        topContainer("functional", "功能机器",
+        topContainer("functional", "Functional Machines",
                 GuideCategoryMenu.createVirtualIcon(Utils.doGlow(Material.FURNACE),
-                        ColorGradient.getGradientName("功能机器"),
-                        "点击查看生产机器与资源生成器", "functional"), 4);
+                        ColorGradient.getGradientName("Functional Machines"),
+                        "Click to view production machines and resource generators", "functional"), 4);
         flat("functional", "resourcegenerator",
-                new CustomItemStack(Utils.doGlow(Material.LANTERN), ColorGradient.getGradientName("资源生成器")));
+                new CustomItemStack(Utils.doGlow(Material.LANTERN), ColorGradient.getGradientName("Resource Generators")));
         flat("functional", "recipemachine",
-                new CustomItemStack(Utils.doGlow(Material.SOUL_CAMPFIRE), ColorGradient.getGradientName("生产机器")));
+                new CustomItemStack(Utils.doGlow(Material.SOUL_CAMPFIRE), ColorGradient.getGradientName("Production Machines")));
 
         // ===== 一级(平铺): 魔法BOSS =====
         flat(null, "boss",
-                new CustomItemStack(Utils.doGlow(Material.ENDER_DRAGON_SPAWN_EGG), ColorGradient.getGradientName("魔法BOSS")));
+                new CustomItemStack(Utils.doGlow(Material.ENDER_DRAGON_SPAWN_EGG), ColorGradient.getGradientName("Magic Bosses")));
 
         // ===== 一级: 预制菜 =====
-        topContainer("prebuild", "预制菜",
+        topContainer("prebuild", "Prefabs",
                 GuideCategoryMenu.createVirtualIcon(Utils.doGlow(Material.BRICKS),
-                        ColorGradient.getGradientName("预制菜"),
-                        "点击查看预制菜与建筑材料", "prebuild"), 7);
+                        ColorGradient.getGradientName("Prefabs"),
+                        "Click to view prefabs and building materials", "prebuild"), 7);
         flat("prebuild", "prebuilding",
-                new CustomItemStack(Utils.doGlow(Material.BRICKS), ColorGradient.getGradientName("预制菜（建筑）")));
+                new CustomItemStack(Utils.doGlow(Material.BRICKS), ColorGradient.getGradientName("Prefabs (Building)")));
         flat("prebuild", "prebuildingresource",
-                new CustomItemStack(Utils.doGlow(Material.PRISMARINE_CRYSTALS), ColorGradient.getGradientName("建筑材料")));
+                new CustomItemStack(Utils.doGlow(Material.PRISMARINE_CRYSTALS), ColorGradient.getGradientName("Building Materials")));
 
         // ===== 一级(平铺): 魔法锻造 =====
         flat(null, "forge",
-                new CustomItemStack(Utils.doGlow(Material.ANVIL), ColorGradient.getGradientName("魔法锻造")));
+                new CustomItemStack(Utils.doGlow(Material.ANVIL), ColorGradient.getGradientName("Magic Forging")));
 
         // ===== 一级: 钓鱼佬 =====
-        topContainer("fishing", "钓鱼佬",
+        topContainer("fishing", "Fishing",
                 GuideCategoryMenu.createVirtualIcon(Utils.doGlow(Material.FISHING_ROD),
-                        ColorGradient.getGradientName("钓鱼佬"),
-                        "点击查看织梦者与水云间", "fishing"), 9);
+                        ColorGradient.getGradientName("Fishing"),
+                        "Click to view Dreamweaver and Water Cloud", "fishing"), 9);
         // 二级容器: 织梦者
-        container("fishing", "dreamer", "织梦者",
-                new CustomItemStack(Utils.doGlow(Material.GHAST_TEAR), ColorGradient.getRandomGradientName("织梦者")));
+        container("fishing", "dreamer", "Dreamweaver",
+                new CustomItemStack(Utils.doGlow(Material.GHAST_TEAR), ColorGradient.getRandomGradientName("Dreamweaver")));
         flat("dreamer", "nonsensical",
-                new CustomItemStack(Utils.doGlow(Material.STRING), ColorGradient.getRandomGradientName("合成材料")));
+                new CustomItemStack(Utils.doGlow(Material.STRING), ColorGradient.getRandomGradientName("Crafting Materials")));
         flat("dreamer", "dreamer_lure",
-                new CustomItemStack(Utils.doGlow(Material.ORANGE_DYE), ColorGradient.getRandomGradientName("鱼饵")));
+                new CustomItemStack(Utils.doGlow(Material.ORANGE_DYE), ColorGradient.getRandomGradientName("Lures")));
         flat("dreamer", "dreamer_rod",
-                new CustomItemStack(Utils.doGlow(Material.FISHING_ROD), ColorGradient.getRandomGradientName("鱼竿")));
+                new CustomItemStack(Utils.doGlow(Material.FISHING_ROD), ColorGradient.getRandomGradientName("Fishing Rods")));
         flat("dreamer", "dreamer_guide",
-                new CustomItemStack(Utils.doGlow(Material.BOOK), ColorGradient.getRandomGradientName("钓鱼指南")));
+                new CustomItemStack(Utils.doGlow(Material.BOOK), ColorGradient.getRandomGradientName("Fishing Guide")));
         // 二级容器: 水云间
-        container("fishing", "watercloud", "水云间",
-                new CustomItemStack(Utils.doGlow(Material.CYAN_DYE), ColorGradient.getGradientNameVer2("水云间")));
+        container("fishing", "watercloud", "Water Cloud",
+                new CustomItemStack(Utils.doGlow(Material.CYAN_DYE), ColorGradient.getGradientNameVer2("Water Cloud")));
         flat("watercloud", "watercloud_material",
-                new CustomItemStack(Utils.doGlow(Material.BAMBOO), ColorGradient.getGradientNameVer2("合成材料")));
+                new CustomItemStack(Utils.doGlow(Material.BAMBOO), ColorGradient.getGradientNameVer2("Crafting Materials")));
         flat("watercloud", "watercloud_lure",
-                new CustomItemStack(Utils.doGlow(Material.ORANGE_DYE), ColorGradient.getGradientNameVer2("鱼饵")));
+                new CustomItemStack(Utils.doGlow(Material.ORANGE_DYE), ColorGradient.getGradientNameVer2("Lures")));
         flat("watercloud", "watercloud_rod",
-                new CustomItemStack(Utils.doGlow(Material.FISHING_ROD), ColorGradient.getGradientNameVer2("鱼竿")));
+                new CustomItemStack(Utils.doGlow(Material.FISHING_ROD), ColorGradient.getGradientNameVer2("Fishing Rods")));
         flat("watercloud", "watercloud_guide",
-                new CustomItemStack(Utils.doGlow(Material.KNOWLEDGE_BOOK), ColorGradient.getGradientNameVer2("钓鱼指南")));
+                new CustomItemStack(Utils.doGlow(Material.KNOWLEDGE_BOOK), ColorGradient.getGradientNameVer2("Fishing Guide")));
 
         // ===== 一级: 魔法作物 =====
-        topContainer("crop", "魔法作物",
+        topContainer("crop", "Magic Crops",
                 GuideCategoryMenu.createVirtualIcon(Utils.doGlow(Material.WHEAT),
-                        ColorGradient.getGradientNameVer2("魔法作物"),
-                        "点击查看美食与食材原料", "crop"), 10);
+                        ColorGradient.getGradientNameVer2("Magic Crops"),
+                        "Click to view foods and ingredients", "crop"), 10);
         flat("crop", "food",
-                new CustomItemStack(Utils.doGlow(Material.CAKE), ColorGradient.getGradientNameVer2("美食")));
+                new CustomItemStack(Utils.doGlow(Material.CAKE), ColorGradient.getGradientNameVer2("Foods")));
         flat("crop", "foodresource",
-                new CustomItemStack(Utils.doGlow(Material.WHEAT), ColorGradient.getGradientNameVer2("食材原料")));
+                new CustomItemStack(Utils.doGlow(Material.WHEAT), ColorGradient.getGradientNameVer2("Ingredients")));
 
         // ===== 一级(平铺): 魔法2.0-共创 =====
         flat(null, "cooperatecreate",
                 new CustomItemStack(CustomHead.getHead("7971e55df39a58faad05742d882e9a05ffa511a0c58e4f687777bb74614006eb"),
-                        ColorGradient.getGradientNameVer2("魔法2.0-共创")));
+                        ColorGradient.getGradientNameVer2("Magic 2.0 - Community")));
     }
 
     /** 注册一级容器组(显示在一级主页) */
@@ -269,8 +269,8 @@ public final class GuideMenuGroups {
             String placeholderId = ("VIRTUAL_ENTRY_" + id).toUpperCase();
             SlimefunItemStack placeholder = new SlimefunItemStack(placeholderId,
                     new CustomItemStack(Material.PAPER,
-                            ColorGradient.getGradientName(name + " · 入口"),
-                            ColorGradient.getGradientName("点击查看子分类")));
+                            ColorGradient.getGradientName(name + " · Entry"),
+                            ColorGradient.getGradientName("Click to view subcategories")));
             UnplaceableBlock entry = new UnplaceableBlock(group, placeholder, RecipeType.NULL,
                     new ItemStack[]{null, null, null, null, null, null, null, null, null});
             entry.register(plugin);

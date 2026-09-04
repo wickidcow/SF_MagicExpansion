@@ -173,7 +173,7 @@ public final class BaitBagMenu {
             new SeriesLayout("Between Water and Clouds", Material.CYAN_DYE, List.of(
                     new RodLayout("Cyan Bamboo Rod", MagicExpansionItems.FISHING_ROD_BETWEEN_WATER_CLOUD_CYAN_BAMBOO,
                             List.of("CuiXia", "WeiChen", "RongHuo", "YueJin", "XingHe")),
-                    new RodLayout("Reedflower钓", FISHING_ROD_BETWEEN_WATER_CLOUD_REED,
+                    new RodLayout("Reedflower Rod", FISHING_ROD_BETWEEN_WATER_CLOUD_REED,
                             List.of("JianJia", "LuXue", "WeiLu", "BaiLu", "LuYa")),
                     new RodLayout("Snowy River", MagicExpansionItems.FISHING_ROD_BETWEEN_WATER_CLOUD_HANJIANG,
                             List.of("NingShuang", "LuoXu", "BingPo", "ChuJi", "ChuiLun")),
@@ -263,10 +263,10 @@ public final class BaitBagMenu {
 
     private static ItemStack memoryFragment() {
         return new CustomItemStack(new ItemStack(Material.PRISMARINE_SHARD),
-                getGradientNameVer2("鱼饵·Memory Fragment"),
-                "§f这个鱼饵可以钓到任何物品",
-                "§f他存在于过去或者是未来",
-                "§f你现在看到的他并非真正的他");
+                getGradientNameVer2("Lure · Memory Fragment"),
+                "§fThis lure can catch almost anything.",
+                "§fIt exists somewhere in the past—or the future.",
+                "§fWhat you see now may not be its true form.");
     }
 
     // ==================== PDC 存储 ====================
@@ -496,7 +496,7 @@ public final class BaitBagMenu {
             slot = findBagSlot(player, bag); // 兜底
         }
         if (slot < 0) {
-            player.sendMessage(getGradientNameVer2("饵料袋不在背包中"));
+            player.sendMessage(getGradientNameVer2("The Lure Bag is not in your inventory."));
             return;
         }
         ItemStack current = player.getInventory().getItem(slot);
@@ -508,7 +508,7 @@ public final class BaitBagMenu {
         }
         final int bagSlot = slot;
 
-        ChestMenu menu = new ChestMenu(getGradientNameVer2("✦ 饵料袋 ✦"));
+        ChestMenu menu = new ChestMenu(getGradientNameVer2("✦ Lure Bag ✦"));
         menu.setEmptySlotsClickable(false);
         menu.setPlayerInventoryClickable(true);
         menu.addMenuOpeningHandler(p -> p.playSound(p.getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1.0f));
@@ -519,7 +519,7 @@ public final class BaitBagMenu {
         }
         // 粉红输入槽(命名)
         for (int s : new int[]{47, 48, 50, 51}) {
-            menu.addItem(s, new CustomItemStack(Material.PINK_STAINED_GLASS_PANE, getGradientNameVer2("输入槽")), ChestMenuUtils.getEmptyClickHandler());
+            menu.addItem(s, new CustomItemStack(Material.PINK_STAINED_GLASS_PANE, getGradientNameVer2("Input Slot")), ChestMenuUtils.getEmptyClickHandler());
         }
         // 中间 4×7 存储区: 先铺淡蓝装饰, 再由 renderGrid 覆盖(系列标识/鱼竿展示/鱼饵存储)
         for (int s : new int[]{10,11,12,13,14,15,16,19,20,21,22,23,24,25,28,29,30,31,32,33,34,37,38,39,40,41,42,43}) {
@@ -529,11 +529,11 @@ public final class BaitBagMenu {
 
         // 4槽: 使用说明
         menu.addItem(4, new CustomItemStack(Material.BOOK,
-                getGradientNameVer2("云梦袋"),
-                getGradientNameVer2("左键放入对应鱼饵"),
-                getGradientNameVer2("空手左键取出1个"),
-                getGradientNameVer2("Shift+左键取出全部(最多3456)"),
-                getGradientNameVer2("右键循环调整优先级")), ChestMenuUtils.getEmptyClickHandler());
+                getGradientNameVer2("Cloud Dream Bag"),
+                getGradientNameVer2("Left-click to insert the matching lure"),
+                getGradientNameVer2("Left-click with an empty hand to take 1"),
+                getGradientNameVer2("Shift + Left-click to take all (max 3456)"),
+                getGradientNameVer2("Right-click to cycle priority")), ChestMenuUtils.getEmptyClickHandler());
 
         // 系列标签与鱼饵槽由 renderGrid 统一渲染(数据驱动)
 
@@ -609,7 +609,7 @@ public final class BaitBagMenu {
                 GridCell anchor = rw.seriesAnchor();
                 menu.addItem(GRID_ROWS[row], new CustomItemStack(anchor.seriesIcon(),
                         getGradientNameVer2(anchor.seriesName()),
-                        getGradientNameVer2("优先级 1~" + seriesSize(anchor.seriesName()))), ChestMenuUtils.getEmptyClickHandler());
+                        getGradientNameVer2("Priority 1~" + seriesSize(anchor.seriesName()))), ChestMenuUtils.getEmptyClickHandler());
             } else {
                 // 行首无系列头: 放一个空占位格(与系列头顶格对齐, 用存储区同款淡蓝色玻璃板填充)
                 menu.addItem(GRID_ROWS[row], plainPane(Material.LIGHT_BLUE_STAINED_GLASS_PANE), ChestMenuUtils.getEmptyClickHandler());
@@ -646,7 +646,7 @@ public final class BaitBagMenu {
                 meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
             }
             meta.setDisplayName(getGradientNameVer2(rod.rodName()));
-            meta.setLore(List.of(getGradientNameVer2("该鱼竿消耗以下鱼饵")));
+            meta.setLore(List.of(getGradientNameVer2("This rod uses the following lures")));
             icon.setItemMeta(meta);
         }
         return icon;
@@ -671,9 +671,9 @@ public final class BaitBagMenu {
         List<String> lore = new ArrayList<>();
         if (meta != null && meta.hasLore()) lore.addAll(meta.getLore());
         lore.add("");
-        lore.add(getGradientNameVer2("库存：" + amount));
-        lore.add(getGradientNameVer2("优先级：" + priority + " / " + seriesSize(entry.series())));
-        lore.add(getGradientNameVer2("空手左键取出1 · 左键放入 · Shift取出(≤3456) · 右键优先级"));
+        lore.add(getGradientNameVer2("Stored: " + amount));
+        lore.add(getGradientNameVer2("Priority: " + priority + " / " + seriesSize(entry.series())));
+        lore.add(getGradientNameVer2("Empty-hand Left-click: take 1 · Left-click: insert · Shift: take all (≤3456) · Right-click: priority"));
         meta.setLore(lore);
         icon.setItemMeta(meta);
         return icon;
@@ -726,11 +726,11 @@ public final class BaitBagMenu {
         }
         BaitEntry match = matchBait(cursor);
         if (match == null) {
-            player.sendMessage(getGradientNameVer2("请手持对应的鱼饵点击槽位"));
+            player.sendMessage(getGradientNameVer2("Hold the matching lure and click the slot."));
             return;
         }
         if (!match.id().equals(entry.id())) {
-            player.sendMessage(getGradientNameVer2("这不是该槽位的鱼饵"));
+            player.sendMessage(getGradientNameVer2("That lure does not belong in this slot."));
             return;
         }
         long cur = getAmount(bag, entry);
@@ -870,7 +870,7 @@ public final class BaitBagMenu {
                         setInputItem(bag, source);
                     }
                     player.getInventory().setItem(bagSlot, bag);
-                    player.sendMessage(getGradientNameVer2("已从以太秘匣取出鱼饵"));
+                    player.sendMessage(getGradientNameVer2("Lure withdrawn from the Aether Cache."));
                     refreshBaitSlot(menu, bag, fragBait);
                     return;
                 }
@@ -899,7 +899,7 @@ public final class BaitBagMenu {
             // 更新输入槽内保存的量子存储物品(已扣减)
             setInputItem(bag, source);
             player.getInventory().setItem(bagSlot, bag);
-            player.sendMessage(getGradientNameVer2("已从量子存储取出鱼饵"));
+            player.sendMessage(getGradientNameVer2("Lure withdrawn from Quantum Storage."));
             refreshBaitSlot(menu, bag, qBait);
             return;
         }
@@ -991,11 +991,11 @@ public final class BaitBagMenu {
             setAmount(bag, vBait, getAmount(bag, vBait) + take);
             player.setItemOnCursor(null);
             player.getInventory().setItem(bagSlot, bag);
-            player.sendMessage(getGradientNameVer2("已从量子存储取出鱼饵"));
+            player.sendMessage(getGradientNameVer2("Lure withdrawn from Quantum Storage."));
             refreshBaitSlot(menu, bag, vBait);
         } catch (Throwable t) {
             // 修复(L3)：空吞异常改为输出警告日志，方便排查量子存储兼容问题
-            MagicExpansion.getInstance().getLogger().warning("饵料袋读取量子存储数据失败: " + t.getMessage());
+            MagicExpansion.getInstance().getLogger().warning("Lure Bag failed to read Quantum Storage data: " + t.getMessage());
         }
     }
 

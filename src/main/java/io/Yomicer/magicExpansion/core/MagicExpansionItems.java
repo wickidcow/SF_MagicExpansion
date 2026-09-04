@@ -31,7 +31,7 @@ public class MagicExpansionItems {
             Material.PAPER,
             getGradientNameVer2("Information"),
             "",
-            getGradientNameVer2("Version: Build 90"),
+            getGradientNameVer2("Version: Build 91"),
             getGradientNameVer2("Include this information when reporting an issue.")
     );
     //AUTHOR

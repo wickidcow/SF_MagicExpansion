@@ -34,12 +34,12 @@ import java.util.Random;
 import java.util.Set;
 
 /**
- * 水云间系列专属钓鱼监听
- * 与 PlayerFishingListener 相互独立,各自处理各自的鱼竿钓鱼事件
+ * Dedicated fishing listener for the Water Cloud rod series
+ * Independent from PlayerFishingListener; each listener handles its own rod family.
  */
 public class PlayerFishingWaterCloudListener implements Listener {
 
-    // 水云间系列鱼饵(当前鱼饵作为特殊事件判定依据)
+    // Water Cloud lure list; the active lure determines special-catch behavior.
     private static final List<MoreLure> SHUIYUNJIAN_LURES = List.of(
             new MoreLure(MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_CUIXIA, "CuiXia"),   // 淬霞
             new MoreLure(MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_WEICHEN, "WeiChen"), // 微尘
@@ -48,7 +48,7 @@ public class PlayerFishingWaterCloudListener implements Listener {
             new MoreLure(MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_XINGHE, "XingHe")    // 星核
     );
 
-    // 水云间专属钓获提示词(普通钓物)
+    // Water Cloud normal-catch messages.
     private static final List<String> SHUIYUNJIAN_PHRASES = List.of(
             "Bamboo shadows shatter the moon across the river.",
             "Where water meets cloud, something takes the hook.",
@@ -65,7 +65,7 @@ public class PlayerFishingWaterCloudListener implements Listener {
             "Chime—the water opens into a ring of moonlight."
     );
 
-    // 水云间特殊事件提示词(钓到特殊钓物时)
+    // Water Cloud special-catch messages.
     private static final List<String> SHUIYUNJIAN_SPECIAL_PHRASES = List.of(
             "Water and cloud surge—you hooked something enormous: ",
             "A great catch breaks the surface and scatters the reeds: ",
@@ -74,7 +74,7 @@ public class PlayerFishingWaterCloudListener implements Listener {
             "This cast stirred the whole realm of water and cloud: "
     );
 
-    // 水云间消耗鱼饵提示词(前缀 + 饵名 + ！)
+    // Water Cloud lure-consumption messages.
     private static final List<String> SHUIYUNJIAN_CONSUME_PHRASES = List.of(
             "One lure enters the water, and all grows still: ",
             "Between water and cloud, this lure returns to the current: ",
@@ -85,7 +85,7 @@ public class PlayerFishingWaterCloudListener implements Listener {
             "Another piece of moonlit wind is given to the current: "
     );
 
-    // 水云间最后一组鱼饵提示词(接在饵名之后)
+    // Water Cloud final-lure messages.
     private static final List<String> SHUIYUNJIAN_LAST_PHRASES = List.of(
             " The last one has sunk into water and cloud with this cast.",
             " It has gone to the current; none remain.",
@@ -94,7 +94,7 @@ public class PlayerFishingWaterCloudListener implements Listener {
     );
 
     /**
-     * 入口: 水云间鱼竿钓鱼事件
+     * Entry point for Water Cloud fishing events.
      */
     @EventHandler
     public void onFish(PlayerFishEvent e) {
@@ -102,9 +102,9 @@ public class PlayerFishingWaterCloudListener implements Listener {
     }
 
     /**
-     * 水云间钓鱼主流程
-     * 无鱼饵 → 按原版普通鱼竿走(不干预,保留原版钓获)
-     * 有鱼饵 → 按战利品池随机钓获;钓起的物品中被标记为特殊事件入口的 → 特殊事件,否则普通事件
+     * Main Water Cloud fishing flow.
+     * No lure: leave vanilla fishing untouched.
+     * With a lure: roll the configured loot pool; tagged catches trigger special handling.
      */
     private void fishingUtil(PlayerFishEvent e) {
         if (e.getState() != PlayerFishEvent.State.CAUGHT_FISH) return;
@@ -113,32 +113,35 @@ public class PlayerFishingWaterCloudListener implements Listener {
         ItemStack rod = player.getInventory().getItemInMainHand();
         SlimefunItem sfItem = SlimefunItem.getByItem(rod);
 
-        // 1. 判定是否水云间系列鱼竿
+        // 1. Verify this is a Water Cloud fishing rod.
         if (!(sfItem instanceof FishingRodWaterCloud fishingRod)) return;
 
-        // 2. 获取当前鱼饵(副手优先,其次背包)
+        // Release 11: Water Cloud catches require the hook to be in water.
+        if (!isHookInWater(e.getHook().getLocation())) return;
+
+        // 2. Resolve the active lure: offhand first, then inventory.
         Lure activeLure = getActiveLure(player, fishingRod);
 
-        // 3. 没有鱼饵 → 按原版普通鱼竿走,不干预原版钓获
+        // 3. No lure: preserve vanilla fishing behavior.
         if (activeLure == null) return;
 
-        // 4. 使用原本的战利品池加权随机逻辑获取钓获物
+        // 4. Roll the existing weighted loot pool.
         ItemStack drop = getCaughtDrop(player, fishingRod, activeLure);
         if (drop == null) return;
 
-        // 5. 移除原版钓获实体,改为掉落本次战利品
+        // 5. Remove the vanilla catch entity and spawn the selected reward.
         Entity caught = e.getCaught();
         if (caught instanceof Item item) {
             item.remove();
         }
 
-        // 6. 消耗鱼饵(水云间提示)
+        // 6. Consume the lure and show the Water Cloud message.
         consumeLure(player, activeLure);
 
-        // 7. 在鱼钩位置生成掉落物
+        // 7. Spawn the reward at the hook location.
         spawnDrop(player, e.getHook().getLocation(), drop);
 
-        // 8. 钓起的物品中被标记为特殊事件入口的 → 特殊事件;否则普通事件
+        // 8. Route tagged catches to the special event; otherwise use normal handling.
         ItemStack specialCatch = getSpecialCatchForLure(activeLure);
         if (specialCatch != null && SlimefunUtils.isItemSimilar(drop, specialCatch, true)) {
             triggerSpecialEvent(player, drop);
@@ -148,7 +151,7 @@ public class PlayerFishingWaterCloudListener implements Listener {
     }
 
     /**
-     * 获取当前使用的鱼饵(副手优先,其次背包搜索)
+     * Find the active lure: offhand first, then inventory.
      */
     private Lure getActiveLure(Player player, FishingRodWaterCloud fishingRod) {
         Set<String> supportedKeys = fishingRod.getLootTable().keySet();
@@ -171,7 +174,7 @@ public class PlayerFishingWaterCloudListener implements Listener {
     }
 
     /**
-     * 获取本次钓获物(沿用原本的战利品池加权随机逻辑)
+     * Select this catch using the existing weighted loot logic.
      */
     private ItemStack getCaughtDrop(Player player, FishingRodWaterCloud fishingRod, Lure activeLure) {
         List<WeightedItem> pool = fishingRod.getLootPoolForLure(activeLure);
@@ -193,9 +196,9 @@ public class PlayerFishingWaterCloudListener implements Listener {
     }
 
     /**
-     * 当前鱼饵对应的特殊钓物(显式映射,即被标记为特殊事件入口的物品)
-     * 修复: 返回 clone 而非 MagicExpansionItems 的 static 单例——
-     * 蓄满分支/双倍鱼获会 setAmount 修改 drop, 直接返回单例会被污染并随掉落物扩散。
+     * Map the active lure to its special catch.
+     * Return a clone rather than mutating the shared MagicExpansionItems instance.
+     * Catch modifiers can change stack size, so shared item instances must never be returned directly.
      */
     private ItemStack getSpecialCatchForLure(Lure lure) {
         ItemStack special = switch (lure.getKey()) {
@@ -209,7 +212,7 @@ public class PlayerFishingWaterCloudListener implements Listener {
     }
 
     /**
-     * 在鱼钩位置生成掉落物(沿用原本的掉落方式)
+     * Spawn the reward at the hook location.(沿用原本的掉落方式)
      */
     private void spawnDrop(Player player, Location hookLocation, ItemStack drop) {
         if (drop == null) return;
@@ -224,7 +227,7 @@ public class PlayerFishingWaterCloudListener implements Listener {
     }
 
     /**
-     * 消耗鱼饵(水云间提示)
+     * Consume the lure and show the Water Cloud message.
      */
     private void consumeLure(Player player, Lure lure) {
         PlayerInventory inv = player.getInventory();
@@ -249,29 +252,29 @@ public class PlayerFishingWaterCloudListener implements Listener {
     }
 
     /**
-     * 普通钓物 → 普通事件(水云间专属钓获提示)
+     * Normal catch: show the Water Cloud catch message.
      */
     private void handleNormalCatch(Player player, ItemStack drop) {
-        // 原版获得经验音效
+        // Vanilla experience pickup sound.
         player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f);
         String message = SHUIYUNJIAN_PHRASES.get(new Random().nextInt(SHUIYUNJIAN_PHRASES.size()));
         player.sendMessage(ColorGradient.getRandomGradientName(message) + " §r" + ItemStackHelper.getDisplayName(drop) + ColorGradient.getRandomGradientName("!"));
     }
 
     /**
-     * 特殊钓物 → 特殊事件(专属提示,后续可继续加表现)
+     * Special catch: show the dedicated message and effects.
      */
     private void triggerSpecialEvent(Player player, ItemStack drop) {
-        // 原版获得经验音效
+        // Vanilla experience pickup sound.
         player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f);
-        // 从玩家脚底发射一枚无伤害的庆祝烟花
+        // Launch a harmless celebration firework from the player.
         spawnCelebrationFirework(player);
         String message = SHUIYUNJIAN_SPECIAL_PHRASES.get(new Random().nextInt(SHUIYUNJIAN_SPECIAL_PHRASES.size()));
         player.sendMessage(ColorGradient.getRandomGradientName(message) + " §r" + ItemStackHelper.getDisplayName(drop) + ColorGradient.getRandomGradientName("!"));
     }
 
     /**
-     * 从玩家脚底发射一枚装饰性烟花(无伤害,仅庆祝特效)
+     * Launch a decorative, harmless celebration firework.
      */
     private void spawnCelebrationFirework(Player player) {
         Firework firework = player.getWorld().spawn(player.getLocation(), Firework.class);
@@ -284,4 +287,15 @@ public class PlayerFishingWaterCloudListener implements Listener {
         meta.setPower(1);
         firework.setFireworkMeta(meta);
     }
+    /**
+     * Checks whether the fishing hook is in water. The downward probe covers hooks
+     * resting exactly on the top edge of a water block.
+     */
+    private boolean isHookInWater(Location location) {
+        if (location.getBlock().getType() == Material.WATER) {
+            return true;
+        }
+        return location.clone().subtract(0, 0.1, 0).getBlock().getType() == Material.WATER;
+    }
+
 }

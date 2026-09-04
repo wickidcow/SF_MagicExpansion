@@ -42,7 +42,7 @@ import static io.Yomicer.magicExpansion.utils.MagicExpansionSlimefunItemCache.ge
 public class PlayerFishingListener implements Listener {
 
     Config cfg = new Config(MagicExpansion.getInstance());
-    // 所有鱼饵类型(优先级顺序)
+    // All lure types in priority order
     private static final List<Lure> LURES = List.of(
             new MoreLure(SlimefunItems.MAGIC_SUGAR,"magic_sugar"),
             new MoreLure(new ItemStack(Material.BREAD),"bread"),
@@ -100,7 +100,7 @@ public class PlayerFishingListener implements Listener {
         ItemStack offHand = player.getInventory().getItemInOffHand();
         if (offHand != null) {
             activeLure = LURES.stream()
-                    .filter(lure -> supportedKeys.contains(lure.getKey())) // 鱼竿支持
+                    .filter(lure -> supportedKeys.contains(lure.getKey())) // Supported by this fishing rod
                     .filter(lure -> SlimefunUtils.isItemSimilar(offHand, lure.getItem(), true))
                     .findFirst()
                     .orElse(null);
@@ -219,7 +219,7 @@ public class PlayerFishingListener implements Listener {
         ItemStack offHand = player.getInventory().getItemInOffHand();
         if (offHand != null) {
             activeLure = LURES.stream()
-                    .filter(lure -> supportedKeys.contains(lure.getKey())) // 鱼竿支持
+                    .filter(lure -> supportedKeys.contains(lure.getKey())) // Supported by this fishing rod
                     .filter(lure -> SlimefunUtils.isItemSimilar(offHand, lure.getItem(), true))
                     .findFirst()
                     .orElse(null);

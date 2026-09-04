@@ -42,10 +42,10 @@ public class WaterCloudPoolMenu {
             "FengSi", "YanYu", "LianBai", "XiaoFeng", "XieYing"                    // 细雨·斜风 5 饵
     };
     private static final String[] BAIT_NAMES = {
-            "淬霞", "微尘", "熔火", "跃金", "星核",
-            "蒹葭", "芦雪", "苇露", "白露", "芦芽",
-            "凝霜", "落絮", "冰魄", "初霁", "垂纶",
-            "风丝", "烟雨", "涟白", "晓风", "斜影"
+            "Tempered Glow", "Mote", "Molten Flame", "Leaping Gold", "Star Core",
+            "Reedflower", "Reed Snow", "Reed Dew", "White Dew", "Reed Sprout",
+            "Condensed Frost", "Falling Catkin", "Ice Soul", "First Clearing", "Angler Line",
+            "Wind Thread", "Misty Rain", "White Ripple", "Dawn Breeze", "Slanting Shadow"
     };
     private static final String[] BAIT_COLORS = {
             "§c", "§7", "§4", "§6", "§d",
@@ -106,9 +106,9 @@ public class WaterCloudPoolMenu {
      */
     public static ItemStack createPoolButton(FishingRodWaterCloud rod) {
         CustomItemStack btn = new CustomItemStack(Material.BOOK,
-                getGradientName("✦ 查看鱼饵池 ✦"),
-                getGradientName("点击查看当前鱼竿所有可用鱼饵"),
-                getGradientName("以及每个鱼饵的掉落物概率"));
+                getGradientName("✦ View Lure Pool ✦"),
+                getGradientName("Click to view all lures supported by this rod"),
+                getGradientName("and the drop chance for each lure"));
         ItemMeta meta = btn.getItemMeta();
         meta.getPersistentDataContainer().set(POOL_BUTTON_KEY, PersistentDataType.BOOLEAN, true);
         meta.getPersistentDataContainer().set(POOL_ROD_KEY, PersistentDataType.STRING, rod.getId());
@@ -130,8 +130,8 @@ public class WaterCloudPoolMenu {
      * 主页面:鱼饵选择
      */
     public static void openBaitList(Player player, FishingRodWaterCloud rod) {
-        ChestMenu menu = new ChestMenu(getGradientName("✦ 水云间 · 鱼饵池 ✦"));
-        setupBorders(menu, "§9✦ 水云间");
+        ChestMenu menu = new ChestMenu(getGradientName("✦ Water Cloud · Lure Pool ✦"));
+        setupBorders(menu, "§9✦ Water Cloud");
         menu.setEmptySlotsClickable(false);
         menu.setPlayerInventoryClickable(false);
 
@@ -150,18 +150,18 @@ public class WaterCloudPoolMenu {
             int total = pool.stream().mapToInt(WeightedItem::getWeight).sum();
             WeightedItem special = pool.stream().filter(w -> isSpecialItem(w.getItem(), fi)).findFirst().orElse(null);
             int specialWeight = special == null ? 0 : special.getWeight();
-            String specialName = special == null ? "§8暂无" : "§6" + ItemStackHelper.getDisplayName(special.getItem());
+            String specialName = special == null ? "§8None" : "§6" + ItemStackHelper.getDisplayName(special.getItem());
 
             ItemStack icon = BAIT_ICONS[i].clone();
             ItemMeta meta = icon.getItemMeta();
             meta.setDisplayName(BAIT_COLORS[i] + "✦ " + BAIT_NAMES[i]);
             List<String> lore = new ArrayList<>();
-            lore.add("§7可钓获的物品: §f" + pool.size() + "种");
-            lore.add("§6 · 特殊物品概率: " + formatPercent(total, specialWeight));
+            lore.add("§7Possible catches: §f" + pool.size());
+            lore.add("§6 · Special catch chance: " + formatPercent(total, specialWeight));
             lore.add("");
-            lore.add("§7" + specialName + " §7为特殊钓物");
+            lore.add("§7" + specialName + " §7is the special catch");
             lore.add("");
-            lore.add("§e点击查看掉落物概率");
+            lore.add("§eClick to view drop chances");
             meta.setLore(lore);
             icon.setItemMeta(meta);
 
@@ -173,7 +173,7 @@ public class WaterCloudPoolMenu {
         }
 
         // 关闭按钮
-        menu.addItem(49, new CustomItemStack(Material.BARRIER, "§c关闭菜单", "§7返回游戏"));
+        menu.addItem(49, new CustomItemStack(Material.BARRIER, "§cClose Menu", "§7Return to game"));
         menu.addMenuClickHandler(49, (p, slot, item, action) -> {
             p.playSound(p.getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1.0f);
             p.closeInventory();
@@ -196,7 +196,7 @@ public class WaterCloudPoolMenu {
         page = Math.max(0, Math.min(page, pages - 1));
         final int currentPage = page;
 
-        ChestMenu menu = new ChestMenu(getGradientName(BAIT_NAMES[index] + " · 掉落物"));
+        ChestMenu menu = new ChestMenu(getGradientName(BAIT_NAMES[index] + " · Drops"));
         setupBorders(menu, BAIT_COLORS[index] + "✦ " + BAIT_NAMES[index]);
         menu.setEmptySlotsClickable(false);
         menu.setPlayerInventoryClickable(false);
@@ -205,7 +205,7 @@ public class WaterCloudPoolMenu {
         ItemStack info = BAIT_ICONS[index].clone();
         ItemMeta infoMeta = info.getItemMeta();
         infoMeta.setDisplayName(BAIT_COLORS[index] + "✦ " + BAIT_NAMES[index]);
-        infoMeta.setLore(List.of("§6第 " + (currentPage + 1) + "/" + pages + " 页"));
+        infoMeta.setLore(List.of("§6Page " + (currentPage + 1) + "/" + pages + ""));
         info.setItemMeta(infoMeta);
         menu.addItem(4, info);
         menu.addMenuClickHandler(4, (p, slot, item, action) -> false);
@@ -224,7 +224,7 @@ public class WaterCloudPoolMenu {
 
         // 底部:上一页 / 下一页 / 返回(45 号槽保持装饰栏)
         if (currentPage > 0) {
-            menu.addItem(48, new CustomItemStack(Material.ARROW, "§e上一页", "§7第 " + currentPage + "/" + pages + " 页"));
+            menu.addItem(48, new CustomItemStack(Material.ARROW, "§ePrevious Page", "§7Page " + currentPage + "/" + pages + ""));
             menu.addMenuClickHandler(48, (p, slot, item, action) -> {
                 p.playSound(p.getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1.0f);
                 openPool(p, rod, key, currentPage - 1);
@@ -232,7 +232,7 @@ public class WaterCloudPoolMenu {
             });
         }
         if (currentPage + 1 < pages) {
-            menu.addItem(50, new CustomItemStack(Material.ARROW, "§e下一页", "§7第 " + (currentPage + 2) + "/" + pages + " 页"));
+            menu.addItem(50, new CustomItemStack(Material.ARROW, "§eNext Page", "§7Page " + (currentPage + 2) + "/" + pages + ""));
             menu.addMenuClickHandler(50, (p, slot, item, action) -> {
                 p.playSound(p.getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1.0f);
                 openPool(p, rod, key, currentPage + 1);
@@ -240,7 +240,7 @@ public class WaterCloudPoolMenu {
             });
         }
 
-        menu.addItem(49, new CustomItemStack(Material.OAK_DOOR, "§b返回鱼饵列表"));
+        menu.addItem(49, new CustomItemStack(Material.OAK_DOOR, "§bBack to Lure List"));
         menu.addMenuClickHandler(49, (p, slot, item, action) -> {
             p.playSound(p.getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1.0f);
             openBaitList(p, rod);
@@ -261,7 +261,7 @@ public class WaterCloudPoolMenu {
         ItemStack display = w.getItem().clone();
         ItemMeta meta = display.getItemMeta();
         meta.setDisplayName(displayName);
-        meta.setLore(List.of("§e掉落概率: §f" + formatPercent(total, w.getWeight())));
+        meta.setLore(List.of("§eDrop chance: §f" + formatPercent(total, w.getWeight())));
         display.setItemMeta(meta);
         return display;
     }

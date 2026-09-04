@@ -180,7 +180,7 @@ public class FishingRodWaterCloud extends SlimefunItem implements RecipeDisplayI
     private static WeightedItem gen2Seed(Gen2Fish type, int weight) {
         List<String> lore = new ArrayList<>();
         lore.add("");
-        lore.add("§d品级 · " + type.getRarity().getDisplayName());
+        lore.add("§dRarity · " + type.getRarity().getDisplayName());
         lore.add(type.getLore());
         // 与 FishAttributeGenerator.generate 保持一致的构造方式:
         // 鱼桶材质(COD_BUCKET/PUFFERFISH_BUCKET 等)用 CustomItemStack 固化 name/lore,
