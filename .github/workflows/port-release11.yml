@@ -1,0 +1,150 @@
+name: Port MagicExpansion Release 11
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - '.github/workflows/port-release11.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  port:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Apply Release 11 Legacy port
+        shell: python
+        run: |
+          from pathlib import Path
+          import re
+
+          def replace(path, old, new, count=-1):
+              p = Path(path)
+              text = p.read_text(encoding='utf-8')
+              if old not in text:
+                  print(f'Already applied or not present: {path}: {old[:80]!r}')
+                  return
+              text = text.replace(old, new, count)
+              p.write_text(text, encoding='utf-8')
+
+          # Legacy artifact/version bump.
+          replace('pom.xml', '<version>1.1.2</version>', '<version>1.1.3</version>', 1)
+          replace('.github/workflows/build.yml', 'LEGACY_ARTIFACT_VERSION: "1.1.2"', 'LEGACY_ARTIFACT_VERSION: "1.1.3"')
+          replace('.github/workflows/build.yml', 'OUTPUT_NAME: "SF_MagicExpansion1.1.2.jar"', 'OUTPUT_NAME: "SF_MagicExpansion1.1.3.jar"')
+          replace('.github/workflows/build.yml', "grep -Fq '<version>1.1.2</version>' pom.xml", "grep -Fq '<version>1.1.3</version>' pom.xml")
+          replace('.github/workflows/build.yml', 'target/MagicExpansion-Legacy-English-1.1.2.jar', 'target/MagicExpansion-Legacy-English-1.1.3.jar')
+          replace('.github/workflows/build.yml', 'MagicExpansion Release 10 / Build 90 port for Slimefun Legacy.', 'MagicExpansion Release 11 / Build 91 port for Slimefun Legacy.')
+
+          # Upstream Release 11 / Build 91 information item.
+          replace('src/main/java/io/Yomicer/magicExpansion/core/MagicExpansionItems.java', 'getGradientNameVer2("Version: Build 90")', 'getGradientNameVer2("Version: Build 91")', 1)
+
+          # The upstream commit removes PlayerFishEvent cancellation. The Legacy fork
+          # already has the correct behavior, but remove it defensively if it returns.
+          p = Path('src/main/java/io/Yomicer/magicExpansion/Listener/fishingListener/PlayerFishingListener.java')
+          text = p.read_text(encoding='utf-8')
+          text = text.replace('        e.setCancelled(true);\n', '')
+          text = text.replace('// 所有鱼饵类型(优先级顺序)', '// All lure types in priority order')
+          text = text.replace('// 鱼竿支持', '// Supported by this fishing rod')
+          p.write_text(text, encoding='utf-8')
+
+          # Equivalent Release 11 no-water guard for the Legacy Water Cloud flow.
+          # This fork does not use upstream WaterCloudHookManager, so its XP-bar
+          # takeover/restore bug is not present here.
+          p = Path('src/main/java/io/Yomicer/magicExpansion/Listener/fishingListener/PlayerFishingWaterCloudListener.java')
+          text = p.read_text(encoding='utf-8')
+          needle = '        if (!(sfItem instanceof FishingRodWaterCloud fishingRod)) return;\n\n        // 2.'
+          replacement = '''        if (!(sfItem instanceof FishingRodWaterCloud fishingRod)) return;\n\n        // Release 11: custom Water Cloud catches must still require the hook to be in water.\n        if (!isHookInWater(e.getHook().getLocation())) return;\n\n        // 2.'''
+          if needle in text:
+              text = text.replace(needle, replacement, 1)
+          elif 'if (!isHookInWater(e.getHook().getLocation())) return;' not in text:
+              raise SystemExit('Could not locate Water Cloud fishing guard insertion point')
+
+          if 'private boolean isHookInWater(Location location)' not in text:
+              insert = '''\n    /**\n     * Returns whether the fishing hook is in water. The small downward probe covers\n     * hooks resting exactly on the top edge of a water block.\n     */\n    private boolean isHookInWater(Location location) {\n        if (location.getBlock().getType() == Material.WATER) {\n            return true;\n        }\n        return location.clone().subtract(0, 0.1, 0).getBlock().getType() == Material.WATER;\n    }\n'''
+              pos = text.rfind('\n}')
+              if pos < 0:
+                  raise SystemExit('Could not locate class closing brace')
+              text = text[:pos] + insert + text[pos:]
+
+          # Translate the comments in the touched Water Cloud listener so the ported
+          # code remains English-first. Player-visible text in this class is already English.
+          translations = {
+              '水云间系列专属钓鱼监听': 'Dedicated fishing listener for the Water Cloud rod series',
+              '与 PlayerFishingListener 相互独立,各自处理各自的鱼竿钓鱼事件': 'Independent from PlayerFishingListener; each listener handles its own rod family.',
+              '水云间系列鱼饵(当前鱼饵作为特殊事件判定依据)': 'Water Cloud lure list; the active lure determines special-catch behavior.',
+              '水云间专属钓获提示词(普通钓物)': 'Water Cloud normal-catch messages.',
+              '水云间特殊事件提示词(钓到特殊钓物时)': 'Water Cloud special-catch messages.',
+              '水云间消耗鱼饵提示词(前缀 + 饵名 + ！)': 'Water Cloud lure-consumption messages (prefix + lure name).',
+              '水云间最后一组鱼饵提示词(接在饵名之后)': 'Water Cloud final-lure messages appended after the lure name.',
+              '入口: 水云间鱼竿钓鱼事件': 'Entry point for Water Cloud fishing events.',
+              '水云间钓鱼主流程': 'Main Water Cloud fishing flow.',
+              '无鱼饵 → 按原版普通鱼竿走(不干预,保留原版钓获)': 'No lure: leave vanilla fishing untouched.',
+              '有鱼饵 → 按战利品池随机钓获;钓起的物品中被标记为特殊事件入口的 → 特殊事件,否则普通事件': 'With a lure: roll the configured loot pool; tagged catches trigger special handling.',
+              '判定是否水云间系列鱼竿': 'Verify this is a Water Cloud fishing rod.',
+              '获取当前鱼饵(副手优先,其次背包)': 'Resolve the active lure: offhand first, then inventory.',
+              '没有鱼饵 → 按原版普通鱼竿走,不干预原版钓获': 'No lure: preserve vanilla fishing behavior.',
+              '使用原本的战利品池加权随机逻辑获取钓获物': 'Roll the existing weighted loot pool.',
+              '移除原版钓获实体,改为掉落本次战利品': 'Remove the vanilla catch entity and spawn the selected reward.',
+              '消耗鱼饵(水云间提示)': 'Consume the lure and show the Water Cloud message.',
+              '在鱼钩位置生成掉落物': 'Spawn the reward at the hook location.',
+              '钓起的物品中被标记为特殊事件入口的 → 特殊事件;否则普通事件': 'Route tagged catches to the special event; otherwise use normal handling.',
+              '获取当前使用的鱼饵(副手优先,其次背包搜索)': 'Find the active lure: offhand first, then inventory.',
+              '获取本次钓获物(沿用原本的战利品池加权随机逻辑)': 'Select this catch using the existing weighted loot logic.',
+              '当前鱼饵对应的特殊钓物(显式映射,即被标记为特殊事件入口的物品)': 'Map the active lure to its special catch.',
+              '修复: 返回 clone 而非 MagicExpansionItems 的 static 单例——': 'Return a clone rather than mutating the shared MagicExpansionItems instance.',
+              '蓄满分支/双倍鱼获会 setAmount 修改 drop, 直接返回单例会被污染并随掉落物扩散。': 'Catch modifiers can change stack size, so shared item instances must never be returned directly.',
+              '在鱼钩位置生成掉落物(沿用原本的掉落方式)': 'Spawn the catch at the hook using the existing drop behavior.',
+              '普通钓物 → 普通事件(水云间专属钓获提示)': 'Normal catch: show the Water Cloud catch message.',
+              '原版获得经验音效': 'Vanilla experience pickup sound.',
+              '特殊钓物 → 特殊事件(专属提示,后续可继续加表现)': 'Special catch: show the dedicated message and effects.',
+              '从玩家脚底发射一枚无伤害的庆祝烟花': 'Launch a harmless celebration firework from the player.',
+              '从玩家脚底发射一枚装饰性烟花(无伤害,仅庆祝特效)': 'Launch a decorative, harmless celebration firework.',
+          }
+          for old, new in translations.items():
+              text = text.replace(old, new)
+          p.write_text(text, encoding='utf-8')
+
+          # Audit player-facing Java string literals and resource files for CJK.
+          # Comments are stripped before scanning Java sources.
+          cjk = re.compile(r'[\u3400-\u4DBF\u4E00-\u9FFF\uF900-\uFAFF]')
+          offenders = []
+          for java in Path('src/main/java').rglob('*.java'):
+              src = java.read_text(encoding='utf-8', errors='ignore')
+              src = re.sub(r'/\*.*?\*/', '', src, flags=re.S)
+              src = re.sub(r'//.*', '', src)
+              for lineno, line in enumerate(src.splitlines(), 1):
+                  if cjk.search(line) and '"' in line:
+                      offenders.append(f'{java}:{lineno}: {line.strip()}')
+          for res in Path('src/main/resources').rglob('*'):
+              if res.is_file() and res.suffix.lower() in {'.yml', '.yaml', '.json', '.txt', '.properties'}:
+                  for lineno, line in enumerate(res.read_text(encoding='utf-8', errors='ignore').splitlines(), 1):
+                      if cjk.search(line):
+                          offenders.append(f'{res}:{lineno}: {line.strip()}')
+          if offenders:
+              print('Non-English player-facing text still detected:')
+              print('\n'.join(offenders[:200]))
+              raise SystemExit(2)
+          print('English player-facing text audit passed.')
+
+      - name: Validate Java 21 bytecode build on Paper 26.2
+        run: mvn --batch-mode --no-transfer-progress -DskipTests -Dpaper.version=26.2.build.111-stable clean package
+
+      - name: Commit Release 11 Legacy port
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add pom.xml .github/workflows/build.yml src/main/java/io/Yomicer/magicExpansion/core/MagicExpansionItems.java src/main/java/io/Yomicer/magicExpansion/Listener/fishingListener/PlayerFishingListener.java src/main/java/io/Yomicer/magicExpansion/Listener/fishingListener/PlayerFishingWaterCloudListener.java
+          if git diff --cached --quiet; then
+            echo 'Release 11 port is already applied.'
+            exit 0
+          fi
+          git commit -m 'Port upstream MagicExpansion Release 11 fixes'
+          git push origin HEAD:master
