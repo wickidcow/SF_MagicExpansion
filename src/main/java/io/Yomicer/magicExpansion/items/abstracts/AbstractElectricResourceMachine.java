@@ -168,7 +168,9 @@ public abstract class AbstractElectricResourceMachine extends AbstractMachine im
                 return false;
             }
 
-            setCharge(l, charge - getEnergyConsumption(), data);
+            // This class is always an energy CONSUMER, so no capacitor texture update is needed here.
+            // Writing through the already-loaded data object avoids another StorageCache lookup and charge read.
+            data.setData("energy-charge", String.valueOf(charge - getEnergyConsumption()));
         }
         return true;
     }
