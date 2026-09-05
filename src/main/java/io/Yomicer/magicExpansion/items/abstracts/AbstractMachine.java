@@ -1,5 +1,6 @@
 package io.Yomicer.magicExpansion.items.abstracts;
 
+import com.xzavier0722.mc.plugin.slimefun4.storage.controller.SlimefunBlockData;
 import io.github.thebusybiscuit.slimefun4.api.items.ItemGroup;
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItemStack;
 import io.github.thebusybiscuit.slimefun4.api.recipes.RecipeType;
@@ -45,6 +46,13 @@ public abstract class AbstractMachine extends AbstractTickingContainer implement
         return true;
     }
 
+    /**
+     * Data-aware precondition hook for machine hot paths. Existing subclasses keep their old behaviour by default.
+     */
+    protected boolean checkCraftPreconditions(Block b, @Nullable SlimefunBlockData data) {
+        return checkCraftPreconditions(b);
+    }
+
     protected boolean onCraftFinish(BlockMenu menu, ItemStack[] ingredients) {
         return true;
     }
@@ -69,10 +77,19 @@ public abstract class AbstractMachine extends AbstractTickingContainer implement
 
     @Override
     protected void tick(BlockMenu menu, Block b) {
+        tickMachine(menu, b, null);
+    }
+
+    @Override
+    protected void tick(BlockMenu menu, Block b, SlimefunBlockData data) {
+        tickMachine(menu, b, data);
+    }
+
+    private void tickMachine(BlockMenu menu, Block b, @Nullable SlimefunBlockData data) {
         CraftingOperation currentOp = processor.getOperation(b);
 
         if (currentOp != null) {
-            if (checkCraftPreconditions(b)) {
+            if (checkCraftPreconditions(b, data)) {
 
                 if(!currentOp.isFinished()) {
                     processor.updateProgressBar(menu, getProgressSlot(), currentOp);
