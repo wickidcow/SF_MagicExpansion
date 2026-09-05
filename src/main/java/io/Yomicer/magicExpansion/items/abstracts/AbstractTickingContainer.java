@@ -30,11 +30,19 @@ public abstract class AbstractTickingContainer extends AbstractContainer {
             public void tick(Block b, SlimefunItem item, SlimefunBlockData data) {
                 BlockMenu menu = data.getBlockMenu();
                 if (menu != null) {
-                    AbstractTickingContainer.this.tick(menu, b);
+                    AbstractTickingContainer.this.tick(menu, b, data);
                 }
             }
 
         });
+    }
+
+    /**
+     * Data-aware ticker hook. The default keeps all existing machine behaviour intact while allowing
+     * hot-path machines to reuse the already resolved Slimefun block data instead of looking it up again.
+     */
+    protected void tick(BlockMenu menu, Block b, SlimefunBlockData data) {
+        tick(menu, b);
     }
 
     protected abstract void tick(BlockMenu menu, Block b);
