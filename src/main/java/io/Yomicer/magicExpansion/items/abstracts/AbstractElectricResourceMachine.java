@@ -1,6 +1,7 @@
 package io.Yomicer.magicExpansion.items.abstracts;
 
 import com.google.common.base.Preconditions;
+import com.xzavier0722.mc.plugin.slimefun4.storage.controller.SlimefunBlockData;
 import io.github.thebusybiscuit.slimefun4.api.items.ItemGroup;
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItemStack;
 import io.github.thebusybiscuit.slimefun4.api.recipes.RecipeType;
@@ -40,6 +41,15 @@ public abstract class AbstractElectricResourceMachine extends AbstractMachine im
     @Override
     protected boolean checkCraftPreconditions(Block b) {
         return takeCharge(b.getLocation());
+    }
+
+    @Override
+    protected boolean checkCraftPreconditions(Block b, @Nullable SlimefunBlockData data) {
+        if (data == null) {
+            return checkCraftPreconditions(b);
+        }
+
+        return takeCharge(b.getLocation(), data);
     }
 
     @Nonnull
@@ -131,13 +141,34 @@ public abstract class AbstractElectricResourceMachine extends AbstractMachine im
         Preconditions.checkNotNull(l, "Can't take energy from a null location");
 
         if (isChargeable()) {
-            int charge = getCharge(l);
+            long charge = getChargeLong(l);
 
              if (charge < getEnergyConsumption()) {
                 return false;
              }
 
              setCharge(l, charge - getEnergyConsumption());
+        }
+        return true;
+    }
+
+    /**
+     * Reuses the block data that Slimefun already resolved for this ticker execution. Mine Man machines are
+     * numerous and tick frequently, so avoiding duplicate storage-cache lookups here removes a large amount of
+     * repeated work without changing their energy cost or processing behaviour.
+     */
+    protected boolean takeCharge(Location l, SlimefunBlockData data) {
+        Preconditions.checkNotNull(l, "Can't take energy from a null location");
+        Preconditions.checkNotNull(data, "Can't take energy from null block data");
+
+        if (isChargeable()) {
+            long charge = getChargeLong(l, data);
+
+            if (charge < getEnergyConsumption()) {
+                return false;
+            }
+
+            setCharge(l, charge - getEnergyConsumption(), data);
         }
         return true;
     }
