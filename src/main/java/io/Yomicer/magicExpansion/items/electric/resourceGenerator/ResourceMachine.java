@@ -25,6 +25,7 @@ public class ResourceMachine extends AbstractElectricResourceMachine {
     private static final int[] BACKGROUND_SLOTS = new int[] { 0, 4, 8, 9, 13, 17 };
     private static final int[] OUTPUT_BORDER_SLOTS = new int[] { 10, 11, 12, 14, 15, 16};
     private static final int[] INPUT_BORDER_SLOTS = new int[] {1, 2, 3, 5, 6, 7};
+    private static final int[] INPUT_SLOTS = new int[0];
 
     private static final int[] OUTPUT_SLOTS = new int[] { 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53};
 
@@ -56,21 +57,23 @@ public class ResourceMachine extends AbstractElectricResourceMachine {
 
     @Override
 	public MachineRecipe findNextRecipe(BlockMenu menu) {
+        if (recipes.isEmpty()) {
+            return null;
+        }
 
-        int maxedSlots = 0;
-        for (int slots : getOutputSlots()) {
-            ItemStack item = menu.getItemInSlot(slots);
-            if (item != null && item.getMaxStackSize() == item.getAmount()) {
-                maxedSlots += 1;
+        /*
+         * Resource machines have no recipe inputs, so the only pre-flight condition here is whether every
+         * output slot is completely full. Stop at the first slot that can still accept something instead of
+         * scanning all 36 slots on every new operation. This is especially important for large Mine Man farms.
+         */
+        for (int slot : OUTPUT_SLOTS) {
+            ItemStack item = menu.getItemInSlot(slot);
+            if (item == null || item.getType().isAir() || item.getAmount() < item.getMaxStackSize()) {
+                return recipes.get(0);
             }
         }
 
-        if (maxedSlots == getOutputSlots().length) { return null; }
-
-        MachineRecipe recipe = recipes.get(0);
-
-        return recipe;
-
+        return null;
     }
 
 
@@ -80,7 +83,6 @@ public class ResourceMachine extends AbstractElectricResourceMachine {
 
         display.add(new CustomItemStack(Material.KNOWLEDGE_BOOK, getGradientName("Output Items ⇩"),getGradientName("Production Rate ⇨ ⚙ Every " + getCraftSecond() + " s per operation"),getGradientName("Energy Cost ⇨ ⚡ "+ getEnergyConsumption()*2 +" J/s")));
         display.add(new CustomItemStack(Material.KNOWLEDGE_BOOK, getGradientName("Output Items ⇩"),getGradientName("Production Rate ⇨ ⚙ Every " + getCraftSecond() + " s per operation"),getGradientName("Energy Cost ⇨ ⚡ "+ getEnergyConsumption()*2 +" J/s")));
-        // 将输出物品数组中的所有物品添加到显示列表
         display.addAll(Arrays.asList(getItemStackOutputs()));
 
         return display;
@@ -108,7 +110,7 @@ public class ResourceMachine extends AbstractElectricResourceMachine {
 
 	@Override
 	protected int[] getInputSlots() {
-		return new int[] {};
+		return INPUT_SLOTS;
 	}
 
 	@Override
