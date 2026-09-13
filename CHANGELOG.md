@@ -1,3 +1,11 @@
+# 1.1.4 - Slimefun Legacy Re-entry / Guide Order Fix (2026-09-13)
+
+- Re-verified the maintained fork for the Minecraft/Paper 1.21.11 baseline and Paper/Purpur 26.2 using the Java 25 CI toolchain.
+- Kept the existing Java 21 bytecode target for broad modern-server compatibility.
+- Moved the top-level Magic guide category from tier `0` to Slimefun's normal addon tier `3`, so MagicExpansion no longer forces itself to the first guide position.
+- Preserved the Magic category key, icon, subgroups, Slimefun item IDs, recipes, persistent-data keys, and existing saved-world compatibility.
+- Prepared MagicExpansion to return to the maintained Slimefun Legacy addon bundle.
+
 # 1.1.2 - Upstream Release 10 / Build 90 Port (2026-09-01)
 
 - Ported upstream MagicExpansion commit `6d78c65eb8b60e785daa8a27dd606dc7993375a1` while preserving the Legacy fork's English presentation and compatibility work.
