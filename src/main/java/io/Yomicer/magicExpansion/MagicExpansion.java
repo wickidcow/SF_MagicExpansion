@@ -71,7 +71,7 @@ public class MagicExpansion extends JavaPlugin implements SlimefunAddon {
 
         // Register items
         MagicExpansionItemSetup.setup(this);
-        renameMainGuideCategory();
+        configureMainGuideCategory();
         MagicExpansionRecipeMachineSetup.setup(this);
         MagicExpansionPowerMachineSetup.setup(this);
         MagicExpansionQuickMachineSetup.setup(this);
@@ -131,10 +131,13 @@ public class MagicExpansion extends JavaPlugin implements SlimefunAddon {
     }
 
     /**
-     * Replaces the old obfuscated "2.0" guide label while retaining the
-     * existing LIGHT icon, category key, tier, subgroups, items and saved data.
+     * Keeps MagicExpansion in the normal addon section of the guide instead of
+     * forcing it ahead of Slimefun's regular categories, while preserving the
+     * existing category key, icon, subgroups, items and saved data.
      */
-    private void renameMainGuideCategory() {
+    private void configureMainGuideCategory() {
+        MagicExpansionItemSetup.magicexpansion.setTier(3);
+
         try {
             Field displayItemField = ItemGroup.class.getDeclaredField("item");
             displayItemField.setAccessible(true);
@@ -150,7 +153,7 @@ public class MagicExpansion extends JavaPlugin implements SlimefunAddon {
 
             meta.setDisplayName("Magic");
             displayItem.setItemMeta(meta);
-            getLogger().info("Magic guide category renamed to \"Magic\".");
+            getLogger().info("Magic guide category configured at normal addon priority.");
         } catch (ReflectiveOperationException | SecurityException exception) {
             getLogger().warning(
                     "Could not rename the Magic guide category: " + exception.getMessage()
