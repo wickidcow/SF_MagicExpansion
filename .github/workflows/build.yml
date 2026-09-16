@@ -11,8 +11,8 @@ permissions:
   contents: write
 
 env:
-  LEGACY_ARTIFACT_VERSION: "1.1.4"
-  OUTPUT_NAME: "SF_MagicExpansion1.1.4.jar"
+  LEGACY_ARTIFACT_VERSION: "1.1.5"
+  OUTPUT_NAME: "SF_MagicExpansion1.1.5.jar"
 
 concurrency:
   group: magicexpansion-${{ github.workflow }}-${{ github.ref }}
@@ -23,7 +23,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out source
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: Set up Java 25
         uses: actions/setup-java@v5
         with:
@@ -34,15 +34,18 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          grep -Fq '<version>1.1.4</version>' pom.xml
+          grep -Fq '<version>1.1.5</version>' pom.xml
           grep -Fq '<paper.version>1.21.11-R0.1-SNAPSHOT</paper.version>' pom.xml
           grep -Fq '<maven.compiler.release>21</maven.compiler.release>' pom.xml
+          grep -Fq '<finalName>SF_MagicExpansion1.1.5</finalName>' pom.xml
           grep -Fq "api-version: '1.21.11'" src/main/resources/plugin.yml
           grep -Fq 'MagicExpansionItemSetup.magicexpansion.setTier(3);' src/main/java/io/Yomicer/magicExpansion/MagicExpansion.java
       - name: Verify Paper/Purpur 1.21.11 compilation
         run: mvn --batch-mode --no-transfer-progress -DskipTests clean package
       - name: Verify Paper/Purpur 26.2 compilation
-        run: mvn --batch-mode --no-transfer-progress -DskipTests -Dpaper.version=26.2.build.111-stable clean package
+        run: mvn --batch-mode --no-transfer-progress -DskipTests "-Dpaper.version=[26.2.build,26.3)" clean package
+      - name: Verify Paper 26.3 alpha compilation
+        run: mvn --batch-mode --no-transfer-progress -DskipTests -Dpaper.version=26.3-rc-3.build.1-alpha clean package
       - name: Build universal release JAR from 1.21.11 baseline
         run: mvn --batch-mode --no-transfer-progress -DskipTests -Dpaper.version=1.21.11-R0.1-SNAPSHOT clean package
       - name: Stage versioned JAR
@@ -50,7 +53,7 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p dist
-          JAR="target/MagicExpansion-Legacy-English-1.1.4.jar"
+          JAR="target/${OUTPUT_NAME}"
           test -s "$JAR"
           cp "$JAR" "dist/${OUTPUT_NAME}"
           unzip -p "dist/${OUTPUT_NAME}" plugin.yml | grep -Fq "api-version: '1.21.11'"
@@ -59,6 +62,7 @@ jobs:
       - name: Upload raw JAR artifact
         uses: actions/upload-artifact@v7
         with:
+          name: ${{ env.OUTPUT_NAME }}
           path: dist/${{ env.OUTPUT_NAME }}
           archive: false
           if-no-files-found: error
@@ -71,7 +75,7 @@ jobs:
           set -euo pipefail
           if [[ "$GITHUB_REF" == refs/tags/v* ]]; then TAG="$GITHUB_REF_NAME"; else TAG="v${LEGACY_ARTIFACT_VERSION}"; fi
           JAR="dist/${OUTPUT_NAME}"
-          NOTES="MagicExpansion 1.1.4 re-entry release for Slimefun Legacy. Retains the Release 11 content and compatibility fixes, verifies Minecraft/Paper 1.21.11 and Paper/Purpur 26.2 compilation on Java 25, and moves the main Magic guide category to Slimefun's normal addon tier so it no longer appears first in the guide."
+          NOTES="MagicExpansion 1.1.5 adds Paper 26.3 alpha compatibility validation while preserving the Minecraft/Paper 1.21.11 Java 21 universal release baseline and Paper/Purpur 26.2 as the primary production target. Maven now emits ${OUTPUT_NAME} directly without Legacy-English naming."
           if gh release view "$TAG" >/dev/null 2>&1; then
             gh release upload "$TAG" "$JAR" --clobber
           else
