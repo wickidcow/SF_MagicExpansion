@@ -5,12 +5,12 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>io.Yomicer</groupId>
-    <artifactId>MagicExpansion-Legacy-English</artifactId>
+    <artifactId>MagicExpansion</artifactId>
     <version>1.1.5</version>
     <packaging>jar</packaging>
 
-    <name>MagicExpansion-Legacy-English</name>
-    <description>English maintenance fork of MagicExpansion for Slimefun Legacy on Minecraft 1.21.11 through 26.3.</description>
+    <name>MagicExpansion</name>
+    <description>MagicExpansion maintenance build for Slimefun on Minecraft 1.21.11 through 26.3.</description>
 
     <properties>
         <maven.compiler.release>21</maven.compiler.release>
@@ -20,7 +20,7 @@
     </properties>
 
     <build>
-        <finalName>SF_MagicExpansion1.1.5</finalName>
+        <finalName>SF_MagicExpansion${project.version}</finalName>
         <defaultGoal>clean package</defaultGoal>
         <resources><resource><directory>src/main/resources</directory><filtering>true</filtering></resource></resources>
         <plugins>
