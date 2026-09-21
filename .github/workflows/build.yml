@@ -41,6 +41,12 @@ jobs:
           grep -Fq '<name>MagicExpansion</name>' pom.xml
           grep -Fq '<finalName>SF_MagicExpansion${project.version}</finalName>' pom.xml
           grep -Fq "api-version: '1.21.11'" src/main/resources/plugin.yml
+          grep -Fq 'softdepend: [MagicLegacy, Networks, NetworksExpansion]' src/main/resources/plugin.yml
+          grep -Fq 'loadbefore: [RykenSlimefunCustomizer]' src/main/resources/plugin.yml
+          if grep -Fq 'softdepend: [MagicLegacy, RykenSlimefunCustomizer' src/main/resources/plugin.yml; then
+            echo "RykenSlimefunCustomizer must be loadbefore, not softdepend"
+            exit 1
+          fi
       - name: Verify Paper/Purpur 1.21.11 compilation
         run: mvn --batch-mode --no-transfer-progress -DskipTests clean package
       - name: Verify Paper/Purpur 26.2 compilation
