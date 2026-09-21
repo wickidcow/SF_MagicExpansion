@@ -4,8 +4,8 @@ version: ${project.version}
 author: Yomicer
 api-version: '1.21.11'
 depend: [Slimefun]
-softdepend: [RykenSlimeCustomizer, Networks, NetworksExpansion]
-description: English-first MagicExpansion build for Slimefun Legacy on Minecraft 1.21.11 through 26.2.
+softdepend: [MagicLegacy, RykenSlimefunCustomizer, Networks, NetworksExpansion]
+description: English-first MagicExpansion build for Slimefun Legacy on Minecraft 1.21.11 through 26.3.
 
 commands:
   magicexpansion:
