@@ -71,6 +71,7 @@ public class MagicExpansion extends JavaPlugin implements SlimefunAddon {
 
         // Register items
         MagicExpansionItemSetup.setup(this);
+        ensureMainGuideCategoryRegistered();
         configureMainGuideCategory();
         MagicExpansionRecipeMachineSetup.setup(this);
         MagicExpansionPowerMachineSetup.setup(this);
@@ -131,6 +132,17 @@ public class MagicExpansion extends JavaPlugin implements SlimefunAddon {
     }
 
     /**
+     * Ensures the root category exists independently of item registration order.
+     * This keeps standalone guide replacements such as JEG from missing Magic Expansion.
+     */
+    private void ensureMainGuideCategoryRegistered() {
+        if (!MagicExpansionItemSetup.magicexpansion.isRegistered()) {
+            MagicExpansionItemSetup.magicexpansion.register(this);
+            getLogger().info("Registered Magic Expansion root guide category explicitly.");
+        }
+    }
+
+    /**
      * Keeps MagicExpansion in the normal addon section of the guide instead of
      * forcing it ahead of Slimefun's regular categories, while preserving the
      * existing category key, icon, subgroups, items and saved data.
@@ -151,9 +163,9 @@ public class MagicExpansion extends JavaPlugin implements SlimefunAddon {
                 return;
             }
 
-            meta.setDisplayName("Magic");
+            meta.setDisplayName("Magic Expansion");
             displayItem.setItemMeta(meta);
-            getLogger().info("Magic guide category configured at normal addon priority.");
+            getLogger().info("Magic Expansion guide category configured at normal addon priority.");
         } catch (ReflectiveOperationException | SecurityException exception) {
             getLogger().warning(
                     "Could not rename the Magic guide category: " + exception.getMessage()
