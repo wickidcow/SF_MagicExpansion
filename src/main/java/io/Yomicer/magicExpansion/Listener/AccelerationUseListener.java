@@ -47,7 +47,7 @@ public class AccelerationUseListener implements Listener {
         Block clicked = e.getClickedBlock();
         if (clicked == null) return;
         // 只对 Slimefun 方块(可放置的机器等)注入, 避免对着泥土/空气浪费鱼
-        SlimefunItem target = StorageCacheUtils.getSfItem(clicked.getLocation());
+        SlimefunItem target = StorageCacheUtils.getSlimefunItem(clicked.getLocation());
         if (target == null) return;
 
         double quality = FishAttributeGenerator.getQuality(held);
