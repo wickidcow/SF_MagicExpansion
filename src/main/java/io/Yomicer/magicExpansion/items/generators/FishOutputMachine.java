@@ -310,7 +310,7 @@ public class FishOutputMachine extends MenuBlock implements EnergyNetComponent, 
                             int z = container.get(KEY_Z, PersistentDataType.INTEGER);
 
                             Location targetLocation = new Location(world, x, y, z);
-                            SlimefunItem sfItem = StorageCacheUtils.getSfItem(targetLocation);
+                            SlimefunItem sfItem = StorageCacheUtils.getSlimefunItem(targetLocation);
 
                             if (sfItem != null) {
                                 if (sfItem instanceof CargoCoreMore) {
