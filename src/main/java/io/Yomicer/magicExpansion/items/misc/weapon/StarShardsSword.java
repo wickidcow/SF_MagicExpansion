@@ -81,66 +81,66 @@ public class StarShardsSword extends SimpleSlimefunItem<ItemUseHandler> implemen
             String namespace = "star_shards_sword";
 
             // 💥 攻击力 +1314(固定值)
-            UUID atk1Id = UUID.nameUUIDFromBytes((namespace + "_atk_add").getBytes());
+            NamespacedKey atk1Id = new NamespacedKey(MagicExpansion.getInstance(), namespace + "_atk_add");
             meta.addAttributeModifier(
                     Attribute.ATTACK_DAMAGE,
-                    new AttributeModifier(atk1Id, "StarShards_Atk_Add", StarShards_Atk_Add, AttributeModifier.Operation.ADD_NUMBER)
+                    new AttributeModifier(atk1Id, StarShards_Atk_Add, AttributeModifier.Operation.ADD_NUMBER)
             );
 
             // 💥 攻击力 +618%(乘法)
-            UUID atk2Id = UUID.nameUUIDFromBytes((namespace + "_atk_mult").getBytes());
+            NamespacedKey atk2Id = new NamespacedKey(MagicExpansion.getInstance(), namespace + "_atk_mult");
             meta.addAttributeModifier(
                     Attribute.ATTACK_DAMAGE,
-                    new AttributeModifier(atk2Id, "StarShards_Atk_Mult", StarShards_Atk_Mult, AttributeModifier.Operation.MULTIPLY_SCALAR_1)
+                    new AttributeModifier(atk2Id, StarShards_Atk_Mult, AttributeModifier.Operation.MULTIPLY_SCALAR_1)
             );
 
             // ⚡ 攻击速度 +2000% → 最终速度 = 原速 × (1 + 20.0) = 21倍!
-            UUID atkSpeedId = UUID.nameUUIDFromBytes((namespace + "_atk_speed").getBytes());
+            NamespacedKey atkSpeedId = new NamespacedKey(MagicExpansion.getInstance(), namespace + "_atk_speed");
             meta.addAttributeModifier(
                     Attribute.ATTACK_SPEED,
-                    new AttributeModifier(atkSpeedId, "StarShards_AtkSpeed", StarShards_Atk_Speed, AttributeModifier.Operation.MULTIPLY_SCALAR_1)
+                    new AttributeModifier(atkSpeedId, StarShards_Atk_Speed, AttributeModifier.Operation.MULTIPLY_SCALAR_1)
             );
 
             // ❤️ 生命值 +1314(固定值,单位是"half-heart",所以 +1314 = +657 颗心!)
-            UUID health1Id = UUID.nameUUIDFromBytes((namespace + "_health_add").getBytes());
+            NamespacedKey health1Id = new NamespacedKey(MagicExpansion.getInstance(), namespace + "_health_add");
             meta.addAttributeModifier(
                     Attribute.MAX_HEALTH,
-                    new AttributeModifier(health1Id, "StarShards_Health_Add", StarShards_Health_Add, AttributeModifier.Operation.ADD_NUMBER)
+                    new AttributeModifier(health1Id, StarShards_Health_Add, AttributeModifier.Operation.ADD_NUMBER)
             );
 
             // ❤️ 生命值 +618%(乘法)
-            UUID health2Id = UUID.nameUUIDFromBytes((namespace + "_health_mult").getBytes());
+            NamespacedKey health2Id = new NamespacedKey(MagicExpansion.getInstance(), namespace + "_health_mult");
             meta.addAttributeModifier(
                     Attribute.MAX_HEALTH,
-                    new AttributeModifier(health2Id, "StarShards_Health_Mult", StarShards_Health_Mult, AttributeModifier.Operation.MULTIPLY_SCALAR_1)
+                    new AttributeModifier(health2Id, StarShards_Health_Mult, AttributeModifier.Operation.MULTIPLY_SCALAR_1)
             );
 
             // 🏃 移动速度 +1314% → 最终速度 = 原速 × (1 + 13.14) = 14.14倍!
-            UUID moveSpeedId = UUID.nameUUIDFromBytes((namespace + "_move_speed").getBytes());
+            NamespacedKey moveSpeedId = new NamespacedKey(MagicExpansion.getInstance(), namespace + "_move_speed");
             meta.addAttributeModifier(
                     Attribute.MOVEMENT_SPEED,
-                    new AttributeModifier(moveSpeedId, "StarShards_MoveSpeed", StarShards_MoveSpeed, AttributeModifier.Operation.MULTIPLY_SCALAR_1)
+                    new AttributeModifier(moveSpeedId, StarShards_MoveSpeed, AttributeModifier.Operation.MULTIPLY_SCALAR_1)
             );
 
             // 🛡️ 护甲值 +200(固定值)
-            UUID armorId = UUID.nameUUIDFromBytes((namespace + "_armor").getBytes());
+            NamespacedKey armorId = new NamespacedKey(MagicExpansion.getInstance(), namespace + "_armor");
             meta.addAttributeModifier(
                     Attribute.ARMOR,
-                    new AttributeModifier(armorId, "StarShards_Armor", StarShards_Armor, AttributeModifier.Operation.ADD_NUMBER)
+                    new AttributeModifier(armorId, StarShards_Armor, AttributeModifier.Operation.ADD_NUMBER)
             );
 
             // 🧱 护甲韧性 +200(固定值)
-            UUID toughnessId = UUID.nameUUIDFromBytes((namespace + "_toughness").getBytes());
+            NamespacedKey toughnessId = new NamespacedKey(MagicExpansion.getInstance(), namespace + "_toughness");
             meta.addAttributeModifier(
                     Attribute.ARMOR_TOUGHNESS,
-                    new AttributeModifier(toughnessId, "StarShards_Toughness", StarShards_Toughness, AttributeModifier.Operation.ADD_NUMBER)
+                    new AttributeModifier(toughnessId, StarShards_Toughness, AttributeModifier.Operation.ADD_NUMBER)
             );
 
             // ✈️ 飞行速度 +1314%
-            UUID flySpeedId = UUID.nameUUIDFromBytes((namespace + "_fly_speed").getBytes());
+            NamespacedKey flySpeedId = new NamespacedKey(MagicExpansion.getInstance(), namespace + "_fly_speed");
             meta.addAttributeModifier(
                     Attribute.FLYING_SPEED,
-                    new AttributeModifier(flySpeedId, "StarShards_FlySpeed", StarShards_FlySpeed, AttributeModifier.Operation.MULTIPLY_SCALAR_1)
+                    new AttributeModifier(flySpeedId, StarShards_FlySpeed, AttributeModifier.Operation.MULTIPLY_SCALAR_1)
             );
 
 
