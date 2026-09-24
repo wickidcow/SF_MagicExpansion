@@ -17,6 +17,9 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <paper.version>1.21.11-R0.1-SNAPSHOT</paper.version>
+        <slimefun.groupId>com.github.wickidcow</slimefun.groupId>
+        <slimefun.artifactId>Slimefun-Legacy</slimefun.artifactId>
+        <slimefun.version>4.1.60</slimefun.version>
     </properties>
 
     <build>
@@ -51,7 +54,7 @@
 
     <dependencies>
         <dependency><groupId>io.papermc.paper</groupId><artifactId>paper-api</artifactId><version>${paper.version}</version><scope>provided</scope></dependency>
-        <dependency><groupId>com.github.SlimefunGuguProject</groupId><artifactId>Slimefun4</artifactId><version>2025.1.2</version><scope>provided</scope></dependency>
+        <dependency><groupId>${slimefun.groupId}</groupId><artifactId>${slimefun.artifactId}</artifactId><version>${slimefun.version}</version><scope>provided</scope></dependency>
         <dependency><groupId>com.google.code.gson</groupId><artifactId>gson</artifactId><version>2.11.0</version><scope>provided</scope></dependency>
         <dependency><groupId>javax.annotation</groupId><artifactId>javax.annotation-api</artifactId><version>1.3.2</version><scope>provided</scope></dependency>
         <dependency><groupId>com.jeff-media</groupId><artifactId>MorePersistentDataTypes</artifactId><version>2.4.0</version></dependency>
