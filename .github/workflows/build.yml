@@ -13,7 +13,6 @@ permissions:
 env:
   VERSION: "1.1.7"
   OUTPUT_NAME: "SF_MagicExpansion1.1.7.jar"
-  SLIMEFUN_LEGACY_VERSION: "4.1.60"
 
 concurrency:
   group: magicexpansion-${{ github.workflow }}-${{ github.ref }}
@@ -31,21 +30,6 @@ jobs:
           distribution: temurin
           java-version: "25"
           cache: maven
-      - name: Install Slimefun Legacy API
-        env:
-          GH_TOKEN: ${{ github.token }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          mkdir -p legacy-deps
-          gh release download "v${SLIMEFUN_LEGACY_VERSION}" --repo wickidcow/Slimefun-Legacy --pattern "Slimefun-Legacy${SLIMEFUN_LEGACY_VERSION}.jar" --dir legacy-deps
-          mvn -B install:install-file \
-            -Dfile="legacy-deps/Slimefun-Legacy${SLIMEFUN_LEGACY_VERSION}.jar" \
-            -DgroupId=com.github.wickidcow \
-            -DartifactId=Slimefun-Legacy \
-            -Dversion="${SLIMEFUN_LEGACY_VERSION}" \
-            -Dpackaging=jar \
-            -DgeneratePom=true
 
       - name: Verify canonical release identity
         shell: bash
