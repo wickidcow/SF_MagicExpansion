@@ -27,6 +27,7 @@ import org.bukkit.FireworkEffect;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
+import org.bukkit.Registry;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Firework;
@@ -211,8 +212,9 @@ public final class GuideCategoryMenu {
             }
             case 7 -> {
                 // 音效合唱: 从原版全部音效里随机播一种
-                Sound[] sounds = Sound.values();
-                Sound sound = sounds[random.nextInt(sounds.length)];
+                List<Sound> sounds = new ArrayList<>();
+                Registry.SOUNDS.forEach(sounds::add);
+                Sound sound = sounds.get(random.nextInt(sounds.size()));
                 player.playSound(player.getLocation(), sound, 1.0f, 1.0f + random.nextFloat());
                 player.sendMessage(getGradientNameVer2("What was that noise?"));
             }
