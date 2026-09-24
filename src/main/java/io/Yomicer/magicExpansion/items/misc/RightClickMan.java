@@ -101,7 +101,7 @@ public class RightClickMan extends SlimefunItem implements EnergyNetComponent {
 
                 ItemStack displayItem;
 
-                SlimefunItem sfItem = StorageCacheUtils.getSfItem(targetLocation);
+                SlimefunItem sfItem = StorageCacheUtils.getSlimefunItem(targetLocation);
                 if (sfItem != null) {
                     displayItem = sfItem.getItem().clone();
                 }
