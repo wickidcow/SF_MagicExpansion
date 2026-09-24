@@ -88,7 +88,7 @@ public class MagicCrop extends SlimefunItem implements Listener, RecipeDisplayIt
             @Override
             public void onPlayerBreak(BlockBreakEvent e, ItemStack item, List<ItemStack> drops) {
                 Block block = e.getBlock();
-                SlimefunItem sfItem = StorageCacheUtils.getSfItem(block.getLocation());
+                SlimefunItem sfItem = StorageCacheUtils.getSlimefunItem(block.getLocation());
                 if (sfItem != MagicCrop.this) {
                     return;
                 }
@@ -110,7 +110,7 @@ public class MagicCrop extends SlimefunItem implements Listener, RecipeDisplayIt
     public void onPhysics(BlockPhysicsEvent e) {
         Block block = e.getBlock();
         Block below = block.getRelative(0, -1, 0);
-        SlimefunItem sfItem = StorageCacheUtils.getSfItem(block.getLocation());
+        SlimefunItem sfItem = StorageCacheUtils.getSlimefunItem(block.getLocation());
         if (sfItem != MagicCrop.this) {
             return;
         }
