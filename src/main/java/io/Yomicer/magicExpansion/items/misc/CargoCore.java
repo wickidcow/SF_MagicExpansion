@@ -1847,7 +1847,7 @@ public class CargoCore extends SlimefunItem implements EnergyNetComponent{
         }
 
         // 如果是Slimefun方块,不处理
-        SlimefunItem sfItem = StorageCacheUtils.getSfItem(targetLocation);
+        SlimefunItem sfItem = StorageCacheUtils.getSlimefunItem(targetLocation);
         if (null != sfItem) return;
 
         // 获取模板物品

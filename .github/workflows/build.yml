@@ -30,6 +30,7 @@ jobs:
           distribution: temurin
           java-version: "25"
           cache: maven
+
       - name: Verify canonical release identity
         shell: bash
         run: |

@@ -961,7 +961,7 @@ public final class BaitBagMenu {
                 container.get(KEY_X, PersistentDataType.INTEGER),
                 container.get(KEY_Y, PersistentDataType.INTEGER),
                 container.get(KEY_Z, PersistentDataType.INTEGER));
-        SlimefunItem targetSf = StorageCacheUtils.getSfItem(target);
+        SlimefunItem targetSf = StorageCacheUtils.getSlimefunItem(target);
         if (targetSf == null || !NetworkStorage.isQuantumStorageBlock(targetSf)) {
             return;
         }

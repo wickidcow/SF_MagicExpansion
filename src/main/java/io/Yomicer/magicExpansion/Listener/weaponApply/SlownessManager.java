@@ -1,6 +1,7 @@
 package io.Yomicer.magicExpansion.Listener.weaponApply;
 
 import io.Yomicer.magicExpansion.MagicExpansion;
+import org.bukkit.NamespacedKey;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.attribute.AttributeModifier;
@@ -15,7 +16,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class SlownessManager {
 
     // 用于存储减速修饰符 ID
-    private static final Map<UUID, UUID> playerSlownessModifierIds = new ConcurrentHashMap<>();
+    private static final Map<UUID, NamespacedKey> playerSlownessModifierIds = new ConcurrentHashMap<>();
 
     /**
      * 施加减速效果
@@ -31,7 +32,7 @@ public class SlownessManager {
         // 先移除所有已有的修饰符
         removeAllModifiers(movementSpeed);
         UUID playerId = livingTarget.getUniqueId();
-        UUID modifierId = playerSlownessModifierIds.get(playerId);
+        NamespacedKey modifierId = playerSlownessModifierIds.get(playerId);
 
         // 如果已经存在减速修饰符,则先移除
         if (modifierId != null) {
@@ -43,13 +44,15 @@ public class SlownessManager {
         double reducedSpeed = baseSpeed * (1 - slownessLevel*0.0099); // 减速比例
 
         // 生成新的修饰符 ID
-        modifierId = UUID.randomUUID();
+        modifierId = new NamespacedKey(
+                MagicExpansion.getInstance(),
+                "slowness_" + UUID.randomUUID()
+        );
         playerSlownessModifierIds.put(playerId, modifierId);
 
         // 创建减速修饰符
         AttributeModifier modifier = new AttributeModifier(
                 modifierId,
-                "SlownessEffect",
                 reducedSpeed - baseSpeed, // 减速值
                 AttributeModifier.Operation.ADD_NUMBER
         );
@@ -79,7 +82,7 @@ public class SlownessManager {
         if (movementSpeed == null) return;
 
         UUID playerId = livingTarget.getUniqueId();
-        UUID modifierId = playerSlownessModifierIds.get(playerId);
+        NamespacedKey modifierId = playerSlownessModifierIds.get(playerId);
 
         if (modifierId != null) {
             removeExistingModifier(movementSpeed, modifierId);
@@ -96,10 +99,10 @@ public class SlownessManager {
      * @param movementSpeed 属性实例
      * @param modifierId    需要移除的修饰符 ID
      */
-    private static void removeExistingModifier(AttributeInstance movementSpeed, UUID modifierId) {
+    private static void removeExistingModifier(AttributeInstance movementSpeed, NamespacedKey modifierId) {
         Collection<AttributeModifier> modifiers = movementSpeed.getModifiers();
         for (AttributeModifier modifier : modifiers) {
-            if (modifier.getUniqueId().equals(modifierId)) {
+            if (modifier.getKey().equals(modifierId)) {
                 movementSpeed.removeModifier(modifier);
                 break;
             }
