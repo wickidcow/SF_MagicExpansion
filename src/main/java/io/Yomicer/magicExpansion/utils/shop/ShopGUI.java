@@ -660,9 +660,9 @@ public class ShopGUI implements Listener {
             if (slot == 45) openAdminMainMenu(player, adminMainPage.getOrDefault(player.getUniqueId(), 0) - 1);
             else if (slot == 53) openAdminMainMenu(player, adminMainPage.getOrDefault(player.getUniqueId(), 0) + 1);
             else if (slot == 49) {
+                pendingShopNameCreation.put(player.getUniqueId(), "");
                 player.closeInventory();
                 player.sendMessage(ChatColor.GREEN + "Enter the new shop name in chat, or type 'cancel' to cancel.");
-                pendingShopNameCreation.put(player.getUniqueId(), "");
             } else if (item.getType() == Material.CHEST) {
                 String shopName = ChatColor.stripColor(item.getItemMeta().getDisplayName());
                 if (e.isRightClick()) {
@@ -758,18 +758,18 @@ public class ShopGUI implements Listener {
                 return;
             }
             if (slot == 40) {
-                safeClose.add(player.getUniqueId());
-                player.closeInventory();
                 currentData.editing = "global";
                 pendingEditData.put(player.getUniqueId(), currentData);
+                safeClose.add(player.getUniqueId());
+                player.closeInventory();
                 player.sendMessage(ChatColor.GREEN + "Enter the server-wide purchase limit in chat (0 for unlimited), or type 'cancel' to cancel.");
                 return;
             }
             if (slot == 41) {
-                safeClose.add(player.getUniqueId());
-                player.closeInventory();
                 currentData.editing = "personal";
                 pendingEditData.put(player.getUniqueId(), currentData);
+                safeClose.add(player.getUniqueId());
+                player.closeInventory();
                 player.sendMessage(ChatColor.GREEN + "Enter the per-player purchase limit in chat (0 for unlimited), or type 'cancel' to cancel.");
                 return;
             }
