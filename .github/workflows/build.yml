@@ -30,7 +30,8 @@ jobs:
           distribution: temurin
           java-version: "25"
           cache: maven
-
+      - name: Install checksum-verified stable Slimefun API
+        run: bash scripts/install_slimefun_api.sh
       - name: Verify canonical release identity
         shell: bash
         run: |
@@ -55,7 +56,7 @@ jobs:
       - name: Verify Paper 26.3 alpha compilation
         run: mvn --batch-mode --no-transfer-progress -DskipTests -Dpaper.version=26.3-rc-3.build.1-alpha clean package
       - name: Build universal release JAR from 1.21.11 baseline
-        run: mvn --batch-mode --no-transfer-progress -DskipTests -Dpaper.version=1.21.11-R0.1-SNAPSHOT clean package
+        run: mvn --batch-mode --no-transfer-progress -Dpaper.version=1.21.11-R0.1-SNAPSHOT clean verify
       - name: Verify and stage canonical JAR
         shell: bash
         run: |
@@ -63,13 +64,29 @@ jobs:
           mkdir -p dist
           JAR="target/${OUTPUT_NAME}"
           test -s "$JAR"
-          PLUGIN_VERSION=$(unzip -p "$JAR" plugin.yml | awk -F': *' '/^version:/ {gsub(/["'"'"']/,"",$2); print $2; exit}')
-          test "$PLUGIN_VERSION" = "$VERSION"
-          if printf '%s\n' "$PLUGIN_VERSION" | grep -Eiq '(legacy|english|snapshot)'; then exit 1; fi
+          python3 - "$JAR" "$VERSION" <<'PY'
+          import re, sys, zipfile
+          with zipfile.ZipFile(sys.argv[1]) as jar:
+              assert jar.testzip() is None
+              descriptor = jar.read('plugin.yml').decode('utf-8')
+              version = re.search(r'''(?m)^version:\s*['"]?([^'"\s]+)''', descriptor)
+              assert version and version.group(1) == sys.argv[2]
+              assert "api-version: '1.21.11'" in descriptor
+              for name in jar.namelist():
+                  if name.endswith('.class') and not name.startswith('META-INF/versions/'):
+                      assert int.from_bytes(jar.read(name)[6:8], 'big') <= 65, name
+                  assert not name.startswith(('org/junit/', 'org/mockbukkit/')), name
+          PY
           cp "$JAR" "dist/${OUTPUT_NAME}"
-          unzip -p "dist/${OUTPUT_NAME}" plugin.yml | grep -Fq "api-version: '1.21.11'"
-          javap -verbose -classpath "dist/${OUTPUT_NAME}" io.Yomicer.magicExpansion.MagicExpansion | grep -Fq 'major version: 65'
           sha256sum "dist/${OUTPUT_NAME}"
+      - name: Preserve actual unit-test reports
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: magicexpansion-unit-tests
+          path: target/surefire-reports/TEST-*.xml
+          retention-days: 14
+          if-no-files-found: warn
       - name: Upload canonical raw JAR artifact
         uses: actions/upload-artifact@v7
         with:
