@@ -1,0 +1,72 @@
+name: Pinned Mock YAML Type Diagnostic
+on:
+  push:
+    branches: ['work/shop-file-safety-validation-20261001']
+    paths: ['.github/workflows/mock-yaml-diagnostic.yml']
+permissions:
+  contents: read
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '25'
+          cache: maven
+      - name: Run the installed test library without changing the shop writer
+        run: |
+          set -euo pipefail
+          mkdir -p evidence probe
+          bash scripts/install_slimefun_api.sh > evidence/install.log 2>&1
+          mvn -B -ntp dependency:build-classpath -Dmdep.outputFile=probe/classpath.txt > evidence/classpath.log 2>&1
+          cat > probe/MockYamlProbe.java <<'JAVA'
+          import java.util.*;
+          import org.bukkit.*;
+          import org.bukkit.inventory.*;
+          import org.bukkit.persistence.*;
+          import org.bukkit.configuration.file.YamlConfiguration;
+          import org.mockbukkit.mockbukkit.MockBukkit;
+          import org.mockbukkit.mockbukkit.persistence.PersistentDataContainerMock;
+          public class MockYamlProbe {
+              public static void main(String[] args) throws Exception {
+                  MockBukkit.mock();
+                  try {
+                      ItemStack item = new ItemStack(Material.DIAMOND,37);
+                      var meta = item.getItemMeta();
+                      var data = meta.getPersistentDataContainer();
+                      data.set(NamespacedKey.fromString("old:id"),PersistentDataType.STRING,"OLD_ID");
+                      data.set(NamespacedKey.fromString("old:charge"),PersistentDataType.FLOAT,123.4567F);
+                      data.set(NamespacedKey.fromString("old:count"),PersistentDataType.LONG,9007199254740993L);
+                      data.set(NamespacedKey.fromString("old:bytes"),PersistentDataType.BYTE_ARRAY,new byte[]{0,-1,4});
+                      item.setItemMeta(meta);
+                      var config=new YamlConfiguration();config.set("item",item);
+                      String yaml=config.saveToString();System.out.println("ENCODED:\n"+yaml);
+                      var decoded=new YamlConfiguration();decoded.loadFromString(yaml);
+                      var after=decoded.getItemStack("item");
+                      System.out.println("ITEM_EQUAL="+item.equals(after));
+                      print("before",item);print("after",after);
+                  } finally { MockBukkit.unmock(); }
+              }
+              static void print(String label,ItemStack item) {
+                  var data=(PersistentDataContainerMock)item.getItemMeta().getPersistentDataContainer();
+                  data.serialize().forEach((key,value)->System.out.println(label+" "+key+" "+value.getClass().getName()+" "+(value instanceof byte[] bytes?Arrays.toString(bytes):value)));
+                  System.out.println(label+" charge_has_float="+data.has(NamespacedKey.fromString("old:charge"),PersistentDataType.FLOAT));
+                  System.out.println(label+" charge_has_double="+data.has(NamespacedKey.fromString("old:charge"),PersistentDataType.DOUBLE));
+              }
+          }
+          JAVA
+          javac --release 21 -cp "$(cat probe/classpath.txt)" -d probe probe/MockYamlProbe.java > evidence/compile.log 2>&1
+          java -cp "probe:$(cat probe/classpath.txt)" MockYamlProbe > evidence/diagnostic.txt 2>&1
+          cat evidence/diagnostic.txt
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: pinned-mock-yaml-diagnostic
+          path: evidence/
+          retention-days: 14
+          if-no-files-found: error
