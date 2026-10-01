@@ -1,23 +1,26 @@
 package io.Yomicer.magicExpansion.utils.shop;
 
 import io.Yomicer.magicExpansion.MagicExpansion;
-import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.AtomicMoveNotSupportedException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.*;
 
 public class ShopManager {
 
-    private static final File dir = new File(MagicExpansion.getInstance().getDataFolder(), "portable_shops");
-
     public static class Trade {
         public ItemStack result;
         public List<ItemStack> costItems = new ArrayList<>();
-        public int globalLimit = 0;   // 0 表示无限制
-        public int personalLimit = 0; // 0 表示无限制
+        public int globalLimit = 0;   // 0 means unlimited
+        public int personalLimit = 0; // 0 means unlimited
         public int globalUsed = 0;
         public Map<UUID, Integer> personalUsed = new HashMap<>();
     }
@@ -29,49 +32,116 @@ public class ShopManager {
 
     private static final List<Shop> shops = new ArrayList<>();
 
-    @SuppressWarnings("unchecked")
     public static void load() {
-        if (!dir.exists()) {
-            dir.mkdirs();
+        File dir = getShopDirectory();
+        if (!ensureDirectory(dir)) {
+            return;
         }
-        shops.clear();
 
         File[] files = dir.listFiles((d, name) -> name.endsWith(".yml"));
-        if (files == null) return;
+        if (files == null) {
+            MagicExpansion.getInstance().getLogger().warning("Could not list Magic Market shop files. Keeping the currently loaded shops.");
+            return;
+        }
+
+        Arrays.sort(files, Comparator.comparing(File::getName, String.CASE_INSENSITIVE_ORDER));
+        List<Shop> loadedShops = new ArrayList<>();
 
         for (File file : files) {
-            FileConfiguration config = YamlConfiguration.loadConfiguration(file);
-            String shopName = file.getName().replace(".yml", "");
-            Shop shop = new Shop();
-            shop.name = shopName;
+            try {
+                loadedShops.add(loadShop(file));
+            } catch (InvalidConfigurationException | ShopFormatException e) {
+                quarantineCorruptShopFile(file, e);
+            } catch (IOException e) {
+                MagicExpansion.getInstance().getLogger().severe(
+                        "Could not read Magic Market shop file '" + file.getName() + "'. "
+                                + "The file was left untouched and the shop was not loaded: " + e.getMessage()
+                );
+            } catch (RuntimeException e) {
+                MagicExpansion.getInstance().getLogger().severe(
+                        "Unexpected error while loading Magic Market shop file '" + file.getName() + "'. "
+                                + "The file was left untouched and the shop was not loaded."
+                );
+                e.printStackTrace();
+            }
+        }
 
-            List<Map<?, ?>> tradeList = config.getMapList("trades");
-            for (Map<?, ?> tradeMap : tradeList) {
-                Trade trade = new Trade();
+        shops.clear();
+        shops.addAll(loadedShops);
+    }
 
-                Object resultObj = tradeMap.get("result");
-                if (resultObj instanceof ItemStack) trade.result = (ItemStack) resultObj;
+    private static Shop loadShop(File file) throws IOException, InvalidConfigurationException, ShopFormatException {
+        YamlConfiguration config = new YamlConfiguration();
+        config.load(file);
 
-                Object costObj = tradeMap.get("cost");
-                if (costObj instanceof List) trade.costItems = (List<ItemStack>) costObj;
+        Shop shop = new Shop();
+        shop.name = stripYamlSuffix(file.getName());
 
-                trade.globalLimit = getInt(tradeMap.get("globalLimit"), 0);
-                trade.personalLimit = getInt(tradeMap.get("personalLimit"), 0);
-                trade.globalUsed = getInt(tradeMap.get("globalUsed"), 0);
+        Object rawTrades = config.get("trades");
+        if (rawTrades == null) {
+            return shop;
+        }
+        if (!(rawTrades instanceof List<?> tradeList)) {
+            throw new ShopFormatException("'trades' must be a YAML list");
+        }
 
-                Object puObj = tradeMap.get("personalUsed");
-                if (puObj instanceof Map) {
-                    Map<String, Object> pu = (Map<String, Object>) puObj;
-                    for (Map.Entry<String, Object> entry : pu.entrySet()) {
-                        try {
-                            trade.personalUsed.put(UUID.fromString(entry.getKey()), getInt(entry.getValue(), 0));
-                        } catch (Exception ignored) {}
+        for (int index = 0; index < tradeList.size(); index++) {
+            Object rawTrade = tradeList.get(index);
+            if (!(rawTrade instanceof Map<?, ?> tradeMap)) {
+                throw new ShopFormatException("trade " + index + " is not a map");
+            }
+
+            Trade trade = new Trade();
+
+            Object resultObj = tradeMap.get("result");
+            if (resultObj != null && !(resultObj instanceof ItemStack)) {
+                throw new ShopFormatException("trade " + index + " has an invalid result item");
+            }
+            trade.result = resultObj == null ? null : ((ItemStack) resultObj).clone();
+
+            Object costObj = tradeMap.get("cost");
+            if (costObj != null && !(costObj instanceof List<?>)) {
+                throw new ShopFormatException("trade " + index + " has an invalid cost list");
+            }
+            if (costObj instanceof List<?> rawCosts) {
+                for (int costIndex = 0; costIndex < rawCosts.size(); costIndex++) {
+                    Object rawCost = rawCosts.get(costIndex);
+                    if (rawCost != null && !(rawCost instanceof ItemStack)) {
+                        throw new ShopFormatException(
+                                "trade " + index + " cost " + costIndex + " is not an item"
+                        );
+                    }
+                    trade.costItems.add(rawCost == null ? null : ((ItemStack) rawCost).clone());
+                }
+            }
+
+            trade.globalLimit = getInt(tradeMap.get("globalLimit"), 0);
+            trade.personalLimit = getInt(tradeMap.get("personalLimit"), 0);
+            trade.globalUsed = getInt(tradeMap.get("globalUsed"), 0);
+
+            Object personalUsedObj = tradeMap.get("personalUsed");
+            if (personalUsedObj != null && !(personalUsedObj instanceof Map<?, ?>)) {
+                throw new ShopFormatException("trade " + index + " has an invalid personalUsed map");
+            }
+            if (personalUsedObj instanceof Map<?, ?> personalUsed) {
+                for (Map.Entry<?, ?> entry : personalUsed.entrySet()) {
+                    if (!(entry.getKey() instanceof String uuidString)) {
+                        continue;
+                    }
+                    try {
+                        trade.personalUsed.put(UUID.fromString(uuidString), getInt(entry.getValue(), 0));
+                    } catch (IllegalArgumentException ignored) {
+                        MagicExpansion.getInstance().getLogger().warning(
+                                "Ignoring invalid player UUID '" + uuidString + "' in shop '" + shop.name + "'."
+                        );
                     }
                 }
-                shop.trades.add(trade);
             }
-            shops.add(shop);
+
+            shop.trades.add(trade);
         }
+
+        return shop;
     }
 
     private static int getInt(Object obj, int def) {
@@ -79,44 +149,140 @@ public class ShopManager {
         return def;
     }
 
+    private static File getShopDirectory() {
+        return new File(MagicExpansion.getInstance().getDataFolder(), "portable_shops");
+    }
+
     private static File getShopFile(String shopName) {
         String safeName = shopName.replaceAll("[\\\\/:*?\"<>|]", "_");
-        return new File(dir, safeName + ".yml");
+        return new File(getShopDirectory(), safeName + ".yml");
     }
 
     public static void saveShop(Shop shop) {
+        if (shop == null || shop.name == null) {
+            return;
+        }
+
+        File dir = getShopDirectory();
+        if (!ensureDirectory(dir)) {
+            return;
+        }
+
         File file = getShopFile(shop.name);
-        FileConfiguration config = new YamlConfiguration();
+        YamlConfiguration config = new YamlConfiguration();
 
         List<Map<String, Object>> tradeList = new ArrayList<>();
-        for (Trade trade : shop.trades) {
-            Map<String, Object> tradeMap = new HashMap<>();
+        for (Trade trade : new ArrayList<>(shop.trades)) {
+            if (trade == null) {
+                continue;
+            }
+
+            Map<String, Object> tradeMap = new LinkedHashMap<>();
             tradeMap.put("result", trade.result);
-            tradeMap.put("cost", trade.costItems);
+            tradeMap.put("cost", trade.costItems == null ? Collections.emptyList() : new ArrayList<>(trade.costItems));
             tradeMap.put("globalLimit", trade.globalLimit);
             tradeMap.put("personalLimit", trade.personalLimit);
             tradeMap.put("globalUsed", trade.globalUsed);
 
-            Map<String, Integer> pu = new HashMap<>();
-            for (Map.Entry<UUID, Integer> entry : trade.personalUsed.entrySet()) {
-                pu.put(entry.getKey().toString(), entry.getValue());
+            Map<String, Integer> personalUsed = new LinkedHashMap<>();
+            if (trade.personalUsed != null) {
+                for (Map.Entry<UUID, Integer> entry : new HashMap<>(trade.personalUsed).entrySet()) {
+                    if (entry.getKey() != null) {
+                        personalUsed.put(entry.getKey().toString(), entry.getValue());
+                    }
+                }
             }
-            tradeMap.put("personalUsed", pu);
+            tradeMap.put("personalUsed", personalUsed);
             tradeList.add(tradeMap);
         }
         config.set("trades", tradeList);
 
         try {
-            config.save(file);
+            saveYamlAtomically(file, config.saveToString());
         } catch (IOException e) {
+            MagicExpansion.getInstance().getLogger().severe(
+                    "Could not save Magic Market shop '" + shop.name + "'. "
+                            + "The previous shop file was left intact where possible: " + e.getMessage()
+            );
             e.printStackTrace();
         }
     }
 
+    private static void saveYamlAtomically(File file, String yaml) throws IOException {
+        Path parent = file.toPath().getParent();
+        if (parent == null) {
+            throw new IOException("shop file has no parent directory");
+        }
+
+        Path temp = Files.createTempFile(parent, "." + file.getName() + ".", ".tmp");
+        try {
+            Files.writeString(temp, yaml, StandardCharsets.UTF_8);
+            try {
+                Files.move(temp, file.toPath(), StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING);
+            } catch (AtomicMoveNotSupportedException ignored) {
+                Files.move(temp, file.toPath(), StandardCopyOption.REPLACE_EXISTING);
+            }
+        } finally {
+            Files.deleteIfExists(temp);
+        }
+    }
+
+    private static boolean ensureDirectory(File dir) {
+        if (dir.isDirectory()) {
+            return true;
+        }
+        if (dir.exists()) {
+            MagicExpansion.getInstance().getLogger().severe(
+                    "Magic Market shop path is not a directory: " + dir.getAbsolutePath()
+            );
+            return false;
+        }
+        if (!dir.mkdirs()) {
+            MagicExpansion.getInstance().getLogger().severe(
+                    "Could not create Magic Market shop directory: " + dir.getAbsolutePath()
+            );
+            return false;
+        }
+        return true;
+    }
+
+    private static void quarantineCorruptShopFile(File file, Exception cause) {
+        File quarantineDir = new File(file.getParentFile(), "quarantine");
+        if (!ensureDirectory(quarantineDir)) {
+            MagicExpansion.getInstance().getLogger().severe(
+                    "Magic Market shop file '" + file.getName() + "' is invalid and could not be quarantined. "
+                            + "It was left untouched and was not loaded: " + cause.getMessage()
+            );
+            return;
+        }
+
+        String baseName = stripYamlSuffix(file.getName());
+        File target = new File(quarantineDir, baseName + ".corrupt-" + System.currentTimeMillis() + ".yml");
+        int suffix = 1;
+        while (target.exists()) {
+            target = new File(quarantineDir, baseName + ".corrupt-" + System.currentTimeMillis() + "-" + suffix++ + ".yml");
+        }
+
+        try {
+            Files.move(file.toPath(), target.toPath());
+            MagicExpansion.getInstance().getLogger().severe(
+                    "Magic Market skipped corrupt shop file '" + file.getName() + "': " + cause.getMessage()
+                            + ". The original file was preserved at " + target.getAbsolutePath()
+            );
+        } catch (IOException moveFailure) {
+            MagicExpansion.getInstance().getLogger().severe(
+                    "Magic Market shop file '" + file.getName() + "' is invalid and could not be quarantined. "
+                            + "It was left untouched and was not loaded: " + cause.getMessage()
+            );
+            moveFailure.printStackTrace();
+        }
+    }
+
+    private static String stripYamlSuffix(String name) {
+        return name.endsWith(".yml") ? name.substring(0, name.length() - 4) : name;
+    }
+
     public static void reload() {
-//        for (Shop shop : shops) {
-//            saveShop(shop);
-//        }
         load();
     }
 
@@ -143,8 +309,12 @@ public class ShopManager {
     public static void deleteShop(String name) {
         shops.removeIf(s -> s.name.equals(name));
         File file = getShopFile(name);
-        if (file.exists()) {
-            file.delete();
+        try {
+            Files.deleteIfExists(file.toPath());
+        } catch (IOException e) {
+            MagicExpansion.getInstance().getLogger().warning(
+                    "Could not delete Magic Market shop file '" + file.getName() + "': " + e.getMessage()
+            );
         }
     }
 
@@ -172,9 +342,16 @@ public class ShopManager {
         trade.personalUsed.clear();
         saveShop(shop);
     }
+
     public static void saveAll() {
-        for (Shop shop : shops) {
+        for (Shop shop : new ArrayList<>(shops)) {
             saveShop(shop);
+        }
+    }
+
+    private static final class ShopFormatException extends Exception {
+        private ShopFormatException(String message) {
+            super(message);
         }
     }
 }
