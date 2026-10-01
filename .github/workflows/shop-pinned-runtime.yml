@@ -20,12 +20,15 @@ jobs:
           - minecraft: '1.21.11'
             build: 132
             java: '21'
+            server_sha: 5ffef465eeeb5f2a3c23a24419d97c51afd7dbb4923ff42df9a3f58bba1ccfba
           - minecraft: '26.2'
             build: 129
             java: '25'
+            server_sha: b1d8f6bfa1b6101fa8e947b53041cb3bdf5540e7b83b6547ca19ba7edefeb083
           - minecraft: '26.3'
             build: 140
             java: '25'
+            server_sha: 98aabc113a80b9b5e183475e839a17cf99c39c915a1f46b8f35a5e89fd5de0f1
     steps:
       - uses: actions/setup-java@v5
         with:
@@ -49,16 +52,20 @@ jobs:
               assert hashlib.sha256(Path('runtime-inputs',name).read_bytes()).hexdigest() == expected
           assert hashes['candidate.jar'] == '491619a0acf6a564cd2242ab84d62eddb6d7688e8623530af0ef6bc2d71db111'
           PY
-      - name: Execute real shop methods with pinned Paper builds
+      - name: Execute real shop methods with checksum-pinned official Paper builds
         env:
           MINECRAFT: ${{ matrix.minecraft }}
           BUILD: ${{ matrix.build }}
+          SERVER_SHA: ${{ matrix.server_sha }}
         run: |
           set -euo pipefail
+          # Exact publisher URLs/hashes retained by successful prior-release run36808369424.
+          # Source artifacts11138104725/11138453374/11138343888 were independently digest-checked.
           AGENT='Slimefun-Legacy-Preservation/4.1.62 (https://github.com/wickidcow/Slimefun-Legacy)'
-          curl --fail-with-body -L -sS --retry 3 --retry-delay 5 --max-time 60 -H "User-Agent: $AGENT" "https://fill.papermc.io/v3/projects/paper/versions/${MINECRAFT}/builds/${BUILD}" -o evidence/paper-build.json
-          URL="$(jq -er '.downloads."server:default".url' evidence/paper-build.json)"
+          URL="https://fill-data.papermc.io/v1/objects/${SERVER_SHA}/paper-${MINECRAFT}-${BUILD}.jar"
+          printf 'software=paper\nminecraft=%s\nbuild=%s\nurl=%s\nsha256=%s\nmetadata_source_run=36808369424\n' "$MINECRAFT" "$BUILD" "$URL" "$SERVER_SHA" > evidence/server-provenance.txt
           curl --fail-with-body -L -sS --retry 3 --retry-delay 5 --max-time 120 -H "User-Agent: $AGENT" "$URL" -o server.jar
+          printf '%s  server.jar\n' "$SERVER_SHA" | sha256sum --check
           sha256sum server.jar runtime-inputs/*.jar > evidence/input-sha256.txt
           cp runtime-inputs/input-sha256.json runtime-inputs/probe-sha256.txt evidence/
           for KIND in original candidate; do
