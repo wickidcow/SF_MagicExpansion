@@ -70,7 +70,7 @@ public class ShopManager {
         shops.addAll(loadedShops);
     }
 
-    private static Shop loadShop(File file) throws IOException, InvalidConfigurationException, ShopFormatException {
+    static Shop loadShop(File file) throws IOException, InvalidConfigurationException, ShopFormatException {
         YamlConfiguration config = new YamlConfiguration();
         config.load(file);
 
@@ -208,7 +208,7 @@ public class ShopManager {
         }
     }
 
-    private static void saveYamlAtomically(File file, String yaml) throws IOException {
+    static void saveYamlAtomically(File file, String yaml) throws IOException {
         Path parent = file.toPath().getParent();
         if (parent == null) {
             throw new IOException("shop file has no parent directory");
@@ -349,7 +349,7 @@ public class ShopManager {
         }
     }
 
-    private static final class ShopFormatException extends Exception {
+    static final class ShopFormatException extends Exception {
         private ShopFormatException(String message) {
             super(message);
         }
