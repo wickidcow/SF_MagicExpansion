@@ -1,0 +1,140 @@
+name: Corrected Shop Safety Validation
+on:
+  push:
+    branches: ['work/shop-file-safety-validation-20261001']
+    paths: ['.github/workflows/shop-safety-corrected-validation.yml', 'audit-safety/refine-tests.py']
+permissions:
+  contents: write
+  actions: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '25'
+          cache: maven
+      - name: Restore and verify reviewed source without weakening production validation
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p evidence runtime-inputs
+          python3 - <<'PY'
+          import base64,hashlib,json,subprocess,zlib
+          from pathlib import Path
+          ids=['8c5ea15a107eb76dea2c0b96821e787863d18481','6f788f028daab6be5d1c3231686868462bf182d5','eeaf336c0fe352c1494dd0ac309cc3947aced507','2d3cf6407fa3e4a76a2b5caa78fa59556ac402d5','25b60f8c6abb5308b46e8666420f84aa733db7a4','06144dc9e8ea432209c9aab371014211e1ce36ce','5ec9054ec3a1c615a1c40b36192ed17ed6cfc5c8','37f4324a813cc2eac36a57ad4f440cb7bb842f2a']
+          payload=b''
+          blob=lambda b:hashlib.sha1(b'blob '+str(len(b)).encode()+b'\0'+b).hexdigest()
+          for sha in ids:
+              raw=json.loads(subprocess.check_output(['gh','api',f'repos/wickidcow/SF_MagicExpansion/git/blobs/{sha}']))
+              data=base64.b64decode(raw['content']);assert blob(data)==sha
+              payload+=data
+          text=zlib.decompress(base64.b64decode(payload));assert hashlib.sha256(text).hexdigest()=='f70ed5ae5fdee130971cd79f2929cbc6cc233bf72a93fa94880657942520078e'
+          files=json.loads(text)
+          for name,content in files.items():
+              if name.endswith('.patch'):
+                  patch=Path('evidence/gui.patch');patch.write_text(content)
+                  subprocess.run(['git','apply','--check',str(patch)],check=True);subprocess.run(['git','apply',str(patch)],check=True)
+              else:
+                  path=Path(name);path.parent.mkdir(parents=True,exist_ok=True);path.write_text(content)
+          subprocess.run(['python3','audit-safety/refine-tests.py'],check=True)
+          expected={}
+          for name in files:
+              path=Path(name.removesuffix('.patch'))
+              expected[str(path)]=blob(path.read_bytes())
+          expected_values={'755dbba6fb29f87562239caab30d3b2aaa7e12b7','51c268f120b91fd61f295ac5abb21b198aa3cefa','7aad6319934449cce9f45724361feb0b972f0c88','7e5ce1f9786a72cceef4c0f7c446c6b7ceb9bbe1','bbc69822f9d2573138546ebbdb9e5c31541fd47b','fbdea392e1d854a4e1c3f18822a21ed6e692ec29'}
+          assert set(expected.values())==expected_values
+          Path('evidence/reviewed-blobs.json').write_text(json.dumps(expected,indent=2)+'\n')
+          PY
+          git diff --check
+      - name: Full stable-core build and tests
+        run: |
+          set -euo pipefail
+          bash scripts/install_slimefun_api.sh > evidence/stable-api.log 2>&1
+          mvn -B -ntp clean verify 2>&1 | tee evidence/stable-build.log
+          mkdir -p evidence/stable-tests
+          cp target/surefire-reports/TEST-*.xml evidence/stable-tests/
+          cp target/SF_MagicExpansion1.1.7.jar runtime-inputs/stable-addon.jar
+      - name: Supply exact revision98 core
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python3 - <<'PY'
+          import hashlib,io,json,subprocess,zipfile
+          from pathlib import Path
+          endpoint='repos/wickidcow/Slimefun-Legacy/actions/artifacts/11153273058'
+          def api(path):return subprocess.run(['gh','api',path],check=True,capture_output=True,timeout=120).stdout
+          meta=json.loads(api(endpoint));assert meta['workflow_run']['head_sha']=='b65978497a9178cdcc9c93030087c50ce02b249b'
+          raw=api(endpoint+'/zip');assert hashlib.sha256(raw).hexdigest()=='d7df4a5c0ccd5b1d194a0791cf9cf1df478ab1dccbb91c6a95ff218284587f83'
+          with zipfile.ZipFile(io.BytesIO(raw)) as z:
+              names=[n for n in z.namelist() if n.endswith('.jar')];assert len(names)==1
+              core=z.read(names[0])
+          digest=hashlib.sha256(core).hexdigest();assert digest=='55be5129bfb70e64fc16fbe53147c7ee6d3cccf7734844e6f1dda539444a59e0'
+          Path('runtime-inputs/core.jar').write_bytes(core)
+          Path('evidence/core.json').write_text(json.dumps(dict(artifact_id=11153273058,head=meta['workflow_run']['head_sha'],jar_sha256=digest,release_approved=False),indent=2))
+          PY
+          mvn -B -ntp org.apache.maven.plugins:maven-install-plugin:3.1.3:install-file -Dfile=runtime-inputs/core.jar -DgroupId=com.github.wickidcow -DartifactId=Slimefun-Legacy -Dversion=4.1.62-safety-audit -Dpackaging=jar -DgeneratePom=true > evidence/candidate-api.log 2>&1
+      - name: Full candidate-core build and test-report verification
+        run: |
+          set -euo pipefail
+          mvn -B -ntp -Dslimefun.version=4.1.62-safety-audit clean verify 2>&1 | tee evidence/candidate-build.log
+          mkdir -p evidence/candidate-tests
+          cp target/surefire-reports/TEST-*.xml evidence/candidate-tests/
+          cp target/SF_MagicExpansion1.1.7.jar runtime-inputs/candidate-addon.jar
+          python3 - <<'PY'
+          from pathlib import Path
+          import hashlib,json,xml.etree.ElementTree as ET,zipfile
+          results={}
+          for kind in ['stable','candidate']:
+              roots=[ET.parse(p).getroot() for p in Path(f'evidence/{kind}-tests').glob('TEST-*.xml')]
+              counts={k:sum(int(r.attrib[k]) for r in roots) for k in ['tests','failures','errors','skipped']}
+              assert counts==dict(tests=59,failures=0,errors=0,skipped=0),(kind,counts)
+              path=Path(f'runtime-inputs/{kind}-addon.jar');classes=0
+              with zipfile.ZipFile(path) as z:
+                  assert z.testzip() is None
+                  for name in z.namelist():
+                      assert not name.startswith(('org/junit/','org/mockbukkit/','audit/')),name
+                      if name.endswith('.class') and not name.startswith('META-INF/versions/'):
+                          data=z.read(name);assert data[:4]==b'\xca\xfe\xba\xbe'
+                          assert int.from_bytes(data[6:8],'big')<=65 and int.from_bytes(data[4:6],'big')!=65535,name
+                          classes+=1
+              results[kind]=dict(counts=counts,classes=classes,sha256=hashlib.sha256(path.read_bytes()).hexdigest())
+          Path('evidence/results.json').write_text(json.dumps(results,indent=2)+'\n')
+          print(json.dumps(results,indent=2))
+          PY
+      - name: Stage tested plain source objects without branch updates
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python3 - <<'PY'
+          import hashlib,json,subprocess
+          from pathlib import Path
+          for name,sha in json.loads(Path('evidence/reviewed-blobs.json').read_text()).items():
+              data=Path(name).read_bytes();assert hashlib.sha1(b'blob '+str(len(data)).encode()+b'\0'+data).hexdigest()==sha
+              result=subprocess.run(['gh','api','--method','POST','repos/wickidcow/SF_MagicExpansion/git/blobs','--input','-'],input=json.dumps(dict(content=data.decode(),encoding='utf-8')),check=True,capture_output=True,text=True)
+              assert json.loads(result.stdout)['sha']==sha
+              path=Path('evidence/reviewed-source')/name;path.parent.mkdir(parents=True,exist_ok=True);path.write_bytes(data)
+          PY
+      - name: Retain actual failing reports too
+        if: always()
+        run: |
+          mkdir -p evidence/last-test-results
+          if test -d target/surefire-reports; then cp target/surefire-reports/TEST-*.xml evidence/last-test-results/ || true; fi
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: corrected-shop-safety-evidence
+          path: evidence/
+          retention-days: 14
+          if-no-files-found: error
+      - uses: actions/upload-artifact@v7
+        with:
+          name: corrected-shop-safety-runtime-inputs
+          path: runtime-inputs/
+          retention-days: 14
+          if-no-files-found: error
