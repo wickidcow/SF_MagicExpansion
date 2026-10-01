@@ -1,0 +1,172 @@
+name: Shop Safety Real Paper Validation
+on:
+  push:
+    branches: ['work/shop-file-safety-validation-20261001']
+    paths: ['.github/workflows/shop-safety-paper-validation.yml', 'audit-safety/ShopSafetyProbe.java']
+permissions:
+  contents: read
+  actions: read
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '25'
+          cache: maven
+      - name: Supply exact tested revision98 core
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p inputs evidence
+          python3 - <<'PY'
+          import hashlib,io,json,subprocess,zipfile
+          from pathlib import Path
+          raw=subprocess.run(['gh','api','repos/wickidcow/Slimefun-Legacy/actions/artifacts/11153273058/zip'],check=True,capture_output=True,timeout=120).stdout
+          assert hashlib.sha256(raw).hexdigest()=='d7df4a5c0ccd5b1d194a0791cf9cf1df478ab1dccbb91c6a95ff218284587f83'
+          with zipfile.ZipFile(io.BytesIO(raw)) as z:
+              names=[n for n in z.namelist() if n.endswith('.jar')];assert len(names)==1
+              core=z.read(names[0])
+          assert hashlib.sha256(core).hexdigest()=='55be5129bfb70e64fc16fbe53147c7ee6d3cccf7734844e6f1dda539444a59e0'
+          Path('inputs/core.jar').write_bytes(core)
+          PY
+          mvn -B -ntp org.apache.maven.plugins:maven-install-plugin:3.1.3:install-file -Dfile=inputs/core.jar -DgroupId=com.github.wickidcow -DartifactId=Slimefun-Legacy -Dversion=4.1.62-safety-audit -Dpackaging=jar -DgeneratePom=true > evidence/core-install.log 2>&1
+      - name: Build the actual unchanged original addon
+        run: |
+          set -euo pipefail
+          mvn -B -ntp -Dslimefun.version=4.1.62-safety-audit -DskipTests clean package > evidence/original-build.log 2>&1
+          cp target/SF_MagicExpansion1.1.7.jar inputs/original.jar
+      - name: Restore only the reviewed candidate production source
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python3 - <<'PY'
+          import base64,hashlib,json,subprocess,zlib
+          from pathlib import Path
+          ids=['8c5ea15a107eb76dea2c0b96821e787863d18481','6f788f028daab6be5d1c3231686868462bf182d5','eeaf336c0fe352c1494dd0ac309cc3947aced507','2d3cf6407fa3e4a76a2b5caa78fa59556ac402d5','25b60f8c6abb5308b46e8666420f84aa733db7a4','06144dc9e8ea432209c9aab371014211e1ce36ce','5ec9054ec3a1c615a1c40b36192ed17ed6cfc5c8','37f4324a813cc2eac36a57ad4f440cb7bb842f2a']
+          encoded=b'';blob=lambda b:hashlib.sha1(b'blob '+str(len(b)).encode()+b'\0'+b).hexdigest()
+          for sha in ids:
+              row=json.loads(subprocess.check_output(['gh','api',f'repos/wickidcow/SF_MagicExpansion/git/blobs/{sha}']))
+              data=base64.b64decode(row['content']);assert blob(data)==sha;encoded+=data
+          raw=zlib.decompress(base64.b64decode(encoded));assert hashlib.sha256(raw).hexdigest()=='f70ed5ae5fdee130971cd79f2929cbc6cc233bf72a93fa94880657942520078e'
+          records={}
+          for name,content in json.loads(raw).items():
+              if not name.startswith('src/main/'):continue
+              if name.endswith('.patch'):
+                  path=Path('evidence/gui.patch');path.write_text(content)
+                  subprocess.run(['git','apply','--check',str(path)],check=True);subprocess.run(['git','apply',str(path)],check=True)
+                  name=name.removesuffix('.patch')
+              else:
+                  path=Path(name);path.parent.mkdir(parents=True,exist_ok=True);path.write_text(content)
+              records[name]=blob(Path(name).read_bytes())
+          assert set(records.values())=={'755dbba6fb29f87562239caab30d3b2aaa7e12b7','51c268f120b91fd61f295ac5abb21b198aa3cefa','7aad6319934449cce9f45724361feb0b972f0c88','7e5ce1f9786a72cceef4c0f7c446c6b7ceb9bbe1'}
+          Path('inputs/source-blobs.json').write_text(json.dumps(records,indent=2)+'\n')
+          PY
+      - name: Build diagnostic candidate and compile real-Paper test plugin
+        run: |
+          set -euo pipefail
+          # Unit validation is a separate required workflow, not claimed by this diagnostic assembly.
+          mvn -B -ntp -Dslimefun.version=4.1.62-safety-audit -DskipTests clean package > evidence/candidate-build.log 2>&1
+          cp target/SF_MagicExpansion1.1.7.jar inputs/candidate.jar
+          mvn -B -ntp -Dslimefun.version=4.1.62-safety-audit dependency:build-classpath -Dmdep.outputFile=inputs/classpath.txt > evidence/probe-build.log 2>&1
+          mkdir -p probe-classes
+          javac --release 21 -cp "inputs/candidate.jar:$(cat inputs/classpath.txt)" -d probe-classes audit-safety/ShopSafetyProbe.java >> evidence/probe-build.log 2>&1
+          printf "name: ShopSafetyProbe\nmain: audit.ShopSafetyProbe\nversion: '1'\napi-version: '1.21.11'\ndepend: [Slimefun, magicexpansion]\n" > probe-classes/plugin.yml
+          jar --create --file inputs/probe.jar -C probe-classes .
+          cp audit-safety/ShopSafetyProbe.java evidence/
+          sha256sum inputs/*.jar > inputs/jar-sha256.txt
+          cp inputs/source-blobs.json inputs/jar-sha256.txt evidence/
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: shop-safety-paper-build-evidence
+          path: evidence/
+          retention-days: 14
+          if-no-files-found: error
+      - uses: actions/upload-artifact@v7
+        with:
+          name: shop-safety-paper-inputs
+          path: inputs/
+          retention-days: 14
+          if-no-files-found: error
+  runtime:
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - minecraft: '1.21.11'
+            build: 132
+            java: '21'
+            server_sha: 5ffef465eeeb5f2a3c23a24419d97c51afd7dbb4923ff42df9a3f58bba1ccfba
+          - minecraft: '26.2'
+            build: 129
+            java: '25'
+            server_sha: b1d8f6bfa1b6101fa8e947b53041cb3bdf5540e7b83b6547ca19ba7edefeb083
+          - minecraft: '26.3'
+            build: 140
+            java: '25'
+            server_sha: 98aabc113a80b9b5e183475e839a17cf99c39c915a1f46b8f35a5e89fd5de0f1
+    steps:
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: ${{ matrix.java }}
+      - uses: actions/download-artifact@v8
+        with:
+          name: shop-safety-paper-inputs
+          path: inputs
+      - name: Original failure control and two corrected server boots
+        env:
+          MC: ${{ matrix.minecraft }}
+          BUILD: ${{ matrix.build }}
+          SHA: ${{ matrix.server_sha }}
+        run: |
+          set -euo pipefail
+          mkdir -p evidence
+          sha256sum --check inputs/jar-sha256.txt
+          URL="https://fill-data.papermc.io/v1/objects/${SHA}/paper-${MC}-${BUILD}.jar"
+          curl -fLsS --retry 3 --max-time 120 -H 'User-Agent: Slimefun-Legacy-Preservation/4.1.62 (https://github.com/wickidcow/Slimefun-Legacy)' "$URL" -o server.jar
+          printf '%s  server.jar\n' "$SHA" | sha256sum --check
+          printf 'url=%s\nsha256=%s\nsource_reference_run=36808369424\n' "$URL" "$SHA" > evidence/server-provenance.txt
+          cp inputs/source-blobs.json inputs/jar-sha256.txt evidence/
+          for KIND in original candidate; do
+            mkdir -p "$KIND/plugins/magicexpansion/portable_shops"
+            cp server.jar "$KIND/server.jar"
+            cp inputs/core.jar "$KIND/plugins/Slimefun.jar"
+            cp "inputs/$KIND.jar" "$KIND/plugins/MagicExpansion.jar"
+            cp inputs/probe.jar "$KIND/plugins/ShopSafetyProbe.jar"
+            printf 'trades: [unterminated\n' > "$KIND/plugins/magicexpansion/portable_shops/Blocked.yml"
+            printf 'eula=true\n' > "$KIND/eula.txt"
+            printf 'online-mode=false\nserver-ip=127.0.0.1\nserver-port=0\nview-distance=2\nsimulation-distance=2\nspawn-protection=0\npause-when-empty-seconds=-1\n' > "$KIND/server.properties"
+          done
+          for CYCLE in original first second; do
+            KIND=candidate; ORIGINAL=false; PHASE=1; MARKER=SHOP_SAFETY_FIRST_BOOT_PASS
+            if [[ "$CYCLE" == original ]]; then KIND=original; ORIGINAL=true; MARKER=SHOP_FILE_ORIGINAL_OVERWRITE_REPRODUCED; fi
+            if [[ "$CYCLE" == second ]]; then PHASE=2; MARKER=SHOP_SAFETY_SECOND_BOOT_PASS; fi
+            STATUS=0
+            (cd "$KIND" && timeout --kill-after=20s 240s java -Xms512M -Xmx2G -Dshop.safety.original="$ORIGINAL" -Dshop.safety.phase="$PHASE" -jar server.jar --nogui > "$CYCLE.log" 2>&1) || STATUS=$?
+            mkdir -p "evidence/$CYCLE"
+            cp "$KIND/$CYCLE.log" "evidence/$CYCLE/"
+            cp -r "$KIND/plugins/magicexpansion/portable_shops" "evidence/$CYCLE/"
+            if test -f "$KIND/safety-result-$CYCLE.txt"; then cp "$KIND/safety-result-$CYCLE.txt" "evidence/$CYCLE/"; fi
+            if [[ "$STATUS" != 0 ]] || ! grep -Fq "$MARKER" "$KIND/safety-result-$CYCLE.txt"; then tail -n 120 "$KIND/$CYCLE.log"; exit 1; fi
+            if grep -Eq 'SHOP_SAFETY_RUNTIME_FAIL|Error occurred while enabling|NoClassDefFoundError|NoSuchMethodError' "$KIND/$CYCLE.log"; then tail -n 120 "$KIND/$CYCLE.log"; exit 1; fi
+            # The corrupt fixture intentionally generates a refused-load diagnostic. Never suppress other failures.
+            cat "$KIND/safety-result-$CYCLE.txt"
+          done
+          printf 'PASS: original overwrite reproduced; strict rich-item/editor/chat guards and second-boot persistence passed on %s\n' "$MC" > evidence/runtime-result.txt
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: shop-safety-paper-${{ matrix.minecraft }}
+          path: evidence/
+          retention-days: 14
+          if-no-files-found: error
