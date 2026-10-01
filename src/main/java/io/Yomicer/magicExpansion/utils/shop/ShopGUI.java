@@ -126,7 +126,6 @@ public class ShopGUI implements Listener {
     }
 
     public static void openShopTrades(Player player, String shopName, int page) {
-        shopTradesPage.computeIfAbsent(player.getUniqueId(), k -> new HashMap<>()).put(shopName, page);
         ShopManager.Shop shop = ShopManager.getShop(shopName);
         if (shop == null) return;
 
@@ -136,7 +135,8 @@ public class ShopGUI implements Listener {
         inv.setItem(4, createInfoItem(Material.ENDER_CHEST, ChatColor.AQUA + shopName, Arrays.asList(ChatColor.GRAY + "Click an item to make the trade.")));
 
         int maxPage = Math.max(0, (shop.trades.size() - 1) / CONTENT_SLOTS.length);
-        page = Math.min(page, maxPage);
+        page = Math.max(0, Math.min(page, maxPage));
+        shopTradesPage.computeIfAbsent(player.getUniqueId(), k -> new HashMap<>()).put(shopName, page);
 
         int startIndex = page * CONTENT_SLOTS.length;
         UUID playerId = player.getUniqueId();
@@ -527,30 +527,11 @@ public class ShopGUI implements Listener {
         UUID playerId = player.getUniqueId();
         BlackMarketManager.BlackMarketTrade trade = BlackMarketManager.getTodayTrades(player).get(index);
 
-        if (!trade.isFree && trade.costs != null) {
-            for (ItemStack cost : trade.costs) {
-                if (cost == null || cost.getType() == Material.AIR) continue;
-                if (!player.getInventory().containsAtLeast(cost, cost.getAmount())) {
-                    String costName = ItemStackHelper.getDisplayName(cost);
-                    player.sendMessage(ChatColor.RED + "Missing items: " + costName + " x" + cost.getAmount());
-                    player.playSound(player.getLocation(), org.bukkit.Sound.ENTITY_VILLAGER_NO, 1f, 1f);
-                    return;
-                }
-            }
+        if (trade.result == null || trade.result.getType().isAir() || trade.result.getAmount() <= 0) return;
+        ItemStack reward = trade.result.clone();
+        if (!trade.isFree && !takePayment(player, trade.costs)) return;
 
-            for (ItemStack cost : trade.costs) {
-                if (cost == null || cost.getType() == Material.AIR) continue;
-                ItemStack costToRemove = cost.clone();
-                HashMap<Integer, ItemStack> notRemoved = player.getInventory().removeItem(costToRemove);
-                if (!notRemoved.isEmpty()) {
-                    for (ItemStack leftOver : notRemoved.values()) {
-                        removeItems(player.getInventory(), leftOver);
-                    }
-                }
-            }
-        }
-
-        HashMap<Integer, ItemStack> overflow = player.getInventory().addItem(trade.result.clone());
+        HashMap<Integer, ItemStack> overflow = player.getInventory().addItem(reward);
         if (!overflow.isEmpty()) {
             for (ItemStack drop : overflow.values()) {
                 player.getWorld().dropItemNaturally(player.getLocation(), drop);
@@ -927,12 +908,15 @@ public class ShopGUI implements Listener {
 
     // ================= 辅助逻辑 =================
     private void handlePurchase(Player player, String shopName, int slot, ItemStack clickedItem) {
-        int index = getTradeIndexBySlot(slot);
         ShopManager.Shop shop = ShopManager.getShop(shopName);
-        if (shop == null || index == -1 || index >= shop.trades.size()) return;
+        if (shop == null) return;
+        int page = shopTradesPage.getOrDefault(player.getUniqueId(), Collections.emptyMap()).getOrDefault(shopName, 0);
+        int index = purchaseIndex(page, slot, shop.trades.size());
+        if (index == -1) return;
 
         ShopManager.Trade trade = shop.trades.get(index);
-        if (trade.result == null) return;
+        if (trade.result == null || trade.result.getType().isAir() || trade.result.getAmount() <= 0) return;
+        ItemStack reward = trade.result.clone();
 
         UUID playerId = player.getUniqueId();
         if (!ShopManager.canPurchase(playerId, trade)) {
@@ -941,28 +925,9 @@ public class ShopGUI implements Listener {
             return;
         }
 
-        for (ItemStack cost : trade.costItems) {
-            if (cost == null || cost.getType() == Material.AIR) continue;
-            if (!player.getInventory().containsAtLeast(cost, cost.getAmount())) {
-                String costName = ItemStackHelper.getDisplayName(cost);
-                player.sendMessage(ChatColor.RED + "Missing items: " + costName + " x" + cost.getAmount());
-                player.playSound(player.getLocation(), org.bukkit.Sound.ENTITY_VILLAGER_NO, 1f, 1f);
-                return;
-            }
-        }
+        if (!takePayment(player, trade.costItems)) return;
 
-        for (ItemStack cost : trade.costItems) {
-            if (cost == null || cost.getType() == Material.AIR) continue;
-            ItemStack costToRemove = cost.clone();
-            HashMap<Integer, ItemStack> notRemoved = player.getInventory().removeItem(costToRemove);
-            if (!notRemoved.isEmpty()) {
-                for (ItemStack leftOver : notRemoved.values()) {
-                    removeItems(player.getInventory(), leftOver);
-                }
-            }
-        }
-
-        HashMap<Integer, ItemStack> overflow = player.getInventory().addItem(trade.result.clone());
+        HashMap<Integer, ItemStack> overflow = player.getInventory().addItem(reward);
         if (!overflow.isEmpty()) {
             for (ItemStack drop : overflow.values()) {
                 player.getWorld().dropItemNaturally(player.getLocation(), drop);
@@ -978,23 +943,30 @@ public class ShopGUI implements Listener {
         openShopTrades(player, shopName, shopTradesPage.getOrDefault(player.getUniqueId(), new HashMap<>()).getOrDefault(shopName, 0));
     }
 
-    private void removeItems(org.bukkit.inventory.Inventory inv, ItemStack item) {
-        int amountToRemove = item.getAmount();
-        ItemStack[] contents = inv.getContents();
-        for (int i = 0; i < contents.length; i++) {
-            ItemStack is = contents[i];
-            if (is != null && is.isSimilar(item)) {
-                if (is.getAmount() > amountToRemove) {
-                    is.setAmount(is.getAmount() - amountToRemove);
-                    inv.setItem(i, is);
-                    return;
-                } else {
-                    amountToRemove -= is.getAmount();
-                    inv.setItem(i, null);
-                    if (amountToRemove <= 0) return;
-                }
+    private boolean takePayment(Player player, List<ItemStack> costs) {
+        final ItemStack missing;
+        try {
+            missing = InventoryPayment.debit(player.getInventory(), costs);
+        } catch (IllegalArgumentException invalidCost) {
+            player.sendMessage(ChatColor.RED + "This trade has an invalid cost; no items were taken.");
+            return false;
+        }
+        if (missing == null) return true;
+        player.sendMessage(ChatColor.RED + "Missing items: " + ItemStackHelper.getDisplayName(missing)
+                + " x" + missing.getAmount() + ". No items were taken.");
+        player.playSound(player.getLocation(), org.bukkit.Sound.ENTITY_VILLAGER_NO, 1f, 1f);
+        return false;
+    }
+
+    static int purchaseIndex(int page, int slot, int tradeCount) {
+        if (page < 0 || tradeCount <= 0) return -1;
+        for (int offset = 0; offset < CONTENT_SLOTS.length; offset++) {
+            if (CONTENT_SLOTS[offset] == slot) {
+                long index = (long) page * CONTENT_SLOTS.length + offset;
+                return index < tradeCount ? (int) index : -1;
             }
         }
+        return -1;
     }
 
     private int getTradeIndexBySlot(int slot) {
