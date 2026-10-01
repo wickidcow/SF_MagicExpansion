@@ -1,0 +1,135 @@
+name: Portable Shop Actual Runtime Validation
+
+on:
+  push:
+    branches: ['work/shop-payment-validation-20261001']
+    paths: ['audit-runtime/**', '.github/workflows/shop-runtime-validation.yml']
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '25'
+          cache: maven
+      - name: Verify exact original and corrected runtime inputs
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p runtime-inputs evidence
+          python3 - <<'PY'
+          import hashlib, io, json, subprocess, zipfile
+          from pathlib import Path
+          raw = subprocess.run(['gh', 'api', 'repos/wickidcow/SF_MagicExpansion/actions/artifacts/11151638350/zip'], check=True, capture_output=True, timeout=120).stdout
+          assert hashlib.sha256(raw).hexdigest() == '3bc1c5e388edd44e443881e227fac9513f8ecc743927688a912b0bdea7c3f8b8'
+          records = {}
+          with zipfile.ZipFile(io.BytesIO(raw)) as z:
+              for name in ['core.jar', 'original.jar', 'candidate.jar']:
+                  data = z.read(name)
+                  records[name] = hashlib.sha256(data).hexdigest()
+                  Path('runtime-inputs', name).write_bytes(data)
+          assert records['core.jar'] == '90e9f5ecfe306b70f6cf26d8ca7347ed4f65a07c3e9c6667cf42b1988522ba34'
+          assert records['candidate.jar'] == '491619a0acf6a564cd2242ab84d62eddb6d7688e8623530af0ef6bc2d71db111'
+          Path('runtime-inputs/input-sha256.json').write_text(json.dumps(records, indent=2))
+          PY
+          mvn -B -ntp org.apache.maven.plugins:maven-install-plugin:3.1.3:install-file -Dfile=runtime-inputs/core.jar -DgroupId=com.github.wickidcow -DartifactId=Slimefun-Legacy -Dversion=4.1.62-audit -Dpackaging=jar -DgeneratePom=true
+      - name: Compile the real-server probe against the supported floor
+        run: |
+          set -euo pipefail
+          mvn -B -ntp -Dslimefun.version=4.1.62-audit dependency:build-classpath -Dmdep.outputFile=runtime-inputs/classpath.txt
+          mkdir -p probe-classes
+          javac --release 21 -cp "runtime-inputs/candidate.jar:$(cat runtime-inputs/classpath.txt)" -d probe-classes audit-runtime/ShopRuntimeProbe.java
+          printf "name: ShopRuntimeProbe\nmain: audit.ShopRuntimeProbe\nversion: '1'\napi-version: '1.21.11'\ndepend: [Slimefun, MagicExpansion]\n" > probe-classes/plugin.yml
+          jar --create --file runtime-inputs/probe.jar -C probe-classes .
+          sha256sum audit-runtime/ShopRuntimeProbe.java runtime-inputs/*.jar > runtime-inputs/probe-sha256.txt
+      - name: Check the actual published stable Maven coordinates
+        run: |
+          set -euo pipefail
+          URL=https://maven.norain.city/releases/com/github/slimefun/Slimefun/4.1.61/Slimefun-4.1.61.pom
+          curl -L -sS --retry 2 --max-time 60 -w '%{http_code}\n' "$URL" -o evidence/published-stable.pom > evidence/published-stable-status.txt
+          cat evidence/published-stable-status.txt
+          head -c 300 evidence/published-stable.pom
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: shop-runtime-preparation-evidence
+          path: evidence/
+          retention-days: 14
+          if-no-files-found: warn
+      - uses: actions/upload-artifact@v7
+        with:
+          name: shop-runtime-exact-inputs
+          path: runtime-inputs/
+          retention-days: 14
+          if-no-files-found: error
+
+  runtime:
+    needs: prepare
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    strategy:
+      fail-fast: false
+      matrix:
+        minecraft: ['1.21.11', '26.2', '26.3']
+    steps:
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: ${{ matrix.minecraft == '1.21.11' && '21' || '25' }}
+      - uses: actions/download-artifact@v8
+        with:
+          name: shop-runtime-exact-inputs
+          path: runtime-inputs
+      - name: Run original defect controls and corrected real shop handlers
+        env:
+          MINECRAFT: ${{ matrix.minecraft }}
+        run: |
+          set -euo pipefail
+          mkdir -p evidence
+          curl -fsSL --retry 3 -H 'User-Agent: SF_MagicExpansion-Portable-Shop-Audit/1.0' "https://fill.papermc.io/v3/projects/paper/versions/${MINECRAFT}/builds" > evidence/paper-builds.json
+          URL="$(jq -r '([.[] | select(.channel == "STABLE")] | if length > 0 then max_by(.id) else empty end) // (max_by(.id)) | .downloads."server:default".url' evidence/paper-builds.json)"
+          test -n "$URL"
+          curl -fsSL --retry 3 -H 'User-Agent: SF_MagicExpansion-Portable-Shop-Audit/1.0' "$URL" -o server.jar
+          sha256sum server.jar runtime-inputs/*.jar > evidence/input-sha256.txt
+          cp runtime-inputs/input-sha256.json runtime-inputs/probe-sha256.txt evidence/
+          for KIND in original candidate; do
+            ROOT="$PWD/runtime-$KIND"
+            mkdir -p "$ROOT/plugins"
+            cp server.jar "$ROOT/server.jar"
+            cp runtime-inputs/core.jar "$ROOT/plugins/Slimefun.jar"
+            cp "runtime-inputs/$KIND.jar" "$ROOT/plugins/MagicExpansion.jar"
+            cp runtime-inputs/probe.jar "$ROOT/plugins/ShopRuntimeProbe.jar"
+            printf 'eula=true\n' > "$ROOT/eula.txt"
+            printf 'online-mode=false\nserver-ip=127.0.0.1\nserver-port=0\nview-distance=2\nsimulation-distance=2\nspawn-protection=0\npause-when-empty-seconds=-1\n' > "$ROOT/server.properties"
+            IS_ORIGINAL=false; MARKER=SHOP_RUNTIME_PRESERVATION_PASS; COUNT=7
+            if [[ "$KIND" == original ]]; then IS_ORIGINAL=true; MARKER=SHOP_ORIGINAL_DEFECTS_REPRODUCED; COUNT=3; fi
+            STATUS=0
+            (cd "$ROOT" && timeout --kill-after=20s 300s java -Xms512M -Xmx2G -Dshop.audit.original="$IS_ORIGINAL" -jar server.jar --nogui > server.log 2>&1) || STATUS=$?
+            mkdir -p "evidence/$KIND"
+            cp "$ROOT/server.log" "evidence/$KIND/"
+            if [[ -f "$ROOT/shop-result.txt" ]]; then cp "$ROOT/shop-result.txt" "evidence/$KIND/"; fi
+            if [[ -d "$ROOT/plugins/MagicExpansion/portable_shops" ]]; then cp -r "$ROOT/plugins/MagicExpansion/portable_shops" "evidence/$KIND/"; fi
+            cat "$ROOT/shop-result.txt" || true
+            test "$STATUS" -eq 0
+            grep -Fxq "$MARKER" "$ROOT/shop-result.txt"
+            test "$(wc -l < "$ROOT/shop-result.txt")" -eq "$((COUNT+1))"
+            if grep -Eq 'SHOP_RUNTIME_FAIL|Error occurred while enabling|NoSuchMethodError|NoClassDefFoundError|SQLITE_CONSTRAINT|InvalidConfigurationException' "$ROOT/server.log"; then cat "$ROOT/server.log"; exit 1; fi
+          done
+          printf 'PASS: original 3 defects reproduced; corrected 7 scenarios passed on %s\n' "$MINECRAFT" > evidence/runtime-result.txt
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: shop-runtime-${{ matrix.minecraft }}
+          path: evidence/
+          retention-days: 14
+          if-no-files-found: error
