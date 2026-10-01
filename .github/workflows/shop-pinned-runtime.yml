@@ -1,0 +1,94 @@
+name: Portable Shop Pinned Runtime Validation
+
+on:
+  push:
+    branches: ['work/shop-payment-validation-20261001']
+    paths: ['.github/workflows/shop-pinned-runtime.yml']
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  runtime:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - minecraft: '1.21.11'
+            build: 132
+            java: '21'
+          - minecraft: '26.2'
+            build: 129
+            java: '25'
+          - minecraft: '26.3'
+            build: 140
+            java: '25'
+    steps:
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: ${{ matrix.java }}
+      - name: Retrieve the already verified original, candidate and probe JARs
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p runtime-inputs evidence
+          python3 - <<'PY'
+          from pathlib import Path
+          import hashlib, io, json, subprocess, zipfile
+          raw = subprocess.run(['gh','api','repos/wickidcow/SF_MagicExpansion/actions/artifacts/11151644957/zip'],check=True,capture_output=True,timeout=120).stdout
+          assert hashlib.sha256(raw).hexdigest() == 'd2972acbb676ada7e21d2a703ed22766c2bf4b47889801681841d1cb264179ee'
+          with zipfile.ZipFile(io.BytesIO(raw)) as z:
+              for name in ['core.jar','original.jar','candidate.jar','probe.jar','input-sha256.json','probe-sha256.txt']:
+                  Path('runtime-inputs',name).write_bytes(z.read(name))
+          hashes = json.loads(Path('runtime-inputs/input-sha256.json').read_text())
+          for name, expected in hashes.items():
+              assert hashlib.sha256(Path('runtime-inputs',name).read_bytes()).hexdigest() == expected
+          assert hashes['candidate.jar'] == '491619a0acf6a564cd2242ab84d62eddb6d7688e8623530af0ef6bc2d71db111'
+          PY
+      - name: Execute real shop methods with pinned Paper builds
+        env:
+          MINECRAFT: ${{ matrix.minecraft }}
+          BUILD: ${{ matrix.build }}
+        run: |
+          set -euo pipefail
+          AGENT='Slimefun-Legacy-Preservation/4.1.62 (https://github.com/wickidcow/Slimefun-Legacy)'
+          curl --fail-with-body -L -sS --retry 3 --retry-delay 5 --max-time 60 -H "User-Agent: $AGENT" "https://fill.papermc.io/v3/projects/paper/versions/${MINECRAFT}/builds/${BUILD}" -o evidence/paper-build.json
+          URL="$(jq -er '.downloads."server:default".url' evidence/paper-build.json)"
+          curl --fail-with-body -L -sS --retry 3 --retry-delay 5 --max-time 120 -H "User-Agent: $AGENT" "$URL" -o server.jar
+          sha256sum server.jar runtime-inputs/*.jar > evidence/input-sha256.txt
+          cp runtime-inputs/input-sha256.json runtime-inputs/probe-sha256.txt evidence/
+          for KIND in original candidate; do
+            ROOT="$PWD/runtime-$KIND"
+            mkdir -p "$ROOT/plugins"
+            cp server.jar "$ROOT/server.jar"
+            cp runtime-inputs/core.jar "$ROOT/plugins/Slimefun.jar"
+            cp "runtime-inputs/$KIND.jar" "$ROOT/plugins/MagicExpansion.jar"
+            cp runtime-inputs/probe.jar "$ROOT/plugins/ShopRuntimeProbe.jar"
+            printf 'eula=true\n' > "$ROOT/eula.txt"
+            printf 'online-mode=false\nserver-ip=127.0.0.1\nserver-port=0\nview-distance=2\nsimulation-distance=2\nspawn-protection=0\npause-when-empty-seconds=-1\n' > "$ROOT/server.properties"
+            IS_ORIGINAL=false; MARKER=SHOP_RUNTIME_PRESERVATION_PASS; COUNT=7
+            if [[ "$KIND" == original ]]; then IS_ORIGINAL=true; MARKER=SHOP_ORIGINAL_DEFECTS_REPRODUCED; COUNT=3; fi
+            STATUS=0
+            (cd "$ROOT" && timeout --kill-after=20s 300s java -Xms512M -Xmx2G -Dshop.audit.original="$IS_ORIGINAL" -jar server.jar --nogui > server.log 2>&1) || STATUS=$?
+            mkdir -p "evidence/$KIND"
+            cp "$ROOT/server.log" "evidence/$KIND/"
+            if [[ -f "$ROOT/shop-result.txt" ]]; then cp "$ROOT/shop-result.txt" "evidence/$KIND/"; fi
+            if [[ -d "$ROOT/plugins/MagicExpansion/portable_shops" ]]; then cp -r "$ROOT/plugins/MagicExpansion/portable_shops" "evidence/$KIND/"; fi
+            cat "$ROOT/shop-result.txt" || true
+            test "$STATUS" -eq 0
+            grep -Fxq "$MARKER" "$ROOT/shop-result.txt"
+            test "$(wc -l < "$ROOT/shop-result.txt")" -eq "$((COUNT+1))"
+            if grep -Eq 'SHOP_RUNTIME_FAIL|Error occurred while enabling|NoSuchMethodError|NoClassDefFoundError|SQLITE_CONSTRAINT|InvalidConfigurationException' "$ROOT/server.log"; then cat "$ROOT/server.log"; exit 1; fi
+          done
+          printf 'PASS: original 3 defects reproduced; corrected 7 scenarios passed on %s build%s\n' "$MINECRAFT" "$BUILD" > evidence/runtime-result.txt
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: shop-pinned-runtime-${{ matrix.minecraft }}
+          path: evidence/
+          retention-days: 14
+          if-no-files-found: warn
