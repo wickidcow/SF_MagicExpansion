@@ -1,0 +1,61 @@
+name: Shop File Serialization Diagnostics
+on:
+  push:
+    branches: ['work/shop-file-safety-validation-20261001']
+    paths: ['.github/workflows/shop-file-diagnostics.yml']
+permissions:
+  contents: read
+  actions: read
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '25'
+          cache: maven
+      - name: Reproduce with explicit refusal evidence
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p evidence
+          python3 - <<'PY'
+          import base64,hashlib,json,subprocess,zlib
+          from pathlib import Path
+          ids=['8c5ea15a107eb76dea2c0b96821e787863d18481','6f788f028daab6be5d1c3231686868462bf182d5','eeaf336c0fe352c1494dd0ac309cc3947aced507','2d3cf6407fa3e4a76a2b5caa78fa59556ac402d5','25b60f8c6abb5308b46e8666420f84aa733db7a4','06144dc9e8ea432209c9aab371014211e1ce36ce','5ec9054ec3a1c615a1c40b36192ed17ed6cfc5c8','37f4324a813cc2eac36a57ad4f440cb7bb842f2a']
+          payload=b''
+          for sha in ids:
+              raw=json.loads(subprocess.check_output(['gh','api',f'repos/wickidcow/SF_MagicExpansion/git/blobs/{sha}']))
+              data=base64.b64decode(raw['content']);assert hashlib.sha1(b'blob '+str(len(data)).encode()+b'\0'+data).hexdigest()==sha
+              payload+=data
+          text=zlib.decompress(base64.b64decode(payload));assert hashlib.sha256(text).hexdigest()=='f70ed5ae5fdee130971cd79f2929cbc6cc233bf72a93fa94880657942520078e'
+          for name,content in json.loads(text).items():
+              if name.endswith('.patch'):
+                  patch=Path('evidence/gui.patch');patch.write_text(content)
+                  subprocess.run(['git','apply','--check',str(patch)],check=True);subprocess.run(['git','apply',str(patch)],check=True)
+              else:
+                  path=Path(name);path.parent.mkdir(parents=True,exist_ok=True);path.write_text(content)
+          path=Path('src/test/java/io/Yomicer/magicExpansion/utils/shop/ShopFileStoreTest.java')
+          content=path.read_text().replace('assertTrue(store.save(shop));','assertTrue(store.save(shop), () -> errors.toString());')
+          path.write_text(content)
+          PY
+          bash scripts/install_slimefun_api.sh > evidence/stable-api.log 2>&1
+          mvn -B -ntp -Dtest=ShopFileStoreTest test 2>&1 | tee evidence/diagnostics.log
+      - name: Keep actual reports
+        if: always()
+        run: |
+          mkdir -p evidence/tests
+          cp target/surefire-reports/TEST-*.xml evidence/tests/ || true
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: shop-file-serialization-diagnostics
+          path: evidence/
+          retention-days: 14
+          if-no-files-found: error
