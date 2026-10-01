@@ -21,10 +21,11 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class ShopGUI implements Listener {
 
-    private static final Map<UUID, String> pendingShopNameCreation = new HashMap<>();
+    private static final Map<UUID, String> pendingShopNameCreation = new ConcurrentHashMap<>();
     private static final Map<UUID, Integer> playerMainPage = new HashMap<>();
     private static final Map<UUID, Integer> adminMainPage = new HashMap<>();
     private static final Map<UUID, Map<String, Integer>> shopTradesPage = new HashMap<>();
@@ -48,8 +49,9 @@ public class ShopGUI implements Listener {
         int personalLimit = 0;
         String editing = "none";
         boolean isNew = true;
+        ShopManager.Trade originalTrade;
     }
-    private static final Map<UUID, ShopEditData> pendingEditData = new HashMap<>();
+    private static final Map<UUID, ShopEditData> pendingEditData = new ConcurrentHashMap<>();
 
     private static final int[] CONTENT_SLOTS = {
             10, 11, 12, 13, 14, 15, 16,
@@ -242,7 +244,6 @@ public class ShopGUI implements Listener {
     }
 
     public static void openAdminTradesMenu(Player player, String shopName, int page) {
-        adminTradesPage.computeIfAbsent(player.getUniqueId(), k -> new HashMap<>()).put(shopName, page);
         ShopManager.Shop shop = ShopManager.getShop(shopName);
         if (shop == null) return;
 
@@ -252,7 +253,8 @@ public class ShopGUI implements Listener {
         inv.setItem(4, createInfoItem(Material.ENDER_CHEST, ChatColor.AQUA + "Manage: " + shopName, Arrays.asList(ChatColor.GRAY + "Middle-click: Reset purchase counts")));
 
         int maxPage = Math.max(0, (shop.trades.size() - 1) / CONTENT_SLOTS.length);
-        page = Math.min(page, maxPage);
+        page = Math.max(0, Math.min(page, maxPage));
+        adminTradesPage.computeIfAbsent(player.getUniqueId(), k -> new HashMap<>()).put(shopName, page);
 
         int startIndex = page * CONTENT_SLOTS.length;
         for (int i = 0; i < CONTENT_SLOTS.length && (startIndex + i) < shop.trades.size(); i++) {
@@ -686,9 +688,11 @@ public class ShopGUI implements Listener {
                 openAdminTradesMenu(player, shopName, slot == 45 ? current - 1 : current + 1);
                 return;
             }
-            int index = getTradeIndexBySlot(slot);
             ShopManager.Shop shop = ShopManager.getShop(shopName);
-            if (shop == null || index == -1 || index >= shop.trades.size()) return;
+            if (shop == null) return;
+            int currentPage = adminTradesPage.getOrDefault(player.getUniqueId(), Collections.emptyMap()).getOrDefault(shopName, 0);
+            int index = purchaseIndex(currentPage, slot, shop.trades.size());
+            if (index == -1) return;
 
             if (e.isRightClick()) {
                 shop.trades.remove(index);
@@ -698,11 +702,12 @@ public class ShopGUI implements Listener {
                 ShopManager.Trade t = shop.trades.get(index);
                 ShopEditData data = new ShopEditData();
                 data.shopName = shopName;
-                data.result = t.result;
-                data.costs = t.costItems;
+                data.result = t.result == null ? null : t.result.clone();
+                data.costs = cloneItems(t.costItems);
                 data.globalLimit = t.globalLimit;
                 data.personalLimit = t.personalLimit;
                 data.isNew = false;
+                data.originalTrade = t;
                 openTradeEditor(player, shopName, data);
             } else if (e.getClick() == ClickType.MIDDLE) {
                 ShopManager.resetUsage(shop, shop.trades.get(index));
@@ -713,17 +718,38 @@ public class ShopGUI implements Listener {
         // 管理员编辑器
         else if (title.startsWith(ChatColor.DARK_RED + "Configure: ")) {
             String shopName = title.replace(ChatColor.DARK_RED + "Configure: ", "");
+            ShopEditData session = currentEditingData.get(player.getUniqueId());
+            if (session == null) {
+                player.sendMessage(ChatColor.RED + "This trade editor session is no longer active. Reopen the trade before making changes.");
+                openAdminTradesMenu(player, shopName);
+                return;
+            }
+
             ShopEditData currentData = readEditDataFromInventory(e.getInventory(), shopName);
-            currentData.isNew = currentEditingData.get(player.getUniqueId()).isNew;
+            currentData.isNew = session.isNew;
+            currentData.originalTrade = session.originalTrade;
 
             if (slot == 45) {
                 ShopManager.Shop shop = ShopManager.getShop(shopName);
-                safeClose.add(player.getUniqueId());
-                if (currentData.result != null) {
-                    shop.trades.removeIf(t -> t.result != null && SlimefunUtils.isItemSimilar(t.result, currentData.result, true));
-                    ShopManager.saveShop(shop);
-                    player.sendMessage(ChatColor.RED + "Trade deleted!");
+                if (shop == null) return;
+
+                if (currentData.isNew || currentData.originalTrade == null) {
+                    player.sendMessage(ChatColor.YELLOW + "New trade discarded. Any unsaved items will be returned.");
+                    openAdminTradesMenu(player, shopName);
+                    return;
                 }
+
+                int originalIndex = shop.trades.indexOf(currentData.originalTrade);
+                if (originalIndex == -1) {
+                    player.sendMessage(ChatColor.RED + "That trade changed or was reloaded while you were editing it. Nothing was deleted.");
+                    openAdminTradesMenu(player, shopName);
+                    return;
+                }
+
+                safeClose.add(player.getUniqueId());
+                shop.trades.remove(originalIndex);
+                ShopManager.saveShop(shop);
+                player.sendMessage(ChatColor.RED + "Trade deleted!");
                 openAdminTradesMenu(player, shopName);
                 return;
             }
@@ -760,16 +786,33 @@ public class ShopGUI implements Listener {
                 if (newTrade.result == null || newTrade.result.getType() == Material.AIR) {
                     player.sendMessage(ChatColor.RED + "Place the trade result in slot 13 first!");
                     safeClose.remove(player.getUniqueId());
-                    openTradeEditor(player, shopName, currentData);
                     return;
                 }
 
                 int existIndex = -1;
-                for (int i = 0; i < shop.trades.size(); i++) {
-                    ShopManager.Trade t = shop.trades.get(i);
-                    if (t.result != null && SlimefunUtils.isItemSimilar(t.result, newTrade.result, true)) {
-                        existIndex = i;
-                        break;
+                if (!currentData.isNew) {
+                    if (currentData.originalTrade == null) {
+                        safeClose.remove(player.getUniqueId());
+                        player.sendMessage(ChatColor.RED + "This trade editor lost its original trade reference. Reopen the trade and try again.");
+                        return;
+                    }
+
+                    existIndex = shop.trades.indexOf(currentData.originalTrade);
+                    if (existIndex == -1) {
+                        safeClose.remove(player.getUniqueId());
+                        player.sendMessage(ChatColor.RED + "That trade changed or was reloaded while you were editing it. Nothing was saved.");
+                        return;
+                    }
+
+                    newTrade.globalUsed = currentData.originalTrade.globalUsed;
+                    newTrade.personalUsed = new HashMap<>(currentData.originalTrade.personalUsed);
+                } else {
+                    for (int i = 0; i < shop.trades.size(); i++) {
+                        ShopManager.Trade t = shop.trades.get(i);
+                        if (t.result != null && SlimefunUtils.isItemSimilar(t.result, newTrade.result, true)) {
+                            existIndex = i;
+                            break;
+                        }
                     }
                 }
 
@@ -814,8 +857,7 @@ public class ShopGUI implements Listener {
             ShopEditData data = currentEditingData.get(uuid);
             currentEditingData.remove(uuid);
 
-            if (safeClose.contains(uuid)) {
-                safeClose.remove(uuid);
+            if (safeClose.remove(uuid)) {
                 return;
             }
 
@@ -847,62 +889,68 @@ public class ShopGUI implements Listener {
     public void onChat(AsyncPlayerChatEvent e) {
         Player player = e.getPlayer();
         UUID uuid = player.getUniqueId();
+        String msg = e.getMessage().trim();
 
-        if (pendingShopNameCreation.containsKey(uuid)) {
+        if (pendingShopNameCreation.remove(uuid) != null) {
             e.setCancelled(true);
-            String msg = e.getMessage().trim();
-
-            if (msg.equalsIgnoreCase("cancel")) {
-                player.sendMessage(ChatColor.YELLOW + "Shop creation cancelled.");
-                pendingShopNameCreation.remove(uuid);
-            } else {
-                boolean exists = false;
-                for (ShopManager.Shop shop : ShopManager.getShops()) {
-                    if (shop.name.equals(msg)) {
-                        exists = true;
-                        break;
-                    }
-                }
-
-                if (exists) {
-                    player.sendMessage(ChatColor.RED + "A shop with that name already exists: " + msg + ". Enter a different name or type 'cancel' to cancel.");
-                } else {
-                    ShopManager.createShop(msg);
-                    player.sendMessage(ChatColor.GREEN + "Shop " + msg + " created successfully!");
-                    pendingShopNameCreation.remove(uuid);
-                    Bukkit.getScheduler().runTask(MagicExpansion.getInstance(), () -> openAdminMainMenu(player));
-                }
-            }
+            Bukkit.getScheduler().runTask(
+                    MagicExpansion.getInstance(),
+                    () -> handleShopNameInput(player, uuid, msg)
+            );
             return;
         }
 
-        if (pendingEditData.containsKey(uuid)) {
+        ShopEditData data = pendingEditData.remove(uuid);
+        if (data != null) {
             e.setCancelled(true);
-            String msg = e.getMessage().trim();
-            ShopEditData data = pendingEditData.get(uuid);
+            Bukkit.getScheduler().runTask(
+                    MagicExpansion.getInstance(),
+                    () -> handleLimitInput(player, data, msg)
+            );
+        }
+    }
 
-            if (msg.equalsIgnoreCase("cancel")) {
-                player.sendMessage(ChatColor.YELLOW + "Limit setting cancelled.");
-            } else {
-                try {
-                    int amount = Math.max(0, Integer.parseInt(msg));
-                    if (data.editing.equals("global")) {
-                        data.globalLimit = amount;
-                        player.sendMessage(ChatColor.GREEN + "Server-wide purchase limit set to: " + (amount == 0 ? "Unlimited" : amount));
-                    } else if (data.editing.equals("personal")) {
-                        data.personalLimit = amount;
-                        player.sendMessage(ChatColor.GREEN + "Per-player purchase limit set to: " + (amount == 0 ? "Unlimited" : amount));
-                    }
-                } catch (NumberFormatException ex) {
-                    player.sendMessage(ChatColor.RED + "Invalid input; enter a number!");
-                }
-            }
-
-            Bukkit.getScheduler().runTask(MagicExpansion.getInstance(), () -> {
-                openTradeEditor(player, data.shopName, data);
-            });
-            pendingEditData.remove(uuid);
+    private void handleShopNameInput(Player player, UUID uuid, String msg) {
+        if (msg.equalsIgnoreCase("cancel")) {
+            player.sendMessage(ChatColor.YELLOW + "Shop creation cancelled.");
             return;
+        }
+
+        for (ShopManager.Shop shop : ShopManager.getShops()) {
+            if (shop.name.equals(msg)) {
+                pendingShopNameCreation.put(uuid, "");
+                player.sendMessage(ChatColor.RED + "A shop with that name already exists: " + msg + ". Enter a different name or type 'cancel' to cancel.");
+                return;
+            }
+        }
+
+        ShopManager.createShop(msg);
+        player.sendMessage(ChatColor.GREEN + "Shop " + msg + " created successfully!");
+        if (player.isOnline()) {
+            openAdminMainMenu(player);
+        }
+    }
+
+    private void handleLimitInput(Player player, ShopEditData data, String msg) {
+        if (msg.equalsIgnoreCase("cancel")) {
+            player.sendMessage(ChatColor.YELLOW + "Limit setting cancelled.");
+        } else {
+            try {
+                int amount = Math.max(0, Integer.parseInt(msg));
+                if (data.editing.equals("global")) {
+                    data.globalLimit = amount;
+                    player.sendMessage(ChatColor.GREEN + "Server-wide purchase limit set to: " + (amount == 0 ? "Unlimited" : amount));
+                } else if (data.editing.equals("personal")) {
+                    data.personalLimit = amount;
+                    player.sendMessage(ChatColor.GREEN + "Per-player purchase limit set to: " + (amount == 0 ? "Unlimited" : amount));
+                }
+            } catch (NumberFormatException ex) {
+                player.sendMessage(ChatColor.RED + "Invalid input; enter a number!");
+            }
+        }
+
+        if (player.isOnline()) {
+            openTradeEditor(player, data.shopName, data);
         }
     }
 
@@ -969,11 +1017,14 @@ public class ShopGUI implements Listener {
         return -1;
     }
 
-    private int getTradeIndexBySlot(int slot) {
-        for (int i = 0; i < CONTENT_SLOTS.length; i++) {
-            if (CONTENT_SLOTS[i] == slot) return i;
+    private static List<ItemStack> cloneItems(List<ItemStack> items) {
+        List<ItemStack> clones = new ArrayList<>();
+        if (items == null) return clones;
+
+        for (ItemStack item : items) {
+            clones.add(item == null ? null : item.clone());
         }
-        return -1;
+        return clones;
     }
 
     private int getBlackMarketIndexBySlot(int slot) {
