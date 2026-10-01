@@ -2,7 +2,7 @@ name: Corrected Shop Safety Validation
 on:
   push:
     branches: ['work/shop-file-safety-validation-20261001']
-    paths: ['.github/workflows/shop-safety-corrected-validation.yml', 'audit-safety/refine-tests.py']
+    paths: ['.github/workflows/shop-safety-corrected-validation.yml', 'audit-safety/refine-tests.py', 'audit-safety/finalize-fixtures.py']
 permissions:
   contents: write
   actions: read
@@ -43,11 +43,12 @@ jobs:
               else:
                   path=Path(name);path.parent.mkdir(parents=True,exist_ok=True);path.write_text(content)
           subprocess.run(['python3','audit-safety/refine-tests.py'],check=True)
+          subprocess.run(['python3','audit-safety/finalize-fixtures.py'],check=True)
           expected={}
           for name in files:
               path=Path(name.removesuffix('.patch'))
               expected[str(path)]=blob(path.read_bytes())
-          expected_values={'755dbba6fb29f87562239caab30d3b2aaa7e12b7','51c268f120b91fd61f295ac5abb21b198aa3cefa','7aad6319934449cce9f45724361feb0b972f0c88','7e5ce1f9786a72cceef4c0f7c446c6b7ceb9bbe1','bbc69822f9d2573138546ebbdb9e5c31541fd47b','fbdea392e1d854a4e1c3f18822a21ed6e692ec29'}
+          expected_values={'755dbba6fb29f87562239caab30d3b2aaa7e12b7','51c268f120b91fd61f295ac5abb21b198aa3cefa','7aad6319934449cce9f45724361feb0b972f0c88','7e5ce1f9786a72cceef4c0f7c446c6b7ceb9bbe1','fe66f9bad99466c72d6383ab4c32a4a230561642','fbdea392e1d854a4e1c3f18822a21ed6e692ec29'}
           assert set(expected.values())==expected_values
           Path('evidence/reviewed-blobs.json').write_text(json.dumps(expected,indent=2)+'\n')
           PY
@@ -93,7 +94,7 @@ jobs:
           for kind in ['stable','candidate']:
               roots=[ET.parse(p).getroot() for p in Path(f'evidence/{kind}-tests').glob('TEST-*.xml')]
               counts={k:sum(int(r.attrib[k]) for r in roots) for k in ['tests','failures','errors','skipped']}
-              assert counts==dict(tests=59,failures=0,errors=0,skipped=0),(kind,counts)
+              assert counts==dict(tests=60,failures=0,errors=0,skipped=0),(kind,counts)
               path=Path(f'runtime-inputs/{kind}-addon.jar');classes=0
               with zipfile.ZipFile(path) as z:
                   assert z.testzip() is None
