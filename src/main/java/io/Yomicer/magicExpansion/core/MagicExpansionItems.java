@@ -31,7 +31,7 @@ public class MagicExpansionItems {
             Material.PAPER,
             getGradientNameVer2("Information"),
             "",
-            getGradientNameVer2("Version: Build 91"),
+            getGradientNameVer2("Upstream content: Build 93 / Release 13"),
             getGradientNameVer2("Include this information when reporting an issue.")
     );
     //AUTHOR
@@ -345,7 +345,7 @@ public class MagicExpansionItems {
             "§x§A§3§5§7§B§9Damage Multiplier: §c" + StarShards_Atk_Mix + "x",
             "§x§A§3§5§7§B§9*Execution* §e Deals extra damage equal to " + StarShards_Atk_ExtraPercent*100 + "% of maximum health.",
             "§x§A§3§5§7§B§9*Bleed* §4 Health loss rate: " + StarShards_Atk_Blood*100 + "% (lasts 8 seconds and can stack)",
-            "§x§A§3§5§7§B§9*Mercy* §b Attacks usually leave players or creatures with 0.1 health.",
+            "§x§A§3§5§7§B§9*Mercy* §b Bleeding leaves players or creatures with at least 0.1 health.",
             "",
             "§f• Left-click§7: Blazing Slash (Cooldown: "+StarShards_BlazingSlash_CD+" seconds)",
             "§7Launches a burning blade wave that deals extra fire damage.",

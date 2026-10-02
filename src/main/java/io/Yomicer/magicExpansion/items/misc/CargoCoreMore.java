@@ -5,6 +5,7 @@ import com.xzavier0722.mc.plugin.slimefun4.storage.util.StorageCacheUtils;
 import io.Yomicer.magicExpansion.MagicExpansion;
 import io.Yomicer.magicExpansion.items.tools.VoidTouch;
 import io.Yomicer.magicExpansion.utils.ColorGradient;
+import io.Yomicer.magicExpansion.utils.CargoStorage;
 import io.Yomicer.magicExpansion.utils.SameItemJudge;
 import io.Yomicer.magicExpansion.utils.log.Debug;
 import io.github.thebusybiscuit.slimefun4.api.items.ItemGroup;
@@ -470,19 +471,20 @@ public class CargoCoreMore extends SlimefunItem implements EnergyNetComponent{
                                 // 存入 CargoCore
                                 ItemStack toStore = originalItem.clone();
                                 toStore.setAmount(amountToStore);
-                                storeItemCargoCoreMore(data, toStore);
+                                // A partial fragment cannot replace a stack of whole fragments.
+                                if (amountToStore < amount && item.getAmount() != 1) continue;
+                                ItemStack remainder = amountToStore < amount
+                                        ? createCargoFragment(originalItem, amount - amountToStore) : null;
+                                if (amountToStore < amount && remainder == null) continue;
+                                int accepted = CargoStorage.storeExact(data, toStore, amountToStore, MAX_STORED_ITEMS);
+                                if (accepted == 0) continue;
 
-                                // 消费这个 CargoFragment
+                                // Consume only the fragment whose contents were accepted.
                                 menu.consumeItem(slot, 1);
 
                                 // 如果只存储了部分数量,创建新的 CargoFragment 代表剩余数量
-                                if (amountToStore < amount) {
-                                    int remaining = amount - amountToStore;
-                                    ItemStack newFragment = createCargoFragment(originalItem, remaining);
-                                    if (newFragment != null) {
-                                        // 将剩余的 CargoFragment 放回输入槽
-                                        menu.replaceExistingItem(slot, newFragment);
-                                    }
+                                if (accepted < amount) {
+                                    menu.replaceExistingItem(slot, remainder);
                                 }
                             } else {
                                 // 数量已达上限,不退物品,留在输入槽
@@ -504,9 +506,10 @@ public class CargoCoreMore extends SlimefunItem implements EnergyNetComponent{
                     // 创建要存储的物品副本
                     ItemStack toStore = item.clone();
                     toStore.setAmount(amountToStore);
-                    storeItemCargoCoreMore(data, toStore);
+                    amountToStore = tryStoreItemCargoCoreMore(data, toStore);
+                    if (amountToStore == 0) continue;
 
-                    // 消耗相应数量的物品
+                    // Consume only the quantity committed to storage.
                     if (amountToStore == item.getAmount()) {
                         // 完全存储,清空槽位
                         menu.consumeItem(slot, item.getAmount());
@@ -541,157 +544,22 @@ public class CargoCoreMore extends SlimefunItem implements EnergyNetComponent{
      * 返回实际可以存储的数量
      */
     private int canStoreMoreAmount(SlimefunBlockData data, ItemStack item, int amountToAdd) {
-        if (item == null || item.getType() == Material.AIR) return 0;
-
-        ItemStack prototype = item.clone();
-        prototype.setAmount(1);
-
-        // 查找匹配的存储槽位
-        for (int i = 0; i < MAX_STORED_ITEMS; i++) {
-            String jsonData = data.getData("item_type_" + i);
-            if (jsonData == null || jsonData.isEmpty()) continue;
-
-            try {
-                ItemStack storedItem = itemFromBase64(jsonData);
-                if (storedItem != null && SameItemJudge.isSimilarSafe(prototype, storedItem)) {
-//                if (storedItem != null && SlimefunUtils.isItemSimilar(storedItem, prototype, true)) {
-                    // 找到匹配物品,检查当前数量和最大限制
-                    String countStr = data.getData("item_count_" + i);
-                    String maxStr = data.getData("item_max_" + i); // 最大数量限制
-
-                    if (countStr == null || countStr.isEmpty()) continue;
-
-                    long currentCount = Long.parseLong(countStr);
-                    long maxCount = (maxStr != null && !maxStr.isEmpty()) ? Long.parseLong(maxStr) : -1;
-
-                    // 如果没有设置限制或者限制为-1,表示无限制
-                    if (maxCount == -1) return amountToAdd;
-
-                    // 计算剩余空间
-                    long remainingSpace = maxCount - currentCount;
-                    if (remainingSpace <= 0) return 0;
-
-                    // 返回可以存储的数量(取剩余空间和要添加数量的最小值)
-                    return (int) Math.min(remainingSpace, amountToAdd);
-                }
-            } catch (Exception e) {
-                continue;
-            }
-        }
-
-        // 新物品,检查默认限制(这里可以设置全局默认限制,或者无限制)
-        // 对于新物品,我们暂时返回全部数量,因为会在storeItem中设置默认限制
-        return amountToAdd;
+        return CargoStorage.capacity(data, item, amountToAdd, MAX_STORED_ITEMS);
     }
 
-
-    /**
-     * 检查是否可以存储更多该物品(考虑数量限制)
-     */
     private boolean canStoreMore(SlimefunBlockData data, ItemStack item, int amountToAdd) {
-        if (item == null || item.getType() == Material.AIR) return false;
-
-        ItemStack prototype = item.clone();
-        prototype.setAmount(1);
-
-        // 查找匹配的存储槽位
-        for (int i = 0; i < MAX_STORED_ITEMS; i++) {
-            String jsonData = data.getData("item_type_" + i);
-            if (jsonData == null || jsonData.isEmpty()) continue;
-
-            try {
-                ItemStack storedItem = itemFromBase64(jsonData);
-                if (storedItem != null && SameItemJudge.isSimilarSafe(prototype, storedItem)) {
-//                if (storedItem != null && SlimefunUtils.isItemSimilar(storedItem, prototype, true)) {
-                    // 找到匹配物品,检查当前数量和最大限制
-                    String countStr = data.getData("item_count_" + i);
-                    String maxStr = data.getData("item_max_" + i); // 最大数量限制
-
-                    if (countStr == null || countStr.isEmpty()) continue;
-
-                    long currentCount = Long.parseLong(countStr);
-                    long maxCount = (maxStr != null && !maxStr.isEmpty()) ? Long.parseLong(maxStr) : -1;
-
-                    // 如果没有设置限制或者限制为-1,表示无限制
-                    if (maxCount == -1) return true;
-
-                    // 检查添加后是否超过限制
-                    return currentCount + amountToAdd <= maxCount;
-                }
-            } catch (Exception e) {
-                continue;
-            }
-        }
-
-        // 新物品,检查默认限制(这里可以设置全局默认限制,或者无限制)
-        return true;
+        return amountToAdd > 0 && canStoreMoreAmount(data, item, amountToAdd) == amountToAdd;
     }
 
-
-    /**
-     * 存储物品(修复版)
-     * 确保不会覆盖正在输出的槽位
-     */
+    /** Retains the public API; transfer callers should use the accepted-count method below. */
     public void storeItemCargoCoreMore(SlimefunBlockData data, ItemStack item) {
-        cleanupInvalidSlots(data);
+        tryStoreItemCargoCoreMore(data, item);
+    }
 
-        // 检查可以存储多少数量
-        int amountToStore = canStoreMoreAmount(data, item, item.getAmount());
-        if (amountToStore <= 0) return;
-
-        int slot = findMatchingSlot(data, item);
-        if (slot != -1) {
-            // 匹配到已有槽位
-            long count = 0;
-
-            try {
-                count = Long.parseLong(data.getData("item_count_" + slot));
-            } catch (Exception ignored) {}
-
-            try {
-                count = Math.addExact(count, amountToStore);
-                data.setData("item_count_" + slot, String.valueOf(count));
-            } catch (ArithmeticException e) {
-                // 溢出,丢弃
-                Location loc = data.getLocation();
-                if (loc != null) {
-                    loc.getWorld().dropItem(loc, item);
-                }
-            }
-
-        } else {
-            // 找一个真正的空槽位
-            slot = findEmptySlot(data);
-            if (slot == -1) {
-                Location loc = data.getLocation();
-                if (loc != null) {
-                    loc.getWorld().dropItem(loc, item);
-                }
-                return;
-            }
-
-            // ✅ 使用 JSON 替代 Base64
-            String json = itemToBase64(item.clone());
-            if (json == null) return;
-
-            data.setData("item_type_" + slot, json);
-            data.setData("item_count_" + slot, String.valueOf(amountToStore));
-            // 默认不设置最大限制(-1表示无限制)
-            data.setData("item_max_" + slot, "-1");
-        }
-
-        // 如果实际存储的数量小于输入的数量,将剩余物品退回
-        if (amountToStore < item.getAmount()) {
-            int remaining = item.getAmount() - amountToStore;
-            if (remaining > 0) {
-                ItemStack remainingItems = item.clone();
-                remainingItems.setAmount(remaining);
-                Location loc = data.getLocation();
-                if (loc != null) {
-                    loc.getWorld().dropItem(loc, remainingItems);
-                }
-            }
-        }
+    /** Stores only available capacity, without mutating the input or dropping unaccepted items. */
+    public int tryStoreItemCargoCoreMore(SlimefunBlockData data, ItemStack item) {
+        if (item == null) return 0;
+        return CargoStorage.store(data, item, item.getAmount(), MAX_STORED_ITEMS);
     }
 
 
@@ -767,142 +635,28 @@ public class CargoCoreMore extends SlimefunItem implements EnergyNetComponent{
      * 清理无效槽位:count <= 0 且没有最大限制的槽位,除非它是输出目标
      */
     public void cleanupInvalidSlots(SlimefunBlockData data) {
-        // 获取当前输出目标
-        int currentOutputSlot = -1;
-        try {
-            String outputStr = data.getData("output_target_slot");
-            if (outputStr != null && !outputStr.isEmpty()) {
-                currentOutputSlot = Integer.parseInt(outputStr);
-            }
-        } catch (Exception ignored) {}
-
-        for (int i = 0; i < MAX_STORED_ITEMS; i++) {
-            String typeKey = "item_type_" + i;
-            String countKey = "item_count_" + i;
-            String maxKey = "item_max_" + i;
-
-            String typeStr = data.getData(typeKey);
-            String countStr = data.getData(countKey);
-            String maxStr = data.getData(maxKey);
-
-            boolean hasType = typeStr != null && !typeStr.trim().isEmpty();
-            boolean hasCount = countStr != null && !countStr.trim().isEmpty();
-            boolean hasMax = maxStr != null && !maxStr.trim().isEmpty();
-
-            if (!hasType && !hasCount && !hasMax) continue;
-
-            // 缺失一个 → 删除(除非是输出目标)
-            if (hasType && !hasCount) {
-                if (i != currentOutputSlot) {
-                    data.removeData(typeKey);
-                    if (hasMax) data.removeData(maxKey);
-                }
-                continue;
-            }
-            if (!hasType && hasCount) {
-                if (i != currentOutputSlot) {
-                    data.removeData(countKey);
-                    if (hasMax) data.removeData(maxKey);
-                }
-                continue;
-            }
-
-            // 都有 → 检查 count
-            long count = 0;
-            try {
-                if (countStr == null) {
-                    if (i != currentOutputSlot) {
-                        data.removeData(typeKey);
-                        data.removeData(countKey);
-                        if (hasMax) data.removeData(maxKey);
+        synchronized (data) {
+            String outputSlot = data.getData("output_target_slot");
+            for (int i = 0; i < MAX_STORED_ITEMS; i++) {
+                if (Integer.toString(i).equals(outputSlot)) continue;
+                String type = data.getData("item_type_" + i);
+                String count = data.getData("item_count_" + i);
+                String maximum = data.getData("item_max_" + i);
+                if (type == null || type.isEmpty() || count == null) continue;
+                try {
+                    long quantity = Long.parseLong(count);
+                    long limit = maximum == null || maximum.isEmpty() ? -1 : Long.parseLong(maximum);
+                    // Only a valid, exhausted, unlimited record is disposable.
+                    if (quantity == 0 && limit == -1 && itemFromBase64(type) != null) {
+                        data.removeData("item_type_" + i);
+                        data.removeData("item_count_" + i);
+                        data.removeData("item_max_" + i);
                     }
-                    continue;
-                }
-
-                count = Long.parseLong(countStr.trim());
-
-                // 检查是否有最大数量限制
-                long maxCount = -1;
-                if (maxStr != null && !maxStr.trim().isEmpty()) {
-                    try {
-                        maxCount = Long.parseLong(maxStr.trim());
-                    } catch (Exception ignored) {}
-                }
-
-                // 如果没有设置最大数量限制且数量为0,才清理槽位
-                // 但如果是输出目标,即使数量为0也不清理
-                if (count <= 0 && maxCount == -1 && i != currentOutputSlot) {
-                    data.removeData(typeKey);
-                    data.removeData(countKey);
-                    data.removeData(maxKey);
-                }
-                // 如果设置了最大数量限制,即使数量为0也保留槽位
-            } catch (Exception e) {
-                // 只有 count 错误才清理
-                // 但如果是输出目标,不删除
-                if (i != currentOutputSlot) {
-                    data.removeData(typeKey);
-                    data.removeData(countKey);
-                    if (hasMax) data.removeData(maxKey);
+                } catch (RuntimeException unreadable) {
+                    // Preserve the source record for recovery.
                 }
             }
         }
-    }
-
-    /**
-     * 查找真正的空槽位(修复版)
-     * 只返回完全未使用的槽位,不会返回数量为0的槽位
-     */
-    private int findEmptySlot(SlimefunBlockData data) {
-        for (int i = 0; i < MAX_STORED_ITEMS; i++) {
-            String typeData = data.getData("item_type_" + i);
-            String countData = data.getData("item_count_" + i);
-
-            // 只有当类型和数量都为空时,才认为是真正的空槽位
-            if ((typeData == null || typeData.isEmpty()) &&
-                    (countData == null || countData.isEmpty())) {
-                return i;
-            }
-
-            // 如果有类型数据但数量为0,检查是否是输出目标
-            if (typeData != null && !typeData.isEmpty()) {
-                String countStr = data.getData("item_count_" + i);
-                if (countStr != null && !countStr.isEmpty()) {
-                    try {
-                        long count = Long.parseLong(countStr);
-                        // 如果是输出目标,跳过这个槽位
-                        String outputTargetStr = data.getData("output_target_slot");
-                        int outputTarget = -1;
-                        if (outputTargetStr != null && !outputTargetStr.isEmpty()) {
-                            try {
-                                outputTarget = Integer.parseInt(outputTargetStr);
-                            } catch (Exception ignored) {}
-                        }
-
-                        if (i == outputTarget) {
-                            continue; // 跳过输出目标槽位
-                        }
-
-                        // 如果数量为0且没有最大限制,这个槽位应该被清理,不应该被使用
-                        String maxStr = data.getData("item_max_" + i);
-                        long maxCount = -1;
-                        if (maxStr != null && !maxStr.isEmpty()) {
-                            try {
-                                maxCount = Long.parseLong(maxStr);
-                            } catch (Exception ignored) {}
-                        }
-
-                        if (count <= 0 && maxCount == -1) {
-                            continue; // 跳过这个槽位
-                        }
-                    } catch (Exception e) {
-                        // 解析失败,跳过这个槽位
-                        continue;
-                    }
-                }
-            }
-        }
-        return -1;
     }
 
     private List<Integer> getStoredItemSlots(SlimefunBlockData data) {
@@ -2531,22 +2285,22 @@ public class CargoCoreMore extends SlimefunItem implements EnergyNetComponent{
         int actualTransferAmount = (int) Math.min(Math.min(configuredAmount, currentStock), maxFit);
         if (actualTransferAmount <= 0) return;
 
-        // 9. [从主存储系统扣除库存]- 修复关键问题
-        long deducted = deductStoredItemFromMainStorage(data, template, actualTransferAmount);
-        if (deducted <= 0) return;
-
-        // 10. 执行推送
-        int actualPushed = pushItemsToLocation(sourceBlock, targetLocation, template, (int) deducted);
-
-        // 11. 播放音效和粒子效果
-        if (actualPushed > 0) {
-            showTransferParticles(sourceBlock.getLocation(), targetLocation, Particle.END_ROD);
-        }
-
-        // 12. 如果实际推送量小于扣除量,将差额退回存储
-        if (deducted > actualPushed) {
-            long refundAmount = deducted - actualPushed;
-            refundToMainStorage(data, template, refundAmount);
+        // Debit only what the destination actually accepted. No refund/drop path is needed.
+        synchronized (data) {
+            String countKey = "item_count_" + targetSlot;
+            long count;
+            try {
+                count = Long.parseLong(data.getData(countKey));
+            } catch (NumberFormatException unreadable) {
+                return;
+            }
+            int offered = (int) Math.min(count, actualTransferAmount);
+            if (offered <= 0) return;
+            int pushed = pushItemsToLocation(sourceBlock, targetLocation, template, offered);
+            if (pushed > 0 && pushed <= offered) {
+                data.setData(countKey, Long.toString(count - pushed));
+                showTransferParticles(sourceBlock.getLocation(), targetLocation, Particle.END_ROD);
+            }
         }
     }
 
@@ -2652,18 +2406,6 @@ public class CargoCoreMore extends SlimefunItem implements EnergyNetComponent{
             }
         }
         return 0;
-    }
-
-    /**
-     * 退还物品到主存储系统
-     */
-    private void refundToMainStorage(@Nonnull SlimefunBlockData data, @Nonnull ItemStack template, long amount) {
-        if (amount <= 0) return;
-
-        // 直接调用现有的storeItem方法
-        ItemStack refundStack = template.clone();
-        refundStack.setAmount((int) Math.min(amount, Integer.MAX_VALUE));
-        storeItemCargoCoreMore(data, refundStack);
     }
 
     /**
@@ -3005,11 +2747,12 @@ public class CargoCoreMore extends SlimefunItem implements EnergyNetComponent{
         toExtract.setAmount(maxExtract);
 
         // 直接存储到目标存储系统
-        storeItemCargoCoreMore(destData, toExtract);
+        int accepted = tryStoreItemCargoCoreMore(destData, toExtract);
+        if (accepted == 0) return 0;
 //        Debug.logInfo("Item stored in target storage");
 
         // 更新源槽位:减少数量或清空
-        int newAmount = sourceItem.getAmount() - maxExtract;
+        int newAmount = sourceItem.getAmount() - accepted;
 //        Debug.logInfo("New source slot amount: " + newAmount);
 
         if (newAmount <= 0) {
@@ -3025,7 +2768,7 @@ public class CargoCoreMore extends SlimefunItem implements EnergyNetComponent{
         }
 
 //        Debug.logInfo("Successfully extracted " + maxExtract + " " + sourceItem.getType());
-        return maxExtract;
+        return accepted;
     }
 
     /**
