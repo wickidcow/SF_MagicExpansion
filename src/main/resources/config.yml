@@ -19,6 +19,10 @@ StarShardsSword:
   # Additional percentage damage. Default: 0.08 (+8%).
   StarShards_Atk_Blood: 0.05
   # Stackable bleeding damage. Default: 0.05 (+5%).
+  StarShards_Atk_Fire: 0.8
+  # Blazing Slash bonus damage as a multiplier of this attack's base damage.
+  StarShards_ArcaneBlast_Mult: 0.6
+  # Arcane Blast damage as a multiplier of this attack's base damage.
   StarShards_Health_Add: 1314.0
   # Flat health bonus. Default: 1314.0.
   StarShards_Health_Mult: 6.18

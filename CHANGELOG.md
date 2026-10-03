@@ -1,3 +1,14 @@
+# Unreleased - Upstream Build 93 / Release 13 integration
+
+- Ported the October 1 upstream update (`39471f40826fcc815b64c3b01ade20ddcb9360ad`) into the English maintained fork.
+- Magic Storage - Rebuilt now refuses new item types when full. Input and extraction paths consume only successfully stored quantities; unavailable space does not cause asynchronous world drops or discard excess items.
+- Preserved large cargo counts, existing typed item metadata, storage keys, reserved slots, and unreadable records. Partial cargo-fragment imports leave their remainder intact; stacked fragments wait when only a partial fragment would fit.
+- Added Star Shards Sword projectile reflection, Blazing Slash flame/explosion effects and configurable bonus damage, animated Arcane Blast with configurable proportional damage, and Shadow Blink shockwave/slow/knockback effects.
+- Added defaults of `0.8` for `StarShardsSword.StarShards_Atk_Fire` and `0.6` for `StarShardsSword.StarShards_ArcaneBlast_Mult`; existing config files receive the same fallback behavior without being rewritten.
+- Prevented nested sword-generated damage from triggering the sword again. Cancelled attacks and Slimefun protection checks are respected; timed shields no longer set a persistent vanilla invulnerability flag. Expired bleed task handles and player session state are cleaned up.
+- Retained modern Paper APIs, English messages, item/research IDs, namespaced attribute keys, recipes, storage schema, machine rates, and all previously merged shop preservation fixes.
+- Updated the guide's upstream-content information and corrected the sword's Mercy description to describe its nonlethal bleeding effect.
+
 # 1.1.4 - Slimefun Legacy Re-entry / Guide Order Fix (2026-09-13)
 
 - Re-verified the maintained fork for the Minecraft/Paper 1.21.11 baseline and Paper/Purpur 26.2 using the Java 25 CI toolchain.

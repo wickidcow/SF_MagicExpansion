@@ -60,6 +60,8 @@ public final class ShopSafetyProbe extends JavaPlugin {
                 finish("SHOP_SAFETY_SECOND_BOOT_PASS", "second");
                 return;
             }
+            Upstream13Checks.run();
+            results.add("upstream13:cargo_identity_capacity_sword_guard_shield_cancelled_attack");
             richRoundTrip();
             externalConflict();
             editorEvents();

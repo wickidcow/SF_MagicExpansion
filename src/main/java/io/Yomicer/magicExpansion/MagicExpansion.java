@@ -175,6 +175,7 @@ public class MagicExpansion extends JavaPlugin implements SlimefunAddon {
 
     @Override
     public void onDisable() {
+        io.Yomicer.magicExpansion.items.misc.weapon.StarShardsSword.shutdown();
         if (pluginInitializer != null) {
             pluginInitializer.getAltarManager().cancelAllTasks();
         }
