@@ -11,8 +11,8 @@ permissions:
   contents: write
 
 env:
-  VERSION: "1.1.7"
-  OUTPUT_NAME: "SF_MagicExpansion1.1.7.jar"
+  VERSION: "1.1.8"
+  OUTPUT_NAME: "SF_MagicExpansion1.1.8.jar"
 
 concurrency:
   group: magicexpansion-${{ github.workflow }}-${{ github.ref }}
@@ -38,6 +38,7 @@ jobs:
           set -euo pipefail
           [[ "$VERSION" =~ ^[0-9]+(\.[0-9]+)*$ ]]
           test "$OUTPUT_NAME" = "SF_MagicExpansion${VERSION}.jar"
+          test -s "docs/releases/${VERSION}.md"
           test "$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" = "$VERSION"
           grep -Fq '<artifactId>MagicExpansion</artifactId>' pom.xml
           grep -Fq '<name>MagicExpansion</name>' pom.xml
@@ -109,5 +110,5 @@ jobs:
             done < <(gh release view "$TAG" --repo "$GITHUB_REPOSITORY" --json assets --jq '.assets[].name')
             gh release upload "$TAG" "$JAR" --repo "$GITHUB_REPOSITORY" --clobber
           else
-            gh release create "$TAG" "$JAR" --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --notes "MagicExpansion ${VERSION}: canonical ${OUTPUT_NAME} release." --title "SF_MagicExpansion ${VERSION}"
+            gh release create "$TAG" "$JAR" --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --notes-file "docs/releases/${VERSION}.md" --title "SF_MagicExpansion ${VERSION}"
           fi
