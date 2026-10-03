@@ -9,6 +9,7 @@ import io.Yomicer.magicExpansion.Listener.SlimefunRegistryListener;
 import io.Yomicer.magicExpansion.Listener.bossListener.BasicBossAttackListener;
 import io.Yomicer.magicExpansion.Listener.bossListener.BasicBossDropListener;
 import io.Yomicer.magicExpansion.Listener.fishingListener.GuidePoolButtonListener;
+import io.Yomicer.magicExpansion.Listener.fishingListener.FishingCompatibility;
 import io.Yomicer.magicExpansion.Listener.fishingListener.PlayerFishingListener;
 import io.Yomicer.magicExpansion.Listener.fishingListener.PlayerFishingWaterCloudListener;
 import io.Yomicer.magicExpansion.Listener.magicItemEffectManager.ArrowHitLocationListener;
@@ -50,6 +51,7 @@ public class MagicExpansion extends JavaPlugin implements SlimefunAddon {
     private static MagicExpansion instance;
     private PluginInitializer pluginInitializer;
     private AIManager aiManager;
+    private FishingCompatibility fishingCompatibility;
 
     @Override
     public void onEnable() {
@@ -112,8 +114,9 @@ public class MagicExpansion extends JavaPlugin implements SlimefunAddon {
         getServer().getPluginManager().registerEvents(new ArrowHitLocationListener(), this);
         getServer().getPluginManager().registerEvents(new BasicBossAttackListener(), this);
         getServer().getPluginManager().registerEvents(new BasicBossDropListener(), this);
-        getServer().getPluginManager().registerEvents(new PlayerFishingListener(), this);
-        getServer().getPluginManager().registerEvents(new PlayerFishingWaterCloudListener(), this);
+        fishingCompatibility = new FishingCompatibility(this,
+                new PlayerFishingListener()::onFish, new PlayerFishingWaterCloudListener()::onFish);
+        getServer().getPluginManager().registerEvents(fishingCompatibility, this);
         getServer().getPluginManager().registerEvents(new GuidePoolButtonListener(), this);
         getServer().getPluginManager().registerEvents(new GuideVirtualGroupClickListener(), this);
         getServer().getPluginManager().registerEvents(new AccelerationUseListener(), this);
@@ -205,6 +208,10 @@ public class MagicExpansion extends JavaPlugin implements SlimefunAddon {
 
     public PluginInitializer getPluginInitializer() {
         return pluginInitializer;
+    }
+
+    public FishingCompatibility getFishingCompatibility() {
+        return fishingCompatibility;
     }
 
     @Override

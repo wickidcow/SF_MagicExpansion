@@ -62,6 +62,8 @@ public final class ShopSafetyProbe extends JavaPlugin {
             }
             Upstream13Checks.run();
             results.add("upstream13:cargo_identity_capacity_sword_guard_shield_cancelled_attack");
+            FishingCompatibilityChecks.run();
+            results.add("fishing:both_rod_families_full_compatibility_cancelled_pending_catch_bait_xp");
             richRoundTrip();
             externalConflict();
             editorEvents();

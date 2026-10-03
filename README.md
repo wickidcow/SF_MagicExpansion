@@ -49,6 +49,22 @@ Maintenance work includes:
 
 One historical internal non-English identifier may remain where changing it would break existing saved items; visible names/lore can still be presented in English.
 
+## 🎣 Fishing alongside other plugins
+
+`Fish.Compatibility.mode` defaults to `AUTO`, including on existing configurations that do not yet contain this setting:
+
+| Mode | Catch behavior |
+| --- | --- |
+| `AUTO` | Full MagicExpansion fishing unless a recognized fishing plugin is enabled; then MagicExpansion leaves fishing events untouched. |
+| `COMPATIBILITY` | Always leave fishing events untouched. Use this for an unlisted fishing plugin. |
+| `FULL` | Explicitly enable MagicExpansion catch effects even with another fishing plugin present. Overlapping catch handlers can conflict. |
+
+Built-in detection recognizes the plugin names `PyroFishing`, `PyroFishingPro`, `BetterFish`, `BetterFishing`, `EvenMoreFish`, `CustomFishing`, and `UltimateFishing`, case-insensitively. Add other exact names from `/plugins` to `Fish.Compatibility.additional-plugins`. These entries extend the built-in list. Detection follows plugin enable/disable events, so load order does not require any fishing plugin as a dependency. Unrelated plugins and disabled fishing plugins do not turn fishing off. An invalid mode falls back to `COMPATIBILITY` and logs a warning.
+
+While compatibility mode is active, both MagicExpansion rod families, including Water Cloud rods, leave catches, XP and cancellation unchanged. They do not consume MagicExpansion bait, replace or add loot, generate fish attributes, or trigger catch messages, TNT or celebration effects. Existing rods keep their item data and enchantments; existing fish, IDs, recipes, guides and fishing machines remain available. This is coexistence, not a conversion or API bridge: the other plugin decides whether it accepts a particular rod, and its fish are not converted into MagicExpansion fish or vice versa. MagicExpansion-exclusive catches become available again when its catch effects are enabled.
+
+Use `/magicexpansion fishing` to see the active mode and detected plugins. After editing `config.yml`, use `/magicexpansion reload fishing` to apply the compatibility settings without resetting fishing items or data. These are operator commands. Cancelled fishing events and missing/removed catches are also ignored when MagicExpansion fishing is enabled.
+
 ## ❤️ Credits & project lineage
 
 - **Yomicer** — creator and primary upstream developer of **MagicExpansion**.

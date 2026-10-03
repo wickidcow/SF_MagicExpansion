@@ -20,8 +20,6 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Firework;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerFishEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
@@ -37,7 +35,7 @@ import java.util.Set;
  * Dedicated fishing listener for the Water Cloud rod series
  * Independent from PlayerFishingListener; each listener handles its own rod family.
  */
-public class PlayerFishingWaterCloudListener implements Listener {
+public class PlayerFishingWaterCloudListener {
 
     // Water Cloud lure list; the active lure determines special-catch behavior.
     private static final List<MoreLure> SHUIYUNJIAN_LURES = List.of(
@@ -96,7 +94,7 @@ public class PlayerFishingWaterCloudListener implements Listener {
     /**
      * Entry point for Water Cloud fishing events.
      */
-    @EventHandler
+    // Called only through FishingCompatibility, before any bait or catch is changed.
     public void onFish(PlayerFishEvent e) {
         fishingUtil(e);
     }
