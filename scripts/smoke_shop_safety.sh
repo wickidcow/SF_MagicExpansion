@@ -17,7 +17,8 @@ mvn -B -ntp -Dslimefun.version=shop-safety-test dependency:build-classpath \
     "-Dmdep.outputFile=$WORK/classpath.txt" > "$WORK/classpath.log" 2>&1
 mkdir -p "$WORK/probe-classes" "$WORK/server/plugins/magicexpansion/portable_shops"
 javac --release 21 -cp "$ADDON:$(cat "$WORK/classpath.txt")" -d "$WORK/probe-classes" \
-    tests/runtime/ShopSafetyProbe.java tests/runtime/Upstream13Checks.java > "$WORK/probe-compile.log" 2>&1
+    tests/runtime/ShopSafetyProbe.java tests/runtime/Upstream13Checks.java \
+    tests/runtime/FishingCompatibilityChecks.java > "$WORK/probe-compile.log" 2>&1
 printf "name: ShopSafetyProbe\nmain: audit.ShopSafetyProbe\nversion: '1'\napi-version: '1.21.11'\ndepend: [Slimefun, magicexpansion]\n" > "$WORK/probe-classes/plugin.yml"
 jar --create --file "$WORK/server/plugins/ShopSafetyProbe.jar" -C "$WORK/probe-classes" .
 cp "$CORE" "$WORK/server/plugins/Slimefun.jar"

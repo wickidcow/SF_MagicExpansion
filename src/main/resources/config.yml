@@ -47,6 +47,16 @@ StarShardsSword:
   # Shift-right-click skill cooldown in seconds.
 
 Fish:
+  Compatibility:
+    # AUTO: full MagicExpansion fishing when no detected fishing plugin is enabled.
+    # With a detected plugin, leave catches, XP, bait and fishing effects to that plugin.
+    # FULL: force MagicExpansion catch effects (may conflict with other fishing plugins).
+    # COMPATIBILITY: always leave fishing events untouched, even for unlisted plugins.
+    mode: AUTO
+    # Built-in detection: PyroFishing, PyroFishingPro, BetterFish, BetterFishing,
+    # EvenMoreFish, CustomFishing and UltimateFishing. Only enabled plugins count.
+    # Add other exact plugin names here (from /plugins, not the JAR filename).
+    additional-plugins: []
   FishingRod:
     FISHING_ROD_FINAL_STICK:
       Enable:

@@ -21,8 +21,6 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.TNTPrimed;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerFishEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
@@ -39,7 +37,7 @@ import static io.Yomicer.magicExpansion.utils.ColorGradient.getGradientNameVer2;
 import static io.Yomicer.magicExpansion.utils.MagicExpansionSlimefunItemCache.getRandomItemStack;
 
 
-public class PlayerFishingListener implements Listener {
+public class PlayerFishingListener {
 
     Config cfg = new Config(MagicExpansion.getInstance());
     // All lure types in priority order
@@ -82,7 +80,7 @@ public class PlayerFishingListener implements Listener {
 
 
 
-    @EventHandler
+    // Called only through FishingCompatibility, before any bait or catch is changed.
     public void onFish(PlayerFishEvent e) {
         if (e.getState() != PlayerFishEvent.State.CAUGHT_FISH) return;
 
