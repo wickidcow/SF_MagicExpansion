@@ -339,12 +339,12 @@ public class MagicExpansionItems {
             "§x§D§9§4§2§F§5A legendary weapon said to cut stars from the sky,",
             "§x§A§3§5§7§B§9the void trembles wherever its blade points.",
             "§x§6§A§8§C§E§FIt holds primal arcane power and celestial flame,",
-            "§x§F§2§5§4§5§9And only one chosen by fate can awaken its true name.",
+            "§x§F§2§5§4§5§9Only one chosen by fate can awaken its true name.",
             "",
             "§x§A§3§5§7§B§9Rarity: §cMythical",
             "§x§A§3§5§7§B§9Damage Multiplier: §c" + StarShards_Atk_Mix + "x",
             "§x§A§3§5§7§B§9*Execution* §e Deals extra damage equal to " + StarShards_Atk_ExtraPercent*100 + "% of maximum health.",
-            "§x§A§3§5§7§B§9*Bleed* §4 Health loss rate: " + StarShards_Atk_Blood*100 + "% (lasts 8 seconds and can stack)",
+            "§x§A§3§5§7§B§9*Bleed* §4 Maximum health lost each second: " + StarShards_Atk_Blood*100 + "% (lasts 8 seconds and can stack)",
             "§x§A§3§5§7§B§9*Mercy* §b Bleeding leaves players or creatures with at least 0.1 health.",
             "",
             "§f• Left-click§7: Blazing Slash (Cooldown: "+StarShards_BlazingSlash_CD+" seconds)",
@@ -361,7 +361,7 @@ public class MagicExpansionItems {
             "",
             "§f• Sneak + Right-click§7: Shadow Blink (Cooldown: "+StarShards_InstantBlink_CD+" seconds)",
             "§7Teleports instantly to the targeted ground, up to 15 blocks away.",
-            "§7Releases a shockwave on landing that briefly stuns nearby enemies."
+            "§7Releases a shockwave that slows and knocks back nearby enemies."
     );
 
 

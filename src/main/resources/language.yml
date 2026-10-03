@@ -1,833 +1,965 @@
 en_US:
   Items:
     QUICK_MACHINE_BV_INFO:
-      Name: Quick Machine BV Information
+      Name: Quick Machine Guide
       Lore:
-      - Information and instructions for Quick Machine BV Information.
-      - Use the Slimefun guide for recipes and details.
+      - Insert ingredients to see the recipes you can craft.
+      - Supports most recipes, with some adjusted vanilla recipes.
+      - Shift-clicking ingredients in does not refresh the results.
+      - Click an input item or the Nether Star to refresh.
+      - Removing ingredients with Shift-click also refreshes the list.
     QUICK_ENHANCED_CRAFTING_TABLE_BV:
       Name: Magic Enhanced Crafting Table [Block Version]
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Quick Enhanced Crafting Table BV.
+      - Insert ingredients to display the available recipes.
+      - Select a result to process the ingredients quickly.
     QUICK_SMELTERY_BV:
       Name: Magic Smeltery [Block Version]
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Quick Smeltery BV.
+      - Insert ingredients to display the available recipes.
+      - Select a result to process the ingredients quickly.
     QUICK_GRIND_STONE_BV:
       Name: Magic Grind Stone [Block Version]
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Quick Grind Stone BV.
+      - Insert ingredients to display the available recipes.
+      - Select a result to process the ingredients quickly.
     QUICK_ORE_CRUSHER_BV:
       Name: Magic Ore Crusher [Block Version]
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Quick Ore Crusher BV.
+      - Insert ingredients to display the available recipes.
+      - Select a result to process the ingredients quickly.
     QUICK_ARMOR_FORGE_BV:
       Name: Magic Armor Forge [Block Version]
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Quick Armor Forge BV.
+      - Insert ingredients to display the available recipes.
+      - Select a result to process the ingredients quickly.
     QUICK_COMPRESSOR_BV:
       Name: Magic Compressor [Block Version]
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Quick Compressor BV.
+      - Insert ingredients to display the available recipes.
+      - Select a result to process the ingredients quickly.
     QUICK_PRESSURE_CHAMBER_BV:
       Name: Magic Pressure Chamber [Block Version]
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Quick Pressure Chamber BV.
+      - Insert ingredients to display the available recipes.
+      - Select a result to process the ingredients quickly.
     QUICK_MAGIC_WORKBENCH_BV:
       Name: Magic Workbench [Block Version]
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Quick Magic Workbench BV.
+      - Insert ingredients to display the available recipes.
+      - Select a result to process the ingredients quickly.
     QUICK_AUTOMATED_PANNING_MACHINE_BV:
       Name: Magic Automated Panning Machine [Block Version]
       Lore:
-      - A MagicExpansion processing machine.
-      - Processes materials for Quick Automated Panning Machine BV.
+      - Insert ingredients to display the available recipes.
+      - Select a result to process the ingredients quickly.
     QUICK_AUTOMATED_ANCIENT_ALTAR_BV:
       Name: Magic Ancient Altar [Block Version]
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Quick Automated Ancient Altar BV.
+      - Insert ingredients to display the available recipes.
+      - Select a result to process the ingredients quickly.
     QUICK_ELECTRIC_ORE_GRINDER_BV:
       Name: Damaged Magic Electric Ore Grinder [Block Version]
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Quick Electric Ore Grinder BV.
+      - Insert ingredients to display the available recipes.
+      - Supports iron ore, gold ore, netherrack, sifted ore,
+      - crushed ore, pure ore clusters, and coal.
+      - Select a result to process the ingredients quickly.
     QUICK_HEATED_PRESSURE_CHAMBER_BV:
       Name: Magic Heated Pressure Chamber [Block Version]
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Quick Heated Pressure Chamber BV.
+      - Insert ingredients to display the available recipes.
+      - Select a result to process the ingredients quickly.
     ENCHANTING_TABLE:
       Name: Magic Empowerment Table
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Enchanting Table.
-      - ⇨ ⚡ 10,000 J per operation
+      - Apply magical attributes independently of enchantments.
+      - Consumes empowerment materials and electricity.
+      - 'Energy: 10,000 J per operation.'
+      - 'Capacity: 8,888,888 J.'
     BASIC_ENCHANT_STONE:
       Name: Stellar Iron
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Basic Enchant Stone.
+      - A rare metal refined from fallen meteorites.
+      - Its power comes from beyond the mortal world.
     WIND_SPIRIT:
       Name: Breath of the Wind Spirit
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Wind Spirit.
+      - The last pure breath of a fading wind spirit.
+      - A whisper of storms, freedom, and distant mountain skies.
+      - A catalyst for magic of flight, speed, and wind.
     WIND_SPIRIT_DROP:
-      Name: Wind Spirit
+      Name: Wind Spirit Drops
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Wind Spirit Drop.
+      - Defeat the Wind Spirit for a chance to obtain its breath.
+      - 'Drop chance: 91.888%.'
     BASIC_ENCHANT_STONE_DROP:
-      Name: Flame Zombie
+      Name: Flame Zombie Drops
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Basic Enchant Stone Drop.
+      - Defeat a Flame Zombie for a chance to obtain Stellar Iron.
+      - 'Drop chance: 91.888%.'
+      - An ancient curse has fused meteoric metal into its body.
     ENCHANTING_TABLE_INFO:
-      Name: Enchanting Table Information
+      Name: Empowerment Guide
       Lore:
-      - Information and instructions for Enchanting Table Information.
-      - Use the Slimefun guide for recipes and details.
+      - Place a weapon and empowerment material in their slots.
+      - Select the attributes you want to apply.
+      - Levels 1-3 consume 1-3 materials respectively.
+      - Material quantity determines the number of attributes.
+      - Material quality determines their strength.
     ENCHANTING_TABLE_LIST:
-      Name: Enchanting Table List
+      Name: Empowerment Effects
       Lore:
-      - Information and instructions for Enchanting Table List.
-      - Use the Slimefun guide for recipes and details.
+      - Launch, attraction, fire, slowing, and lightning.
+      - Creation, ender-pearl arrows, and position swapping.
     FIREZOMBIE_HEAD:
       Name: Flame Zombie Head
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Flame Zombie Head.
+      - A vessel of magical fire and ender energy.
+      - Its owner wields spells, teleportation, and mental attacks.
     FIREZOMBIE_BODY:
       Name: Flame Zombie Body
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Flame Zombie Body.
+      - Decay and rebirth, bound together in living flame.
     WIND_ELF_SPAWN:
       Name: Wind Spirit Summoner
       Lore:
-      - A MagicExpansion boss or summoning item.
-      - Right-click to use where permitted.
+      - Right-click to summon the Wind Spirit.
     WIND_ELF_HEAD:
-      Name: Wind Elf Head
+      Name: Wind Spirit Head
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Wind Elf Head.
+      - A vessel of wind magic and ender energy.
+      - Its owner wields twin winds, teleportation, and mental attacks.
     WIND_ELF_BODY:
-      Name: Wind Elf Body
+      Name: Wind Spirit Body
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Wind Elf Body.
+      - A wind spirit's body, condensed from the water element.
     WIND_ELF_SKILL:
-      Name: Wind Elf Skill
+      Name: Wind Spirit Abilities
       Lore:
-      - Information and instructions for Wind Elf Skill.
-      - Use the Slimefun guide for recipes and details.
+      - Uses a random ability every 4-6 seconds.
+      - 'Magic Strike: 10 damage to its target.'
+      - 'Twin Winds: two nearby players take 68 and 136 damage.'
+      - Both strikes may select the same player; armor still applies.
+      - 'Gale: harms and debuffs players within 15 blocks horizontally'
+      - and 8 blocks vertically.
     WIND_ELF_DEFENSE:
-      Name: Wind Elf Defense
+      Name: Fighting the Wind Spirit
       Lore:
-      - Information and instructions for Wind Elf Defense.
-      - Use the Slimefun guide for recipes and details.
+      - Regenerates 2 health per second.
+      - Only sword attacks can harm it.
+      - Requires 2-5 nearby players to become vulnerable.
+      - After casting, its defenses weaken for 2-4 seconds.
+      - Each hit is capped at 33% of its maximum health.
+      - Moves rapidly and teleports every 2 seconds.
     PRE_BUILDING_TREE_INFO:
-      Name: Prefab Tree Information
+      Name: Prefab Placement Guide
       Lore:
-      - Information and instructions for Prefab Tree Information.
-      - Use the Slimefun guide for recipes and details.
+      - Right-click a block to place the stored structure.
+      - Sneak-right-click to inspect its dimensions and volume.
+      - Trees grow from the center of their base.
+      - Other structures extend from the origin toward +X, +Y, and +Z.
+      - Each prefab has a fixed layout.
     PRE_BUILDING_OAK_TREE:
       Name: Prefab Oak Tree
       Lore:
-      - Places or operates Prefab Oak Tree.
-      - Right-click to use. Sneak-right-click for more information.
+      - A oak tree sealed within a seed of folded magical space.
+      - Release it to bring the life of an ancient forest to your home.
+      - Right-click a block to place it.
+      - Sneak-right-click to inspect its dimensions.
     PRE_BUILDING_SPRUCE_TREE:
       Name: Prefab Spruce Tree
       Lore:
-      - Places or operates Prefab Spruce Tree.
-      - Right-click to use. Sneak-right-click for more information.
+      - A spruce tree sealed within a seed of folded magical space.
+      - Release it to bring the life of an ancient forest to your home.
+      - Right-click a block to place it.
+      - Sneak-right-click to inspect its dimensions.
     PRE_BUILDING_BIRCH_TREE:
       Name: Prefab Birch Tree
       Lore:
-      - Places or operates Prefab Birch Tree.
-      - Right-click to use. Sneak-right-click for more information.
+      - A birch tree sealed within a seed of folded magical space.
+      - Release it to bring the life of an ancient forest to your home.
+      - Right-click a block to place it.
+      - Sneak-right-click to inspect its dimensions.
     PRE_BUILDING_JUNGLE_TREE:
       Name: Prefab Jungle Tree
       Lore:
-      - Places or operates Prefab Jungle Tree.
-      - Right-click to use. Sneak-right-click for more information.
+      - A jungle tree sealed within a seed of folded magical space.
+      - Release it to bring the life of an ancient forest to your home.
+      - Right-click a block to place it.
+      - Sneak-right-click to inspect its dimensions.
     PRE_BUILDING_ACACIA_TREE:
       Name: Prefab Acacia Tree
       Lore:
-      - Places or operates Prefab Acacia Tree.
-      - Right-click to use. Sneak-right-click for more information.
+      - A acacia tree sealed within a seed of folded magical space.
+      - Release it to bring the life of an ancient forest to your home.
+      - Right-click a block to place it.
+      - Sneak-right-click to inspect its dimensions.
     PRE_BUILDING_DARK_OAK_TREE:
       Name: Prefab Dark Oak Tree
       Lore:
-      - Places or operates Prefab Dark Oak Tree.
-      - Right-click to use. Sneak-right-click for more information.
+      - A dark oak tree sealed within a seed of folded magical space.
+      - Release it to bring the life of an ancient forest to your home.
+      - Right-click a block to place it.
+      - Sneak-right-click to inspect its dimensions.
     PRE_BUILDING_MANGROVE_TREE:
       Name: Prefab Mangrove Tree
       Lore:
-      - Places or operates Prefab Mangrove Tree.
-      - Right-click to use. Sneak-right-click for more information.
+      - A mangrove tree sealed within a seed of folded magical space.
+      - Release it to bring the life of an ancient forest to your home.
+      - Right-click a block to place it.
+      - Sneak-right-click to inspect its dimensions.
     PRE_BUILDING_CHERRY_TREE:
       Name: Prefab Cherry Tree
       Lore:
-      - Places or operates Prefab Cherry Tree.
-      - Right-click to use. Sneak-right-click for more information.
+      - A cherry tree sealed within a seed of folded magical space.
+      - Release it to bring the life of an ancient forest to your home.
+      - Right-click a block to place it.
+      - Sneak-right-click to inspect its dimensions.
     PRE_BUILDING_TAFEI:
-      Name: Prefab Tafei
+      Name: Prefab Tafei Sugar Factory
       Lore:
-      - Places or operates Prefab Tafei.
-      - Right-click to use. Sneak-right-click for more information.
+      - A sugar factory sealed in magical space.
+      - Tafei always faces the setting sun.
+      - Right-click a block to place it.
+      - Sneak-right-click to inspect its dimensions.
     PRE_BUILDING_WISH_DALE:
-      Name: Prefab Wish Dale
+      Name: Prefab Wis'adel Statue
       Lore:
-      - Places or operates Prefab Wish Dale.
-      - Right-click to use. Sneak-right-click for more information.
+      - Smoke and gunpowder linger around a mischievous smile.
+      - A raised cannon promises fireworks to anyone who comes too close.
+      - Right-click a block to place it.
+      - Sneak-right-click to inspect its dimensions.
     PRE_BUILDING_ANON:
-      Name: Prefab Anon
+      Name: Prefab Anon Statue
       Lore:
-      - Places or operates Prefab Anon.
-      - Right-click to use. Sneak-right-click for more information.
+      - A guitar, a distant stage, and an unfinished melody.
+      - A faint pink-blue glow follows the song into the night.
+      - Right-click a block to place it.
+      - Sneak-right-click to inspect its dimensions.
     PRE_BUILDING_VILLAGE_LOVE_AND_TRADE_HOUSE:
-      Name: Prefab Village Love And Trade House
+      Name: Prefab Villager Breeder and Trading Hall
       Lore:
-      - Places or operates Prefab Village Love And Trade House.
-      - Right-click to use. Sneak-right-click for more information.
+      - A combined villager breeder and trading hall.
+      - The breeder is at the lower left; trading areas fill the center and right.
+      - Place boats yourself at the holding points.
+      - Rails around the structure help transport villagers.
+      - Right-click to place; sneak-right-click to inspect its dimensions.
     PRE_BUILDING_SHULKER_FARM:
       Name: Prefab Shulker Farm
       Lore:
-      - Places or operates Prefab Shulker Farm.
-      - Right-click to use. Sneak-right-click for more information.
+      - A shulker farm above its collection system.
+      - You must supply the shulkers and place the snow golems yourself.
+      - Right-click a block to place it.
+      - Sneak-right-click to inspect its dimensions.
     PRE_BUILDING_MCDONALDS:
-      Name: Prefab Mcdonalds
+      Name: Prefab McDonald's
       Lore:
-      - Places or operates Prefab Mcdonalds.
-      - Right-click to use. Sneak-right-click for more information.
+      - A familiar restaurant folded into a small magical seal.
+      - Right-click a block to place it.
+      - Sneak-right-click to inspect its dimensions.
     PRE_BUILDING_HOUSE_OAK:
-      Name: Prefab House Oak
+      Name: Prefab Oak Cottage
       Lore:
-      - Places or operates Prefab House Oak.
-      - Right-click to use. Sneak-right-click for more information.
+      - An old oak scent escapes from a cottage sleeping between runes.
+      - Choose a forest clearing and let the hearth burn again.
+      - Right-click a block to place it.
+      - Sneak-right-click to inspect its dimensions.
     PRE_BUILDING_HOUSE_SPRUCE:
-      Name: Prefab House Spruce
+      Name: Prefab Spruce Cottage
       Lore:
-      - Places or operates Prefab House Spruce.
-      - Right-click to use. Sneak-right-click for more information.
+      - A mountain retreat wrapped in pine scent, mist, and snow.
+      - Open its door to the wind and a quieter life.
+      - Right-click a block to place it.
+      - Sneak-right-click to inspect its dimensions.
     PRE_BUILDING_HOUSE_CHERRY:
-      Name: Prefab House Cherry
+      Name: Prefab Cherry Cottage
       Lore:
-      - Places or operates Prefab House Cherry.
-      - Right-click to use. Sneak-right-click for more information.
+      - A spring cottage sheltered beneath a rain of pale blossoms.
+      - Right-click a block to place it.
+      - Sneak-right-click to inspect its dimensions.
     PRE_BUILDING_HOUSE_MANGROVE:
-      Name: Prefab House Mangrove
+      Name: Prefab Mangrove Cottage
       Lore:
-      - Places or operates Prefab House Mangrove.
-      - Right-click to use. Sneak-right-click for more information.
+      - A waterside home carrying the hush of tides and sea mist.
+      - Right-click a block to place it.
+      - Sneak-right-click to inspect its dimensions.
     PRE_BUILDING_HOUSE_MOSS:
-      Name: Prefab House Moss
+      Name: Prefab Moss Cottage
       Lore:
-      - Places or operates Prefab House Moss.
-      - Right-click to use. Sneak-right-click for more information.
+      - A soft green roof shelters a house within the forest's dream.
+      - Right-click a block to place it.
+      - Sneak-right-click to inspect its dimensions.
     PRE_BUILDING_HOUSE_WIND_CAR:
-      Name: Prefab House Wind Car
+      Name: Prefab Windmill Cottage
       Lore:
-      - Places or operates Prefab House Wind Car.
-      - Right-click to use. Sneak-right-click for more information.
+      - A hilltop home where grain, gears, and the wind once met.
+      - Right-click a block to place it.
+      - Sneak-right-click to inspect its dimensions.
     PRE_BUILDING_DORA_PICTURE:
-      Name: Prefab Dora Picture
+      Name: Prefab Dora Pixel Art
       Lore:
-      - Places or operates Prefab Dora Picture.
-      - Right-click to use. Sneak-right-click for more information.
+      - An endearing pink dog preserved in a frame of pixel starlight.
+      - Right-click a block to place it.
+      - Sneak-right-click to inspect its dimensions.
     PRE_BUILDING_WINE_BAR:
-      Name: Prefab Wine Bar
+      Name: Prefab Tavern
       Lore:
-      - Places or operates Prefab Wine Bar.
-      - Right-click to use. Sneak-right-click for more information.
+      - A warm refuge of candlelight, music, and travelers' stories.
+      - Right-click a block to place it.
+      - Sneak-right-click to inspect its dimensions.
     PRE_BUILDING_MOON_RABBIT_SHOP:
       Name: Prefab Moon Rabbit Shop
       Lore:
-      - Places or operates Prefab Moon Rabbit Shop.
-      - Right-click to use. Sneak-right-click for more information.
+      - A moonlit shop where rabbit guardians watch over quiet wishes.
+      - Right-click a block to place it.
+      - Sneak-right-click to inspect its dimensions.
     PRE_BUILDING_MIDDLE_HORSE_HOUSE:
-      Name: Prefab Middle Horse House
+      Name: Prefab Medium Stable
       Lore:
-      - Places or operates Prefab Middle Horse House.
-      - Right-click to use. Sneak-right-click for more information.
+      - A sheltered resting place for faithful companions on long journeys.
+      - Right-click a block to place it.
+      - Sneak-right-click to inspect its dimensions.
     PRE_BUILDING_FISHING_PORT:
       Name: Prefab Fishing Port
       Lore:
-      - Places or operates Prefab Fishing Port.
-      - Right-click to use. Sneak-right-click for more information.
+      - A peaceful harbor for morning casts and evening reflections.
+      - Choose an open space beside the water.
+      - Right-click a block to place it.
+      - Sneak-right-click to inspect its dimensions.
     PRE_BUILDING_SI_HE_YUAN:
-      Name: Prefab Si He Yuan
+      Name: Prefab Courtyard House
       Lore:
-      - Places or operates Prefab Si He Yuan.
-      - Right-click to use. Sneak-right-click for more information.
+      - A traditional courtyard home of dark roof tiles and quiet gardens.
+      - Includes a four-block-deep foundation.
+      - The house itself begins on the fifth layer; prepare the ground first.
+      - Right-click a block to place it.
+      - Sneak-right-click to inspect its dimensions.
     PRE_BUILDING_BAKERY:
       Name: Prefab Bakery
       Lore:
-      - Places or operates Prefab Bakery.
-      - Right-click to use. Sneak-right-click for more information.
+      - A street-corner bakery filled with the warmth of fresh bread.
+      - Right-click a block to place it.
+      - Sneak-right-click to inspect its dimensions.
     PRE_BUILDING_KFC_MIDDLE:
-      Name: Prefab KFC Middle
+      Name: Prefab Medium KFC Restaurant
       Lore:
-      - Places or operates Prefab KFC Middle.
-      - Right-click to use. Sneak-right-click for more information.
+      - A familiar red-and-white restaurant, ready for a gathering.
+      - Right-click a block to place it.
+      - Sneak-right-click to inspect its dimensions.
     PRE_BUILDING_KFC_SMALL:
-      Name: Prefab KFC Small
+      Name: Prefab Small KFC Restaurant
       Lore:
-      - Places or operates Prefab KFC Small.
-      - Right-click to use. Sneak-right-click for more information.
+      - A compact takeaway restaurant with room for a little comfort.
+      - Right-click a block to place it.
+      - Sneak-right-click to inspect its dimensions.
     PRE_BUILDING_LARGE_SNOW_KING:
-      Name: Prefab Large Snow King
+      Name: Prefab Snow King's Castle
       Lore:
-      - Places or operates Prefab Large Snow King.
-      - Right-click to use. Sneak-right-click for more information.
+      - An ice castle sealed in winter magic and a fairy-tale dream.
+      - Right-click a block to place it.
+      - Sneak-right-click to inspect its dimensions.
     PRE_BUILDING_MIDDLE_VILLA:
-      Name: Prefab Middle Villa
+      Name: Prefab Medium Villa
       Lore:
-      - Places or operates Prefab Middle Villa.
-      - Right-click to use. Sneak-right-click for more information.
+      - A sunlit villa with a peaceful courtyard.
+      - A dragon egg rests on the main living-room table.
+      - Right-click a block to place it.
+      - Sneak-right-click to inspect its dimensions.
     PRE_BUILDING_LITTLE_MI_XUE:
-      Name: Prefab Little Mi Xue
+      Name: Prefab Mini Mixue Shop
       Lore:
-      - Places or operates Prefab Little Mi Xue.
-      - Right-click to use. Sneak-right-click for more information.
+      - A small drinks shop filled with cool sweetness and familiar memories.
+      - Right-click a block to place it.
+      - Sneak-right-click to inspect its dimensions.
     PRE_BUILDING_JAPAN_HOUSE:
-      Name: Prefab Japan House
+      Name: Prefab Japanese Townhouse
       Lore:
-      - Places or operates Prefab Japan House.
-      - Right-click to use. Sneak-right-click for more information.
+      - Lattice doors, a mossy courtyard, and the scent of tea.
+      - A quiet moment beneath the eaves.
+      - Right-click a block to place it.
+      - Sneak-right-click to inspect its dimensions.
     PRE_BUILDING_FARM_BARN:
       Name: Prefab Farm Barn
       Lore:
-      - Places or operates Prefab Farm Barn.
-      - Right-click to use. Sneak-right-click for more information.
+      - A red-walled barn holding the promise of a full harvest.
+      - Right-click a block to place it.
+      - Sneak-right-click to inspect its dimensions.
     PRE_BUILDING_SAKURA_SHOP:
       Name: Prefab Sakura Shop
       Lore:
-      - Places or operates Prefab Sakura Shop.
-      - Right-click to use. Sneak-right-click for more information.
+      - A spring shop beneath falling petals and chiming wind bells.
+      - Right-click a block to place it.
+      - Sneak-right-click to inspect its dimensions.
     PRE_BUILDING_FRUIT_SHOP:
       Name: Prefab Fruit Shop
       Lore:
-      - Places or operates Prefab Fruit Shop.
-      - Right-click to use. Sneak-right-click for more information.
+      - A bright neighborhood shop celebrating gifts of sun and rain.
+      - Right-click a block to place it.
+      - Sneak-right-click to inspect its dimensions.
     PRE_BUILDING_KRUSTY_KRAB:
       Name: Prefab Krusty Krab
       Lore:
-      - Places or operates Prefab Krusty Krab.
-      - Right-click to use. Sneak-right-click for more information.
+      - A little undersea restaurant with a lively kitchen and a familiar roof.
+      - Right-click a block to place it.
+      - Sneak-right-click to inspect its dimensions.
     UI_3:
-      Name: Ui 3
-      Lore:
-      - A magical item from MagicExpansion.
-      - Used for Ui 3.
+      Name: ' '
+      Lore: []
     UI_4:
-      Name: Ui 4
-      Lore:
-      - A magical item from MagicExpansion.
-      - Used for Ui 4.
+      Name: ' '
+      Lore: []
     UI_5:
-      Name: Ui 5
-      Lore:
-      - A magical item from MagicExpansion.
-      - Used for Ui 5.
+      Name: ' '
+      Lore: []
     UI_6:
-      Name: Ui 6
-      Lore:
-      - A magical item from MagicExpansion.
-      - Used for Ui 6.
+      Name: ' '
+      Lore: []
     UI_7:
-      Name: Ui 7
-      Lore:
-      - A magical item from MagicExpansion.
-      - Used for Ui 7.
+      Name: ' '
+      Lore: []
     UI_8:
-      Name: Ui 8
-      Lore:
-      - A magical item from MagicExpansion.
-      - Used for Ui 8.
+      Name: ' '
+      Lore: []
     UI_9:
-      Name: Ui 9
-      Lore:
-      - A magical item from MagicExpansion.
-      - Used for Ui 9.
+      Name: ' '
+      Lore: []
     UI_THX:
-      Name: Ui Thx
+      Name: Special Thanks
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Ui Thx.
+      - Contributors are listed in no particular order.
     NAZUKICYL_TEST:
-      Name: Nazukicyl Test
+      Name: Nazukicyl
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Nazukicyl Test.
+      - Tester and experienced Slimefun player.
     HAIMAN_TEST:
-      Name: Haiman Test
+      Name: Haiman
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Haiman Test.
+      - Tester, addon translator, and creator of HaimanTech.
+      - A longstanding contributor to Slimefun.
     QIZHIYI_TEST:
-      Name: Qizhiyi Test
+      Name: Qizhiyi
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Qizhiyi Test.
+      - Tester and wiki contributor.
     KOMU_A:
-      Name: Komu A
+      Name: Komu_A
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Komu A.
+      - Tester and creator of KomuTech.
+      - An experienced guide to MagicExpansion.
     LENGSHANG_TEST:
-      Name: Lengshang Test
+      Name: Lengshang
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Lengshang Test.
+      - Tester and creator of LengshangTech.
+      - Slimefun modpack creator.
     VOID_TOUCH:
       Name: Void Touch
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Void Touch.
+      - Sneak-right-click a block to bind it.
+      - Right-click to interact with the bound Slimefun machine.
+      - Works within the same world and the configured range.
+      - Does not load chunks or bypass protection.
     VOID_TOUCH_SCRIPT:
-      Name: Void Touch Script
+      Name: Void Touch - Script Edition
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Void Touch Script.
+      - Sneak-right-click a block to bind it.
+      - Right-click to interact with the bound Slimefun machine.
+      - Intended for use in action sequences.
+      - Works within the same world; does not load chunks.
     FIVE_ELEMENT_TOUCH:
-      Name: Five Element Touch
+      Name: Five-Element Touch
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Five Element Touch.
+      - Sneak-right-click a block to bind it.
+      - Right-click to open the bound Slimefun machine.
+      - Works across dimensions without a distance limit.
+      - Does not load the destination chunk.
     FIVE_ELEMENT_TOUCH_RIGHT_CLICK:
-      Name: Five Element Touch Right Click
+      Name: Five-Element Touch - Block Interaction
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Five Element Touch Right Click.
+      - Sneak-right-click a block to bind it.
+      - Right-click to simulate a left-click at the bound location.
+      - Works across dimensions without a distance limit.
+      - Does not load the destination chunk.
     RIGHT_CLICK_MAN:
-      Name: Right Click Man
+      Name: Interaction Robot
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Right Click Man.
+      - Simulates player interaction with blocks.
+      - Useful for automating multiblock machines.
+      - Requires a nearby player but no electricity.
+      - Does not open vanilla containers.
     DEATH_LIFE_BOOK:
-      Name: Death Life Book
+      Name: Book of Life and Death
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Death Life Book.
+      - Inspect nearby creatures and their health, names, and locations.
+      - Pass judgment or teleport to the selected creature.
     DRAW_MACHINE:
-      Name: Draw Machine
+      Name: Prize Draw Machine
       Lore:
-      - A MagicExpansion processing machine.
-      - Processes materials for Draw Machine.
+      - Configure prizes in the available slots.
+      - Each occupied prize slot has an equal chance of selection.
+      - Supports consecutive draws.
+      - An experimental prize machine.
     MAGIC_WAND:
       Name: Magic Wand
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Magic Wand.
+      - Right-click an altar's dispenser to begin crafting.
+      - Requires the correct altar layout and ingredients.
     UPDATE_LOG_2025_06_23:
-      Name: Update Log 2025 06 23
+      Name: Update Notes - 2025-06-23
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Update Log 2025 06 23.
+      - Historical upstream update.
+      - Added magical soil conversion and automated fishing.
+      - Improved prefab placement protection.
     UPDATE_LOG_2025_06_29:
-      Name: Update Log 2025 06 29
+      Name: Update Notes - 2025-06-29
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Update Log 2025 06 29.
+      - Historical upstream update.
+      - Added Star Rail collectibles, mystery boxes, and the Starlight Scanner.
     UPDATE_LOG_2025_07_12:
-      Name: Update Log 2025 07 12
+      Name: Update Notes - 2025-07-12
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Update Log 2025 07 12.
+      - Historical upstream update.
+      - Improved compatibility for older RSC magic machines.
+      - Fixed targeted magic resource mining.
     UPDATE_LOG_2025_07_23:
-      Name: Update Log 2025 07 23
+      Name: Update Notes - 2025-07-23
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Update Log 2025 07 23.
+      - Historical upstream update.
+      - Added the Ore Vein One Block and an integrated dust production line.
+      - Improved item descriptions.
     UPDATE_LOG_2025_07_25:
-      Name: Update Log 2025 07 25
+      Name: Update Notes - 2025-07-25
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Update Log 2025 07 25.
+      - Historical upstream update.
+      - Added materials, generators, machine upgrades, string generators,
+      - and automated ore-vein miners.
+      - Secret generators use item patterns to unlock production.
     UPDATE_LOG_2025_07_26:
-      Name: Update Log 2025 07 26
+      Name: Update Notes - 2025-07-26
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Update Log 2025 07 26.
+      - Historical upstream update.
+      - Added Void Touch, Five-Element Touch, and the Interaction Robot.
     UPDATE_LOG_2025_08_01:
-      Name: Update Log 2025 08 01
+      Name: Update Notes - 2025-08-01
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Update Log 2025 08 01.
+      - Historical upstream update.
+      - Added the Wind Spirit boss and its combat guide.
+      - Fixed empowerment protection checks.
     UPDATE_LOG_2025_08_27:
-      Name: Update Log 2025 08 27
+      Name: Update Notes - 2025-08-27
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Update Log 2025 08 27.
+      - Historical upstream update.
+      - Added six cottages, the Wis'adel statue, and Dora pixel art.
     UPDATE_LOG_2025_08_29:
-      Name: Update Log 2025 08 29
+      Name: Update Notes - 2025-08-29
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Update Log 2025 08 29.
+      - Historical upstream update.
+      - Expanded the prefab collection and reorganized the guide.
+      - Improved quick machines and added novelty crafting challenges.
     UPDATE_LOG_2025_08_30:
-      Name: Update Log 2025 08 30
+      Name: Update Notes - 2025-08-30
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Update Log 2025 08 30.
+      - Historical upstream update.
+      - 'Secret generator patterns: 110011111 and 111011011.'
+      - 'Featured block: glowstone.'
+      - Added beginner and lumber rods, fish, bio-generation, and vivariums.
     UPDATE_LOG_2025_09_02:
-      Name: Update Log 2025 09 02
+      Name: Update Notes - 2025-09-02
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Update Log 2025 09 02.
+      - Historical upstream update.
+      - Expanded mineral fish, bait preferences, and special fish uses.
+      - Added the Windwhisper Rod and corrected recipes and descriptions.
     UPDATE_LOG_2025_09_05:
-      Name: Update Log 2025 09 05
+      Name: Update Notes - 2025-09-05
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Update Log 2025 09 05.
+      - Historical upstream update.
+      - Improved catch-weight calculation.
+      - Added the final rod and its special Slimefun-item catch pool.
     UPDATE_LOG_2025_09_09:
-      Name: Update Log 2025 09 09
+      Name: Update Notes - 2025-09-09
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Update Log 2025 09 09.
+      - Historical upstream update.
+      - Fixed weapon and material duplication in the Empowerment Table.
     UPDATE_LOG_2025_09_13:
-      Name: Update Log 2025 09 13
+      Name: Update Notes - 2025-09-13
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Update Log 2025 09 13.
+      - Historical upstream update.
+      - Improved One Block transformations.
+      - Added industrial fish and reorganized vivarium outputs.
     UPDATE_LOG_2025_09_14:
-      Name: Update Log 2025 09 14
+      Name: Update Notes - 2025-09-14
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Update Log 2025 09 14.
+      - Historical upstream update.
+      - Improved vivariums; added redstone and experience-bottle fish.
+      - Corrected item descriptions.
     UPDATE_LOG_2025_09_18:
-      Name: Update Log 2025 09 18
+      Name: Update Notes - 2025-09-18
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Update Log 2025 09 18.
+      - Historical upstream update.
+      - Corrected recipes and separated material decompression.
+      - Improved quick-machine slots and secret generator output.
+      - Started the upstream wiki.
     UPDATE_LOG_2025_09_20:
-      Name: Update Log 2025 09 20
+      Name: Update Notes - 2025-09-20
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Update Log 2025 09 20.
+      - Historical upstream update.
+      - Fixed Void Touch distance calculation.
+      - Introduced intermediary outputs for optimized RSC resource machines.
+      - Improved Interaction Robot controls.
     UPDATE_LOG_2025_09_27:
-      Name: Update Log 2025 09 27
+      Name: Update Notes - 2025-09-27
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Update Log 2025 09 27.
+      - Historical upstream update.
+      - Added the Slimefun Tick Monitor and experimental Magic Storage.
+      - Improved generators, catch weights, and resource mining recipes.
     UPDATE_LOG_2025_09_29:
-      Name: Update Log 2025 09 29
+      Name: Update Notes - 2025-09-29
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Update Log 2025 09 29.
+      - Historical upstream update.
+      - Fixed storage errors and enabled storage-terminal crafting.
+      - Removed noisy transfer effects.
     UPDATE_LOG_2025_10_06:
-      Name: Update Log 2025 10 06
+      Name: Update Notes - 2025-10-06
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Update Log 2025 10 06.
+      - Historical upstream update.
+      - Improved cargo lore and One Block displays.
+      - Reduced prefab cooldowns; added separate-slot dust lines, tape,
+      - Schrodinger's frames, and the Fishing Guide.
     UPDATE_LOG_2025_10_07:
-      Name: Update Log 2025 10 07
+      Name: Update Notes - 2025-10-07
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Update Log 2025 10 07.
+      - Historical upstream update.
+      - Added the Reforged Storage Terminal and per-item quantity limits.
+      - Improved storage recovery as Aether Cargo Chests.
     UPDATE_LOG_2025_10_14:
-      Name: Update Log 2025 10 14
+      Name: Update Notes - 2025-10-14
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Update Log 2025 10 14.
+      - Historical upstream update.
+      - Restricted Schrodinger's frames to plain vanilla items.
+      - Expanded alloy fish, bait, and the final rod's special catch chance.
+      - Added an unexpected catch when fishing without bait.
     UPDATE_LOG_2025_10_23:
-      Name: Update Log 2025 10 23
+      Name: Update Notes - 2025-10-23
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Update Log 2025 10 23.
+      - Historical upstream update.
+      - Added the Aether Eel, power cards, transfer stations,
+      - and the Lucky Capacitor; improved transfer compatibility.
     UPDATE_LOG_2025_10_25:
-      Name: Update Log 2025 10 25
+      Name: Update Notes - 2025-10-25
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Update Log 2025 10 25.
+      - Historical upstream update.
+      - Added configurable AI conversation support.
     UPDATE_LOG_2025_10_26:
-      Name: Update Log 2025 10 26
+      Name: Update Notes - 2025-10-26
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Update Log 2025 10 26.
+      - Historical upstream update.
+      - Adjusted personal and public AI reply-length limits.
     UPDATE_LOG_2025_11_02:
-      Name: Update Log 2025 11 02
+      Name: Update Notes - 2025-11-02
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Update Log 2025 11 02.
+      - Historical upstream update.
+      - Improved fish weights and rare catches.
+      - Added action sequences and Aether Cargo Senders.
     UPDATE_LOG_2025_11_05:
-      Name: Update Log 2025 11 05
+      Name: Update Notes - 2025-11-05
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Update Log 2025 11 05.
+      - Historical upstream update.
+      - Improved machine scheduling and storage displays.
+      - Added capacitor tiers, the Book of Life and Death, and prize draws.
+      - Charged capacitors retain energy when broken; avoid rapid replacement.
     UPDATE_LOG_2025_11_07:
-      Name: Update Log 2025 11 07
+      Name: Update Notes - 2025-11-07
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Update Log 2025 11 07.
+      - Historical upstream update.
+      - Fixed lost items in Aether Cargo Senders.
+      - The original sender must be placed again after a server restart.
     UPDATE_LOG_2025_11_08:
-      Name: Update Log 2025 11 08
+      Name: Update Notes - 2025-11-08
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Update Log 2025 11 08.
+      - Historical upstream update.
+      - Fixed prize-draw duplication and expanded magic-sugar catches.
+      - Added the Magic Altar; use /mxalter to view its commands.
     UPDATE_LOG_2025_11_12:
-      Name: Update Log 2025 11 12
+      Name: Update Notes - 2025-11-12
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Update Log 2025 11 12.
+      - Historical upstream update.
+      - Added Emperor fish weight rarity and Sharpness 255 altar crafting.
+      - Improved prize-draw scheduling.
     UPDATE_LOG_2025_11_21:
-      Name: Update Log 2025 11 21
+      Name: Update Notes - 2025-11-21
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Update Log 2025 11 21.
+      - Historical upstream update.
+      - Fixed Fishing Guide duplication and startup checks.
+      - Added Looting 255 altar crafting.
     UPDATE_LOG_2025_11_22:
-      Name: Update Log 2025 11 22
+      Name: Update Notes - 2025-11-22
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Update Log 2025 11 22.
-      - 0.5s -> 2s
+      - Historical upstream update.
+      - Added a Slimefun-tick Cargo Sender and glass energy connectors.
+      - Reduced Wind Spirit teleport frequency to once every 2 seconds.
     UPDATE_LOG_2025_11_23:
-      Name: Update Log 2025 11 23
+      Name: Update Notes - 2025-11-23
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Update Log 2025 11 23.
+      - Historical upstream update.
+      - Upstream changed the final fishing rod's item identity.
+      - This fork retains compatibility with its existing saved item IDs.
     UPDATE_LOG_2025_12_01:
-      Name: Update Log 2025 12 01
+      Name: Update Notes - 2025-12-01
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Update Log 2025 12 01.
+      - Historical upstream update.
+      - Added Starfall Judgment and improved altar recipe displays.
     UPDATE_LOG_2025_12_06:
-      Name: Update Log 2025 12 06
+      Name: Update Notes - 2025-12-06
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Update Log 2025 12 06.
+      - Historical upstream update.
+      - Added the Material Origin Tracer and corrected descriptions.
     UPDATE_LOG_2025_12_13:
-      Name: Update Log 2025 12 13
+      Name: Update Notes - 2025-12-13
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Update Log 2025 12 13.
+      - Historical upstream update.
+      - Added an Aether Cargo Extractor and missing altar recipes.
     UPDATE_LOG_2025_12_16:
-      Name: Update Log 2025 12 16
+      Name: Update Notes - 2025-12-16
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Update Log 2025 12 16.
+      - Historical upstream update.
+      - Fixed storage access checks; added Script Edition Void Touch.
+      - Added simple vivariums and adjusted vivarium progression.
     UPDATE_LOG_2025_12_19:
-      Name: Update Log 2025 12 19
+      Name: Update Notes - 2025-12-19
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Update Log 2025 12 19.
+      - Historical upstream update.
+      - Added the Aether Ecological Array and direct storage output.
+      - Reforged terminals now transfer between Slimefun containers.
+      - Use compatible storage bridges for vanilla container output.
     UPDATE_LOG_2025_12_20:
-      Name: Update Log 2025 12 20
+      Name: Update Notes - 2025-12-20
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Update Log 2025 12 20.
+      - Historical upstream update.
+      - Added a 53-slot buffer and quantum-storage cargo conversion.
+      - Cargo chests can transfer contents into configured quantum storage.
     UPDATE_LOG_2025_12_31:
-      Name: Update Log 2025 12 31
+      Name: Update Notes - 2025-12-31
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Update Log 2025 12 31.
+      - Historical upstream update.
+      - Added commemorative New Year fireworks to welcome 2026.
     UPDATE_LOG_2026_01_02:
-      Name: Update Log 2026 01 02
+      Name: Update Notes - 2026-01-02
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Update Log 2026 01 02.
+      - Historical upstream update.
+      - Fixed prize-draw and storage duplication.
+      - 'Avoid deeply nested storage containers: serialized data limits'
+      - can interrupt storage or disconnect players.
     UPDATE_LOG_2026_01_23:
-      Name: Update Log 2026 01 23
+      Name: Update Notes - 2026-01-23
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Update Log 2026 01 23.
+      - Historical upstream update.
+      - Added the Community Creations category.
     UPDATE_LOG_2026_01_27:
-      Name: Update Log 2026 01 27
+      Name: Update Notes - 2026-01-27
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Update Log 2026 01 27.
+      - Historical upstream update.
+      - Improved recipes, hologram controls, and display colors.
+      - Added item name tags, forced resource conversion, food categories,
+      - and a new contributor; reduced boss teleport frequency.
     UPDATE_LOG_2026_01_28:
-      Name: Update Log 2026 01 28
+      Name: Update Notes - 2026-01-28
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Update Log 2026 01 28.
+      - Historical upstream update.
+      - Added a contributor and distinctive cargo-chest handling.
+      - Added the Empowerment Eraser.
     UPDATE_LOG_2026_02_19:
-      Name: Update Log 2026 02 19
+      Name: Update Notes - 2026-02-19
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Update Log 2026 02 19.
+      - Historical upstream update.
+      - Improved quantum-storage compatibility.
+      - Added random research unlocks, five-element gathering,
+      - sword configuration, and storage stability fixes.
     UPDATE_LOG_2026_03_10:
-      Name: Update Log 2026 03 10
+      Name: Update Notes - 2026-03-10
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Update Log 2026 03 10.
+      - Historical upstream update.
+      - Added the Character Engraving Workshop.
+      - Smaller upstream changes may share a historical update entry.
     UPDATE_LOG_2026_03_13:
-      Name: Update Log 2026 03 13
+      Name: Update Notes - 2026-03-13
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Update Log 2026 03 13.
+      - Historical upstream update.
+      - Added Sweetheart Wheat and High-Fiber Potatoes.
+      - Began expanding magical crops and foods.
     UPDATE_LOG_2026_03_17:
-      Name: Update Log 2026 03 17
+      Name: Update Notes - 2026-03-17
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Update Log 2026 03 17.
+      - Historical upstream update.
+      - Expanded crops and magical foods; reduced item display-data size.
+      - Improved sword shielding and prefab previews and recipes.
     UPDATE_LOG_2026_03_22:
-      Name: Update Log 2026 03 22
+      Name: Update Notes - 2026-03-22
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Update Log 2026 03 22.
+      - Historical upstream update.
+      - Added metal-dust, metal-ingot, and alloy crops.
+      - Expanded final-bait and sword configuration.
+      - Improved magical crop drop rates.
     UPDATE_LOG_2026_04_18:
-      Name: Update Log 2026 04 18
+      Name: Update Notes - 2026-04-18
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Update Log 2026 04 18.
+      - Historical upstream update.
+      - Fixed prize-draw and fishing-bait issues.
+      - Added the Hologram Eraser and Magic Printing Press.
+      - Includes the small May 17 update.
     UPDATE_LOG_2026_05_21:
-      Name: Update Log 2026 05 21
+      Name: Update Notes - 2026-05-21
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Update Log 2026 05 21.
+      - Historical upstream update.
+      - Added Evolution Tables and their precursor workstations.
+      - Improved item descriptions.
     UPDATE_LOG_2026_06_24:
-      Name: Update Log 2026 06 24
+      Name: Update Notes - 2026-06-24
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Update Log 2026 06 24.
+      - Historical upstream update.
+      - Added percentage damage and independently stacking sword bleed.
+      - Added the Ultimate Evolution Table.
     UPDATE_LOG_2026_07_03:
-      Name: Update Log 2026 07 03
+      Name: Update Notes - 2026-07-03
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Update Log 2026 07 03.
+      - Historical upstream update.
+      - Improved altar layout, fish commands, and vivarium recipes.
+      - Added Magic Fish Growth Feed and an experimental machine.
+      - Expanded quantum-storage support and fixed array duplication.
     UPDATE_LOG_2026_07_12:
-      Name: Update Log 2026 07 12
+      Name: Update Notes - 2026-07-12
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Update Log 2026 07 12.
+      - Historical upstream update.
+      - Added configurable markets and the magical black market.
+      - Added probability displays and exchange compensation.
     UPDATE_LOG_2026_07_30:
-      Name: Update Log 2026 07 30
+      Name: Update Notes - 2026-07-30
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Update Log 2026 07 30.
+      - Historical upstream update.
+      - Added the Origin Evolution Table and its array controller.
+      - Reworked evolution-table names and descriptions.
+      - Expanded basic bait catches.
     UPDATE_LOG_2026_08_05:
-      Name: Update Log 2026 08 05
+      Name: Update Notes - 2026-08-05
       Lore:
-      - Added the Between Water and Clouds fishing series.
-      - Added the Cyan Bamboo Rod and five specialized lures.
-      - Added optional Networks quantum-storage support for vivariums.
-      - Added direct quantum item storage and Void Touch block binding.
-      - Added capacity and overflow protection for high-output fish.
-      - Added quantum-storage support to the Etheric Vivarium Array.
-      - Fixed duplicate output, energy charging, and stale Draw Machine holograms.
+      - Historical upstream update.
+      - Added the Between Water and Clouds fishing progression.
+      - Expanded quantum-storage support across vivariums and arrays.
+      - Added output limits and overflow checks; fixed duplication,
+      - energy accounting, and prize-draw hologram cleanup.
     COOPERATE_CREATION_INFO:
-      Name: Cooperative Creation Information
+      Name: Community Creations
       Lore:
-      - Information and instructions for Cooperative Creation Information.
-      - Use the Slimefun guide for recipes and details.
+      - Content created together with players.
+      - Everyone is welcome to contribute a balanced idea.
     FISHING_INFO:
-      Name: Fishing Information
+      Name: Magic Fishing Guide
       Lore:
-      - Information and instructions for Fishing Information.
-      - Use the Slimefun guide for recipes and details.
+      - Only MagicExpansion rods trigger magic fishing.
+      - Bait in the off hand is checked first.
+      - Otherwise, earlier registered bait has priority.
+      - Rod tier affects catch weight and rarity.
+      - The rod and bait together determine the catch pool.
+      - Fishing without bait can produce different catches.
+      - Special bait can yield the materials for the Windwhisper Rod.
     FISH_CATEGORY_INFO:
-      Name: Fish Category Information
+      Name: Fish Rarities
       Lore:
-      - Information and instructions for Fish Category Information.
-      - Use the Slimefun guide for recipes and details.
+      - Fish are grouped as Common, Uncommon, Rare, Epic,
+      - Legendary, and Mythic.
+      - See each catch pool for its available species.
     RANDOM_FISH_COMMON:
-      Name: Random Fish Common
+      Name: Common Fish
       Lore:
-      - A fishing item from MagicExpansion.
-      - Used for Random Fish Common.
+      - Familiar shoals beneath the river surface.
+      - Browse the species in this rarity tier.
     RANDOM_FISH_UNCOMMON:
-      Name: Random Fish Uncommon
+      Name: Uncommon Fish
       Lore:
-      - A fishing item from MagicExpansion.
-      - Used for Random Fish Uncommon.
+      - A less familiar visitor to the waiting hook.
+      - Browse the species in this rarity tier.
     RANDOM_FISH_RARE:
-      Name: Random Fish Rare
+      Name: Rare Fish
       Lore:
-      - A fishing item from MagicExpansion.
-      - Used for Random Fish Rare.
+      - An elusive catch treasured by patient anglers.
+      - Browse the species in this rarity tier.
     RANDOM_FISH_RARE_POOL_DUST:
-      Name: Random Fish Rare Pool Dust
+      Name: Rare Dust Fish
       Lore:
-      - A fishing item from MagicExpansion.
-      - Used for Random Fish Rare Pool Dust.
+      - An elusive catch treasured by patient anglers.
+      - Browse fish that produce dust.
     RANDOM_FISH_RARE_POOL_ORE:
-      Name: Random Fish Rare Pool Ore
+      Name: Rare Ore Fish
       Lore:
-      - A fishing item from MagicExpansion.
-      - Used for Random Fish Rare Pool Ore.
+      - An elusive catch treasured by patient anglers.
+      - Browse fish that produce ore.
     RANDOM_FISH_RARE_POOL_INDUSTRY:
-      Name: Random Fish Rare Pool Industry
+      Name: Rare Industry Fish
       Lore:
-      - A fishing item from MagicExpansion.
-      - Used for Random Fish Rare Pool Industry.
+      - An elusive catch treasured by patient anglers.
+      - Browse fish that produce industry.
     RANDOM_FISH_EPIC_POOL_INDUSTRY:
-      Name: Random Fish Epic Pool Industry
+      Name: Epic Industry Fish
       Lore:
-      - A fishing item from MagicExpansion.
-      - Used for Random Fish Epic Pool Industry.
+      - A remarkable catch few anglers have seen.
+      - Browse fish that produce industry.
     RANDOM_FISH_EPIC_POOL_ALLOY_INGOT:
-      Name: Random Fish Epic Pool Alloy Ingot
+      Name: Epic Alloy Ingot Fish
       Lore:
-      - A fishing item from MagicExpansion.
-      - Used for Random Fish Epic Pool Alloy Ingot.
+      - A remarkable catch few anglers have seen.
+      - Browse fish that produce alloy ingot.
     RANDOM_FISH_EPIC:
-      Name: Random Fish Epic
+      Name: Epic Fish
       Lore:
-      - A fishing item from MagicExpansion.
-      - Used for Random Fish Epic.
+      - A remarkable catch few anglers have seen.
+      - Browse the species in this rarity tier.
     RANDOM_FISH_LEGENDARY:
-      Name: Random Fish Legendary
+      Name: Legendary Fish
       Lore:
-      - An automated MagicExpansion energy or resource machine.
-      - Produces or processes resources related to Random Fish Legendary.
+      - A creature remembered in ancient fishing tales.
+      - Browse the species in this rarity tier.
     FISH_LEGENDARY_EEL_POWER:
-      Name: Fish Legendary Eel Power
+      Name: Aether Eel
       Lore:
-      - An automated MagicExpansion energy or resource machine.
-      - Produces or processes resources related to Fish Legendary Eel Power.
+      - A living carrier for stored electricity.
     FISH_LURE_BASIC:
-      Name: Fish Lure Basic
+      Name: Basic Magic Bait
       Lore:
-      - A fishing item from MagicExpansion.
-      - Used for Fish Lure Basic.
+      - Worms and grain steeped in a mild magical solution.
+      - Every magical angler's journey begins with a simple cast.
     FISH_LURE_DUST:
-      Name: Fish Lure Dust
+      Name: Metal-Dust Bait
       Lore:
-      - A fishing item from MagicExpansion.
-      - Used for Fish Lure Dust.
+      - Metal powders mixed with basic magic bait.
+      - Its mineral resonance attracts metal-dust fish.
     FISH_LURE_ORE:
-      Name: Fish Lure Ore
+      Name: Mineral Bait
       Lore:
-      - A fishing item from MagicExpansion.
-      - Used for Fish Lure Ore.
+      - Minerals mixed with basic magic bait.
+      - Attracts fish that produce gems and other mineral resources.
     FISH_LURE_ALLOY_INGOT:
-      Name: Fish Lure Alloy Ingot
+      Name: Alloy Bait
       Lore:
-      - A fishing item from MagicExpansion.
-      - Used for Fish Lure Alloy Ingot.
+      - Forged around an ancient alloy's lingering heat.
+      - Attracts fish that produce advanced alloy ingots.
     FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_CUIXIA:
       Name: Between Water and Clouds Special Catch - Tempered Sunset
       Lore:
-      - Internal special-catch marker.
+      - A guide entry for this lure's special catch pool.
     FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_WEICHEN:
       Name: Between Water and Clouds Special Catch - Motes
       Lore:
-      - Internal special-catch marker.
+      - A guide entry for this lure's special catch pool.
     FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_RONGHUO:
       Name: Between Water and Clouds Special Catch - Molten Flame
       Lore:
-      - Internal special-catch marker.
+      - A guide entry for this lure's special catch pool.
     FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_YUEJIN:
       Name: Between Water and Clouds Special Catch - Leaping Gold
       Lore:
-      - Internal special-catch marker.
+      - A guide entry for this lure's special catch pool.
     FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_XINGHE:
       Name: Between Water and Clouds Special Catch - Star Core
       Lore:
-      - Internal special-catch marker.
-
+      - A guide entry for this lure's special catch pool.
     FISH_LURE_BETWEEN_WATER_CLOUD_CUIXIA:
       Name: Tempered Sunset
       Lore:
@@ -853,17 +985,16 @@ en_US:
       Lore:
       - A fallen spark that still carries the light of distant stars.
       - Draws rare and celestial treasures from the water.
-
     FISHING_ROD_LOG:
-      Name: Fishing Rod Log
+      Name: Lumber Rod
       Lore:
-      - A fishing item from MagicExpansion.
-      - Used for Fishing Rod Log.
+      - Fish in water to catch different kinds of logs.
+      - Does not consume bait.
     FISHING_ROD_NEW_PLAYER:
-      Name: Fishing Rod New Player
+      Name: Beginner's Rod
       Lore:
-      - A fishing item from MagicExpansion.
-      - Used for Fishing Rod New Player.
+      - A supple willow branch bound with spider silk.
+      - A light, dependable companion for your first cast.
     FISHING_ROD_BETWEEN_WATER_CLOUD_CYAN_BAMBOO:
       Name: Between Water and Clouds - Cyan Bamboo Rod
       Lore:
@@ -892,49 +1023,65 @@ en_US:
       - Used to craft the Reedflower Rod.
     FISH_LURE_BETWEEN_WATER_CLOUD_REED_JIANJIA:
       Name: Reedbank Lure
-      Lore: [A Reedflower Rod lure for magical materials.]
+      Lore:
+      - A Reedflower Rod lure for magical materials.
     FISH_LURE_BETWEEN_WATER_CLOUD_REED_LUXUE:
       Name: Reed Snow
-      Lore: [A Reedflower Rod lure attuned to wind and snow.]
+      Lore:
+      - A Reedflower Rod lure attuned to wind and snow.
     FISH_LURE_BETWEEN_WATER_CLOUD_REED_WEILU:
       Name: Reed Dew
-      Lore: [A Reedflower Rod lure attuned to morning dew.]
+      Lore:
+      - A Reedflower Rod lure attuned to morning dew.
     FISH_LURE_BETWEEN_WATER_CLOUD_REED_BAILU:
       Name: White Dew
-      Lore: [A Reedflower Rod lure attuned to frost-white waters.]
+      Lore:
+      - A Reedflower Rod lure attuned to frost-white waters.
     FISH_LURE_BETWEEN_WATER_CLOUD_REED_LUYA:
       Name: Reed Sprout
-      Lore: [A Reedflower Rod lure carrying the scent of new reeds.]
+      Lore:
+      - A Reedflower Rod lure carrying the scent of new reeds.
     FISH_LURE_BETWEEN_WATER_CLOUD_HANJIANG_NINGSHUANG:
       Name: Frostfall
-      Lore: [A Snowy River lure attuned to forming frost.]
+      Lore:
+      - A Snowy River lure attuned to forming frost.
     FISH_LURE_BETWEEN_WATER_CLOUD_HANJIANG_LUOXU:
       Name: Falling Flakes
-      Lore: [A Snowy River lure light enough to drift on cold water.]
+      Lore:
+      - A Snowy River lure light enough to drift on cold water.
     FISH_LURE_BETWEEN_WATER_CLOUD_HANJIANG_BINGPO:
       Name: Ice Soul
-      Lore: [A Snowy River lure carrying deep frozen energy.]
+      Lore:
+      - A Snowy River lure carrying deep frozen energy.
     FISH_LURE_BETWEEN_WATER_CLOUD_HANJIANG_CHUJI:
       Name: First Clearing
-      Lore: [A Snowy River lure warmed by the first light after snow.]
+      Lore:
+      - A Snowy River lure warmed by the first light after snow.
     FISH_LURE_BETWEEN_WATER_CLOUD_HANJIANG_CHUILUN:
       Name: Lone Line
-      Lore: [A Snowy River lure for quiet, patient fishing.]
+      Lore:
+      - A Snowy River lure for quiet, patient fishing.
+      - A lone line rests beneath mountains wrapped in evening snow.
     FISH_LURE_BETWEEN_WATER_CLOUD_XIYU_FENGSI:
       Name: Wind Thread
-      Lore: [A Fine Rain lure carried by thin strands of wind.]
+      Lore:
+      - A Fine Rain lure carried by thin strands of wind.
     FISH_LURE_BETWEEN_WATER_CLOUD_XIYU_YANYU:
       Name: Mist Rain
-      Lore: [A Fine Rain lure for fog-covered waters.]
+      Lore:
+      - A Fine Rain lure for fog-covered waters.
     FISH_LURE_BETWEEN_WATER_CLOUD_XIYU_LIANBAI:
       Name: White Ripple
-      Lore: [A Fine Rain lure that leaves a pale ripple on the surface.]
+      Lore:
+      - A Fine Rain lure that leaves a pale ripple on the surface.
     FISH_LURE_BETWEEN_WATER_CLOUD_XIYU_XIAOFENG:
       Name: Dawn Wind
-      Lore: [A Fine Rain lure for the first breeze of morning.]
+      Lore:
+      - A Fine Rain lure for the first breeze of morning.
     FISH_LURE_BETWEEN_WATER_CLOUD_XIYU_XIEYING:
       Name: Slanting Shadow
-      Lore: [A Fine Rain lure made for broken reflections and hidden currents.]
+      Lore:
+      - A Fine Rain lure made for broken reflections and hidden currents.
     FISH_SPECIAL_ACTION_BETWEEN_WATER_CLOUD_BAILUYU:
       Name: White Reed Feather
       Lore:
@@ -961,1521 +1108,1647 @@ en_US:
       - Five pages of storage in a single Slimefun cargo-compatible chest.
       - Click outside the inventory window to change pages.
     FISHING_STICK_STAR_IRON:
-      Name: Fishing Stick Star Iron
+      Name: Stellar Iron Rod Blank
       Lore:
-      - A fishing item from MagicExpansion.
-      - Used for Fishing Stick Star Iron.
+      - An awakened wooden core infused with Stellar Iron dust.
+      - Rare aquatic creatures answer its starlit resonance.
     FISHING_ROD_WIND_SPEAKER:
-      Name: Fishing Rod Wind Speaker
+      Name: Windwhisper Rod
       Lore:
-      - A fishing item from MagicExpansion.
-      - Used for Fishing Rod Wind Speaker.
+      - Carved from ancient, wind-worn spruce.
+      - Its line carries the whisper of a wind spirit's wings.
+      - The patient angler learns to hear the path of the shoals.
     南柯一梦终须醒_浮生若梦皆是空:
       Name: Dreams Must End
       Lore:
+      - A rod fashioned at the boundary between worlds.
+      - The Thread of the End bears a hook called Paradox.
+      - With special bait, it can draw from a vast pool of Slimefun items.
       - Even the most beautiful dream must eventually end.
-      - A legendary final fishing rod.
     FISHING_ROD_FINAL_STRING:
-      Name: Fishing Rod Final String
+      Name: Thread of the End
       Lore:
-      - A fishing item from MagicExpansion.
-      - Used for Fishing Rod Final String.
+      - A broken echo of cause and effect from the end of time.
+      - It reaches beyond the sea into the silence after all things.
     FISHING_ROD_FINAL_HOOK:
-      Name: Fishing Rod Final Hook
+      Name: Paradox Hook
       Lore:
-      - A fishing item from MagicExpansion.
-      - Used for Fishing Rod Final Hook.
+      - A hook that exists before its own forging.
+      - The final rusted point and the first unmade edge are one.
     FISHING_ROD_FISH_ANYTHING:
-      Name: Fishing Rod Fish Anything
+      Name: Catch Anything - Reference
       Lore:
-      - A fishing item from MagicExpansion.
-      - Used for Fishing Rod Fish Anything.
+      - A guide reference for the final rod's special catch pool.
+      - This display item has no function of its own.
     DOUBLE_SIDED_TAPE:
-      Name: Double Sided Tape
+      Name: Double-Sided Tape
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Double Sided Tape.
+      - Attach an item to the surface of a block.
+      - Consumed on use.
     SCHRODINGER_FRAME_ONE:
-      Name: Schrodinger Frame One
+      Name: Schrodinger's Frame
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Schrodinger Frame One.
+      - Accepts only vanilla items without custom data.
+      - 50% chance to lose the item; 50% chance to receive two.
+      - The frame is consumed after use.
     SCHRODINGER_FRAME_INFINITE:
-      Name: Schrodinger Frame Infinite
+      Name: Schrodinger's Frame - Reusable
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Schrodinger Frame Infinite.
+      - Accepts only vanilla items without custom data.
+      - 50% chance to lose the item; 50% chance to receive two.
+      - Empty the frame before breaking it.
+      - Breaking it may drop an ordinary item frame.
     ITEM_NAME_TAG:
-      Name: Item Name Tag
+      Name: Portable Item Name Tag
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Item Name Tag.
+      - Sneak-right-click to set the name on this tag.
+      - Right-click to apply that name to an item or creature.
+      - Consumed when a name is applied.
     FISHING_BOOK:
-      Name: Fishing Book
+      Name: Fishing Guide
       Lore:
-      - A fishing item from MagicExpansion.
-      - Used for Fishing Book.
+      - Discover fish preferences, bait pools, and special catches.
     MAGIC_CROP_INFO:
-      Name: Magic Crop Information
+      Name: Magic Crop Guide
       Lore:
-      - Information and instructions for Magic Crop Information.
-      - Use the Slimefun guide for recipes and details.
+      - Plant magical crops on farmland and harvest them when mature.
+      - Flowing water can destroy their Slimefun data.
+      - Protect the farmland beneath them.
+      - Use a compatible crop-persistence setup to retain crop data
+      - through server restarts; upstream recommends SlimeGlue.
     WHEAT_SEEDS:
-      Name: Wheat Seeds
+      Name: Sweetheart Wheat Seeds
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Wheat Seeds.
+      - An abundant wheat strain with magic sugar at its tips.
+      - Plant on intact farmland and harvest only when mature.
+      - Breaking the soil beneath it or washing it away with water
+      - can strip its magic and leave an ordinary crop.
     POTATO:
-      Name: Potato
+      Name: High-Fiber Potato
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Potato.
+      - A high-yield tuber woven with magical fibers.
+      - Plant on intact farmland and harvest only when mature.
+      - Breaking the soil beneath it or washing it away with water
+      - can strip its magic and leave an ordinary crop.
     HYBRID_RICE_SEEDS:
       Name: Hybrid Rice Seeds
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Hybrid Rice Seeds.
+      - Tall, abundant rice inspired by the dream of resting beneath its shade.
+      - Right-click moist farmland to plant.
+      - Plant on intact farmland and harvest only when mature.
+      - Breaking the soil beneath it or washing it away with water
+      - can strip its magic and leave an ordinary crop.
     ORE_DUST_CRYSTAL:
       Name: Ore Dust Crystal
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Ore Dust Crystal.
+      - A rare byproduct of harvesting fully mature metal-dust crops.
+      - Excess harvest magic condenses into a small, glowing crystal.
     ORE_INGOT_CRYSTAL:
       Name: Ore Ingot Crystal
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Ore Ingot Crystal.
+      - A rare byproduct of harvesting fully mature metal-ingot crops.
+      - Excess harvest magic condenses into a small, glowing crystal.
     ORE_MIX_CRYSTAL:
       Name: Ore Mix Crystal
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Ore Mix Crystal.
+      - A rare byproduct of harvesting fully mature alloy crops.
+      - Excess harvest magic condenses into a small, glowing crystal.
     WHEAT_COPPER:
-      Name: Wheat Copper
+      Name: Copper Wheat
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Wheat Copper.
+      - Copper-red stalks hum with storm magic.
+      - Harvest mature plants for copper dust.
+      - Plant on intact farmland and harvest only when mature.
+      - Breaking the soil beneath it or washing it away with water
+      - can strip its magic and leave an ordinary crop.
     RADISH_IRON:
-      Name: Radish Iron
+      Name: Iron Radish
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Radish Iron.
+      - Dark, heavy roots resonate with nearby metal.
+      - Harvest mature plants for iron dust.
+      - Plant on intact farmland and harvest only when mature.
+      - Breaking the soil beneath it or washing it away with water
+      - can strip its magic and leave an ordinary crop.
     BEET_GOLD:
-      Name: Beet Gold
+      Name: Gold Beet
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Beet Gold.
+      - Golden roots hold a remarkably stable magic.
+      - Harvest mature plants for gold dust.
+      - Plant on intact farmland and harvest only when mature.
+      - Breaking the soil beneath it or washing it away with water
+      - can strip its magic and leave an ordinary crop.
     RADISH_SILVER:
-      Name: Radish Silver
+      Name: Silver Radish
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Radish Silver.
+      - Silver-white roots gather a quiet moonlit glow.
+      - Harvest mature plants for silver dust.
+      - Plant on intact farmland and harvest only when mature.
+      - Breaking the soil beneath it or washing it away with water
+      - can strip its magic and leave an ordinary crop.
     WHEAT_ZINC:
-      Name: Wheat Zinc
+      Name: Zinc Wheat
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Wheat Zinc.
+      - Blue-gray grains hold a restless spark of energy.
+      - Harvest mature plants for zinc dust.
+      - Plant on intact farmland and harvest only when mature.
+      - Breaking the soil beneath it or washing it away with water
+      - can strip its magic and leave an ordinary crop.
     BEET_MAGNESIUM:
-      Name: Beet Magnesium
+      Name: Magnesium Beet
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Beet Magnesium.
+      - Light leaves shelter roots filled with brilliant white magic.
+      - Harvest mature plants for magnesium dust.
+      - Plant on intact farmland and harvest only when mature.
+      - Breaking the soil beneath it or washing it away with water
+      - can strip its magic and leave an ordinary crop.
     POTATO_TIN:
-      Name: Potato Tin
+      Name: Tin Potato
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Potato Tin.
+      - Soft, silvery tubers hide delicate crystal patterns.
+      - Harvest mature plants for tin dust.
+      - Plant on intact farmland and harvest only when mature.
+      - Breaking the soil beneath it or washing it away with water
+      - can strip its magic and leave an ordinary crop.
     BEET_LEAD:
-      Name: Beet Lead
+      Name: Lead Beet
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Beet Lead.
+      - Heavy, dark roots carry the magic of stillness and sealing.
+      - Harvest mature plants for lead dust.
+      - Plant on intact farmland and harvest only when mature.
+      - Breaking the soil beneath it or washing it away with water
+      - can strip its magic and leave an ordinary crop.
     WHEAT_ALUMINUM:
-      Name: Wheat Aluminum
+      Name: Aluminum Wheat
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Wheat Aluminum.
+      - Light stalks conceal a lively heart beneath their pale surface.
+      - Harvest mature plants for aluminum dust.
+      - Plant on intact farmland and harvest only when mature.
+      - Breaking the soil beneath it or washing it away with water
+      - can strip its magic and leave an ordinary crop.
     WHEAT_COPPER_INGOT:
-      Name: Wheat Copper Ingot
+      Name: Copper Wheat (Ingot)
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Wheat Copper Ingot.
+      - Copper-red stalks hum with storm magic.
+      - Harvest mature plants for copper ingots.
+      - Plant on intact farmland and harvest only when mature.
+      - Breaking the soil beneath it or washing it away with water
+      - can strip its magic and leave an ordinary crop.
     RADISH_IRON_INGOT:
-      Name: Radish Iron Ingot
+      Name: Iron Radish (Ingot)
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Radish Iron Ingot.
+      - Dark, heavy roots resonate with nearby metal.
+      - Harvest mature plants for iron ingots.
+      - Plant on intact farmland and harvest only when mature.
+      - Breaking the soil beneath it or washing it away with water
+      - can strip its magic and leave an ordinary crop.
     BEET_GOLD_INGOT:
-      Name: Beet Gold Ingot
+      Name: Gold Beet (Ingot)
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Beet Gold Ingot.
+      - Golden roots hold a remarkably stable magic.
+      - Harvest mature plants for gold ingots.
+      - Plant on intact farmland and harvest only when mature.
+      - Breaking the soil beneath it or washing it away with water
+      - can strip its magic and leave an ordinary crop.
     RADISH_SILVER_INGOT:
-      Name: Radish Silver Ingot
+      Name: Silver Radish (Ingot)
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Radish Silver Ingot.
+      - Silver-white roots gather a quiet moonlit glow.
+      - Harvest mature plants for silver ingots.
+      - Plant on intact farmland and harvest only when mature.
+      - Breaking the soil beneath it or washing it away with water
+      - can strip its magic and leave an ordinary crop.
     WHEAT_ZINC_INGOT:
-      Name: Wheat Zinc Ingot
+      Name: Zinc Wheat (Ingot)
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Wheat Zinc Ingot.
+      - Blue-gray grains hold a restless spark of energy.
+      - Harvest mature plants for zinc ingots.
+      - Plant on intact farmland and harvest only when mature.
+      - Breaking the soil beneath it or washing it away with water
+      - can strip its magic and leave an ordinary crop.
     BEET_MAGNESIUM_INGOT:
-      Name: Beet Magnesium Ingot
+      Name: Magnesium Beet (Ingot)
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Beet Magnesium Ingot.
+      - Light leaves shelter roots filled with brilliant white magic.
+      - Harvest mature plants for magnesium ingots.
+      - Plant on intact farmland and harvest only when mature.
+      - Breaking the soil beneath it or washing it away with water
+      - can strip its magic and leave an ordinary crop.
     POTATO_TIN_INGOT:
-      Name: Potato Tin Ingot
+      Name: Tin Potato (Ingot)
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Potato Tin Ingot.
+      - Soft, silvery tubers hide delicate crystal patterns.
+      - Harvest mature plants for tin ingots.
+      - Plant on intact farmland and harvest only when mature.
+      - Breaking the soil beneath it or washing it away with water
+      - can strip its magic and leave an ordinary crop.
     BEET_LEAD_INGOT:
-      Name: Beet Lead Ingot
+      Name: Lead Beet (Ingot)
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Beet Lead Ingot.
+      - Heavy, dark roots carry the magic of stillness and sealing.
+      - Harvest mature plants for lead ingots.
+      - Plant on intact farmland and harvest only when mature.
+      - Breaking the soil beneath it or washing it away with water
+      - can strip its magic and leave an ordinary crop.
     WHEAT_ALUMINUM_INGOT:
-      Name: Wheat Aluminum Ingot
+      Name: Aluminum Wheat (Ingot)
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Wheat Aluminum Ingot.
+      - Light stalks conceal a lively heart beneath their pale surface.
+      - Harvest mature plants for aluminum ingots.
+      - Plant on intact farmland and harvest only when mature.
+      - Breaking the soil beneath it or washing it away with water
+      - can strip its magic and leave an ordinary crop.
     WHEAT_BRONZE_INGOT:
-      Name: Wheat Bronze Ingot
+      Name: Bronze Wheat (Ingot)
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Wheat Bronze Ingot.
+      - Copper and tin unite in blue-green crystalline grain.
+      - Harvest mature plants for bronze ingots.
+      - Plant on intact farmland and harvest only when mature.
+      - Breaking the soil beneath it or washing it away with water
+      - can strip its magic and leave an ordinary crop.
     BEET_BRASS_INGOT:
-      Name: Beet Brass Ingot
+      Name: Brass Beet (Ingot)
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Beet Brass Ingot.
+      - Copper and zinc unite in golden alloy grain.
+      - Harvest mature plants for brass ingots.
+      - Plant on intact farmland and harvest only when mature.
+      - Breaking the soil beneath it or washing it away with water
+      - can strip its magic and leave an ordinary crop.
     ENCHANTMENT_ERASER:
-      Name: Enchantment Eraser
+      Name: Empowerment Eraser
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Enchantment Eraser.
+      - Hold this in your main hand and the target item in your off hand.
+      - Right-click to remove its Magic Empowerment attributes.
+      - This cannot be undone.
     FISH_WEIGHT_ENHANCER:
-      Name: Fish Weight Enhancer
+      Name: Magic Fish Growth Feed
       Lore:
-      - A fishing item from MagicExpansion.
-      - Used for Fish Weight Enhancer.
+      - Hold feed in your main hand and a magic fish in your off hand.
+      - Right-click to increase the fish's weight.
+      - Crossing weight thresholds can improve its production stats.
+      - Feed is not fishing bait.
     RESEARCH_UNLOCKER_PAPER:
-      Name: Research Unlocker Paper
+      Name: Lost Page of Revelation
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Research Unlocker Paper.
+      - A weathered page containing fragments of forgotten knowledge.
+      - Hold in your main hand and right-click
+      - to unlock a random research you have not yet learned.
     WORD_CLEAR:
-      Name: Word Clear
+      Name: Hologram Eraser
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Word Clear.
+      - Hold in your main hand and right-click near a hologram.
+      - Selects the nearest holographic armor stand within 3 blocks.
+      - Right-click again to confirm its permanent removal.
     PORTABLE_SHOP:
-      Name: Portable Shop
+      Name: Portable Market
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Portable Shop.
+      - Right-click to browse the market.
+      - Administrators can sneak-right-click to configure trades.
     FARM_HARVEST_BREAD:
-      Name: Farm Harvest Bread
+      Name: Harvest Blessing Bread
       Lore:
-      - A magical food item.
-      - Enjoy the effects of Farm Harvest Bread.
+      - Bread baked with sunlight and the blessing of the harvest.
+      - Eat to restore 8 health (4 hearts).
+      - Grants Saturation III for 15 seconds and Regeneration I for 8 seconds.
+      - 20% chance to drop Sweetheart Wheat Seeds.
     HOLY_PIE:
       Name: Holy Pie
       Lore:
-      - A magical food item.
-      - Enjoy the effects of Holy Pie.
+      - Pumpkin and refined flour beneath ancient protective runes.
+      - Eat to restore 12 health (6 hearts).
+      - Grants Divine Protection for 1.5 seconds.
+      - Removes harmful potion effects.
     CLOUD_BREAD:
       Name: Cloud Bread
       Lore:
-      - A magical food item.
-      - Enjoy the effects of Cloud Bread.
+      - A light loaf carrying the breath of the morning sky.
+      - Eat to restore 8 health (4 hearts).
+      - Grants Jump Boost III and Slow Falling for 15 seconds.
+      - Stops a rapid downward fall when consumed.
     HARVEST_WHEAT:
       Name: Harvest Wheat
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Harvest Wheat.
+      - Golden grain carrying the blessing of the harvest.
+      - An ingredient for magical bread and ceremonial pastries.
+      - Crafting ingredient; cannot be eaten directly.
     WHEAT_FLOUR:
-      Name: Wheat Flour
+      Name: Refined Wheat Flour
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Wheat Flour.
+      - Finely milled harvest wheat, white as fresh snow.
+      - Used in Cloud Bread, Holy Pie, and other magical foods.
+      - Crafting ingredient; cannot be eaten directly.
     HARVEST_RICE:
       Name: Harvest Rice
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Harvest Rice.
+      - Heavy grains nourished by morning dew and clear springs.
+      - The quiet promise of a plentiful harvest.
+      - Crafting ingredient; cannot be eaten directly.
     DREAM_KERNEL:
       Name: Dream Kernel
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Dream Kernel.
+      - A tribute to Yuan Longping and his dream of abundant harvests.
+      - Within this seed lives the hope of shelter beneath tall rice
+      - and a world where no one goes hungry.
     PRESS_CORE_ALPHA:
       Name: Press Core Alpha
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Press Core Alpha.
+      - Once a consumer-grade component.
+      - Magical alterations have given it an industrial purpose.
     ENERGY_CONNECTOR_GLASS:
-      Name: Energy Connector Glass
+      Name: Glass Energy Connector
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Energy Connector Glass.
+      - Connects nearby generators and machines to an energy network.
+      - 'Connection range: 6 blocks.'
     ENERGY_CONNECTOR_GLASS_INFO:
-      Name: Energy Connector Glass Information
+      Name: Glass Energy Connector Guide
       Lore:
-      - Information and instructions for Energy Connector Glass Information.
-      - Use the Slimefun guide for recipes and details.
+      - Connects nearby generators and machines to an energy network.
+      - 'Connection range: 6 blocks.'
+      - Craft with any vanilla glass block or glass pane.
     WEAPON_STAR_SHARDS_SWORD:
-      Name: Weapon Star Shards Sword
+      Name: Starfall Judgment
       Lore:
-      - A specialized MagicExpansion tool.
-      - Use Weapon Star Shards Sword carefully.
+      - A legendary blade of arcane power and celestial fire.
+      - 'Attack: Blazing Slash. Sneak-attack: Arcane Blast.'
+      - 'Right-click: Astral Shield, which reflects projectiles.'
+      - 'Sneak-right-click: Blink to the targeted ground.'
+      - Bleeding stacks independently and cannot deliver a killing blow.
+      - Damage and cooldowns follow the server configuration.
     SF_TIMINGS_HOLOGRAM:
-      Name: SF Timings Hologram
+      Name: Slimefun Tick Monitor
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for SF Timings Hologram.
+      - Displays total Slimefun tick time and the current chunk's time.
+      - Use it to locate demanding machine setups.
     MUSIC_TEST:
       Name: Music Test
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Music Test.
+      - A few bright notes from an experimental instrument.
     CARGO_FRAGMENT:
-      Name: Cargo Fragment
+      Name: Aether Cargo Chest
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Cargo Fragment.
+      - Holds items recovered from a broken Magic Storage Terminal.
+      - Place it in compatible storage to restore its contents.
+      - Each chest holds up to 2,147,483,647 items.
     CARGO_TERMINAL:
-      Name: Cargo Terminal
+      Name: Magic Storage Terminal
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Cargo Terminal.
+      - Stores up to 1,145 item types.
+      - Supports Slimefun cargo and wireless transfer across dimensions.
+      - 'Remote output: up to 256 items; input: up to 512 items per cycle.'
+      - Can output to vanilla containers, but cannot extract from them.
+      - Breaking the terminal releases its contents as Aether Cargo Chests.
+      - At most 2,048 chests can be dropped for each item type.
     CARGO_TERMINAL_RENEW:
-      Name: Cargo Terminal Renew
+      Name: Magic Storage Terminal - Reforged
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Cargo Terminal Renew.
+      - Stores up to 1,145 item types with adjustable quantity limits.
+      - Supports Slimefun cargo and wireless transfer across dimensions.
+      - 'Remote output: up to 256 items; input: up to 512 items per cycle.'
+      - Transfers between Slimefun machines and containers only.
+      - 'Warning: lowering a limit below the stored amount deletes the excess.'
     CHINESE_CHARACTER_CONSTRUCTOR:
-      Name: Chinese Character Constructor
+      Name: Character Engraving Workshop
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Chinese Character Constructor.
+      - A miniature workshop for traditional carved characters.
+      - Produces character components for compatible ID-card recipes.
     SEND_ITEMS_TO_PLAYER_MACHINE:
-      Name: Send Items To Player Machine
+      Name: Aether Cargo Sender
       Lore:
-      - A MagicExpansion processing machine.
-      - Processes materials for Send Items To Player Machine.
+      - Transfers an Aether Cargo Chest's contents to a selected player.
+      - Insert individual cargo chests; stacked chests stop the machine.
+      - Place this machine again after each server restart.
     SEND_ITEMS_TO_PLAYER_MACHINE_SF:
-      Name: Send Items To Player Machine SF
+      Name: Aether Cargo Sender - Slimefun Tick
       Lore:
-      - A MagicExpansion processing machine.
-      - Processes materials for Send Items To Player Machine SF.
+      - Transfers an Aether Cargo Chest's contents to a selected player.
+      - Insert individual cargo chests; stacked chests stop the machine.
+      - Runs once per Slimefun tick.
     PORTABLE_CARGO_TRANSPORTER:
-      Name: Portable Cargo Transporter
+      Name: Portable Aether Cargo Extractor
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Portable Cargo Transporter.
+      - Transfers an Aether Cargo Chest's contents to your inventory.
     CUSTOM_SEQUENCE_TOOL:
-      Name: Custom Sequence Tool
+      Name: Action Sequence Tool
       Lore:
-      - A specialized MagicExpansion tool.
-      - Use Custom Sequence Tool carefully.
+      - Stores a sequence of player actions in the item.
+      - Supports teleportation, interaction, delays, commands, and messages.
     TWO_TO_MAGIC_GEO_MACHINE_FORCE:
-      Name: Two To Magic GEO Machine Force
+      Name: Forced Magic Resource Converter
       Lore:
-      - A MagicExpansion processing machine.
-      - Processes materials for Two To Magic GEO Machine Force.
-      - ⇨ ⚡ 52 J/s
+      - Converts intermediary magic resources into their target resources.
+      - Without the matching magic integration, the result is stone.
+      - 'Energy: 52 J/s. Capacity: 1,314 J.'
     WORLD_CORE:
       Name: World Core
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for World Core.
+      - Its purpose remains a mystery.
     ITEM_ORIGIN_BACK_TRACK:
-      Name: Item Origin Back Track
+      Name: Material Origin Tracer
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Item Origin Back Track.
-      - ⇨ ⚡ 2147483646 J/tick
+      - Uses immense power to reproduce an item's recipe ingredients.
+      - Insert a Slimefun item; the source item is not consumed.
+      - Only ingredients displayed in the Slimefun guide can be produced.
+      - 'Cycle: 5 seconds.'
+      - 'Energy: 2,147,483,646 J/tick. Capacity: 2,147,483,647 J.'
     NEW_YEARS_DAY_FIREWORK_YUAN_DAN:
-      Name: New Years Day Firework New Year
+      Name: 2026 New Year Firework - Starlight
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for New Years Day Firework New Year.
+      - A ring of stars opens the gates of a new year.
+      - A commemorative firework for December 31, 2025.
+      - May its light guide you toward new wonders.
     NEW_YEARS_DAY_FIREWORK_YUAN_DAN_2:
-      Name: New Years Day Firework New Year 2
+      Name: 2026 New Year Firework - Celebration
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for New Years Day Firework New Year 2.
+      - A spinning burst of festive light crosses the midnight sky.
+      - A commemorative firework welcoming 2026.
+      - May hope rise with every spark.
   Resource:
     IRON_INGOT:
-      Name: Iron Ingot
+      Name: Magic Iron Ingot
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Iron Ingot.
+      - Iron Ingot encased in magical crystal.
+      - It seems harder than its ordinary counterpart.
     GOLD_INGOT:
-      Name: Gold Ingot
+      Name: Magic Gold Ingot
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Gold Ingot.
+      - Gold Ingot encased in magical crystal.
+      - It seems brighter than its ordinary counterpart.
     COPPER_INGOT:
-      Name: Copper Ingot
+      Name: Magic Copper Ingot
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Copper Ingot.
+      - Copper Ingot encased in magical crystal.
+      - It seems darker than its ordinary counterpart.
     TIN_INGOT:
-      Name: Tin Ingot
+      Name: Magic Tin Ingot
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Tin Ingot.
+      - Tin Ingot encased in magical crystal.
+      - It seems softer than its ordinary counterpart.
     SILVER_INGOT:
-      Name: Silver Ingot
+      Name: Magic Silver Ingot
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Silver Ingot.
+      - Silver Ingot encased in magical crystal.
+      - It seems more lustrous than its ordinary counterpart.
     LEAD_INGOT:
-      Name: Lead Ingot
+      Name: Magic Lead Ingot
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Lead Ingot.
+      - Lead Ingot encased in magical crystal.
+      - It seems heavier than its ordinary counterpart.
     ALUMINUM_INGOT:
-      Name: Aluminum Ingot
+      Name: Magic Aluminum Ingot
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Aluminum Ingot.
+      - Aluminum Ingot encased in magical crystal.
+      - It seems lighter than its ordinary counterpart.
     ZINC_INGOT:
-      Name: Zinc Ingot
+      Name: Magic Zinc Ingot
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Zinc Ingot.
+      - Zinc Ingot encased in magical crystal.
+      - It seems smoother than its ordinary counterpart.
     MAGNESIUM_INGOT:
-      Name: Magnesium Ingot
+      Name: Magic Magnesium Ingot
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Magnesium Ingot.
+      - Magnesium Ingot encased in magical crystal.
+      - It seems more radiant than its ordinary counterpart.
     ELEMENT_INGOT:
-      Name: Element Ingot
+      Name: Elemental Ingot
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Element Ingot.
+      - Nine magical metals fused into a single ingot.
+      - Does it hold finite possibilities, or infinite ones?
     REDSTONE:
-      Name: Redstone
+      Name: Magic Redstone
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Redstone.
+      - Redstone encased in magical crystal.
+      - It seems redder than its ordinary counterpart.
     DIAMOND:
-      Name: Diamond
+      Name: Magic Diamond
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Diamond.
+      - Diamond encased in magical crystal.
+      - It seems clearer than its ordinary counterpart.
     LAPIS_LAZULI:
-      Name: Lapis Lazuli
+      Name: Magic Lapis Lazuli
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Lapis Lazuli.
+      - Lapis Lazuli encased in magical crystal.
+      - It seems bluer than its ordinary counterpart.
     EMERALD:
-      Name: Emerald
+      Name: Magic Emerald
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Emerald.
+      - Emerald encased in magical crystal.
+      - It seems greener than its ordinary counterpart.
     COAL:
-      Name: Coal
+      Name: Magic Coal
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Coal.
+      - Coal encased in magical crystal.
+      - It seems darker than its ordinary counterpart.
     QUARTZ:
-      Name: Quartz
+      Name: Magic Quartz
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Quartz.
+      - Quartz encased in magical crystal.
+      - It seems sharper than its ordinary counterpart.
     AMETHYST_SHARD:
-      Name: Amethyst Shard
+      Name: Magic Amethyst Shard
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Amethyst Shard.
+      - Amethyst Shard encased in magical crystal.
+      - It seems more vivid than its ordinary counterpart.
     NETHERITE_INGOT:
-      Name: Netherite Ingot
+      Name: Magic Netherite Ingot
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Netherite Ingot.
+      - Netherite Ingot encased in magical crystal.
+      - It seems denser than its ordinary counterpart.
     BONE:
-      Name: Bone
+      Name: Magic Bone
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Bone.
+      - Bone encased in magical crystal.
+      - It seems harder than its ordinary counterpart.
     BONE_MEAL:
-      Name: Bone Meal
+      Name: Magic Bone Meal
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Bone Meal.
+      - Bone Meal encased in magical crystal.
+      - It seems finer than its ordinary counterpart.
     REDSTONE_TORCH:
-      Name: Redstone Torch
+      Name: Magic Redstone Torch
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Redstone Torch.
+      - Redstone Torch encased in magical crystal.
+      - It seems warmer than its ordinary counterpart.
     STICK:
-      Name: Stick
+      Name: Magic Stick
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Stick.
+      - Stick encased in magical crystal.
+      - It seems more flexible than its ordinary counterpart.
     COBBLESTONE:
-      Name: Cobblestone
+      Name: Magic Cobblestone
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Cobblestone.
+      - Cobblestone encased in magical crystal.
+      - It seems smoother than its ordinary counterpart.
     DIRT:
-      Name: Dirt
+      Name: Magic Dirt
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Dirt.
+      - Dirt encased in magical crystal.
+      - It seems looser than its ordinary counterpart.
     GLOWSTONE_DUST:
-      Name: Glowstone Dust
+      Name: Magic Glowstone Dust
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Glowstone Dust.
+      - Glowstone Dust encased in magical crystal.
+      - It seems brighter than its ordinary counterpart.
     LEVER:
-      Name: Lever
+      Name: Magic Lever
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Lever.
+      - Lever encased in magical crystal.
+      - It seems more responsive than its ordinary counterpart.
     BUTTON:
-      Name: Button
+      Name: Magic Button
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Button.
+      - Button encased in magical crystal.
+      - It seems more sensitive than its ordinary counterpart.
     OAK_PLANKS:
-      Name: Oak Planks
+      Name: Magic Oak Planks
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Oak Planks.
+      - Oak Planks encased in magical crystal.
+      - It seems sturdier than its ordinary counterpart.
     CORE_ORIGIN:
-      Name: Core Origin
+      Name: Origin Core
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Core Origin.
+      - A core used in crafting machines based on vanilla mechanisms.
     REDSTONE_EXECUTE_ELEMENT:
-      Name: Redstone Execute Element
+      Name: Redstone Processing Component
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Redstone Execute Element.
+      - A redstone processing component made from magical materials.
     LOG_MIX:
-      Name: Log Mix
+      Name: Woodland Essence
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Log Mix.
+      - The essence of eight kinds of wood, gathered into one material.
     LIGHT_CORE:
       Name: Light Core
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Light Core.
+      - A luminous core containing eight metallic elements.
     QUARTZ_CORE:
       Name: Quartz Core
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Quartz Core.
+      - An alchemical core that reshapes ordinary elements into pure silicon.
     LIGHT_ENERGY_ALPHA:
       Name: Light Energy Alpha
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Light Energy Alpha.
+      - A single-use energy source.
+      - 'Stored energy: 131,452 J.'
     JIN_KE_LA:
-      Name: Jin Ke La
+      Name: Jin Ke La Fertilizer
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Jin Ke La.
+      - A legendary fertilizer celebrated in extravagant harvest tales.
+      - Even the cattle are said to be impressed.
     POWER_CORE:
-      Name: Power Core
+      Name: Unstable Power Core
       Lore:
-      - An automated MagicExpansion energy or resource machine.
-      - Produces or processes resources related to Power Core.
+      - Produces power unpredictably; can also serve as a capacitor.
+      - 'Connection range: 6 blocks. Capacity: 1,314,520 J.'
     PURE_INGOT_POWER_CORE:
-      Name: Pure Ingot Power Core
+      Name: Lucky Capacitor
       Lore:
-      - An automated MagicExpansion energy or resource machine.
-      - Produces or processes resources related to Pure Ingot Power Core.
+      - Adds a random 1-1,314,520 J to its network each tick.
+      - Use at most one per network for predictable operation.
+      - 'Range: 6 blocks. Capacity: 2,147,483,647 J.'
+      - Retains stored energy when broken; avoid rapid replacement.
     BAD_LUCK_CAPACITY:
-      Name: Bad Luck Capacity
+      Name: Unlucky Capacitor
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Bad Luck Capacity.
+      - Removes a random 1-1,314,520 J from its network each tick.
+      - Use at most one per network for predictable operation.
+      - 'Range: 6 blocks. Capacity: 2,147,483,647 J.'
+      - Retains stored energy when broken; avoid rapid replacement.
     PANDORA_CAPACITY:
-      Name: Pandora Capacity
+      Name: Pandora's Capacitor
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Pandora Capacity.
+      - Randomly adds or removes 1-1,314,520 J each tick.
+      - Use at most one per network for predictable operation.
+      - 'Range: 6 blocks. Capacity: 2,147,483,647 J.'
+      - Retains stored energy when broken; avoid rapid replacement.
     MAGIC_CAPACITY_BASIC:
-      Name: Magic Capacity Basic
+      Name: Magic Capacitor
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Magic Capacity Basic.
+      - Adds 1,145,141,919-2,147,483,646 J each tick.
+      - Use at most one per network for predictable operation.
+      - 'Range: 6 blocks. Capacity: 2,147,483,647 J.'
+      - Retains stored energy when broken; avoid rapid replacement.
     MAGIC_CAPACITY_ULTRA:
-      Name: Magic Capacity Ultra
+      Name: Ultimate Magic Capacitor
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Magic Capacity Ultra.
+      - Adds up to 2,147,483,647 J each tick.
+      - Use at most one per network for predictable operation.
+      - 'Range: 6 blocks. Capacity: 2,147,483,647 J.'
+      - Retains stored energy when broken; avoid rapid replacement.
     POWER_CARD:
-      Name: Power Card
+      Name: Magic Power Card
       Lore:
-      - An automated MagicExpansion energy or resource machine.
-      - Produces or processes resources related to Power Card.
+      - Carries stored electricity between power networks.
+      - Sneak-right-click to set its storage limit.
+      - Stored energy is initialized on use.
     INFINITY_FLINT_AND_STEEL:
-      Name: Infinity Flint And Steel
+      Name: Infinite Flint and Steel
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Infinity Flint And Steel.
+      - A spark that refuses to fade.
+      - Can be used repeatedly without being consumed.
     SPACE_INFINITY_MAGIC:
-      Name: Space Infinity Magic
+      Name: Folded-Space Container
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Space Infinity Magic.
+      - A magical container for large prefabricated structures.
+      - Even an entire building fits within its folded space.
     COBBLESTONE_1:
-      Name: Cobblestone 1
+      Name: Compressed Cobblestone 1
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Cobblestone 1.
+      - 64 units of cobblestone, compressed into one material.
     COBBLESTONE_2:
-      Name: Cobblestone 2
+      Name: Compressed Cobblestone 2
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Cobblestone 2.
+      - 4,096 units of cobblestone, compressed into one material.
     STONE_1:
-      Name: Stone 1
+      Name: Compressed Stone 1
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Stone 1.
+      - 64 units of stone, compressed into one material.
     STONE_2:
-      Name: Stone 2
+      Name: Compressed Stone 2
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Stone 2.
+      - 4,096 units of stone, compressed into one material.
     OAK_LOG_1:
-      Name: Oak Log 1
+      Name: Compressed Oak Log 1
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Oak Log 1.
+      - 64 units of oak log, compressed into one material.
     OAK_LOG_2:
-      Name: Oak Log 2
+      Name: Compressed Oak Log 2
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Oak Log 2.
+      - 4,096 units of oak log, compressed into one material.
     STONE_BRICKS_1:
-      Name: Stone Bricks 1
+      Name: Compressed Stone Bricks 1
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Stone Bricks 1.
+      - 64 units of stone bricks, compressed into one material.
     STONE_BRICKS_2:
-      Name: Stone Bricks 2
+      Name: Compressed Stone Bricks 2
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Stone Bricks 2.
+      - 4,096 units of stone bricks, compressed into one material.
     BRICKS_1:
-      Name: Bricks 1
+      Name: Compressed Bricks 1
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Bricks 1.
+      - 64 units of bricks, compressed into one material.
     BRICKS_2:
-      Name: Bricks 2
+      Name: Compressed Bricks 2
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Bricks 2.
+      - 4,096 units of bricks, compressed into one material.
     REDSTONE_1:
-      Name: Redstone 1
+      Name: Compressed Redstone 1
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Redstone 1.
+      - 64 units of redstone, compressed into one material.
     REDSTONE_2:
-      Name: Redstone 2
+      Name: Compressed Redstone 2
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Redstone 2.
+      - 4,096 units of redstone, compressed into one material.
     REDSTONE_TORCH_1:
-      Name: Redstone Torch 1
+      Name: Compressed Redstone Torch 1
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Redstone Torch 1.
+      - 64 units of redstone torch, compressed into one material.
     REDSTONE_TORCH_2:
-      Name: Redstone Torch 2
+      Name: Compressed Redstone Torch 2
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Redstone Torch 2.
+      - 4,096 units of redstone torch, compressed into one material.
     REPEATER_1:
-      Name: Repeater 1
+      Name: Compressed Repeater 1
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Repeater 1.
+      - 64 units of repeater, compressed into one material.
     REPEATER_2:
-      Name: Repeater 2
+      Name: Compressed Repeater 2
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Repeater 2.
+      - 4,096 units of repeater, compressed into one material.
     COMPARATOR_1:
-      Name: Comparator 1
+      Name: Compressed Comparator 1
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Comparator 1.
+      - 64 units of comparator, compressed into one material.
     COMPARATOR_2:
-      Name: Comparator 2
+      Name: Compressed Comparator 2
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Comparator 2.
+      - 4,096 units of comparator, compressed into one material.
     HOPPER_1:
-      Name: Hopper 1
+      Name: Compressed Hopper 1
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Hopper 1.
+      - 64 units of hopper, compressed into one material.
     HOPPER_2:
-      Name: Hopper 2
+      Name: Compressed Hopper 2
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Hopper 2.
+      - 4,096 units of hopper, compressed into one material.
     STRING_1:
-      Name: String 1
+      Name: Compressed String 1
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for String 1.
+      - 64 units of string, compressed into one material.
     STRING_2:
-      Name: String 2
+      Name: Compressed String 2
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for String 2.
+      - 4,096 units of string, compressed into one material.
     TRIPWIRE_HOOK_1:
-      Name: Tripwire Hook 1
+      Name: Compressed Tripwire Hook 1
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Tripwire Hook 1.
+      - 64 units of tripwire hook, compressed into one material.
     TRIPWIRE_HOOK_2:
-      Name: Tripwire Hook 2
+      Name: Compressed Tripwire Hook 2
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Tripwire Hook 2.
+      - 4,096 units of tripwire hook, compressed into one material.
     FURNACE_1:
-      Name: Furnace 1
+      Name: Compressed Furnace 1
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Furnace 1.
+      - 64 units of furnace, compressed into one material.
     FURNACE_2:
-      Name: Furnace 2
+      Name: Compressed Furnace 2
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Furnace 2.
+      - 4,096 units of furnace, compressed into one material.
     IRON_INGOT_1:
-      Name: Iron Ingot 1
+      Name: Compressed Iron Ingot 1
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Iron Ingot 1.
+      - 64 units of iron ingot, compressed into one material.
     IRON_INGOT_2:
-      Name: Iron Ingot 2
+      Name: Compressed Iron Ingot 2
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Iron Ingot 2.
+      - 4,096 units of iron ingot, compressed into one material.
     IRON_INGOT_3:
-      Name: Iron Ingot 3
+      Name: Compressed Iron Ingot 3
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Iron Ingot 3.
+      - 262,144 units of iron ingot, compressed into one material.
     GLASS_1:
-      Name: Glass 1
+      Name: Compressed Glass 1
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Glass 1.
+      - 64 units of glass, compressed into one material.
     GLASS_2:
-      Name: Glass 2
+      Name: Compressed Glass 2
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Glass 2.
+      - 4,096 units of glass, compressed into one material.
     LIGHT_1:
-      Name: Light 1
+      Name: Compressed Light 1
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Light 1.
+      - 64 units of light, compressed into one material.
     LIGHT_2:
-      Name: Light 2
+      Name: Compressed Light 2
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Light 2.
+      - 4,096 units of light, compressed into one material.
     QUARTZ_BLOCK_1:
-      Name: Quartz Block 1
+      Name: Compressed Quartz Block 1
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Quartz Block 1.
+      - 64 units of quartz block, compressed into one material.
     QUARTZ_BLOCK_2:
-      Name: Quartz Block 2
+      Name: Compressed Quartz Block 2
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Quartz Block 2.
+      - 4,096 units of quartz block, compressed into one material.
     COLOR_WOOL_1:
-      Name: Color Wool 1
+      Name: Compressed Color Wool 1
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Color Wool 1.
+      - 64 units of color wool, compressed into one material.
     COLOR_WOOL_2:
-      Name: Color Wool 2
+      Name: Compressed Color Wool 2
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Color Wool 2.
+      - 4,096 units of color wool, compressed into one material.
     COLOR_TERRACOTTA_1:
-      Name: Color Terracotta 1
+      Name: Compressed Color Terracotta 1
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Color Terracotta 1.
+      - 64 units of color terracotta, compressed into one material.
     COLOR_TERRACOTTA_2:
-      Name: Color Terracotta 2
+      Name: Compressed Color Terracotta 2
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Color Terracotta 2.
+      - 4,096 units of color terracotta, compressed into one material.
     COLOR_CONCRETE_1:
-      Name: Color Concrete 1
+      Name: Compressed Color Concrete 1
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Color Concrete 1.
+      - 64 units of color concrete, compressed into one material.
     COLOR_CONCRETE_2:
-      Name: Color Concrete 2
+      Name: Compressed Color Concrete 2
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Color Concrete 2.
+      - 4,096 units of color concrete, compressed into one material.
     COLOR_GLAZED_TERRACOTTA_1:
-      Name: Color Glazed Terracotta 1
+      Name: Compressed Color Glazed Terracotta 1
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Color Glazed Terracotta 1.
+      - 64 units of color glazed terracotta, compressed into one material.
     COLOR_GLAZED_TERRACOTTA_2:
-      Name: Color Glazed Terracotta 2
+      Name: Compressed Color Glazed Terracotta 2
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Color Glazed Terracotta 2.
+      - 4,096 units of color glazed terracotta, compressed into one material.
     COLOR_LEAVES_1:
-      Name: Color Leaves 1
+      Name: Compressed Color Leaves 1
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Color Leaves 1.
+      - 64 units of color leaves, compressed into one material.
     COLOR_LEAVES_2:
-      Name: Color Leaves 2
+      Name: Compressed Color Leaves 2
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Color Leaves 2.
+      - 4,096 units of color leaves, compressed into one material.
     COLOR_LOG_1:
-      Name: Color Log 1
+      Name: Compressed Color Log 1
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Color Log 1.
+      - 64 units of color log, compressed into one material.
     COLOR_LOG_2:
-      Name: Color Log 2
+      Name: Compressed Color Log 2
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Color Log 2.
+      - 4,096 units of color log, compressed into one material.
     PURE_GOLD:
       Name: Pure Gold
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Pure Gold.
+      - Gold refined to extraordinary purity.
     PURE_IRON:
       Name: Pure Iron
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Pure Iron.
+      - Iron refined to extraordinary purity.
     PURE_COPPER:
       Name: Pure Copper
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Pure Copper.
+      - Copper refined to extraordinary purity.
     PURE_MAGNESIUM:
       Name: Pure Magnesium
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Pure Magnesium.
+      - Magnesium refined to extraordinary purity.
     PURE_TIN:
       Name: Pure Tin
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Pure Tin.
+      - Tin refined to extraordinary purity.
     PURE_SILVER:
       Name: Pure Silver
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Pure Silver.
+      - Silver refined to extraordinary purity.
     PURE_LEAD:
       Name: Pure Lead
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Pure Lead.
+      - Lead refined to extraordinary purity.
     PURE_ALUMINUM:
       Name: Pure Aluminum
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Pure Aluminum.
+      - Aluminum refined to extraordinary purity.
     PURE_ZINC:
       Name: Pure Zinc
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Pure Zinc.
+      - Zinc refined to extraordinary purity.
     PURE_ELEMENT_INGOT:
       Name: Pure Element Ingot
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Pure Element Ingot.
+      - Element ingot refined to extraordinary purity.
     PURE_ELEMENT_GOLD:
-      Name: Pure Element Gold
+      Name: Pure Metal Essence
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Pure Element Gold.
+      - The purified essence of metal, one of the five elements.
     PURE_ELEMENT_WOOD:
-      Name: Pure Element Wood
+      Name: Pure Wood Essence
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Pure Element Wood.
+      - The purified essence of wood, one of the five elements.
     PURE_ELEMENT_WATER:
-      Name: Pure Element Water
+      Name: Pure Water Essence
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Pure Element Water.
+      - The purified essence of water, one of the five elements.
     PURE_ELEMENT_FIRE:
-      Name: Pure Element Fire
+      Name: Pure Fire Essence
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Pure Element Fire.
+      - The purified essence of fire, one of the five elements.
     PURE_ELEMENT_EARTH:
-      Name: Pure Element Earth
+      Name: Pure Earth Essence
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Pure Element Earth.
+      - The purified essence of earth, one of the five elements.
     PURE_FIVE_ELEMENT:
-      Name: Pure Five Element
+      Name: Pure Five-Element Essence
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Pure Five Element.
+      - The five purified elements united in a single material.
     SPEED_ELEMENT_64:
-      Name: Speed Element 64
+      Name: 64x Speed Component
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Speed Element 64.
+      - A machine component representing sixty-fourfold speed.
   GEO:
     GEO_MINER_PLUS:
       Name: GEO Miner Plus
       Lore:
-      - A GEO resource or mining component.
-      - Used to obtain or process GEO Miner Plus.
+      - Extracts natural resources from the current chunk.
+      - Can collect resources that cannot be mined with a pickaxe.
+      - Run a GEO Scan before operating.
+      - 'Mining speed: 1,314x.'
       - ⇨ ⚡ 520 J/s
+      - ⇨ ⚡ 1314 J capacity
     FIVE_ELEMENT_MINER:
-      Name: Five Element Miner
+      Name: Five-Element Miner
       Lore:
-      - A GEO resource or mining component.
-      - Used to obtain or process Five Element Miner.
+      - Extracts the five elemental resources from the current chunk.
+      - Run a GEO Scan before operating.
+      - 'Mining speed: 1x.'
       - ⇨ ⚡ 520 J/s
+      - ⇨ ⚡ 1314 J capacity
     RSC_MAGIC_MINER:
-      Name: RSC Magic Miner
+      Name: Magic Resource Miner
       Lore:
-      - A GEO resource or mining component.
-      - Used to obtain or process RSC Magic Miner.
+      - Extracts intermediary magic resources from the current chunk.
+      - Insert a matching sample to target a particular resource.
+      - Run a GEO Scan before operating.
       - ⇨ ⚡ 520 J/s
+      - ⇨ ⚡ 1314 J capacity
     WOOD_ELEMENT:
-      Name: Wood Element
+      Name: Wood Essence
       Lore:
-      - A GEO resource or mining component.
-      - Used to obtain or process Wood Element.
+      - 'One of the five elements: metal, wood, water, fire, and earth.'
+      - Wood embodies growth, renewal, and the life of ancient forests.
     GOLD_ELEMENT:
-      Name: Gold Element
+      Name: Metal Essence
       Lore:
-      - A GEO resource or mining component.
-      - Used to obtain or process Gold Element.
+      - 'One of the five elements: metal, wood, water, fire, and earth.'
+      - Metal embodies strength, order, and the bones of the mountains.
     WATER_ELEMENT:
-      Name: Water Element
+      Name: Water Essence
       Lore:
-      - A GEO resource or mining component.
-      - Used to obtain or process Water Element.
+      - 'One of the five elements: metal, wood, water, fire, and earth.'
+      - Water embodies change, acceptance, and the flow of life.
     FIRE_ELEMENT:
-      Name: Fire Element
+      Name: Fire Essence
       Lore:
-      - A GEO resource or mining component.
-      - Used to obtain or process Fire Element.
+      - 'One of the five elements: metal, wood, water, fire, and earth.'
+      - Fire embodies passion and change, warmth and destruction.
     EARTH_ELEMENT:
-      Name: Earth Element
+      Name: Earth Essence
       Lore:
-      - A GEO resource or mining component.
-      - Used to obtain or process Earth Element.
+      - 'One of the five elements: metal, wood, water, fire, and earth.'
+      - Earth embodies endurance and the ground that sustains all life.
     FIVE_ELEMENT:
-      Name: Five Element
+      Name: Five-Element Essence
       Lore:
-      - A GEO resource or mining component.
-      - Used to obtain or process Five Element.
+      - Metal, wood, water, fire, and earth united in one material.
+      - The cycle of nature rests within it.
     RSC_MAGIC_REDSTONE:
-      Name: RSC Magic Redstone
+      Name: Intermediary Magic Redstone
       Lore:
-      - A GEO resource or mining component.
-      - Used to obtain or process RSC Magic Redstone.
+      - An intermediary resource for conversion into compatible magic materials.
     RSC_MAGIC_COSMIC_DUST:
-      Name: RSC Magic Cosmic Dust
+      Name: Intermediary Cosmic Dust
       Lore:
-      - A GEO resource or mining component.
-      - Used to obtain or process RSC Magic Cosmic Dust.
+      - An intermediary resource for conversion into compatible magic materials.
     RSC_MAGIC_SOUL:
-      Name: RSC Magic Soul
+      Name: Intermediary Soul
       Lore:
-      - A GEO resource or mining component.
-      - Used to obtain or process RSC Magic Soul.
+      - An intermediary resource for conversion into compatible magic materials.
   GENERATOR:
     RESOURCE_MACHINE_WOOD_BASIC:
-      Name: Resource Machine Wood Basic
+      Name: Verdant Source
       Lore:
-      - An automated MagicExpansion energy or resource machine.
-      - Produces or processes resources related to Resource Machine Wood Basic.
+      - Ancient magic draws timber from the void.
+      - Automatically produces logs and leaves.
       - ⇨ ⚙ 4 s
       - ⇨ ⚡ 520 J/s
+      - ⇨ ⚡ 1314 J capacity
     RESOURCE_MACHINE_WOOD_ULTRA:
-      Name: Resource Machine Wood Ultra
+      Name: Forestwhisper - Five Elements
       Lore:
-      - An automated MagicExpansion energy or resource machine.
-      - Produces or processes resources related to Resource Machine Wood Ultra.
+      - An advanced Verdant Source, strengthened by the five elements.
+      - Automatically produces logs and leaves.
       - ⇨ ⚙ 3 s
       - ⇨ ⚡ 5200 J/s
+      - ⇨ ⚡ 131452.0 J capacity
     LIGHT_GEN_BASIC:
-      Name: Light Generator Basic
+      Name: Light Collector
       Lore:
-      - An automated MagicExpansion energy or resource machine.
-      - Produces or processes resources related to Light Generator Basic.
+      - Collects light from the surrounding environment.
+      - Automatically produces light resources.
       - ⇨ ⚙ 16s
       - ⇨ ⚡ 520 J/s
+      - ⇨ ⚡ 1314 J capacity
     STRING_GEN_BASIC:
-      Name: String Generator Basic
+      Name: String Generator
       Lore:
-      - An automated MagicExpansion energy or resource machine.
-      - Produces or processes resources related to String Generator Basic.
+      - Keeps an old string-duplication trick alive through magic.
+      - Automatically produces and collects string.
       - ⇨ ⚙ 1s
       - ⇨ ⚡ 5.2 J/s
+      - ⇨ ⚡ 1314 J capacity
     STRING_GEN_ULTRA:
-      Name: String Generator Ultra
+      Name: String Generator - Five Elements
       Lore:
-      - An automated MagicExpansion energy or resource machine.
-      - Produces or processes resources related to String Generator Ultra.
+      - Five-element magic multiplies the threads of an old trick.
+      - Automatically produces and collects string.
       - ⇨ ⚙ 1s
       - ⇨ ⚡ 52 J/s
+      - ⇨ ⚡ 1314 J capacity
     MINE_MAN_QUARTZ_BASIC:
-      Name: Mine Man Quartz Basic
+      Name: Quartz Mining Robot
       Lore:
-      - An automated MagicExpansion energy or resource machine.
-      - Produces or processes resources related to Mine Man Quartz Basic.
+      - A tireless mining companion powered by a magical cavern.
+      - Automatically produces quartz.
       - ⇨ ⚙ 2s
       - ⇨ ⚡ 520 J/s
+      - ⇨ ⚡ 1314 J capacity
     MINE_MAN_AMETHYST_SHARD_BASIC:
-      Name: Mine Man Amethyst Shard Basic
+      Name: Amethyst Shard Mining Robot
       Lore:
-      - An automated MagicExpansion energy or resource machine.
-      - Produces or processes resources related to Mine Man Amethyst Shard Basic.
+      - A tireless mining companion powered by a magical cavern.
+      - Automatically produces amethyst shard.
       - ⇨ ⚙ 2s
       - ⇨ ⚡ 520 J/s
+      - ⇨ ⚡ 1314 J capacity
     MINE_MAN_REDSTONE_BASIC:
-      Name: Mine Man Redstone Basic
+      Name: Redstone Mining Robot
       Lore:
-      - An automated MagicExpansion energy or resource machine.
-      - Produces or processes resources related to Mine Man Redstone Basic.
+      - A tireless mining companion powered by a magical cavern.
+      - Automatically produces redstone.
       - ⇨ ⚙ 2s
       - ⇨ ⚡ 520 J/s
+      - ⇨ ⚡ 1314 J capacity
     MINE_MAN_DIAMOND_BASIC:
-      Name: Mine Man Diamond Basic
+      Name: Diamond Mining Robot
       Lore:
-      - An automated MagicExpansion energy or resource machine.
-      - Produces or processes resources related to Mine Man Diamond Basic.
+      - A tireless mining companion powered by a magical cavern.
+      - Automatically produces diamond.
       - ⇨ ⚙ 2s
       - ⇨ ⚡ 520 J/s
+      - ⇨ ⚡ 1314 J capacity
     MINE_MAN_LAPIS_LAZULI_BASIC:
-      Name: Mine Man Lapis Lazuli Basic
+      Name: Lapis Lazuli Mining Robot
       Lore:
-      - An automated MagicExpansion energy or resource machine.
-      - Produces or processes resources related to Mine Man Lapis Lazuli Basic.
+      - A tireless mining companion powered by a magical cavern.
+      - Automatically produces lapis lazuli.
       - ⇨ ⚙ 2s
       - ⇨ ⚡ 520 J/s
+      - ⇨ ⚡ 1314 J capacity
     MINE_MAN_EMERALD_BASIC:
-      Name: Mine Man Emerald Basic
+      Name: Emerald Mining Robot
       Lore:
-      - An automated MagicExpansion energy or resource machine.
-      - Produces or processes resources related to Mine Man Emerald Basic.
+      - A tireless mining companion powered by a magical cavern.
+      - Automatically produces emerald.
       - ⇨ ⚙ 2s
       - ⇨ ⚡ 520 J/s
+      - ⇨ ⚡ 1314 J capacity
     MINE_MAN_COAL_BASIC:
-      Name: Mine Man Coal Basic
+      Name: Coal Mining Robot
       Lore:
-      - An automated MagicExpansion energy or resource machine.
-      - Produces or processes resources related to Mine Man Coal Basic.
+      - A tireless mining companion powered by a magical cavern.
+      - Automatically produces coal.
       - ⇨ ⚙ 2s
       - ⇨ ⚡ 520 J/s
+      - ⇨ ⚡ 1314 J capacity
     MINE_MAN_NETHERITE_SCRAP_BASIC:
-      Name: Mine Man Netherite Scrap Basic
+      Name: Netherite Scrap Mining Robot
       Lore:
-      - An automated MagicExpansion energy or resource machine.
-      - Produces or processes resources related to Mine Man Netherite Scrap Basic.
+      - A tireless mining companion powered by a magical cavern.
+      - Automatically produces netherite scrap.
       - ⇨ ⚙ 2s
       - ⇨ ⚡ 520 J/s
+      - ⇨ ⚡ 1314 J capacity
     MINE_MAN_IRON_DUST_BASIC:
-      Name: Mine Man Iron Dust Basic
+      Name: Iron Dust Mining Robot
       Lore:
-      - An automated MagicExpansion energy or resource machine.
-      - Produces or processes resources related to Mine Man Iron Dust Basic.
+      - A tireless mining companion powered by a magical cavern.
+      - Automatically produces iron dust.
       - ⇨ ⚙ 2s
       - ⇨ ⚡ 520 J/s
+      - ⇨ ⚡ 1314 J capacity
     MINE_MAN_GOLD_DUST_BASIC:
-      Name: Mine Man Gold Dust Basic
+      Name: Gold Dust Mining Robot
       Lore:
-      - An automated MagicExpansion energy or resource machine.
-      - Produces or processes resources related to Mine Man Gold Dust Basic.
+      - A tireless mining companion powered by a magical cavern.
+      - Automatically produces gold dust.
       - ⇨ ⚙ 2s
       - ⇨ ⚡ 520 J/s
+      - ⇨ ⚡ 1314 J capacity
     MINE_MAN_COPPER_DUST_BASIC:
-      Name: Mine Man Copper Dust Basic
+      Name: Copper Dust Mining Robot
       Lore:
-      - An automated MagicExpansion energy or resource machine.
-      - Produces or processes resources related to Mine Man Copper Dust Basic.
+      - A tireless mining companion powered by a magical cavern.
+      - Automatically produces copper dust.
       - ⇨ ⚙ 2s
       - ⇨ ⚡ 520 J/s
+      - ⇨ ⚡ 1314 J capacity
     MINE_MAN_TIN_DUST_BASIC:
-      Name: Mine Man Tin Dust Basic
+      Name: Tin Dust Mining Robot
       Lore:
-      - An automated MagicExpansion energy or resource machine.
-      - Produces or processes resources related to Mine Man Tin Dust Basic.
+      - A tireless mining companion powered by a magical cavern.
+      - Automatically produces tin dust.
       - ⇨ ⚙ 2s
       - ⇨ ⚡ 520 J/s
+      - ⇨ ⚡ 1314 J capacity
     MINE_MAN_SILVER_DUST_BASIC:
-      Name: Mine Man Silver Dust Basic
+      Name: Silver Dust Mining Robot
       Lore:
-      - An automated MagicExpansion energy or resource machine.
-      - Produces or processes resources related to Mine Man Silver Dust Basic.
+      - A tireless mining companion powered by a magical cavern.
+      - Automatically produces silver dust.
       - ⇨ ⚙ 2s
       - ⇨ ⚡ 520 J/s
+      - ⇨ ⚡ 1314 J capacity
     MINE_MAN_LEAD_DUST_BASIC:
-      Name: Mine Man Lead Dust Basic
+      Name: Lead Dust Mining Robot
       Lore:
-      - An automated MagicExpansion energy or resource machine.
-      - Produces or processes resources related to Mine Man Lead Dust Basic.
+      - A tireless mining companion powered by a magical cavern.
+      - Automatically produces lead dust.
       - ⇨ ⚙ 2s
       - ⇨ ⚡ 520 J/s
+      - ⇨ ⚡ 1314 J capacity
     MINE_MAN_ALUMINUM_DUST_BASIC:
-      Name: Mine Man Aluminum Dust Basic
+      Name: Aluminum Dust Mining Robot
       Lore:
-      - An automated MagicExpansion energy or resource machine.
-      - Produces or processes resources related to Mine Man Aluminum Dust Basic.
+      - A tireless mining companion powered by a magical cavern.
+      - Automatically produces aluminum dust.
       - ⇨ ⚙ 2s
       - ⇨ ⚡ 520 J/s
+      - ⇨ ⚡ 1314 J capacity
     MINE_MAN_ZINC_DUST_BASIC:
-      Name: Mine Man Zinc Dust Basic
+      Name: Zinc Dust Mining Robot
       Lore:
-      - An automated MagicExpansion energy or resource machine.
-      - Produces or processes resources related to Mine Man Zinc Dust Basic.
+      - A tireless mining companion powered by a magical cavern.
+      - Automatically produces zinc dust.
       - ⇨ ⚙ 2s
       - ⇨ ⚡ 520 J/s
+      - ⇨ ⚡ 1314 J capacity
     MINE_MAN_MAGNESIUM_DUST_BASIC:
-      Name: Mine Man Magnesium Dust Basic
+      Name: Magnesium Dust Mining Robot
       Lore:
-      - An automated MagicExpansion energy or resource machine.
-      - Produces or processes resources related to Mine Man Magnesium Dust Basic.
+      - A tireless mining companion powered by a magical cavern.
+      - Automatically produces magnesium dust.
       - ⇨ ⚙ 2s
       - ⇨ ⚡ 520 J/s
+      - ⇨ ⚡ 1314 J capacity
     MINE_MAN_IRON_INGOT_BASIC:
-      Name: Mine Man Iron Ingot Basic
+      Name: Iron Ingot Mining Robot
       Lore:
-      - An automated MagicExpansion energy or resource machine.
-      - Produces or processes resources related to Mine Man Iron Ingot Basic.
+      - A tireless mining companion powered by a magical cavern.
+      - Automatically produces iron ingot.
       - ⇨ ⚙ 2s
       - ⇨ ⚡ 520 J/s
+      - ⇨ ⚡ 1314 J capacity
     MINE_MAN_GOLD_INGOT_BASIC:
-      Name: Mine Man Gold Ingot Basic
+      Name: Gold Ingot Mining Robot
       Lore:
-      - An automated MagicExpansion energy or resource machine.
-      - Produces or processes resources related to Mine Man Gold Ingot Basic.
+      - A tireless mining companion powered by a magical cavern.
+      - Automatically produces gold ingot.
       - ⇨ ⚙ 2s
       - ⇨ ⚡ 520 J/s
+      - ⇨ ⚡ 1314 J capacity
     MINE_MAN_COPPER_INGOT_BASIC:
-      Name: Mine Man Copper Ingot Basic
+      Name: Copper Ingot Mining Robot
       Lore:
-      - An automated MagicExpansion energy or resource machine.
-      - Produces or processes resources related to Mine Man Copper Ingot Basic.
+      - A tireless mining companion powered by a magical cavern.
+      - Automatically produces copper ingot.
       - ⇨ ⚙ 2s
       - ⇨ ⚡ 520 J/s
+      - ⇨ ⚡ 1314 J capacity
     MINE_MAN_TIN_INGOT_BASIC:
-      Name: Mine Man Tin Ingot Basic
+      Name: Tin Ingot Mining Robot
       Lore:
-      - An automated MagicExpansion energy or resource machine.
-      - Produces or processes resources related to Mine Man Tin Ingot Basic.
+      - A tireless mining companion powered by a magical cavern.
+      - Automatically produces tin ingot.
       - ⇨ ⚙ 2s
       - ⇨ ⚡ 520 J/s
+      - ⇨ ⚡ 1314 J capacity
     MINE_MAN_SILVER_INGOT_BASIC:
-      Name: Mine Man Silver Ingot Basic
+      Name: Silver Ingot Mining Robot
       Lore:
-      - An automated MagicExpansion energy or resource machine.
-      - Produces or processes resources related to Mine Man Silver Ingot Basic.
+      - A tireless mining companion powered by a magical cavern.
+      - Automatically produces silver ingot.
       - ⇨ ⚙ 2s
       - ⇨ ⚡ 520 J/s
+      - ⇨ ⚡ 1314 J capacity
     MINE_MAN_LEAD_INGOT_BASIC:
-      Name: Mine Man Lead Ingot Basic
+      Name: Lead Ingot Mining Robot
       Lore:
-      - An automated MagicExpansion energy or resource machine.
-      - Produces or processes resources related to Mine Man Lead Ingot Basic.
+      - A tireless mining companion powered by a magical cavern.
+      - Automatically produces lead ingot.
       - ⇨ ⚙ 2s
       - ⇨ ⚡ 520 J/s
+      - ⇨ ⚡ 1314 J capacity
     MINE_MAN_ALUMINUM_INGOT_BASIC:
-      Name: Mine Man Aluminum Ingot Basic
+      Name: Aluminum Ingot Mining Robot
       Lore:
-      - An automated MagicExpansion energy or resource machine.
-      - Produces or processes resources related to Mine Man Aluminum Ingot Basic.
+      - A tireless mining companion powered by a magical cavern.
+      - Automatically produces aluminum ingot.
       - ⇨ ⚙ 2s
       - ⇨ ⚡ 520 J/s
+      - ⇨ ⚡ 1314 J capacity
     MINE_MAN_ZINC_INGOT_BASIC:
-      Name: Mine Man Zinc Ingot Basic
+      Name: Zinc Ingot Mining Robot
       Lore:
-      - An automated MagicExpansion energy or resource machine.
-      - Produces or processes resources related to Mine Man Zinc Ingot Basic.
+      - A tireless mining companion powered by a magical cavern.
+      - Automatically produces zinc ingot.
       - ⇨ ⚙ 2s
       - ⇨ ⚡ 520 J/s
+      - ⇨ ⚡ 1314 J capacity
     MINE_MAN_MAGNESIUM_INGOT_BASIC:
-      Name: Mine Man Magnesium Ingot Basic
+      Name: Magnesium Ingot Mining Robot
       Lore:
-      - An automated MagicExpansion energy or resource machine.
-      - Produces or processes resources related to Mine Man Magnesium Ingot Basic.
+      - A tireless mining companion powered by a magical cavern.
+      - Automatically produces magnesium ingot.
       - ⇨ ⚙ 2s
       - ⇨ ⚡ 520 J/s
+      - ⇨ ⚡ 1314 J capacity
     MINE_MAN_NETHERITE_INGOT_BASIC:
-      Name: Mine Man Netherite Ingot Basic
+      Name: Netherite Ingot Mining Robot
       Lore:
-      - An automated MagicExpansion energy or resource machine.
-      - Produces or processes resources related to Mine Man Netherite Ingot Basic.
+      - A tireless mining companion powered by a magical cavern.
+      - Automatically produces netherite ingot.
       - ⇨ ⚙ 2s
       - ⇨ ⚡ 520 J/s
+      - ⇨ ⚡ 1314 J capacity
     MINE_MAN_MINERAL_BASIC:
-      Name: Mine Man Mineral Basic
+      Name: Ore Vein Mining Robot
       Lore:
-      - An automated MagicExpansion energy or resource machine.
-      - Produces or processes resources related to Mine Man Mineral Basic.
+      - An automated miner for the Ore Vein One Block.
+      - Produces raw ores using electrical power.
       - ⇨ ⚙ 2s
       - ⇨ ⚡ 520 J/s
+      - ⇨ ⚡ 1314 J capacity
     MINE_MAN_MINERAL_ULTRA:
-      Name: Mine Man Mineral Ultra
+      Name: Ore Vein Mining Robot - Five Elements
       Lore:
-      - An automated MagicExpansion energy or resource machine.
-      - Produces or processes resources related to Mine Man Mineral Ultra.
+      - An automated miner for the Ore Vein One Block.
+      - Produces raw ores using electrical power.
       - ⇨ ⚙ 1s
       - ⇨ ⚡ 5200 J/s
+      - ⇨ ⚡ 131452.0 J capacity
     FIVE_ELEMENT_GEN_BASIC:
-      Name: Five Element Generator Basic
+      Name: Five-Element Gathering Array
       Lore:
-      - An automated MagicExpansion energy or resource machine.
-      - Produces or processes resources related to Five Element Generator Basic.
+      - An ancient instrument that gathers metal, wood, water, fire, and earth.
+      - Place it on the ground to begin collecting.
+      - 'Collection range: 5 blocks. Collection interval: 3 seconds.'
     ORIGIN_MATERIAL_GEN_MAKER_LITE:
-      Name: Origin Material Generator Maker Lite
+      Name: Origin Foundation
       Lore:
-      - An automated MagicExpansion energy or resource machine.
-      - Produces or processes resources related to Origin Material Generator Maker Lite.
+      - The earliest framework for the Evolution Table.
+      - Alchemy begins to define the rules by which matter is copied.
       - ⇨ ⚙ 5s
       - ⇨ ⚡ 520 J/s
+      - ⇨ ⚡ 131452.0 J capacity
     ORIGIN_MATERIAL_GEN_MAKER_ALPHA:
-      Name: Origin Material Generator Maker Alpha
+      Name: Primordial Framework Alpha
       Lore:
-      - An automated MagicExpansion energy or resource machine.
-      - Produces or processes resources related to Origin Material Generator Maker Alpha.
+      - A prototype that forges the rules of creation.
+      - Every form produced by an Evolution Table follows its hidden script.
       - ⇨ ⚙ 5s
       - ⇨ ⚡ 52000 J/s
+      - ⇨ ⚡ 131452.0 J capacity
     ORIGIN_MATERIAL_GEN_MAKER_BETA:
-      Name: Origin Material Generator Maker Beta
+      Name: Primordial Framework Beta
       Lore:
-      - An automated MagicExpansion energy or resource machine.
-      - Produces or processes resources related to Origin Material Generator Maker Beta.
+      - A successor to the first primordial framework.
+      - Before matter can be remade, its possibilities must be defined.
       - ⇨ ⚙ 5s
       - ⇨ ⚡ 52000 J/s
+      - ⇨ ⚡ 131452.0 J capacity
     ORIGIN_MATERIAL_GEN_LITE:
-      Name: Origin Material Generator Lite
+      Name: Evolution Table - Origin
       Lore:
-      - An automated MagicExpansion energy or resource machine.
-      - Produces or processes resources related to Origin Material Generator Lite.
+      - The first generation of material evolution.
+      - Reconstructs basic materials at a modest rate.
+      - Its available forms are limited by the supported recipes.
       - ⇨ ⚙ 1s
       - ⇨ ⚡ 52 J/s
+      - ⇨ ⚡ 131452.0 J capacity
     ORIGIN_MATERIAL_GEN_LITE_PRESS:
-      Name: Origin Material Generator Lite Press
+      Name: Evolution Array - Origin
       Lore:
-      - An automated MagicExpansion energy or resource machine.
-      - Produces or processes resources related to Origin Material Generator Lite Press.
+      - Coordinates multiple Origin Evolution Tables.
+      - Only supports the Origin tier.
+      - Centralizes their material production.
       - ⇨ ⚙ 1s
       - ⇨ ⚡ 52 J/s
+      - ⇨ ⚡ 131452.0 J capacity
     ORIGIN_MATERIAL_GEN:
-      Name: Origin Material Generator
+      Name: Evolution Table - Swift
       Lore:
-      - An automated MagicExpansion energy or resource machine.
-      - Produces or processes resources related to Origin Material Generator.
+      - An advanced table for rapid material reconstruction.
+      - Produces supported basic materials at a very high rate.
       - ⇨ ⚙ 1s
       - ⇨ ⚡ 52000 J/s
+      - ⇨ ⚡ 131452.0 J capacity
     ORIGIN_MATERIAL_GEN_ULTRA:
-      Name: Origin Material Generator Ultra
+      Name: Ultimate Evolution Table
       Lore:
-      - An automated MagicExpansion energy or resource machine.
-      - Produces or processes resources related to Origin Material Generator Ultra.
+      - Reads the underlying pattern of matter and recreates its form.
+      - An advanced resource generator with configurable output.
+      - Creation follows the rules of equivalent exchange.
       - ⇨ ⚙ 1s
       - ⇨ ⚡ 52000 J/s
+      - ⇨ ⚡ 131452.0 J capacity
     SLIME_BOOK_GEN_ADVANCE:
-      Name: Slime Book Generator Advance
+      Name: Magic Printing Press
       Lore:
-      - An automated MagicExpansion energy or resource machine.
-      - Produces or processes resources related to Slime Book Generator Advance.
+      - A Slimefun core powers the press.
+      - Automatically produces enchanted books and knowledge books.
+      - We bind more than words between these covers.
       - ⇨ ⚙ 2s
       - ⇨ ⚡ 520 J/s
+      - ⇨ ⚡ 1314 J capacity
   MACHINE:
     PHANTON_SUPPRESSION:
-      Name: Phantom Suppression
+      Name: Phantom Suppressor
       Lore:
-      - A MagicExpansion processing machine.
-      - Processes materials for Phantom Suppression.
+      - Removes phantoms within a 20-block radius.
+      - Even restless wings retreat before this light.
       - ⇨ ⚡ 520 J/s
+      - ⇨ ⚡ 1314 J capacity
   POWER_MACHINE:
     POWER_FIRE_UNSTABLE:
-      Name: Power Fire Unstable
+      Name: Thermal Generator
       Lore:
-      - An automated MagicExpansion energy or resource machine.
-      - Produces or processes resources related to Power Fire Unstable.
+      - Generates electricity from heat beneath the machine.
+      - Output varies with the heat source.
+      - 'Output: 2-52,000 J/s. Capacity: 131,452 J.'
     POWER_FIRE_STABILITY:
-      Name: Power Fire Stability
+      Name: Advanced Thermal Generator
       Lore:
-      - An automated MagicExpansion energy or resource machine.
-      - Produces or processes resources related to Power Fire Stability.
+      - Generates electricity from heat beneath the machine.
+      - Output varies with the heat source.
+      - 'Output: 520-1,314,520 J/s. Capacity: 1,314,520 J.'
     POWER_COLOR_EGG_BLOCK:
-      Name: Power Color Egg Block
+      Name: Secret Block Generator
       Lore:
-      - An automated MagicExpansion energy or resource machine.
-      - Produces or processes resources related to Power Color Egg Block.
+      - Place a block above the generator to produce power.
+      - The chosen block affects its random output.
+      - 'Output: 2-131,452 J/s. Capacity: 1,314,520 J.'
     POWER_COLOR_EGG_KEY:
-      Name: Power Color Egg Key
+      Name: Secret Pattern Generator
       Lore:
-      - An automated MagicExpansion energy or resource machine.
-      - Produces or processes resources related to Power Color Egg Key.
+      - Arrange items in the top nine slots to enter a binary pattern.
+      - Occupied slot = 1; empty slot = 0.
+      - 'Example: slots 1, 2, 5, 6, and 9 form 110011001.'
+      - Find the unlocking patterns in the historical update notes.
+      - 'Output: 5,200-131,452 J/s. Capacity: 1,314,520 J.'
     POWER_FISH_ELECTRIC:
-      Name: Power Fish Electric
+      Name: Bioelectric Generator
       Lore:
-      - An automated MagicExpansion energy or resource machine.
-      - Produces or processes resources related to Power Fish Electric.
+      - Insert a compatible electric fish to generate electricity.
+      - Power output depends on the fish's weight.
+      - 'Capacity: 25,000,000 J.'
     FISH_VIVARIUM_EASY:
-      Name: Fish Vivarium Easy
+      Name: Simple Vivarium
       Lore:
-      - An automated MagicExpansion energy or resource machine.
-      - Produces or processes resources related to Fish Vivarium Easy.
+      - A small ecological cycle for magical fish.
+      - Insert a compatible fish to produce its associated resources.
+      - Can send output to configured external storage.
+      - Set the destination's stored item before connecting it.
       - ⇨ ⚙ 0 s
       - ⇨ ⚡ 520 J/s
+      - ⇨ ⚡ 131452.0 J capacity
     FISH_VIVARIUM:
-      Name: Fish Vivarium
+      Name: Magic Vivarium
       Lore:
-      - An automated MagicExpansion energy or resource machine.
-      - Produces or processes resources related to Fish Vivarium.
+      - A carefully balanced ecological cycle for magical fish.
+      - Insert a compatible fish to produce its associated resources.
+      - Can send output to configured external storage.
+      - Set the destination's stored item before connecting it.
       - ⇨ ⚙ 0 s
       - ⇨ ⚡ 520 J/s
+      - ⇨ ⚡ 131452.0 J capacity
     FISH_VIVARIUM_STACK:
-      Name: Fish Vivarium Stacked
+      Name: Aether Ecological Array
       Lore:
-      - An automated MagicExpansion energy or resource machine.
-      - Produces or processes resources related to Fish Vivarium Stacked.
+      - Combines vivariums into a larger ecological system.
+      - Insert vivariums and a compatible magical fish.
+      - Supports vivariums held in Aether Cargo Chests or quantum storage.
+      - Outputs directly to configured external storage.
+      - Set the destination's stored item before connecting it.
+      - A single output is limited to 2,147,483,647 items.
       - ⇨ ⚙ 0 s
       - ⇨ ⚡ 52000 J/s
+      - ⇨ ⚡ 1314520 J capacity
     WHITE_SLOTS_CHEST_53:
-      Name: White Slots Chest 53
+      Name: 53-Slot Storage Buffer
       Lore:
-      - An automated MagicExpansion energy or resource machine.
-      - Produces or processes resources related to White Slots Chest 53.
+      - A shared buffer for transfers between different storage systems.
     CARGO_FRAGMENT_EXTRACT:
-      Name: Cargo Fragment Extract
+      Name: Aether Cargo Converter
       Lore:
-      - An automated MagicExpansion energy or resource machine.
-      - Produces or processes resources related to Cargo Fragment Extract.
+      - Extracts items from quantum storage into an Aether Cargo Chest.
     MAGIC_POWER_INPUT_MACHINE:
-      Name: Magic Power Input Machine
+      Name: Power Carrier Charging Station
       Lore:
-      - An automated MagicExpansion energy or resource machine.
-      - Produces or processes resources related to Magic Power Input Machine.
+      - Transfers network electricity into a compatible power carrier.
+      - Supports Magic Power Cards and the Aether Eel.
       - ⇨ ⚡ 0 ~ 2147483647 J/s
+      - ⇨ ⚡ 2147483647 J capacity
     MAGIC_POWER_OUTPUT_MACHINE:
-      Name: Magic Power Output Machine
+      Name: Power Carrier Discharging Station
       Lore:
-      - An automated MagicExpansion energy or resource machine.
-      - Produces or processes resources related to Magic Power Output Machine.
+      - Transfers electricity from a compatible carrier into the network.
+      - Supports Magic Power Cards and the Aether Eel.
       - ⇨ ⚡ 0 ~ 2147483647 J/s
+      - ⇨ ⚡ 2147483647 J capacity
   RECIPE_MACHINE:
     PRE_BUILDINGS_MACHINE:
-      Name: Prefab Structures Machine
+      Name: Prefab Workshop
       Lore:
-      - Places or operates Prefab Structures Machine.
-      - Right-click to use. Sneak-right-click for more information.
+      - Supply materials to turn stored plans into simple prefab structures.
+      - Ancient craftsmanship waits behind every blueprint.
       - ⇨ ⚡ 52.0 J/s
+      - ⇨ ⚡ 1314 J capacity
     PRE_BUILDINGS_MACHINE_ADVANCED:
-      Name: Prefab Structures Machine Advanced
+      Name: Advanced Prefab Workshop
       Lore:
-      - Places or operates Prefab Structures Machine Advanced.
-      - Right-click to use. Sneak-right-click for more information.
+      - Supply materials to construct large prefab structures.
+      - A workshop for buildings too grand to carry by ordinary means.
       - ⇨ ⚡ 520 J/s
+      - ⇨ ⚡ 131452.0 J capacity
     PRE_BUILDINGS_MACHINE_RESOURCE_ADVANCED:
-      Name: Prefab Structures Machine Resource Advanced
+      Name: Magic Material Compressor
       Lore:
-      - Places or operates Prefab Structures Machine Resource Advanced.
-      - Right-click to use. Sneak-right-click for more information.
+      - Compresses materials used in prefab construction.
       - ⇨ ⚡ 520 J/s
+      - ⇨ ⚡ 131452.0 J capacity
     PRE_BUILDINGS_MACHINE_RESOURCE_ADVANCED_REVERSE:
-      Name: Prefab Structures Machine Resource Advanced Reverse
+      Name: Magic Material Decompressor
       Lore:
-      - Places or operates Prefab Structures Machine Resource Advanced Reverse.
-      - Right-click to use. Sneak-right-click for more information.
+      - Breaks compressed magical materials back into their components.
       - ⇨ ⚡ 520 J/s
+      - ⇨ ⚡ 131452.0 J capacity
     WOOD_TRANSFORM_BASIC:
-      Name: Wood Transform Basic
+      Name: Wood Transmuter
       Lore:
-      - A MagicExpansion processing machine.
-      - Processes materials for Wood Transform Basic.
+      - Converts one kind of log or leaf into another.
+      - A green glow reveals the hidden kinship of the trees.
       - ⇨ ⚙ 4 s
       - ⇨ ⚡ 52.0 J/s
+      - ⇨ ⚡ 1314 J capacity
     WOOD_TRANSFORM_ULTRA:
-      Name: Wood Transform Ultra
+      Name: Advanced Wood Transmuter
       Lore:
-      - A MagicExpansion processing machine.
-      - Processes materials for Wood Transform Ultra.
+      - Rapidly converts one kind of log or leaf into another.
       - ⇨ ⚙ 1 s
       - ⇨ ⚡ 520 J/s
+      - ⇨ ⚡ 1314 J capacity
     LIGHT_TRANSFORM_BASIC:
-      Name: Light Transform Basic
+      Name: Light-Energy Converter
       Lore:
-      - A MagicExpansion processing machine.
-      - Processes materials for Light Transform Basic.
+      - Uses electricity to convert collected light into energy materials.
       - ⇨ ⚡ 52.0 J/s
+      - ⇨ ⚡ 1314 J capacity
     LIGHT_EXTRACT_BASIC:
-      Name: Light Extract Basic
+      Name: Light Extractor
       Lore:
-      - A MagicExpansion processing machine.
-      - Processes materials for Light Extract Basic.
+      - Extracts light resources from luminous blocks.
       - ⇨ ⚡ 52.0 J/s
+      - ⇨ ⚡ 1314 J capacity
     QUARTZ_PURE_MACHINE_BAISC:
-      Name: Quartz Pure Machine Basic
+      Name: Silicon Refiner
       Lore:
-      - A MagicExpansion processing machine.
-      - Processes materials for Quartz Pure Machine Basic.
+      - Reshapes ingot material into silicon and quartz.
+      - Alchemy finds pure silicon in unexpected places.
       - ⇨ ⚡ 52.0 J/s
+      - ⇨ ⚡ 1314 J capacity
     QUARTZ_PURE_MACHINE_ULTRA:
-      Name: Quartz Pure Machine Ultra
+      Name: Advanced Silicon Refiner
       Lore:
-      - A MagicExpansion processing machine.
-      - Processes materials for Quartz Pure Machine Ultra.
+      - Extracts silicon and quartz more quickly, using more power.
       - ⇨ ⚡ 520 J/s
+      - ⇨ ⚡ 1314 J capacity
     INTEGRATION_ORIGIN_SLIME_MINERAL_POWDER_LINE:
-      Name: Integration Origin Slime Mineral Powder Line
+      Name: Integrated Dust Production Line
       Lore:
-      - A MagicExpansion processing machine.
-      - Processes materials for Integration Origin Slime Mineral Powder Line.
+      - Combines several Slimefun processing stages in one machine.
+      - Converts supported raw materials into metal dust.
       - ⇨ ⚡ 52.0 J/s
+      - ⇨ ⚡ 1314 J capacity
     INTEGRATION_ORIGIN_SLIME_MINERAL_POWDER_LINE_ULTRA:
-      Name: Integration Origin Slime Mineral Powder Line Ultra
+      Name: Advanced Dust Production Line
       Lore:
-      - A MagicExpansion processing machine.
-      - Processes materials for Integration Origin Slime Mineral Powder Line Ultra.
+      - A faster integrated line for producing metal dust.
       - ⇨ ⚡ 520 J/s
+      - ⇨ ⚡ 1314 J capacity
     INTEGRATION_ORIGIN_SLIME_MINERAL_POWDER_LINE_DEFAULT:
-      Name: Integration Origin Slime Mineral Powder Line Standard
+      Name: Dust Production Line - Separate Slots
       Lore:
-      - A MagicExpansion processing machine.
-      - Processes materials for Integration Origin Slime Mineral Powder Line Standard.
+      - Processes supported raw materials into metal dust.
+      - Uses separate input and output slots.
       - ⇨ ⚡ 52.0 J/s
+      - ⇨ ⚡ 1314 J capacity
     INTEGRATION_ORIGIN_SLIME_MINERAL_POWDER_LINE_ULTRA_DEFAULT:
-      Name: Integration Origin Slime Mineral Powder Line Ultra Standard
+      Name: Advanced Dust Line - Separate Slots
       Lore:
-      - A MagicExpansion processing machine.
-      - Processes materials for Integration Origin Slime Mineral Powder Line Ultra Standard.
+      - A faster integrated line for producing metal dust.
+      - Uses separate input and output slots.
       - ⇨ ⚡ 520 J/s
+      - ⇨ ⚡ 1314 J capacity
     INGOT_PURE_MACHINE:
-      Name: Ingot Pure Machine
+      Name: Magic Ingot Refiner
       Lore:
-      - A MagicExpansion processing machine.
-      - Processes materials for Ingot Pure Machine.
+      - Removes impurities from magical ingots.
+      - Purity comes at the cost of power and a little material.
       - ⇨ ⚡ 520 J/s
+      - ⇨ ⚡ 1314 J capacity
     TWO_TO_MAGIC_GEO_MACHINE:
-      Name: Two To Magic GEO Machine
+      Name: Magic Resource Converter
       Lore:
-      - A MagicExpansion processing machine.
-      - Processes materials for Two To Magic GEO Machine.
+      - Converts intermediary magic resources into their target materials.
       - ⇨ ⚡ 52 J/s
+      - ⇨ ⚡ 1314 J capacity
     CRUDE_MACHINE_TEST:
-      Name: Crude Machine Test
+      Name: Crude Machine - Experimental
       Lore:
-      - A MagicExpansion processing machine.
-      - Processes materials for Crude Machine Test.
+      - An experimental machine with a deliberately simple construction.
   TEMPLATE:
     DIRT_MEAL_MACHINE:
-      Name: Dirt Meal Machine
+      Name: Magic Soil Garden
       Lore:
-      - A MagicExpansion processing machine.
-      - Processes materials for Dirt Meal Machine.
+      - Uses electricity and bone meal to produce special soil variants.
+      - Supports appropriate soil recipes, including netherrack.
       - ⇨ ⚡ 52.0 J/s
+      - ⇨ ⚡ 1314 J capacity
     FISHING_MACHINE:
-      Name: Fishing Machine
+      Name: Automated Fishing Pond
       Lore:
-      - A MagicExpansion processing machine.
-      - Processes materials for Fishing Machine.
+      - Insert a fishing rod and compatible bait to begin fishing.
+      - Consumes electricity and bait without wearing out the rod.
       - ⇨ ⚡ 52.0 J/s
+      - ⇨ ⚡ 1314 J capacity
   SKY_BLOCK:
     SINGLE_CUBE_ORIGIN:
-      Name: Single Cube Origin
+      Name: Origin One Block
       Lore:
-      - Places or operates Single Cube Origin.
-      - Right-click to use. Sneak-right-click for more information.
+      - An endless block that reforms each time it is mined.
+      - Changes between different mineable blocks.
+      - Use a One Block tool to harvest its current form.
+      - Other tools retrieve the One Block itself.
+      - Fortune and Silk Touch do not affect its drops.
     SINGLE_CUBE_ORE:
-      Name: Single Cube Ore
+      Name: Ore Vein One Block
       Lore:
-      - Places or operates Single Cube Ore.
-      - Right-click to use. Sneak-right-click for more information.
+      - An endless block that reforms each time it is mined.
+      - Changes between ores and their surrounding stone.
+      - Use a One Block tool to harvest its current form.
+      - Other tools retrieve the One Block itself.
+      - Fortune and Silk Touch do not affect its drops.
     SINGLE_DIAMOND_PICKAXE:
-      Name: Single Diamond Pickaxe
+      Name: One Block Pickaxe
       Lore:
-      - Places or operates Single Diamond Pickaxe.
-      - Right-click to use. Sneak-right-click for more information.
+      - Resonates with magical One Blocks.
+      - Harvests their current form and lets them regenerate.
     SINGLE_DIAMOND_AXE:
-      Name: Single Diamond Axe
+      Name: One Block Axe
       Lore:
-      - Places or operates Single Diamond Axe.
-      - Right-click to use. Sneak-right-click for more information.
+      - Resonates with magical One Blocks.
+      - Harvests their current form and lets them regenerate.
     SINGLE_DIAMOND_SHOVEL:
-      Name: Single Diamond Shovel
+      Name: One Block Shovel
       Lore:
-      - Places or operates Single Diamond Shovel.
-      - Right-click to use. Sneak-right-click for more information.
+      - Resonates with magical One Blocks.
+      - Harvests their current form and lets them regenerate.
     SINGLE_DIAMOND_HOE:
-      Name: Single Diamond Hoe
+      Name: One Block Hoe
       Lore:
-      - Places or operates Single Diamond Hoe.
-      - Right-click to use. Sneak-right-click for more information.
+      - Resonates with magical One Blocks.
+      - Harvests their current form and lets them regenerate.
   MIHOYO_ROLE:
     MIHOYO_STAR_RAY_MACHINE:
-      Name: HoYoverse Star Ray Machine
+      Name: Starlight Scanner
       Lore:
-      - A MagicExpansion processing machine.
-      - Processes materials for HoYoverse Star Ray Machine.
-      - ⇨ ⚙ 0.5 s
-      - ⇨ ⚡ 0 J/s
+      - Reveals and opens mystery boxes automatically.
+      - 'Cycle: 0.5 seconds. Requires no electricity.'
     HONKAI_STAR_RAIL_BOX:
-      Name: 'Honkai: Star Rail Box'
+      Name: 'Honkai: Star Rail Mystery Box'
       Lore:
-      - A magical item from MagicExpansion.
-      - 'Used for Honkai: Star Rail Box.'
+      - Right-click to open, or use a Starlight Scanner.
+      - The character inside is a matter of chance.
     JING_LIU:
-      Name: Jing Liu
+      Name: Jingliu
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Jing Liu.
+      - 'A character collectible from Honkai: Star Rail.'
     SILVER_WOLF:
       Name: Silver Wolf
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Silver Wolf.
+      - 'A character collectible from Honkai: Star Rail.'
     KAFKA:
       Name: Kafka
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Kafka.
+      - 'A character collectible from Honkai: Star Rail.'
     SUNDAY:
       Name: Sunday
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Sunday.
+      - 'A character collectible from Honkai: Star Rail.'
     LUNAE:
-      Name: Lunae
+      Name: Dan Heng - Imbibitor Lunae
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Lunae.
+      - 'A character collectible from Honkai: Star Rail.'
     HUOHUO:
       Name: Huohuo
       Lore:
-      - A magical item from MagicExpansion.
-      - Used for Huohuo.
+      - 'A character collectible from Honkai: Star Rail.'

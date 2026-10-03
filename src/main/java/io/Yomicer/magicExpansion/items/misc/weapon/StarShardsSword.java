@@ -30,11 +30,9 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 
@@ -210,7 +208,7 @@ public class StarShardsSword extends SimpleSlimefunItem<ItemUseHandler> implemen
         SwordAttackGuard.run(() -> {
 
             double damageToDeal = event.getDamage() * StarShards_Atk_Mix
-                    + target.getMaxHealth() * (StarShards_Atk_ExtraPercent);
+                    + Objects.requireNonNull(target.getAttribute(Attribute.MAX_HEALTH)).getValue() * (StarShards_Atk_ExtraPercent);
 
             target.damage(damageToDeal, player);
 
@@ -229,9 +227,7 @@ public class StarShardsSword extends SimpleSlimefunItem<ItemUseHandler> implemen
 
     private void applyBleedEffect(Player damager, LivingEntity target) {
 
-        double damagePerSecond = target.getMaxHealth() * StarShards_Atk_Blood;
-
-        String bleedTagKey = "MagicExpansion_BLEED_" + damager.getUniqueId();
+        double damagePerSecond = Objects.requireNonNull(target.getAttribute(Attribute.MAX_HEALTH)).getValue() * StarShards_Atk_Blood;
 
         var effect = new BukkitRunnable() {
             int ticksPassed = 0;
@@ -241,15 +237,7 @@ public class StarShardsSword extends SimpleSlimefunItem<ItemUseHandler> implemen
             private void finishAndCleanup() {
                 this.cancel();
                 bleedCleanup.remove(cleanup);
-                if (target.hasMetadata(bleedTagKey)) {
-                    List<BukkitTask> tasks = (List<BukkitTask>) target.getMetadata(bleedTagKey).get(0).value();
-                    if (tasks != null) {
-                        tasks.removeIf(task -> task.getTaskId() == getTaskId());
-                        if (tasks.isEmpty()) {
-                            target.removeMetadata(bleedTagKey, MagicExpansion.getInstance());
-                        }
-                    }
-                }
+
             }
 
             @Override
@@ -288,22 +276,8 @@ public class StarShardsSword extends SimpleSlimefunItem<ItemUseHandler> implemen
                 }
             }
         };
-        BukkitTask bleedTask = effect.runTaskTimer(MagicExpansion.getInstance(), 0L, 1L);
+        effect.runTaskTimer(MagicExpansion.getInstance(), 0L, 1L);
         bleedCleanup.add(effect.cleanup);
-
-        List<BukkitTask> targetBleedTasks;
-
-        if (target.hasMetadata(bleedTagKey)) {
-
-            targetBleedTasks = (List<BukkitTask>) target.getMetadata(bleedTagKey).get(0).value();
-        } else {
-
-            targetBleedTasks = new ArrayList<>();
-        }
-
-        targetBleedTasks.add(bleedTask);
-
-        target.setMetadata(bleedTagKey, new FixedMetadataValue(MagicExpansion.getInstance(), targetBleedTasks));
     }
 
     private boolean checkCooldown(Player player, String skill, long seconds) {
@@ -439,7 +413,7 @@ public class StarShardsSword extends SimpleSlimefunItem<ItemUseHandler> implemen
 
         if (targets.isEmpty()) {
 
-            player.sendMessage("§7Arcane Burst was released but hit no target.");
+            player.sendMessage("§7Arcane Blast was released but hit no target.");
         }
     }
 
@@ -459,7 +433,7 @@ public class StarShardsSword extends SimpleSlimefunItem<ItemUseHandler> implemen
                 if (expires == null || expires > System.currentTimeMillis()) return;
                 invulnerableUntil.remove(player.getUniqueId(), expires);
                 if (player.isOnline()) {
-                    player.sendMessage(ChatColor.GRAY + "§7Astral Shield faded...");
+                    player.sendMessage("§7Astral Shield faded...");
                 }
             }
         }.runTaskLater(MagicExpansion.getInstance(), StarShards_AstralShield_During*20L);
@@ -517,7 +491,8 @@ public class StarShardsSword extends SimpleSlimefunItem<ItemUseHandler> implemen
         if (player == target || !target.isValid() || target.isDead() || target.isInvulnerable()) return false;
         Long shieldExpiry = invulnerableUntil.get(target.getUniqueId());
         if (shieldExpiry != null && System.currentTimeMillis() < shieldExpiry) return false;
-        if (target instanceof Player && !target.getWorld().getPVP()) return false;
+        if (target instanceof Player && !Boolean.TRUE.equals(
+                target.getWorld().getGameRuleValue(GameRules.PVP))) return false;
         return Slimefun.getProtectionManager().hasPermission(player, target.getLocation(),
                 target instanceof Player ? Interaction.ATTACK_PLAYER : Interaction.ATTACK_ENTITY);
     }

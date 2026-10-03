@@ -1,4 +1,4 @@
-# Unreleased - Upstream Build 93 / Release 13 integration
+# 1.1.8 - Upstream Build 93 / Release 13 integration (2026-10-03)
 
 - Ported the October 1 upstream update (`39471f40826fcc815b64c3b01ade20ddcb9360ad`) into the English maintained fork.
 - Magic Storage - Rebuilt now refuses new item types when full. Input and extraction paths consume only successfully stored quantities; unavailable space does not cause asynchronous world drops or discard excess items.
@@ -8,6 +8,10 @@
 - Prevented nested sword-generated damage from triggering the sword again. Cancelled attacks and Slimefun protection checks are respected; timed shields no longer set a persistent vanilla invulnerability flag. Expired bleed task handles and player session state are cleaned up.
 - Retained modern Paper APIs, English messages, item/research IDs, namespaced attribute keys, recipes, storage schema, machine rates, and all previously merged shop preservation fixes.
 - Updated the guide's upstream-content information and corrected the sword's Mercy description to describe its nonlethal bleeding effect.
+
+- Replaced placeholder English lore with meaningful item descriptions, controls, warnings, machine functions, and historical notes. Preserved all 475 language entries and the historical final-rod key.
+- Polished displayed names and aligned food, hologram-eraser, and sword wording with their implementation.
+- Enabled detailed deprecation reporting. Replaced deprecated maximum-health and PvP access and removed redundant transient metadata tracking in the sword; legacy compatibility APIs elsewhere remain documented.
 
 # 1.1.4 - Slimefun Legacy Re-entry / Guide Order Fix (2026-09-13)
 
