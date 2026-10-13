@@ -1,4 +1,4 @@
-## Unreleased — Rare-fishing announcement privacy
+## 1.1.11 — Coordinate-safe rare-fishing announcements (2026-10-13)
 
 - Disabled global rare, super-rare and Fish Emperor catch broadcasts by default, including for servers with older config files.
 - Removed mandatory precise-coordinate announcements. World and block X/Y/Z can appear in public messages only when both `fishing.announcements.enabled` and `fishing.announcements.show-coordinates` are explicitly enabled.
