@@ -198,6 +198,7 @@ public class MagicExpansion extends JavaPlugin implements SlimefunAddon {
 
         onPluginDisable();
         ShopManager.saveAll();
+        BlackMarketManager.shutdown();
 
         if (aiManager != null) {
             aiManager.shutdown();
