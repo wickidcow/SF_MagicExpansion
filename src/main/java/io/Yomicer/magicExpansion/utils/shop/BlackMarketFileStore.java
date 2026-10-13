@@ -284,8 +284,10 @@ final class BlackMarketFileStore {
         if (!(raw instanceof List<?> rows)) throw new IOException("Missing Black Market slot list");
         Set<Integer> result = new LinkedHashSet<>();
         for (Object row : rows) {
-            int slot = slot(integer(row));
-            if (!result.add(slot)) throw new IOException("Duplicate Black Market slot receipt");
+            long number = integer(row);
+            if (number < 0 || number >= OFFERS) throw new IOException("Invalid Black Market slot index");
+            int index = (int) number;
+            if (!result.add(index)) throw new IOException("Duplicate Black Market slot receipt");
         }
         return result;
     }
