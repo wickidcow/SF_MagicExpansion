@@ -166,9 +166,7 @@ class BlackMarketFileStoreTest {
         assertThrows(IOException.class, () -> cannotReplace.savePlayer(uuid, restoredCycle,
                 new BlackMarketFileStore.PlayerState(before.trades(), Set.of(1, 2), Set.of(1, 2))));
         assertArrayEquals(original, Files.readAllBytes(playerFile));
-        assertEquals(Set.of(1), new BlackMarketFileStore(directory)
-                .loadOrCreate(START + 2).id().equals(cycle.id()) ? // reload cycle before loading the player
-                reloadedPurchases(uuid, START + 2) : Set.of());
+        assertEquals(Set.of(1), reloadedPurchases(uuid, START + 2));
     }
 
     private Set<Integer> reloadedPurchases(UUID uuid, long now) throws IOException {
