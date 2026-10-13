@@ -8,14 +8,12 @@ import java.nio.charset.CharacterCodingException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
-import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -148,14 +146,11 @@ final class BlackMarketFileStore {
     }
 
     private static byte[] read(Path path) throws IOException {
-        try {
-            if (!Files.isRegularFile(path, LinkOption.NOFOLLOW_LINKS)) {
-                throw new IOException("Black Market state is not a regular file: " + path);
-            }
-            return Files.readAllBytes(path);
-        } catch (NoSuchFileException missing) {
-            return null;
+        if (!Files.exists(path, LinkOption.NOFOLLOW_LINKS)) return null;
+        if (!Files.isRegularFile(path, LinkOption.NOFOLLOW_LINKS)) {
+            throw new IOException("Black Market state is not a regular file: " + path);
         }
+        return Files.readAllBytes(path);
     }
 
     private void replace(Path target, byte[] expected, byte[] contents) throws IOException {
