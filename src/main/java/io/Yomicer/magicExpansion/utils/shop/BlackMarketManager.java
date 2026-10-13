@@ -1,6 +1,7 @@
 package io.Yomicer.magicExpansion.utils.shop;
 
 import io.Yomicer.magicExpansion.MagicExpansion;
+import java.io.IOException;
 import io.Yomicer.magicExpansion.core.MagicExpansionItems;
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItem;
 import io.github.thebusybiscuit.slimefun4.implementation.Slimefun;
@@ -17,7 +18,11 @@ public class BlackMarketManager {
 
     private static final Map<UUID, List<BlackMarketTrade>> playerTrades = new HashMap<>();
     private static long lastRefreshTime = 0;
-    private static final long REFRESH_INTERVAL = 4 * 60 * 60 * 1000L; // 4小时(毫秒)
+    private static final long REFRESH_INTERVAL = 4 * 60 * 60 * 1000L;
+    private static BlackMarketFileStore files;
+    private static BlackMarketFileStore.Cycle cycle;
+    private static boolean available;
+    private static final Set<UUID> blockedPlayers = new HashSet<>();
 
     // 简单奖励池 (80%概率)
     private static List<ItemStack> simpleRewardPool = new ArrayList<>();
@@ -232,33 +237,79 @@ public class BlackMarketManager {
 
         MagicExpansion.getInstance().getLogger().info("Black Market item pool initialized. Standard items: " + simpleRewardPool.size() + " Difficult items: " + hardRewardPool.size());
 
-        if (lastRefreshTime == 0) {
-            lastRefreshTime = System.currentTimeMillis();
-        } else {
-            checkAndRefresh();
-        }
-    }
-
-
-
-
-
-
-
-    public static void checkAndRefresh() {
-        if (System.currentTimeMillis() - lastRefreshTime >= REFRESH_INTERVAL) {
-            forceRefresh();
-        }
-    }
-
-    public static void forceRefresh() {
         playerTrades.clear();
-        lastRefreshTime = System.currentTimeMillis();
         dailyPurchases.clear();
         revealedSlots.clear();
+        blockedPlayers.clear();
+        available = false;
+        files = new BlackMarketFileStore(MagicExpansion.getInstance()
+                .getDataFolder().toPath().resolve("black_market"));
+        try {
+            cycle = files.loadOrCreate(System.currentTimeMillis());
+            lastRefreshTime = cycle.startedAt();
+            available = true;
+            checkAndRefresh();
+        } catch (IOException | RuntimeException error) {
+            available = false;
+            MagicExpansion.getInstance().getLogger().severe(
+                    "Black Market is locked: purchase history could not be loaded. "
+                            + "Restore the state files before enabling trades. " + error.getMessage());
+        }
+    }
+
+
+
+
+
+
+
+    public static boolean checkAndRefresh() {
+        if (!available) return false;
+        if (System.currentTimeMillis() - lastRefreshTime >= REFRESH_INTERVAL) {
+            return forceRefresh();
+        }
+        return true;
+    }
+
+    /**
+     * Advances the durable cycle marker before invalidating any player records.
+     * A disk failure retains the old state and locks trades instead of resetting limits.
+     */
+    public static boolean forceRefresh() {
+        if (!available) return false;
+        try {
+            cycle = files.refresh(cycle, System.currentTimeMillis());
+            lastRefreshTime = cycle.startedAt();
+            playerTrades.clear();
+            dailyPurchases.clear();
+            revealedSlots.clear();
+            blockedPlayers.clear();
+            return true;
+        } catch (IOException | RuntimeException error) {
+            available = false;
+            MagicExpansion.getInstance().getLogger().severe(
+                    "Black Market refresh failed; trading disabled: " + error.getMessage());
+            return false;
+        }
+    }
+
+    public static boolean isAvailable() {
+        return available;
+    }
+
+    public static void shutdown() {
+        available = false;
+        playerTrades.clear();
+        dailyPurchases.clear();
+        revealedSlots.clear();
+        blockedPlayers.clear();
+        files = null;
+        cycle = null;
+        lastRefreshTime = 0;
     }
 
     public static String getTimeRemaining() {
+        if (!available) return "Unavailable";
         long elapsed = System.currentTimeMillis() - lastRefreshTime;
         long remaining = REFRESH_INTERVAL - elapsed;
         if (remaining < 0) remaining = 0;
@@ -368,25 +419,89 @@ public class BlackMarketManager {
     }
 
 
+    /**
+     * Reloading a player's offers never rerolls them within the same four-hour cycle.
+     * On storage failure, do not show newly generated offers or allow purchases.
+     */
     public static List<BlackMarketTrade> getTodayTrades(Player player) {
-        checkAndRefresh();
-        // 如果该玩家没有生成过,则为他单独生成一份
-        return playerTrades.computeIfAbsent(player.getUniqueId(), k -> generateTradesForPlayer());
+        if (!checkAndRefresh()) return List.of();
+        UUID uuid = player.getUniqueId();
+        if (blockedPlayers.contains(uuid)) return List.of();
+        List<BlackMarketTrade> cached = playerTrades.get(uuid);
+        if (cached != null) return cached;
+
+        try {
+            BlackMarketFileStore.PlayerState saved = files.loadPlayer(uuid, cycle);
+            if (saved == null) {
+                List<BlackMarketTrade> generated = generateTradesForPlayer();
+                saved = new BlackMarketFileStore.PlayerState(generated, Set.of(), Set.of());
+                files.savePlayer(uuid, cycle, saved);
+            }
+            playerTrades.put(uuid, saved.trades());
+            dailyPurchases.put(uuid, new HashSet<>(saved.purchased()));
+            revealedSlots.put(uuid, new HashSet<>(saved.revealed()));
+            return saved.trades();
+        } catch (IOException | RuntimeException error) {
+            blockPlayer(uuid, error);
+            return List.of();
+        }
     }
 
     public static boolean hasPurchased(UUID uuid, int index) {
-        return dailyPurchases.containsKey(uuid) && dailyPurchases.get(uuid).contains(index);
+        return dailyPurchases.getOrDefault(uuid, Set.of()).contains(index);
     }
 
-    public static void recordPurchase(UUID uuid, int index) {
-        dailyPurchases.computeIfAbsent(uuid, k -> new HashSet<>()).add(index);
+    /**
+     * Durably reserve a purchase before the reward is added to the inventory.
+     * The expected trade identity rejects stale GUI clicks following a cycle change.
+     */
+    public static boolean recordPurchase(UUID uuid, int index, BlackMarketTrade expectedTrade) {
+        if (!checkAndRefresh() || blockedPlayers.contains(uuid)) return false;
+        List<BlackMarketTrade> trades = playerTrades.get(uuid);
+        if (trades == null || index < 0 || index >= trades.size()
+                || trades.get(index) != expectedTrade || hasPurchased(uuid, index)
+                || !isRevealed(uuid, index)) return false;
+
+        Set<Integer> updated = new HashSet<>(dailyPurchases.getOrDefault(uuid, Set.of()));
+        updated.add(index);
+        if (!savePlayer(uuid, trades, updated, revealedSlots.getOrDefault(uuid, Set.of()))) return false;
+        dailyPurchases.put(uuid, updated);
+        return true;
     }
 
     public static boolean isRevealed(UUID uuid, int index) {
-        return revealedSlots.containsKey(uuid) && revealedSlots.get(uuid).contains(index);
+        return revealedSlots.getOrDefault(uuid, Set.of()).contains(index);
     }
 
-    public static void reveal(UUID uuid, int index) {
-        revealedSlots.computeIfAbsent(uuid, k -> new HashSet<>()).add(index);
+    public static boolean reveal(UUID uuid, int index) {
+        if (!checkAndRefresh() || blockedPlayers.contains(uuid)) return false;
+        List<BlackMarketTrade> trades = playerTrades.get(uuid);
+        if (trades == null || index < 0 || index >= trades.size()
+                || hasPurchased(uuid, index)) return false;
+        if (isRevealed(uuid, index)) return true;
+
+        Set<Integer> updated = new HashSet<>(revealedSlots.getOrDefault(uuid, Set.of()));
+        updated.add(index);
+        if (!savePlayer(uuid, trades, dailyPurchases.getOrDefault(uuid, Set.of()), updated)) return false;
+        revealedSlots.put(uuid, updated);
+        return true;
+    }
+
+    private static boolean savePlayer(UUID uuid, List<BlackMarketTrade> trades,
+                                      Set<Integer> purchased, Set<Integer> revealed) {
+        try {
+            files.savePlayer(uuid, cycle, new BlackMarketFileStore.PlayerState(trades, purchased, revealed));
+            return true;
+        } catch (IOException | RuntimeException error) {
+            blockPlayer(uuid, error);
+            return false;
+        }
+    }
+
+    private static void blockPlayer(UUID uuid, Exception error) {
+        blockedPlayers.add(uuid);
+        MagicExpansion.getInstance().getLogger().severe(
+                "Black Market trades locked for " + uuid + " because the ledger is unreadable "
+                        + "or could not be saved: " + error.getMessage());
     }
 }
