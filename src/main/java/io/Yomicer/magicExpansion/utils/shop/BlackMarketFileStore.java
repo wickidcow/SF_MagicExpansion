@@ -16,6 +16,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -56,6 +57,7 @@ final class BlackMarketFileStore {
     private final Committer committer;
     private byte[] cycleSnapshot;
     private final Map<UUID, byte[]> playerSnapshots = new HashMap<>();
+    private final Set<UUID> lockedPlayers = new HashSet<>();
 
     BlackMarketFileStore(Path root) {
         this(root, (staged, target) -> Files.move(staged, target,
@@ -72,6 +74,7 @@ final class BlackMarketFileStore {
     synchronized Cycle loadOrCreate(long now) throws IOException {
         checkDirectories();
         playerSnapshots.clear();
+        lockedPlayers.clear();
         byte[] original = read(cycleFile);
         if (original == null) {
             Cycle cycle = new Cycle(UUID.randomUUID(), now);
@@ -98,6 +101,7 @@ final class BlackMarketFileStore {
         replace(cycleFile, cycleSnapshot, encoded);
         cycleSnapshot = encoded;
         playerSnapshots.clear();
+        lockedPlayers.clear();
         return fresh;
     }
 
@@ -108,12 +112,20 @@ final class BlackMarketFileStore {
         byte[] original = read(path);
         playerSnapshots.put(playerId, original);
         if (original == null) return null;
-        return decodePlayer(original, playerId, cycle);
+        try {
+            return decodePlayer(original, playerId, cycle);
+        } catch (IOException | RuntimeException invalid) {
+            lockedPlayers.add(playerId);
+            throw invalid;
+        }
     }
 
     synchronized void savePlayer(UUID playerId, Cycle cycle, PlayerState state) throws IOException {
         checkDirectories();
         requireCycle(cycle);
+        if (lockedPlayers.contains(playerId)) {
+            throw new IOException("Unreadable player ledger is locked until cycle refresh");
+        }
         if (!playerSnapshots.containsKey(playerId)) {
             throw new IOException("Player record was not loaded before save");
         }
