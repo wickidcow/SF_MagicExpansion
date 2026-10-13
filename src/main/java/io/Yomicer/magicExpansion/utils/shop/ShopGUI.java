@@ -333,7 +333,11 @@ public class ShopGUI implements Listener {
 
     // ================= 黑市界面 =================
     public static void openBlackMarket(Player player) {
-        BlackMarketManager.checkAndRefresh();
+        List<BlackMarketManager.BlackMarketTrade> trades = BlackMarketManager.getTodayTrades(player);
+        if (trades.size() != 10) {
+            player.sendMessage(ChatColor.RED + "Black Market is temporarily unavailable: purchase records cannot be verified. Contact an administrator.");
+            return;
+        }
         Inventory inv = Bukkit.createInventory(new ShopHolder(), 54, ChatColor.DARK_PURPLE + "Daily Mystery Black Market");
 
         // 全部铺满黑色玻璃板
@@ -353,7 +357,6 @@ public class ShopGUI implements Listener {
             inv.setItem(slot, null);
         }
 
-        List<BlackMarketManager.BlackMarketTrade> trades = BlackMarketManager.getTodayTrades(player);
         UUID playerId = player.getUniqueId();
 
         for (int i = 0; i < trades.size(); i++) {
@@ -503,7 +506,11 @@ public class ShopGUI implements Listener {
     private void handleBlackMarketClick(Player player, int slot) {
         // 改为获取黑市专属槽位索引
         int index = getBlackMarketIndexBySlot(slot);
-        if (index == -1 || index >= BlackMarketManager.getTodayTrades(player).size()) return;
+        List<BlackMarketManager.BlackMarketTrade> trades = BlackMarketManager.getTodayTrades(player);
+        if (index == -1 || index >= trades.size()) {
+            if (trades.isEmpty()) player.sendMessage(ChatColor.RED + "Black Market is temporarily unavailable.");
+            return;
+        }
 
         UUID playerId = player.getUniqueId();
 
@@ -513,8 +520,11 @@ public class ShopGUI implements Listener {
         }
 
         if (!BlackMarketManager.isRevealed(playerId, index)) {
-            BlackMarketManager.reveal(playerId, index);
-            BlackMarketManager.BlackMarketTrade trade = BlackMarketManager.getTodayTrades(player).get(index);
+            if (!BlackMarketManager.reveal(playerId, index)) {
+                player.sendMessage(ChatColor.RED + "Could not save the Black Market reveal. Try again after an administrator checks storage.");
+                return;
+            }
+            BlackMarketManager.BlackMarketTrade trade = trades.get(index);
 
             org.bukkit.Sound sound;
             if (trade.isFree) {
@@ -531,16 +541,30 @@ public class ShopGUI implements Listener {
             return;
         }
 
-        handleBlackMarketPurchase(player, index);
+        handleBlackMarketPurchase(player, index, trades.get(index));
     }
 
-    private void handleBlackMarketPurchase(Player player, int index) {
+    private void handleBlackMarketPurchase(Player player, int index, BlackMarketManager.BlackMarketTrade trade) {
         UUID playerId = player.getUniqueId();
-        BlackMarketManager.BlackMarketTrade trade = BlackMarketManager.getTodayTrades(player).get(index);
 
         if (trade.result == null || trade.result.getType().isAir() || trade.result.getAmount() <= 0) return;
         ItemStack reward = trade.result.clone();
         if (!trade.isFree && !takePayment(player, trade.costs)) return;
+
+        // The purchase receipt must reach disk before issuing any rewards.
+        // If the disk write fails, refund the already-debited payment.
+        if (!BlackMarketManager.recordPurchase(playerId, index, trade)) {
+            if (!trade.isFree && trade.costs != null) {
+                for (ItemStack cost : trade.costs) {
+                    if (cost == null || cost.getType().isAir()) continue;
+                    for (ItemStack remainder : player.getInventory().addItem(cost.clone()).values()) {
+                        player.getWorld().dropItemNaturally(player.getLocation(), remainder);
+                    }
+                }
+            }
+            player.sendMessage(ChatColor.RED + "Black Market purchase cancelled: could not save the purchase receipt. Payment refunded.");
+            return;
+        }
 
         HashMap<Integer, ItemStack> overflow = player.getInventory().addItem(reward);
         if (!overflow.isEmpty()) {
@@ -549,8 +573,6 @@ public class ShopGUI implements Listener {
             }
             player.sendMessage(ChatColor.YELLOW + "Your inventory was full, so some items were dropped on the ground!");
         }
-
-        BlackMarketManager.recordPurchase(playerId, index);
 
         player.sendMessage(ChatColor.GREEN + "Black Market trade completed!");
         player.playSound(player.getLocation(), org.bukkit.Sound.UI_TOAST_CHALLENGE_COMPLETE, 1f, 1f);
@@ -660,7 +682,10 @@ public class ShopGUI implements Listener {
                 return;
             }
             if (slot == 52) {
-                BlackMarketManager.forceRefresh();
+                if (!BlackMarketManager.forceRefresh()) {
+                    player.sendMessage(ChatColor.RED + "Black Market refresh failed. Purchase history was not reset.");
+                    return;
+                }
                 player.sendMessage(ChatColor.DARK_PURPLE + "Black Market forcibly refreshed!");
                 player.playSound(player.getLocation(), org.bukkit.Sound.ENTITY_WITHER_SPAWN, 1f, 1f);
                 openAdminMainMenu(player, adminMainPage.getOrDefault(player.getUniqueId(), 0));
