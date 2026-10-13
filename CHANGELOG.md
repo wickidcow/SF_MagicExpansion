@@ -1,3 +1,10 @@
+## Unreleased — Rare-fishing announcement privacy
+
+- Disabled global rare, super-rare and Fish Emperor catch broadcasts by default, including for servers with older config files.
+- Removed mandatory precise-coordinate announcements. World and block X/Y/Z can appear in public messages only when both `fishing.announcements.enabled` and `fishing.announcements.show-coordinates` are explicitly enabled.
+- Added an optional private congratulatory message for the angler and documented `/magicexpansion reload fishing` for applying changes.
+- Added tests for privacy defaults and coordinate opt-in; no catch, fish-weight, lore, persistent-data or reward changes.
+
 # 1.1.8 - Upstream Build 93 / Release 13 integration (2026-10-03)
 
 - Ported the October 1 upstream update (`39471f40826fcc815b64c3b01ade20ddcb9360ad`) into the English maintained fork.

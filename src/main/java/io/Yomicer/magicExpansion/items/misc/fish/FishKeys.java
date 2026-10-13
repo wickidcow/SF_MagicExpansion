@@ -5,7 +5,6 @@ import io.Yomicer.magicExpansion.core.MagicExpansionItems;
 import io.Yomicer.magicExpansion.utils.ColorGradient;
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItemStack;
 import io.github.thebusybiscuit.slimefun4.utils.SlimefunUtils;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
@@ -106,28 +105,18 @@ public class FishKeys {
         pdc.set(FishKeys.FISH_WEIGHT_RARITY, PersistentDataType.STRING, weightRarity.name());
         String weightRareThis = "";
         if (weightRarity == Fish.WeightRarity.RARE_FISH) {
-            Bukkit.broadcastMessage("§aCongratulations to §e"+player.getName()+" §afor catching one in §d"+ player.getWorld().getName() + " §aand unexpectedly caught a §erare fish!");
-            Bukkit.broadcastMessage("§aCongratulations to §e"+player.getName()+
-                    "§aat coordinates §dX:"+ String.format("%.2f",player.getLocation().getX())+
-                    " Y: " + String.format("%.2f",player.getLocation().getY())+
-                    " Z: " + String.format("%.2f",player.getLocation().getZ()) +
-                    "§a §eRare Fish"+chosenFish.getDisplayName());
+            FishingAnnouncements.announce(player, MagicExpansion.getInstance().getConfig(),
+                    chosenFish.getDisplayName(), "rare fish", "§e");
             weightRareThis = "§e§l⭐";
         }
         if (weightRarity == Fish.WeightRarity.SUPER_RARE_FISH) {
-            Bukkit.broadcastMessage("§aCongratulations to §e"+player.getName()+" §afor catching one in §d"+ player.getWorld().getName() + " §aand unexpectedly caught a §bsuper-rare fish!");
-            Bukkit.broadcastMessage("§aCongratulations to §e"+player.getName()+
-                    "§aat coordinates §dX:"+ String.format("%.2f",player.getLocation().getX())+
-                    " Y: " + String.format("%.2f",player.getLocation().getY())+
-                    " Z: " + String.format("%.2f",player.getLocation().getZ()) + "§a §bRare Fish"+chosenFish.getDisplayName());
+            FishingAnnouncements.announce(player, MagicExpansion.getInstance().getConfig(),
+                    chosenFish.getDisplayName(), "super-rare fish", "§b");
             weightRareThis = "§b§l\uD83D\uDC8E";
         }
         if (weightRarity == WeightRarity.MAX_WEIGHT_FISH) {
-            Bukkit.broadcastMessage("§aCongratulations to §e"+player.getName()+" §afor catching one in §d"+ player.getWorld().getName() + " §aand unexpectedly caught a §b§lFish Emperor!");
-            Bukkit.broadcastMessage("§aCongratulations to §e"+player.getName()+
-                    "§aat coordinates §dX:"+ String.format("%.2f",player.getLocation().getX())+
-                    " Y: " + String.format("%.2f",player.getLocation().getY())+
-                    " Z: " + String.format("%.2f",player.getLocation().getZ()) + "§a §c§l"+chosenFish.getDisplayName());
+            FishingAnnouncements.announce(player, MagicExpansion.getInstance().getConfig(),
+                    chosenFish.getDisplayName(), "Fish Emperor", "§c§l");
             weightRareThis = "§c§l🎶";
         }
 

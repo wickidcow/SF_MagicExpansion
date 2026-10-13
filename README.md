@@ -65,6 +65,26 @@ While compatibility mode is active, both MagicExpansion rod families, including 
 
 Use `/magicexpansion fishing` to see the active mode and detected plugins. After editing `config.yml`, use `/magicexpansion reload fishing` to apply the compatibility settings without resetting fishing items or data. These are operator commands. Cancelled fishing events and missing/removed catches are also ignored when MagicExpansion fishing is enabled.
 
+## 🔒 Rare-fish announcement privacy
+
+Rare, super-rare and Fish Emperor catches **do not announce player coordinates by default**. On newly installed servers and older `config.yml` files that lack the settings, public rare-catch broadcasts are disabled and only the angler receives a private congratulatory message. Fish weights, catch probabilities, item IDs, lore, and rewards are unchanged.
+
+Add or edit these **lowercase, root-level** options in `plugins/MagicExpansion/config.yml`. These are separate from the older capitalized `Fish.Compatibility` settings:
+
+```yaml
+fishing:
+  announcements:
+    enabled: false
+    show-coordinates: false
+    notify-player: true
+```
+
+- `enabled` toggles server-wide notices for rare, super-rare and Fish Emperor catches.
+- `show-coordinates` controls whether those **public** notices include the angler's world and block X/Y/Z. It is ignored when `enabled: false`. Leave it `false` to protect player locations even if public announcements are switched on.
+- `notify-player` provides a **private** rare-catch congratulations when public broadcasts are off. If public notices are on, the angler already sees the broadcast, so no duplicate private message is sent.
+
+After editing the file, run `/magicexpansion reload fishing` as an operator to apply the new settings without restarting the server. Existing config files are not overwritten; missing options use the privacy-safe defaults above.
+
 ## ❤️ Credits & project lineage
 
 - **Yomicer** — creator and primary upstream developer of **MagicExpansion**.

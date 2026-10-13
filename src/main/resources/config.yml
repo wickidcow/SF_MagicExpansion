@@ -67,6 +67,18 @@ Fish:
     admin-give:
       max-weight: 10000.0
 
+# Rare-fish announcements use their own lowercase settings, separate from the
+# legacy Fish.Compatibility and Fish.FishingRod options above.
+fishing:
+  announcements:
+    # Public announcements for rare, super-rare and Fish Emperor catches.
+    # Defaults to false for privacy, including on existing servers.
+    enabled: false
+    # Only applies when public announcements are enabled. Opt in explicitly.
+    show-coordinates: false
+    # Congratulate the angler privately when public announcements are disabled.
+    notify-player: true
+
 qwen-help:
   help: 'Optional Qwen/DashScope AI chat integration. It is disabled by default.'
   enabled: 'Set true only after supplying a valid API key.'
