@@ -302,6 +302,11 @@ public class BlackMarketManager {
      * a semantically identical cycle marker must not silently override the
      * in-memory snapshot, since purchase receipts may have changed separately.
      */
+    /** A cycle mismatch is not an available trading state, even before a failed receipt write locks a player. */
+    static boolean reportsTradingAvailable(boolean runtimeAvailable, BlackMarketFileStore.CycleStatus status) {
+        return runtimeAvailable && status == BlackMarketFileStore.CycleStatus.MATCH;
+    }
+
     public static List<String> getCycleStatusForOperator() {
         if (files == null) {
             return List.of("§cBlack Market storage is not initialized.");
@@ -309,7 +314,8 @@ public class BlackMarketManager {
 
         BlackMarketFileStore.CycleInspection inspection = files.inspectCycle(cycle);
         List<String> messages = new ArrayList<>();
-        messages.add("§6Black Market trading: " + (available ? "§aAVAILABLE" : "§cLOCKED"));
+        messages.add("§6Black Market trading: " + (reportsTradingAvailable(available, inspection.status())
+                ? "§aAVAILABLE" : "§cLOCKED"));
         messages.add("§7Cycle file: §f" + inspection.status().name());
         if (inspection.loadedCycle() != null) {
             messages.add("§7Loaded cycle: §f" + inspection.loadedCycle().id()
