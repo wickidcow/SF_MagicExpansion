@@ -297,6 +297,39 @@ public class BlackMarketManager {
         return available;
     }
 
+    /**
+     * Read-only operator diagnostics. The market remains locked on mismatches:
+     * a semantically identical cycle marker must not silently override the
+     * in-memory snapshot, since purchase receipts may have changed separately.
+     */
+    public static List<String> getCycleStatusForOperator() {
+        if (files == null) {
+            return List.of("§cBlack Market storage is not initialized.");
+        }
+
+        BlackMarketFileStore.CycleInspection inspection = files.inspectCycle(cycle);
+        List<String> messages = new ArrayList<>();
+        messages.add("§6Black Market trading: " + (available ? "§aAVAILABLE" : "§cLOCKED"));
+        messages.add("§7Cycle file: §f" + inspection.status().name());
+        if (inspection.loadedCycle() != null) {
+            messages.add("§7Loaded cycle: §f" + inspection.loadedCycle().id()
+                    + " §7(started at " + inspection.loadedCycle().startedAt() + " epoch ms)");
+        }
+        if (inspection.diskCycle() != null) {
+            messages.add("§7Disk cycle: §f" + inspection.diskCycle().id()
+                    + " §7(started at " + inspection.diskCycle().startedAt() + " epoch ms)");
+        }
+        messages.add("§7Locked player ledgers in memory: §f" + blockedPlayers.size());
+        if (inspection.detail() != null) {
+            messages.add("§cInspection error: " + inspection.detail());
+        }
+        if (inspection.status() != BlackMarketFileStore.CycleStatus.MATCH || !available) {
+            messages.add("§eNo data was changed. Back up black_market/ before investigating.");
+            messages.add("§eDo not delete cycle.yml or player receipts to clear the lock.");
+        }
+        return messages;
+    }
+
     public static void shutdown() {
         available = false;
         playerTrades.clear();
