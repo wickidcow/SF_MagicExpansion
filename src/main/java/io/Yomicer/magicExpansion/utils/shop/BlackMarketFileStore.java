@@ -94,6 +94,7 @@ final class BlackMarketFileStore {
         lockedPlayers.clear();
         byte[] original = read(cycleFile);
         if (original == null) {
+            BlackMarketBootstrapGuard.requireEmptyStore(root);
             Cycle cycle = new Cycle(UUID.randomUUID(), now);
             byte[] encoded = encodeCycle(cycle);
             replace(cycleFile, null, encoded);
