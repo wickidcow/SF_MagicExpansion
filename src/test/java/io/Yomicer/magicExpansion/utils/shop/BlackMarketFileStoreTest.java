@@ -44,6 +44,17 @@ class BlackMarketFileStoreTest {
         assertFalse(Files.exists(directory), "Operator inspection must not create a market folder");
     }
 
+    @Test void operatorTradingStatusFailsClosedOnEveryCycleMismatch() {
+        for (BlackMarketFileStore.CycleStatus status : BlackMarketFileStore.CycleStatus.values()) {
+            assertEquals(status == BlackMarketFileStore.CycleStatus.MATCH,
+                    BlackMarketManager.reportsTradingAvailable(true, status),
+                    "Operator trading availability must reflect on-disk cycle integrity: " + status);
+        }
+        assertFalse(BlackMarketManager.reportsTradingAvailable(
+                false, BlackMarketFileStore.CycleStatus.MATCH),
+                "A previously locked market must not advertise availability on a healthy cycle");
+    }
+
     @Test void unchangedCycleInspectionIsReadOnlyAndReportsMatch() throws Exception {
         var cycle = files.loadOrCreate(START);
         Path marker = directory.resolve("cycle.yml");
