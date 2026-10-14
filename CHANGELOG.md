@@ -1,3 +1,13 @@
+## 1.1.12 — Black Market cycle diagnostics (candidate, not published)
+
+- Add OP-only `/magicexpansion blackmarket status` to inspect the Black Market cycle marker without writing files or modifying live purchases.
+- Explain whether the marker matches the in-memory snapshot, has changed bytes while retaining the same semantic cycle, represents a different cycle, or is missing/unreadable.
+- Include in-memory trading availability, loaded/on-disk cycle identifiers and count of currently locked player ledgers to make stale-file conflicts easier to investigate.
+- Add tests that prove inspection cannot recreate a missing marker, overwrite a changed file, or bypass purchase locks.
+- Preserve Black Market purchase receipts, four-hour refresh rules, fishing settings, Slimefun item IDs and persistent formats from 1.1.11.
+
+Do not treat a diagnostic `SAME_CYCLE_DIFFERENT_BYTES` result as permission to clear receipts: an external writer might also have changed per-player records. Review backups, investigate concurrent writers and test on a disposable server before production deployment. **No automatic market unlock or reset is included.**
+
 ## 1.1.11 — Coordinate-safe rare-fishing announcements (2026-10-13)
 
 - Disabled global rare, super-rare and Fish Emperor catch broadcasts by default, including for servers with older config files.

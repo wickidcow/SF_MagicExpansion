@@ -51,6 +51,23 @@ final class BlackMarketFileStore {
     record PlayerState(List<BlackMarketManager.BlackMarketTrade> trades,
                        Set<Integer> purchased, Set<Integer> revealed) {}
 
+    enum CycleStatus {
+        MATCH,
+        SAME_CYCLE_DIFFERENT_BYTES,
+        DIFFERENT_CYCLE,
+        MISSING,
+        UNREADABLE,
+        NOT_LOADED
+    }
+
+    /**
+     * Operator diagnostics only. Inspection never refreshes, adopts or rewrites the cycle.
+     * A matching YAML cycle with different bytes is still a conflict until deliberately
+     * reconciled offline, because another writer may also have modified player receipts.
+     */
+    record CycleInspection(CycleStatus status, Cycle loadedCycle, Cycle diskCycle, String detail) {}
+
+
     private final Path root;
     private final Path players;
     private final Path cycleFile;
@@ -133,6 +150,30 @@ final class BlackMarketFileStore {
         byte[] encoded = encodePlayer(playerId, cycle, state);
         replace(path, playerSnapshots.get(playerId), encoded);
         playerSnapshots.put(playerId, encoded);
+    }
+
+
+    synchronized CycleInspection inspectCycle(Cycle activeCycle) {
+        if (activeCycle == null || cycleSnapshot == null) {
+            return new CycleInspection(CycleStatus.NOT_LOADED, activeCycle, null, null);
+        }
+        try {
+            // Intentionally do not call checkDirectories(): status is strictly read-only.
+            final byte[] current = read(cycleFile);
+            if (current == null) {
+                return new CycleInspection(CycleStatus.MISSING, activeCycle, null, null);
+            }
+            final Cycle disk = decodeCycle(current);
+            if (!disk.equals(activeCycle)) {
+                return new CycleInspection(CycleStatus.DIFFERENT_CYCLE, activeCycle, disk, null);
+            }
+            return new CycleInspection(Arrays.equals(cycleSnapshot, current)
+                    ? CycleStatus.MATCH : CycleStatus.SAME_CYCLE_DIFFERENT_BYTES,
+                    activeCycle, disk, null);
+        } catch (IOException | RuntimeException exception) {
+            return new CycleInspection(CycleStatus.UNREADABLE, activeCycle, null,
+                    exception.getClass().getSimpleName());
+        }
     }
 
     private void requireCycle(Cycle cycle) throws IOException {

@@ -11,7 +11,7 @@ description: English-first MagicExpansion build for Slimefun Legacy on Minecraft
 commands:
   magicexpansion:
     description: Main MagicExpansion administration command.
-    usage: /magicexpansion <fishing|reload slimefun|reload fishing>
+    usage: /magicexpansion <fishing|reload slimefun|reload fishing|blackmarket status>
     permission: magicexpansion.command
     permission-message: '&cYou do not have permission to use this command.'
   mxw:

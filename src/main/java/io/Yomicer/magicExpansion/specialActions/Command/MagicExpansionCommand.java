@@ -2,6 +2,7 @@ package io.Yomicer.magicExpansion.specialActions.Command;
 
 import io.Yomicer.magicExpansion.MagicExpansion;
 import io.Yomicer.magicExpansion.utils.MagicExpansionSlimefunItemCache;
+import io.Yomicer.magicExpansion.utils.shop.BlackMarketManager;
 import java.util.Locale;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -15,6 +16,7 @@ public class MagicExpansionCommand implements CommandExecutor {
             sender.sendMessage("§a/magicexpansion reload slimefun §f- Reload the Slimefun item cache");
             sender.sendMessage("§a/magicexpansion fishing §f- Show fishing compatibility status");
             sender.sendMessage("§a/magicexpansion reload fishing §f- Reload fishing compatibility settings");
+            sender.sendMessage("§a/magicexpansion blackmarket status §f- Read-only Black Market safety diagnostics");
             return true;
         }
 
@@ -24,6 +26,15 @@ public class MagicExpansionCommand implements CommandExecutor {
         }
 
         switch (args[0].toLowerCase(Locale.ROOT)) {
+            case "blackmarket":
+                if (args.length == 2 && args[1].equalsIgnoreCase("status")) {
+                    for (String message : BlackMarketManager.getCycleStatusForOperator()) {
+                        sender.sendMessage(message);
+                    }
+                } else {
+                    sender.sendMessage("§cUsage: /magicexpansion blackmarket status");
+                }
+                break;
             case "fishing":
                 sender.sendMessage("§a" + MagicExpansion.getInstance().getFishingCompatibility().getStatus());
                 break;
