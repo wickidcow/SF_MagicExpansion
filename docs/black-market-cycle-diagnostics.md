@@ -18,7 +18,7 @@ On a build containing this patch, run:
 
 The command requires OP access, reads the current `cycle.yml` only, and reports:
 
-- Trading state (AVAILABLE or LOCKED).
+- Effective trading state (AVAILABLE only when runtime trading is enabled **and** the on-disk cycle exactly matches the loaded marker; otherwise LOCKED). This read-only diagnostic can display LOCKED before an attempted purchase raises a player-specific write error.
 - `MATCH`: marker unchanged since load.
 - `SAME_CYCLE_DIFFERENT_BYTES`: valid marker with the same cycle ID and time, but different file bytes. **Still locked.**
 - `DIFFERENT_CYCLE`: the file decodes to a different cycle ID/time. **Still locked.**
