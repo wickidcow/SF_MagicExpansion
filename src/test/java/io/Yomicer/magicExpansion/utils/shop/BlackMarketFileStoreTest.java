@@ -38,6 +38,74 @@ class BlackMarketFileStoreTest {
         MockBukkit.unmock();
     }
 
+    @Test void inspectionOnUninitializedStoreDoesNotCreateFiles() {
+        var beforeLoad = files.inspectCycle(null);
+        assertEquals(BlackMarketFileStore.CycleStatus.NOT_LOADED, beforeLoad.status());
+        assertFalse(Files.exists(directory), "Operator inspection must not create a market folder");
+    }
+
+    @Test void unchangedCycleInspectionIsReadOnlyAndReportsMatch() throws Exception {
+        var cycle = files.loadOrCreate(START);
+        Path marker = directory.resolve("cycle.yml");
+        byte[] original = Files.readAllBytes(marker);
+
+        var inspection = files.inspectCycle(cycle);
+
+        assertEquals(BlackMarketFileStore.CycleStatus.MATCH, inspection.status());
+        assertEquals(cycle, inspection.loadedCycle());
+        assertEquals(cycle, inspection.diskCycle());
+        assertArrayEquals(original, Files.readAllBytes(marker));
+    }
+
+    @Test void semanticallySameCycleRewrittenExternallyStaysLocked() throws Exception {
+        var cycle = files.loadOrCreate(START);
+        Path marker = directory.resolve("cycle.yml");
+        Files.writeString(marker, Files.readString(marker) + "# formatted by another writer\\n");
+        byte[] edited = Files.readAllBytes(marker);
+
+        var inspection = files.inspectCycle(cycle);
+
+        assertEquals(BlackMarketFileStore.CycleStatus.SAME_CYCLE_DIFFERENT_BYTES, inspection.status());
+        assertEquals(cycle, inspection.diskCycle());
+        assertThrows(IOException.class, () -> files.refresh(cycle, START + 1));
+        assertThrows(IOException.class, () -> files.loadPlayer(UUID.randomUUID(), cycle));
+        assertArrayEquals(edited, Files.readAllBytes(marker));
+    }
+
+    @Test void anotherCycleOnDiskIsDiagnosedButNeverAdopted() throws Exception {
+        var cycle = files.loadOrCreate(START);
+        Path marker = directory.resolve("cycle.yml");
+        var newYaml = YamlConfiguration.loadConfiguration(marker.toFile());
+        UUID alternate = UUID.randomUUID();
+        newYaml.set("id", alternate.toString());
+        Files.writeString(marker, newYaml.saveToString());
+        byte[] edited = Files.readAllBytes(marker);
+
+        var inspection = files.inspectCycle(cycle);
+
+        assertEquals(BlackMarketFileStore.CycleStatus.DIFFERENT_CYCLE, inspection.status());
+        assertEquals(cycle, inspection.loadedCycle());
+        assertEquals(alternate, inspection.diskCycle().id());
+        assertThrows(IOException.class, () -> files.refresh(cycle, START + 1));
+        assertArrayEquals(edited, Files.readAllBytes(marker));
+    }
+
+    @Test void unreadableOrMissingMarkerCannotBeSilentlyRecreatedByInspection() throws Exception {
+        var cycle = files.loadOrCreate(START);
+        Path marker = directory.resolve("cycle.yml");
+
+        Files.writeString(marker, "started-at: [broken\\n");
+        byte[] corrupt = Files.readAllBytes(marker);
+        var unreadable = files.inspectCycle(cycle);
+        assertEquals(BlackMarketFileStore.CycleStatus.UNREADABLE, unreadable.status());
+        assertArrayEquals(corrupt, Files.readAllBytes(marker));
+
+        Files.delete(marker);
+        var missing = files.inspectCycle(cycle);
+        assertEquals(BlackMarketFileStore.CycleStatus.MISSING, missing.status());
+        assertFalse(Files.exists(marker));
+    }
+
     @Test void firstInstallCreatesMarkerAndRestartKeepsItsFourHourDeadline() throws Exception {
         BlackMarketFileStore.Cycle initial = files.loadOrCreate(START);
         assertEquals(START, initial.startedAt());
