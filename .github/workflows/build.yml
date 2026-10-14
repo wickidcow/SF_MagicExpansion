@@ -11,8 +11,8 @@ permissions:
   contents: write
 
 env:
-  VERSION: "1.1.11"
-  OUTPUT_NAME: "SF_MagicExpansion1.1.11.jar"
+  VERSION: "1.1.12"
+  OUTPUT_NAME: "SF_MagicExpansion1.1.12.jar"
 
 concurrency:
   group: magicexpansion-${{ github.workflow }}-${{ github.ref }}
