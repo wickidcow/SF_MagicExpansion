@@ -44,7 +44,7 @@ class BlackMarketStableReadTest {
         assertEquals("changed", Files.readString(file), "Do not overwrite the external writer's evidence");
     }
 
-    @Test voidreplacementAfterReadingBytesIsRejected() throws Exception {
+    @Test void replacementAfterReadingBytesIsRejected() throws Exception {
         Path file = receipt();
         AtomicInteger inspections = new AtomicInteger();
         assertThrows(IOException.class, () -> BlackMarketStateReader.read(file, path -> {
@@ -156,7 +156,7 @@ class BlackMarketStableReadTest {
                 actual.size() + (second ? 1 : 0), actual.lastModifiedTime(), actual.creationTime(), actual.lastAccessTime()));
     }
 
-    @Test voidBytesReadMustMatchTheInspectedLength() throws Exception {
+    @Test void bytesReadMustMatchTheInspectedLength() throws Exception {
         Path file = receipt();
         BasicFileAttributes actual = attributes(file);
         Sample longer = new Sample(actual, actual.fileKey(), actual.size() + 1, actual.lastModifiedTime(),
