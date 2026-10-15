@@ -1,0 +1,93 @@
+name: Black Market player flow and restart
+on:
+  push:
+    branches: ['fix/blackmarket-offer-items-*']
+  pull_request:
+    paths: ['src/**', 'tests/runtime/BlackMarketPlayerFlowProbe.java', '.github/workflows/blackmarket-player-flow.yml']
+permissions:
+  contents: read
+jobs:
+  flow:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - version: '1.21.11'
+            build: 132
+            java: '21'
+          - version: '26.2'
+            build: 134
+            java: '25'
+          - version: '26.3'
+            build: 190
+            java: '25'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '25'
+          cache: maven
+      - name: Build and test baseline-compatible candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p audit/server/plugins audit/classes
+          bash scripts/install_slimefun_api.sh > audit/build.log 2>&1
+          mvn -B -ntp clean verify >> audit/build.log 2>&1 || { tail -n 100 audit/build.log; exit 1; }
+          mvn -B -ntp dependency:build-classpath -Dmdep.outputFile=classpath.txt >> audit/build.log 2>&1
+          tail -n 25 audit/build.log
+          cp target/SF_MagicExpansion*.jar audit/server/plugins/MagicExpansion.jar
+          javac --release 21 -cp "audit/server/plugins/MagicExpansion.jar:$(cat classpath.txt)" -d audit/classes tests/runtime/BlackMarketPlayerFlowProbe.java
+          printf "name: BlackMarketPlayerFlowProbe\nmain: audit.BlackMarketPlayerFlowProbe\nversion: '1'\napi-version: '1.21.11'\ndepend: [Slimefun, magicexpansion]\n" > audit/classes/plugin.yml
+          jar --create --file audit/server/plugins/BlackMarketPlayerFlowProbe.jar -C audit/classes .
+      - name: Acquire verified native server and published core
+        shell: bash
+        env:
+          PAPER_VERSION: ${{ matrix.version }}
+          PAPER_BUILD: ${{ matrix.build }}
+        run: |
+          set -euo pipefail
+          curl -fL --retry 3 'https://github.com/wickidcow/Slimefun-Legacy/releases/download/v4.1.74/Slimefun-Legacy4.1.74.jar' -o audit/server/plugins/Slimefun.jar
+          echo '72a524d7c0d6f75a9decbf06679515887273ae53673d3f5ee38f355bef952c96  audit/server/plugins/Slimefun.jar' | sha256sum -c -
+          curl -fL --retry 3 -A 'MagicExpansion-player-flow/1.0 (https://github.com/wickidcow/SF_MagicExpansion)' "https://fill.papermc.io/v3/projects/paper/versions/${PAPER_VERSION}/builds/${PAPER_BUILD}" -o audit/paper-metadata.json
+          URL=$(jq -er '.downloads["server:default"].url' audit/paper-metadata.json)
+          HASH=$(jq -er '.downloads["server:default"].checksums.sha256' audit/paper-metadata.json)
+          [[ "$URL" == https://* && "$HASH" =~ ^[0-9a-f]{64}$ ]]
+          curl -fL --retry 3 "$URL" -o audit/server/server.jar
+          echo "$HASH  audit/server/server.jar" | sha256sum -c -
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: ${{ matrix.java }}
+      - name: Buy and restart with the same files and binaries
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd audit/server
+          printf 'eula=true\n' > eula.txt
+          printf 'online-mode=false\nserver-ip=127.0.0.1\nserver-port=0\nview-distance=2\nsimulation-distance=2\npause-when-empty-seconds=-1\n' > server.properties
+          sha256sum server.jar plugins/*.jar > input-sha256.txt
+          for PHASE in buy restart; do
+            sha256sum -c input-sha256.txt
+            timeout --kill-after=20s 300s java -Xms512M -Xmx2G -Dblackmarket.offer.audit=true -Dblackmarket.flow.phase="$PHASE" -jar server.jar --nogui > "console-${PHASE}.log" 2>&1
+            test ! -e "flow-${PHASE}-fatal.txt" || { cat "flow-${PHASE}-fatal.txt"; tail -n 100 "console-${PHASE}.log"; exit 1; }
+            grep -Fxq PLAYER_FLOW_PASSED "flow-${PHASE}-result.txt"
+            cat "flow-${PHASE}-result.txt"
+          done
+          test "$(grep '^pid=' flow-buy-result.txt)" != "$(grep '^pid=' flow-restart-result.txt)"
+      - name: Preserve real execution evidence
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: blackmarket-player-flow-${{ matrix.version }}
+          path: |
+            audit/build.log
+            audit/paper-metadata.json
+            audit/server/*.log
+            audit/server/*.txt
+            audit/server/plugins/BlackMarketPlayerFlowProbe/*.yml
+            target/surefire-reports/TEST-*.xml
+          if-no-files-found: error
