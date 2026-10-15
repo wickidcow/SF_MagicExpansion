@@ -3,7 +3,7 @@ on:
   push:
     branches: ['test/portable-shops-20261015']
   pull_request:
-    paths: ['tests/portable-shop-audit/**', '.github/workflows/portable-shop-audit.yml']
+    paths: ['src/main/java/io/Yomicer/magicExpansion/utils/shop/**', 'src/test/java/io/Yomicer/magicExpansion/utils/shop/**', 'tests/portable-shop-audit/**', '.github/workflows/portable-shop-audit.yml']
 permissions:
   contents: read
   actions: read
@@ -24,7 +24,7 @@ jobs:
           distribution: temurin
           java-version: '25'
           cache: maven
-      - name: Compile audit dependencies
+      - name: Build and test the exact candidate source
         run: |
           set -euo pipefail
           mkdir -p audit/server/plugins audit/classes audit/fixtures
@@ -32,11 +32,13 @@ jobs:
           bash scripts/install_slimefun_api.sh > audit/build.log 2>&1
           mvn -B -ntp clean verify >> audit/build.log 2>&1 || { tail -n 100 audit/build.log; exit 1; }
           mvn -B -ntp dependency:build-classpath -Dmdep.outputFile=classpath.txt >> audit/build.log 2>&1
-      - name: Obtain exact published addon and core plus verified Paper
+          mapfile -t JARS < <(find target -maxdepth 1 -name 'SF_MagicExpansion*.jar' -print)
+          test "${#JARS[@]}" = 1
+          cp "${JARS[0]}" audit/server/plugins/MagicExpansion.jar
+          sha256sum audit/server/plugins/MagicExpansion.jar > audit/candidate-jar.sha256
+      - name: Obtain the checksum-pinned published core and verified Paper
         run: |
           set -euo pipefail
-          curl -fL --retry 3 https://github.com/wickidcow/SF_MagicExpansion/releases/download/v1.1.14/SF_MagicExpansion1.1.14.jar -o audit/server/plugins/MagicExpansion.jar
-          echo 'e3552fc5d54dc282194428d593d08c939f71172182075667ac87d10571b192dd  audit/server/plugins/MagicExpansion.jar' | sha256sum -c -
           curl -fL --retry 3 https://github.com/wickidcow/Slimefun-Legacy/releases/download/v4.1.74/Slimefun-Legacy4.1.74.jar -o audit/server/plugins/Slimefun.jar
           echo '72a524d7c0d6f75a9decbf06679515887273ae53673d3f5ee38f355bef952c96  audit/server/plugins/Slimefun.jar' | sha256sum -c -
           curl -fL --retry 3 -A 'MagicExpansion-Portable-Shop-Audit/1.0' https://fill.papermc.io/v3/projects/paper/versions/26.3/builds/190 -o audit/paper.json
@@ -51,13 +53,13 @@ jobs:
         run: |
           python3 -m pip install 'PyYAML==6.0.2'
           python3 tests/portable-shop-audit/prepare_fixtures.py
-      - name: Compile temporary probe outside the addon
+      - name: Compile the temporary probe outside the addon
         run: |
           set -euo pipefail
           javac --release 21 -cp "audit/server/plugins/MagicExpansion.jar:$(cat classpath.txt)" -d audit/classes tests/portable-shop-audit/PortableShopProbe.java
           printf "name: PortableShopProbe\nmain: audit.PortableShopProbe\nversion: '1'\napi-version: '1.21.11'\ndepend: [Slimefun, magicexpansion]\n" > audit/classes/plugin.yml
           jar --create --file audit/server/plugins/PortableShopProbe.jar -C audit/classes .
-      - name: Exercise normal trades and characterize refused receipts across restart
+      - name: Require one-time trades and refused-receipt safety across restart
         run: |
           set -euo pipefail
           cd audit/server
@@ -83,9 +85,11 @@ jobs:
             audit/*.log
             audit/*.json
             audit/*.txt
+            audit/*.sha256
             audit/server/*.log
             audit/server/*.yml
             audit/server/*.txt
             audit/server/*.sha256
             audit/server/plugins/magicexpansion/portable_shops/*.yml
+            target/surefire-reports/TEST-*.xml
           if-no-files-found: error
