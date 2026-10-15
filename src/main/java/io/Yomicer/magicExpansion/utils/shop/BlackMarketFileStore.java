@@ -89,6 +89,8 @@ final class BlackMarketFileStore {
     }
 
     synchronized Cycle loadOrCreate(long now) throws IOException {
+        // A failed initialization must never leave a previous cycle authorized.
+        cycleSnapshot = null;
         checkDirectories();
         playerSnapshots.clear();
         lockedPlayers.clear();
@@ -114,6 +116,7 @@ final class BlackMarketFileStore {
         if (previous == null || cycleSnapshot == null) {
             throw new IOException("Black Market cycle not loaded");
         }
+        requireCycle(previous);
         Cycle fresh = new Cycle(UUID.randomUUID(), now);
         byte[] encoded = encodeCycle(fresh);
         replace(cycleFile, cycleSnapshot, encoded);
@@ -200,11 +203,7 @@ final class BlackMarketFileStore {
     }
 
     private static byte[] read(Path path) throws IOException {
-        if (!Files.exists(path, LinkOption.NOFOLLOW_LINKS)) return null;
-        if (!Files.isRegularFile(path, LinkOption.NOFOLLOW_LINKS)) {
-            throw new IOException("Black Market state is not a regular file: " + path);
-        }
-        return Files.readAllBytes(path);
+        return BlackMarketStateReader.read(path);
     }
 
     private void replace(Path target, byte[] expected, byte[] contents) throws IOException {
