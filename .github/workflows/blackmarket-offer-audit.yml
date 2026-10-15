@@ -1,0 +1,66 @@
+name: Native Black Market offer audit
+on:
+  push:
+    branches: ['fix/blackmarket-offer-items-*']
+  pull_request:
+    paths: ['src/**', 'tests/runtime/BlackMarketOfferProbe.java', '.github/workflows/blackmarket-offer-audit.yml']
+permissions:
+  contents: read
+jobs:
+  offers:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '25'
+          cache: maven
+      - name: Build candidate and verify source tests
+        run: |
+          bash scripts/install_slimefun_api.sh
+          mvn -B -ntp clean verify
+          mvn -B -ntp dependency:build-classpath -Dmdep.outputFile=classpath.txt
+      - name: Acquire checksum-verified server and published core
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p audit/server/plugins audit/classes
+          curl -fL --retry 3 'https://github.com/wickidcow/Slimefun-Legacy/releases/download/v4.1.74/Slimefun-Legacy4.1.74.jar' -o audit/server/plugins/Slimefun.jar
+          echo '72a524d7c0d6f75a9decbf06679515887273ae53673d3f5ee38f355bef952c96  audit/server/plugins/Slimefun.jar' | sha256sum -c -
+          curl -fL --retry 3 -A 'MagicExpansion-offer-audit/1.0 (https://github.com/wickidcow/SF_MagicExpansion)' 'https://fill.papermc.io/v3/projects/paper/versions/26.3/builds/190' -o audit/paper-metadata.json
+          URL=$(jq -er '.downloads["server:default"].url' audit/paper-metadata.json)
+          HASH=$(jq -er '.downloads["server:default"].checksums.sha256' audit/paper-metadata.json)
+          [[ "$URL" == https://* && "$HASH" =~ ^[0-9a-f]{64}$ ]]
+          curl -fL --retry 3 "$URL" -o audit/server/server.jar
+          echo "$HASH  audit/server/server.jar" | sha256sum -c -
+          cp target/SF_MagicExpansion*.jar audit/server/plugins/MagicExpansion.jar
+      - name: Compile native audit plugin outside distribution
+        run: |
+          set -euo pipefail
+          javac --release 21 -cp "audit/server/plugins/MagicExpansion.jar:$(cat classpath.txt)" -d audit/classes tests/runtime/BlackMarketOfferProbe.java
+          printf "name: BlackMarketOfferProbe\nmain: audit.BlackMarketOfferProbe\nversion: '1'\napi-version: '1.21.11'\ndepend: [Slimefun, magicexpansion]\n" > audit/classes/plugin.yml
+          jar --create --file audit/server/plugins/BlackMarketOfferProbe.jar -C audit/classes .
+      - name: Exercise real generated offers on disposable Paper
+        run: |
+          set -euo pipefail
+          cd audit/server
+          printf 'eula=true\n' > eula.txt
+          printf 'online-mode=false\nserver-ip=127.0.0.1\nserver-port=0\nview-distance=2\nsimulation-distance=2\npause-when-empty-seconds=-1\n' > server.properties
+          sha256sum server.jar plugins/*.jar > input-sha256.txt
+          timeout --kill-after=20s 300s java -Xms512M -Xmx2G -Dblackmarket.offer.audit=true -jar server.jar --nogui > console.log 2>&1
+          test ! -e offer-audit-fatal.txt
+          grep -Fxq AUDIT_COMPLETED offer-audit-result.txt
+          cat offer-audit-result.txt
+      - name: Retain reproduction evidence (not a release)
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: blackmarket-native-offer-evidence
+          path: |
+            audit/server/*.txt
+            audit/server/*.log
+            audit/paper-metadata.json
+            target/surefire-reports/TEST-*.xml
+          if-no-files-found: error
