@@ -9,7 +9,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 import java.util.*;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -18,25 +17,30 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitTask;
 
-/** Real server/shop/storage code; only the client identity and inventory handoff are synthetic. */
+/** Real server/shop/storage code; only client identity and inventory handoff are synthetic. */
 public final class BlackMarketPlayerFlowProbe extends JavaPlugin {
     private Path market, evidence;
     private Method click;
     private int[] slots;
     private final ShopGUI gui = new ShopGUI();
     private int reveals, paid, free, duplicates, paymentFailures, refundChecks;
-    private String stage = "initialization";
+    private String stage = "initialization", phase;
+    private final Deque<Step> pending = new ArrayDeque<>();
+    private BukkitTask task;
+    private long maximumScenarioNanos;
+    @FunctionalInterface private interface Step { void run() throws Exception; }
 
     @Override public void onEnable() {
         if (!Boolean.getBoolean("blackmarket.offer.audit") || !Bukkit.getOnlinePlayers().isEmpty()) {
             throw new IllegalStateException("Disposable audit authorization and no online players required");
         }
-        Bukkit.getScheduler().runTaskLater(this, this::run, 40L);
+        Bukkit.getScheduler().runTaskLater(this, this::prepare, 40L);
     }
 
-    private void run() {
-        String phase = System.getProperty("blackmarket.flow.phase", "invalid");
+    private void prepare() {
+        phase = System.getProperty("blackmarket.flow.phase", "invalid");
         try {
             check(Set.of("buy", "restart").contains(phase), "Explicit phase required");
             check(BlackMarketManager.isAvailable(), "Market did not initialize");
@@ -51,89 +55,128 @@ public final class BlackMarketPlayerFlowProbe extends JavaPlugin {
             if (phase.equals("buy")) {
                 check(!Files.exists(evidence.resolve("cycle-original.yml")), "Refuse reused seed fixture");
                 Files.copy(market.resolve("cycle.yml"), evidence.resolve("cycle-original.yml"));
-                seedDeterministicPlayer("deterministic", false);
-                for (int p = 0; p < 20; p++) buyAll("generated-player-" + p);
-                buyAll("deterministic");
-                verifyRefundOnRefusedReceipt();
-                check(paid > 0 && free > 0 && paymentFailures > 0 && refundChecks == 1, "Missing required payment paths");
+                pending.add(() -> seedDeterministicPlayer("deterministic", false));
+                for (int p = 0; p < 20; p++) enqueuePurchases("generated-player-" + p);
+                enqueuePurchases("deterministic");
+                pending.add(this::verifyRefundOnRefusedReceipt);
             } else {
                 check(Files.exists(Path.of("flow-buy-result.txt")), "First boot evidence is missing");
-                for (int p = 0; p < 20; p++) verifyRestart("generated-player-" + p);
-                verifyRestart("deterministic");
+                for (int p = 0; p < 20; p++) enqueueRestart("generated-player-" + p);
+                enqueueRestart("deterministic");
             }
-            check(Arrays.equals(Files.readAllBytes(evidence.resolve("cycle-original.yml")),
-                    Files.readAllBytes(market.resolve("cycle.yml"))), "Tests must not reset the cycle");
-            String report = "PLAYER_FLOW_PASSED\nphase=" + phase + "\npid=" + ProcessHandle.current().pid()
-                    + "\nserver=" + Bukkit.getVersion() + "\nreveals=" + reveals + " paid=" + paid + " free=" + free
-                    + " duplicateRejections=" + duplicates + " insufficientPayment=" + paymentFailures
-                    + " refusedReceiptRefunds=" + refundChecks + "\n";
-            Files.writeString(Path.of("flow-" + phase + "-result.txt"), report);
-            getLogger().info(report);
-        } catch (Throwable error) {
-            while (error instanceof InvocationTargetException && error.getCause() != null) error = error.getCause();
-            error.printStackTrace();
-            try { Files.writeString(Path.of("flow-" + phase + "-fatal.txt"), stage + ": " + error); } catch (Exception ignored) { }
-        } finally { Bukkit.shutdown(); }
+            pending.add(this::complete);
+            // One scenario per two ticks. Do not put hundreds of synchronous disk
+            // transactions and assertion reads into a single artificial mega-tick.
+            task = Bukkit.getScheduler().runTaskTimer(this, () -> {
+                try {
+                    check(!pending.isEmpty(), "Unexpected empty audit queue");
+                    long start = System.nanoTime();
+                    pending.removeFirst().run();
+                    maximumScenarioNanos = Math.max(maximumScenarioNanos, System.nanoTime() - start);
+                } catch (Throwable error) { fail(error); }
+            }, 1L, 2L);
+        } catch (Throwable error) { fail(error); }
     }
 
-    private void buyAll(String name) throws Exception {
-        Client client = new Client(name);
-        List<BlackMarketTrade> offers = BlackMarketManager.getTodayTrades(client.player);
-        check(offers.size() == 10, "Player did not receive ten offers: " + name);
-        ShopGUI.openBlackMarket(client.player);
-        check(client.menu != null && client.menu.getHolder() instanceof ShopGUI.ShopHolder, "Market GUI did not open");
-        for (int index = 0; index < offers.size(); index++) {
-            stage = name + "/" + index;
-            BlackMarketTrade offer = offers.get(index);
-            ItemStack expectedReward = nativeStack(offer.result);
-            client.storage.clear();
-            invokeClick(client, index);
-            check(BlackMarketManager.isRevealed(client.id, index), "Reveal not recorded");
-            check(!BlackMarketManager.hasPurchased(client.id, index) && empty(client.storage), "Reveal issued or charged items");
-            check(readLedger(client.id).getIntegerList("revealed").contains(index), "Reveal not persisted");
-            reveals++;
-            if (!offer.isFree) {
-                byte[] before = Files.readAllBytes(ledger(client.id));
-                invokeClick(client, index);
-                check(empty(client.storage) && !BlackMarketManager.hasPurchased(client.id, index), "Unpaid offer succeeded");
-                check(Arrays.equals(before, Files.readAllBytes(ledger(client.id))), "Failed payment changed receipt");
-                for (ItemStack cost : offer.costs) check(client.storage.addItem(nativeStack(cost)).isEmpty(), "Payment fixture overflow");
-                paymentFailures++;
-            }
-            client.requireReceipt = index;
-            invokeClick(client, index);
-            client.requireReceipt = -1;
-            check(BlackMarketManager.hasPurchased(client.id, index), "Purchase was not recorded: " + name + "/" + index);
-            check(readLedger(client.id).getIntegerList("purchased").contains(index), "Purchase not durable");
-            assertContents(client.storage, List.of(expectedReward));
-            check(expectedReward.equals(offer.result), "GUI or payment mutated the original offer");
-            if (offer.isFree) free++; else paid++;
-            byte[] receipt = Files.readAllBytes(ledger(client.id));
-            invokeClick(client, index);
-            assertContents(client.storage, List.of(expectedReward));
-            check(Arrays.equals(receipt, Files.readAllBytes(ledger(client.id))), "Duplicate click changed receipt");
-            duplicates++;
-        }
-        check(readLedger(client.id).getIntegerList("purchased").size() == 10, "Not all slots purchased");
-        Files.copy(ledger(client.id), evidence.resolve(client.id + ".yml"));
+    private void complete() throws Exception {
+        if (phase.equals("buy")) {
+            check(reveals == 210 && paid + free == 210 && duplicates == 210 && paid > 0 && free > 0
+                    && paymentFailures == paid && refundChecks == 1, "Missing required purchase paths");
+        } else check(duplicates == 210, "Missing post-restart duplicate checks");
+        check(Arrays.equals(Files.readAllBytes(evidence.resolve("cycle-original.yml")),
+                Files.readAllBytes(market.resolve("cycle.yml"))), "Tests must not reset the cycle");
+        String report = "PLAYER_FLOW_PASSED\nphase=" + phase + "\npid=" + ProcessHandle.current().pid()
+                + "\nserver=" + Bukkit.getVersion() + "\nreveals=" + reveals + " paid=" + paid + " free=" + free
+                + " duplicateRejections=" + duplicates + " insufficientPayment=" + paymentFailures
+                + " refusedReceiptRefunds=" + refundChecks + "\nmaximumScenarioMs=" + maximumScenarioNanos / 1_000_000.0 + "\n";
+        Files.writeString(Path.of("flow-" + phase + "-result.txt"), report);
+        getLogger().info(report);
+        task.cancel();
+        Bukkit.shutdown();
     }
 
-    private void verifyRestart(String name) throws Exception {
-        stage = "restart/" + name;
+    private void fail(Throwable error) {
+        if (task != null) task.cancel();
+        while (error instanceof InvocationTargetException && error.getCause() != null) error = error.getCause();
+        error.printStackTrace();
+        try { Files.writeString(Path.of("flow-" + phase + "-fatal.txt"), stage + ": " + error); } catch (Exception ignored) { }
+        Bukkit.shutdown();
+    }
+
+    private void enqueuePurchases(String name) {
         Client client = new Client(name);
-        byte[] original = Files.readAllBytes(evidence.resolve(client.id + ".yml"));
-        check(Arrays.equals(original, Files.readAllBytes(ledger(client.id))), "Saved ledger changed between boots");
-        List<BlackMarketTrade> restored = BlackMarketManager.getTodayTrades(client.player);
-        check(restored.size() == 10, "Offers did not load after restart");
-        ShopGUI.openBlackMarket(client.player);
-        check(client.menu != null, "Purchased market did not reopen after restart");
+        pending.add(() -> {
+            stage = name + "/open";
+            client.offers = BlackMarketManager.getTodayTrades(client.player);
+            check(client.offers.size() == 10, "Player did not receive ten offers: " + name);
+            ShopGUI.openBlackMarket(client.player);
+            check(client.menu != null && client.menu.getHolder() instanceof ShopGUI.ShopHolder, "Market GUI did not open");
+        });
         for (int index = 0; index < 10; index++) {
-            check(BlackMarketManager.hasPurchased(client.id, index) && BlackMarketManager.isRevealed(client.id, index), "Lost slot history");
-            invokeClick(client, index);
-            check(empty(client.storage), "Restart allowed a second reward");
-            duplicates++;
+            int slot = index;
+            pending.add(() -> buyOffer(client, name, slot));
         }
-        check(Arrays.equals(original, Files.readAllBytes(ledger(client.id))), "Restart/duplicate clicks rerolled or rewrote offers");
+        pending.add(() -> {
+            check(readLedger(client.id).getIntegerList("purchased").size() == 10, "Not all slots purchased");
+            Files.copy(ledger(client.id), evidence.resolve(client.id + ".yml"));
+        });
+    }
+
+    private void buyOffer(Client client, String name, int index) throws Exception {
+        stage = name + "/" + index;
+        BlackMarketTrade offer = client.offers.get(index);
+        ItemStack expectedReward = nativeStack(offer.result);
+        client.storage.clear();
+        invokeClick(client, index);
+        check(BlackMarketManager.isRevealed(client.id, index), "Reveal not recorded");
+        check(!BlackMarketManager.hasPurchased(client.id, index) && empty(client.storage), "Reveal issued or charged items");
+        check(readLedger(client.id).getIntegerList("revealed").contains(index), "Reveal not persisted");
+        reveals++;
+        if (!offer.isFree) {
+            byte[] before = Files.readAllBytes(ledger(client.id));
+            invokeClick(client, index);
+            check(empty(client.storage) && !BlackMarketManager.hasPurchased(client.id, index), "Unpaid offer succeeded");
+            check(Arrays.equals(before, Files.readAllBytes(ledger(client.id))), "Failed payment changed receipt");
+            for (ItemStack cost : offer.costs) check(client.storage.addItem(nativeStack(cost)).isEmpty(), "Payment fixture overflow");
+            paymentFailures++;
+        }
+        client.requireReceipt = index;
+        invokeClick(client, index);
+        client.requireReceipt = -1;
+        check(BlackMarketManager.hasPurchased(client.id, index), "Purchase was not recorded: " + name + "/" + index);
+        check(readLedger(client.id).getIntegerList("purchased").contains(index), "Purchase not durable");
+        assertContents(client.storage, List.of(expectedReward));
+        check(expectedReward.equals(offer.result), "GUI or payment mutated the original offer");
+        if (offer.isFree) free++; else paid++;
+        byte[] receipt = Files.readAllBytes(ledger(client.id));
+        invokeClick(client, index);
+        assertContents(client.storage, List.of(expectedReward));
+        check(Arrays.equals(receipt, Files.readAllBytes(ledger(client.id))), "Duplicate click changed receipt");
+        duplicates++;
+    }
+
+    private void enqueueRestart(String name) {
+        Client client = new Client(name);
+        pending.add(() -> {
+            stage = "restart/" + name;
+            client.original = Files.readAllBytes(evidence.resolve(client.id + ".yml"));
+            check(Arrays.equals(client.original, Files.readAllBytes(ledger(client.id))), "Saved ledger changed between boots");
+            client.offers = BlackMarketManager.getTodayTrades(client.player);
+            check(client.offers.size() == 10, "Offers did not load after restart");
+            ShopGUI.openBlackMarket(client.player);
+            check(client.menu != null, "Purchased market did not reopen after restart");
+        });
+        for (int index = 0; index < 10; index++) {
+            int slot = index;
+            pending.add(() -> {
+                check(BlackMarketManager.hasPurchased(client.id, slot) && BlackMarketManager.isRevealed(client.id, slot), "Lost slot history");
+                invokeClick(client, slot);
+                check(empty(client.storage), "Restart allowed a second reward");
+                duplicates++;
+            });
+        }
+        pending.add(() -> check(Arrays.equals(client.original, Files.readAllBytes(ledger(client.id))),
+                "Restart/duplicate clicks rerolled or rewrote offers"));
     }
 
     private void verifyRefundOnRefusedReceipt() throws Exception {
@@ -189,10 +232,8 @@ public final class BlackMarketPlayerFlowProbe extends JavaPlugin {
         save.invoke(store, id(name), cycle, state.newInstance(trades, Set.of(), Set.of()));
     }
 
-    // Player payments originate in native inventories. A generic copy constructor
-    // around a template clone can retain a nested subclass delegate on Paper.
-    // Use the server's complete public serialization path for test inventory inputs;
-    // the actual shop reward, payment and refund code remains untouched and exercised.
+    // Payments originate in native inventories; preserve full item data for fixtures.
+    // Actual shop reward/payment/refund handlers remain unchanged and exercised.
     private static ItemStack nativeStack(ItemStack item) { return ItemStack.deserialize(item.serialize()); }
     private void invokeClick(Client c, int index) throws Exception { click.invoke(gui, c.player, slots[index]); }
     private static UUID id(String name) { return UUID.nameUUIDFromBytes(("blackmarket-native-flow:" + name).getBytes(StandardCharsets.UTF_8)); }
@@ -224,6 +265,8 @@ public final class BlackMarketPlayerFlowProbe extends JavaPlugin {
         final PlayerInventory inventory;
         final Player player;
         Inventory menu;
+        List<BlackMarketTrade> offers;
+        byte[] original;
         int requireReceipt = -1;
         Client(String name) {
             id = id(name);
