@@ -1,0 +1,153 @@
+name: Publish verified MagicExpansion 1.1.13 bytes
+on:
+  push:
+    branches: [publish/magicexpansion-1.1.13-exact]
+    paths: [.github/workflows/publish-magicexpansion-1.1.13-exact.yml]
+permissions:
+  contents: write
+  actions: read
+concurrency:
+  group: magicexpansion-exact-release-v1.1.13
+  cancel-in-progress: false
+jobs:
+  publish:
+    if: github.repository == 'wickidcow/SF_MagicExpansion' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - name: Verify frozen tests and bytes, then publish without rebuilding
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import hashlib, io, json, os, pathlib, re, subprocess, zipfile
+          import xml.etree.ElementTree as ET
+          REPO = 'wickidcow/SF_MagicExpansion'
+          CORE = 'wickidcow/Slimefun-Legacy'
+          SOURCE = '13924991a1960daa40fe221cab5a4eef95d46ecb'
+          GATE_HEAD = '5c1287a2842d074f776cbdaceb83513c7d12b3a2'
+          JAR = 'SF_MagicExpansion1.1.13.jar'
+          SHA = '674aeac4dbf5ce09969131dbfdbadd1e037eebfed74588f98f135902ab81adde'
+          TAG = 'v1.1.13'
+          def gh(*args, data=None):
+              return subprocess.run(['gh', *args], input=data, stdout=subprocess.PIPE,
+                                    stderr=subprocess.PIPE, check=True, timeout=180).stdout
+          def api(path, method='GET', payload=None):
+              args = ['api', '--method', method, path]
+              data = None
+              if payload is not None:
+                  args += ['--input', '-']; data = json.dumps(payload).encode()
+              out = gh(*args, data=data)
+              return json.loads(out) if out else None
+          def optional(path):
+              try:
+                  return api(path)
+              except subprocess.CalledProcessError as e:
+                  if b'HTTP 404' in e.stderr:
+                      return None
+                  raise
+          def digest(data):
+              return hashlib.sha256(data).hexdigest()
+          def artifact(artifact_id, expected_sha):
+              meta = api(f'repos/{REPO}/actions/artifacts/{artifact_id}')
+              assert not meta['expired'] and meta['workflow_run']['id'] == 38664857521
+              assert meta['workflow_run']['head_sha'] == SOURCE
+              assert meta['digest'] == 'sha256:' + expected_sha
+              data = gh('api', f'repos/{REPO}/actions/artifacts/{artifact_id}/zip')
+              assert digest(data) == expected_sha, 'Artifact bytes changed'
+              return data
+          def old_release():
+              r = api(f'repos/{REPO}/releases/tags/v1.1.12')
+              assert r['id'] == 413057287 and not r['draft'] and not r['prerelease']
+              assert [(a['id'], a['name'], a['digest']) for a in r['assets']] == [
+                  (641289449, 'SF_MagicExpansion1.1.12.jar',
+                   'sha256:4a98cb3f048b00ee4486e54d42047c00b59e19ddbb43985fa5110f993a825a4e')]
+              return r
+          assert os.environ['GITHUB_REPOSITORY'] == REPO
+          assert os.environ['GITHUB_REF'] == 'refs/heads/publish/magicexpansion-1.1.13-exact'
+          pr = api(f'repos/{REPO}/pulls/18')
+          assert pr['merged'] and pr['head']['sha'] == SOURCE
+          source_tree = api(f'repos/{REPO}/git/commits/{SOURCE}')['tree']['sha']
+          assert api(f"repos/{REPO}/git/commits/{pr['merge_commit_sha']}")['tree']['sha'] == source_tree
+          for repo, run_id, source in [(REPO, 38664857521, SOURCE), (CORE, 38665734646, GATE_HEAD)]:
+              run = api(f'repos/{repo}/actions/runs/{run_id}')
+              assert run['head_sha'] == source and run['status'] == 'completed' and run['conclusion'] == 'success'
+          old = old_release()
+          jar = artifact(11940776508, SHA)
+          with zipfile.ZipFile(io.BytesIO(jar)) as z:
+              assert z.testzip() is None and len(z.namelist()) == len(set(z.namelist()))
+              assert re.search(r'(?m)^version: 1\.1\.13\s*$', z.read('plugin.yml').decode())
+              assert "api-version: '1.21.11'" in z.read('plugin.yml').decode()
+              for name in z.namelist():
+                  assert not name.startswith(('org/junit/', 'org/mockbukkit/'))
+                  if name.endswith('.class') and not name.startswith('META-INF/versions/'):
+                      assert int.from_bytes(z.read(name)[6:8], 'big') <= 65
+          reports = artifact(11940781417, 'b13e0c324188b018b4162eb264867fcb6d65d72b80f06a39bba1fe1361f3c9de')
+          with zipfile.ZipFile(io.BytesIO(reports)) as z:
+              suites = [ET.fromstring(z.read(n)) for n in z.namelist() if n.endswith('.xml')]
+              assert len(suites) == 14
+              assert sum(int(s.attrib['tests']) for s in suites) == 146
+              assert all(int(s.attrib.get(k, 0)) == 0 for s in suites for k in ('failures', 'errors', 'skipped'))
+              assert sum(int(s.attrib['tests']) for s in suites if 'BlackMarket' in s.attrib['name']) == 40
+          pathlib.Path(JAR).write_bytes(jar)
+          notes = f'''# MagicExpansion 1.1.13 — Black Market receipt safety
+          
+          Official exact-byte safety release from merged PR #18. The published JAR is the tested source-CI artifact, not a subsequent rebuild.
+          
+          ## Changes
+          - Preserve purchase history when a missing cycle marker coexists with receipts, backups or incomplete saves.
+          - Refuse unreadable, empty or symbolic-link state instead of treating it as a new purchase history.
+          - Invalidate stale authorization after failed initialization and reject outdated refresh requests.
+          - Preserve four-hour rotation, purchase limits, costs, rewards, item IDs, metadata and receipt-before-reward ordering.
+          
+          ## Verification
+          Source CI: https://github.com/{REPO}/actions/runs/38664857521 — 146 tests, 14 suites, 40 Black Market tests; zero failures, errors or skips.
+          Exact-byte gate: https://github.com/{CORE}/actions/runs/38665734646 — published Slimefun 4.1.74, Paper 1.21.11/26.2/26.3 and experimental Purpur 26.3. All 16 Black Market JVM phases passed; native Networks/Fluffy conservation passed on Paper 26.3.
+          Source: `{SOURCE}`
+          JAR SHA-256: `{SHA}`
+          
+          ## Upgrade and limits
+          Stop and back up the server, preserve the complete magicexpansion folder, and replace the old JAR rather than loading two versions. Start normally; do not use /reload. Run `/magicexpansion blackmarket status`.
+          This does not diagnose or automatically repair Albion's original cycle.yml mismatch. Do not delete receipts or reset offers to clear a lock. Synthetic restart tests are not proof of every live-client or power-loss scenario. No production server was changed by publication.
+          '''
+          pathlib.Path('release-notes.md').write_text(notes)
+          existing = optional(f'repos/{REPO}/releases/tags/{TAG}')
+          if existing is None:
+              matches = [r for r in api(f'repos/{REPO}/releases?per_page=100') if r['tag_name'] == TAG]
+              assert len(matches) <= 1
+              existing = matches[0] if matches else None
+          if existing is None:
+              assert optional(f'repos/{REPO}/git/ref/tags/{TAG}') is None, 'Unexpected existing tag'
+              assert api(f'repos/{REPO}/releases/latest')['id'] == old['id']
+              existing = api(f'repos/{REPO}/releases', 'POST', {
+                  'tag_name': TAG, 'target_commitish': SOURCE, 'name': 'SF_MagicExpansion 1.1.13',
+                  'body': notes, 'draft': True, 'prerelease': False})
+          assert existing['target_commitish'] == SOURCE and existing['body'] == notes
+          assert not existing['prerelease']
+          if not existing['assets']:
+              assert existing['draft'], 'Never modify an already-published empty release'
+              upload = f"https://uploads.github.com/repos/{REPO}/releases/{existing['id']}/assets?name={JAR}"
+              gh('api', '--method', 'POST', upload, '-H', 'Content-Type: application/java-archive', '--input', JAR)
+          existing = api(f"repos/{REPO}/releases/{existing['id']}")
+          assert len(existing['assets']) == 1
+          asset = existing['assets'][0]
+          assert asset['name'] == JAR and asset['digest'] == 'sha256:' + SHA
+          assert digest(gh('api', f"repos/{REPO}/releases/assets/{asset['id']}",
+                           '-H', 'Accept: application/octet-stream')) == SHA
+          ref = optional(f'repos/{REPO}/git/ref/tags/{TAG}')
+          assert (ref is None and existing['draft']) or (ref and ref['object']['sha'] == SOURCE)
+          assert old_release()['body'] == old['body']
+          if existing['draft']:
+              assert api(f'repos/{REPO}/releases/latest')['id'] == old['id']
+              api(f"repos/{REPO}/releases/{existing['id']}", 'PATCH', {'draft': False, 'make_latest': 'true'})
+          final = api(f"repos/{REPO}/releases/{existing['id']}")
+          assert not final['draft'] and final['assets'][0]['digest'] == 'sha256:' + SHA
+          assert api(f'repos/{REPO}/git/ref/tags/{TAG}')['object']['sha'] == SOURCE
+          assert digest(gh('api', f"repos/{REPO}/releases/assets/{final['assets'][0]['id']}",
+                           '-H', 'Accept: application/octet-stream')) == SHA
+          assert old_release()['body'] == old['body']
+          print(json.dumps({'publication': 'PUBLISHED', 'release': final['html_url'],
+                            'release_id': final['id'], 'sha256': SHA, 'old_release_unchanged': True}))
+          PY
