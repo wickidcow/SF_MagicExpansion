@@ -950,7 +950,17 @@ public class ShopGUI implements Listener {
             return;
         }
 
+        // Snapshot only storage slots, the same slots used by InventoryPayment.
+        // This server-thread path invokes no inventory callbacks between debit and save.
+        ItemStack[] beforePayment = java.util.Arrays.stream(player.getInventory().getStorageContents())
+                .map(item -> item == null ? null : item.clone()).toArray(ItemStack[]::new);
         if (!takePayment(player, trade.costItems)) return;
+
+        if (!ShopManager.tryRecordPurchase(playerId, shop, trade)) {
+            player.getInventory().setStorageContents(beforePayment);
+            player.sendMessage(ChatColor.RED + "Trade cancelled: purchase history could not be saved. Payment restored; no reward was issued. Contact an administrator.");
+            return;
+        }
 
         HashMap<Integer, ItemStack> overflow = player.getInventory().addItem(reward);
         if (!overflow.isEmpty()) {
@@ -959,8 +969,6 @@ public class ShopGUI implements Listener {
             }
             player.sendMessage(ChatColor.YELLOW + "Your inventory was full, so some items were dropped on the ground!");
         }
-
-        ShopManager.recordPurchase(playerId, shop, trade);
 
         player.sendMessage(ChatColor.GREEN + "Trade completed successfully!");
         player.playSound(player.getLocation(), org.bukkit.Sound.ENTITY_PLAYER_LEVELUP, 1f, 1.5f);

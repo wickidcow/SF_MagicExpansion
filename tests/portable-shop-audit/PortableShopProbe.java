@@ -95,6 +95,12 @@ public final class PortableShopProbe extends JavaPlugin {
                 check(trade.personalUsed.isEmpty()&&trade.globalUsed==0,"Must be unused authored fixtures");
                 check(trade.result!=null&&!trade.result.getType().isAir()&&trade.result.getAmount()>0,"Invalid reward");
                 check(!trade.costItems.isEmpty()&&trade.costItems.stream().allMatch(i->i!=null&&!i.getType().isAir()&&i.getAmount()>0),"Invalid payment");
+                for (ItemStack cost : trade.costItems) {
+                    var registered = io.github.thebusybiscuit.slimefun4.api.items.SlimefunItem.getByItem(cost);
+                    if (registered != null) {
+                        check(cost.isSimilar(nativeStack(registered.getItem())), "Authored custom cost differs from the actual registered item: " + registered.getId());
+                    }
+                }
             }
         }
     }

@@ -104,12 +104,16 @@ public class ShopManager {
         return true;
     }
 
+    /** Compatibility entry point. Reward issuers must use tryRecordPurchase and check its result. */
     public static void recordPurchase(UUID playerId, Shop shop, Trade trade) {
-        if (trade.globalLimit > 0) trade.globalUsed++;
-        if (trade.personalLimit > 0) {
-            trade.personalUsed.put(playerId, trade.personalUsed.getOrDefault(playerId, 0) + 1);
-        }
-        saveShop(shop);
+        tryRecordPurchase(playerId, shop, trade);
+    }
+
+    /** Persist the purchase before delivering rewards; stale/read-only shops cannot authorize one. */
+    public static boolean tryRecordPurchase(UUID playerId, Shop shop, Trade trade) {
+        if (playerId == null || shop == null || trade == null || !isAvailable(shop)
+                || !shop.trades.contains(trade) || !canPurchase(playerId, trade)) return false;
+        return ShopPurchaseLedger.commit(playerId, trade, () -> trySaveShop(shop));
     }
 
     public static void resetUsage(Shop shop, Trade trade) {
