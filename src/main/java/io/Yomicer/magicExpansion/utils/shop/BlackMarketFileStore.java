@@ -344,7 +344,11 @@ final class BlackMarketFileStore {
         if (!(raw instanceof ItemStack stack) || stack.getType().isAir() || stack.getAmount() <= 0) {
             throw new IOException("Invalid or unreadable Black Market item");
         }
-        return stack.clone();
+        // Persist a native stack, not a Slimefun template subclass or a wrapper
+        // retaining its clone as a nested delegate. The complete public serializer
+        // preserves the item data/count without reconstructing by material or ID.
+        // Keep the existing YAML round-trip validation and receipt ordering below.
+        return ItemStack.deserialize(stack.serialize());
     }
 
     private static boolean flag(Object raw) throws IOException {
