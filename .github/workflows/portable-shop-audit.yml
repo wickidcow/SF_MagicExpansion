@@ -1,0 +1,91 @@
+name: Portable shops once-per-player native audit
+on:
+  push:
+    branches: ['test/portable-shops-20261015']
+  pull_request:
+    paths: ['tests/portable-shop-audit/**', '.github/workflows/portable-shop-audit.yml']
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: portable-shop-audit-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  player-trades:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '25'
+          cache: maven
+      - name: Compile audit dependencies
+        run: |
+          set -euo pipefail
+          mkdir -p audit/server/plugins audit/classes audit/fixtures
+          git rev-parse HEAD > audit/source.txt
+          bash scripts/install_slimefun_api.sh > audit/build.log 2>&1
+          mvn -B -ntp clean verify >> audit/build.log 2>&1 || { tail -n 100 audit/build.log; exit 1; }
+          mvn -B -ntp dependency:build-classpath -Dmdep.outputFile=classpath.txt >> audit/build.log 2>&1
+      - name: Obtain exact published addon and core plus verified Paper
+        run: |
+          set -euo pipefail
+          curl -fL --retry 3 https://github.com/wickidcow/SF_MagicExpansion/releases/download/v1.1.14/SF_MagicExpansion1.1.14.jar -o audit/server/plugins/MagicExpansion.jar
+          echo 'e3552fc5d54dc282194428d593d08c939f71172182075667ac87d10571b192dd  audit/server/plugins/MagicExpansion.jar' | sha256sum -c -
+          curl -fL --retry 3 https://github.com/wickidcow/Slimefun-Legacy/releases/download/v4.1.74/Slimefun-Legacy4.1.74.jar -o audit/server/plugins/Slimefun.jar
+          echo '72a524d7c0d6f75a9decbf06679515887273ae53673d3f5ee38f355bef952c96  audit/server/plugins/Slimefun.jar' | sha256sum -c -
+          curl -fL --retry 3 -A 'MagicExpansion-Portable-Shop-Audit/1.0' https://fill.papermc.io/v3/projects/paper/versions/26.3/builds/190 -o audit/paper.json
+          URL=$(jq -er '.downloads["server:default"].url' audit/paper.json)
+          HASH=$(jq -er '.downloads["server:default"].checksums.sha256' audit/paper.json)
+          [[ "$URL" == https://* && "$HASH" =~ ^[0-9a-f]{64}$ ]]
+          curl -fL --retry 3 "$URL" -o audit/server/server.jar
+          echo "$HASH  audit/server/server.jar" | sha256sum -c -
+      - name: Reconstruct the exact authored shop data from verified native item references
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python3 -m pip install 'PyYAML==6.0.2'
+          python3 tests/portable-shop-audit/prepare_fixtures.py
+      - name: Compile temporary probe outside the addon
+        run: |
+          set -euo pipefail
+          javac --release 21 -cp "audit/server/plugins/MagicExpansion.jar:$(cat classpath.txt)" -d audit/classes tests/portable-shop-audit/PortableShopProbe.java
+          printf "name: PortableShopProbe\nmain: audit.PortableShopProbe\nversion: '1'\napi-version: '1.21.11'\ndepend: [Slimefun, magicexpansion]\n" > audit/classes/plugin.yml
+          jar --create --file audit/server/plugins/PortableShopProbe.jar -C audit/classes .
+      - name: Exercise normal trades and characterize refused receipts across restart
+        run: |
+          set -euo pipefail
+          cd audit/server
+          printf 'eula=true\n' > eula.txt
+          printf 'online-mode=false\nserver-ip=127.0.0.1\nserver-port=0\nview-distance=2\nsimulation-distance=2\npause-when-empty-seconds=-1\n' > server.properties
+          sha256sum server.jar plugins/*.jar > inputs.sha256
+          for PHASE in first restart; do
+            sha256sum -c inputs.sha256
+            timeout --kill-after=20s 300s java -Xms512M -Xmx2G -Dportable.shop.audit=true -Dportable.shop.phase="$PHASE" -jar server.jar --nogui > "$PHASE.log" 2>&1
+            test ! -e "shop-$PHASE-fatal.txt" || { cat "shop-$PHASE-fatal.txt"; tail -n 100 "$PHASE.log"; exit 1; }
+            grep -Fxq 'normal-paths-passed: true' "shop-$PHASE-result.yml"
+            cat "shop-$PHASE-result.yml"
+          done
+          test "$(grep '^pid:' shop-first-result.yml)" != "$(grep '^pid:' shop-restart-result.yml)"
+          grep -Fxq 'unsafe-reward-without-receipt: false' shop-first-result.yml
+          grep -Fxq 'repeat-after-refused-receipt-and-restart: false' shop-restart-result.yml
+      - name: Retain all results including failed safety assertions
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: portable-shop-native-audit
+          path: |
+            audit/*.log
+            audit/*.json
+            audit/*.txt
+            audit/server/*.log
+            audit/server/*.yml
+            audit/server/*.txt
+            audit/server/*.sha256
+            audit/server/plugins/magicexpansion/portable_shops/*.yml
+          if-no-files-found: error
