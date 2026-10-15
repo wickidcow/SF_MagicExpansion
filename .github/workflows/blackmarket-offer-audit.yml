@@ -42,7 +42,7 @@ jobs:
           javac --release 21 -cp "audit/server/plugins/MagicExpansion.jar:$(cat classpath.txt)" -d audit/classes tests/runtime/BlackMarketOfferProbe.java
           printf "name: BlackMarketOfferProbe\nmain: audit.BlackMarketOfferProbe\nversion: '1'\napi-version: '1.21.11'\ndepend: [Slimefun, magicexpansion]\n" > audit/classes/plugin.yml
           jar --create --file audit/server/plugins/BlackMarketOfferProbe.jar -C audit/classes .
-      - name: Exercise real generated offers on disposable Paper
+      - name: Require valid real generated offers on disposable Paper
         run: |
           set -euo pipefail
           cd audit/server
@@ -51,9 +51,9 @@ jobs:
           sha256sum server.jar plugins/*.jar > input-sha256.txt
           timeout --kill-after=20s 300s java -Xms512M -Xmx2G -Dblackmarket.offer.audit=true -jar server.jar --nogui > console.log 2>&1
           test ! -e offer-audit-fatal.txt
-          grep -Fxq AUDIT_COMPLETED offer-audit-result.txt
           cat offer-audit-result.txt
-      - name: Retain reproduction evidence (not a release)
+          grep -Fxq ALL_NATIVE_OFFERS_PASSED offer-audit-result.txt
+      - name: Retain native evidence (not a release)
         if: always()
         uses: actions/upload-artifact@v7
         with:

@@ -344,7 +344,11 @@ final class BlackMarketFileStore {
         if (!(raw instanceof ItemStack stack) || stack.getType().isAir() || stack.getAmount() <= 0) {
             throw new IOException("Invalid or unreadable Black Market item");
         }
-        return stack.clone();
+        // Persist an ordinary Bukkit stack, not a Slimefun template subclass.
+        // clone() retains the subclass and its serialization behavior. The public
+        // copy constructor preserves the item data/count without retaining that
+        // template class. Never replace an item by looking up only its material/ID.
+        return new ItemStack(stack);
     }
 
     private static boolean flag(Object raw) throws IOException {

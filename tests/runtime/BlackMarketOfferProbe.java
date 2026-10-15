@@ -46,8 +46,7 @@ public final class BlackMarketOfferProbe extends JavaPlugin {
             @SuppressWarnings("unchecked") List<ItemStack> costs = (List<ItemStack>) costsField.get(null);
             if (simple.size() < 6 || hard.size() < 100 || costs.isEmpty()) throw new IllegalStateException("Incomplete real item pools");
             audit("vanilla-control", offers(new ItemStack(Material.DIAMOND, 2), false));
-            int controlsFailed = failures;
-            if (controlsFailed != 0) throw new IllegalStateException("Vanilla control failed: " + details);
+            if (failures != 0) throw new IllegalStateException("Vanilla control failed: " + details);
             int n = 0;
             for (ItemStack item : simple) audit("simple-" + n++ + "-" + describe(item), offers(item, false));
             n = 0;
@@ -76,6 +75,7 @@ public final class BlackMarketOfferProbe extends JavaPlugin {
             result.add("simple=" + simple.size() + " hard=" + hard.size() + " costs=" + costs.size());
             result.add("checked=" + checked + " failures=" + failures + " exactItemFailures=" + exactItemFailures + " blockedSyntheticPlayers=" + blocked);
             result.addAll(details);
+            if (failures == 0 && blocked == 0) result.add("ALL_NATIVE_OFFERS_PASSED");
             Files.write(Path.of("offer-audit-result.txt"), result);
             result.forEach(getLogger()::info);
         } catch (Throwable error) {
@@ -105,6 +105,8 @@ public final class BlackMarketOfferProbe extends JavaPlugin {
     private void audit(String label, List<BlackMarketTrade> offers) {
         checked++;
         try {
+            List<ItemStack> originalResults = offers.stream().map(t -> new ItemStack(t.result)).toList();
+            List<List<ItemStack>> originalCosts = offers.stream().map(t -> costs(t).stream().map(ItemStack::new).toList()).toList();
             Path directory = getDataFolder().toPath().resolve("case-" + checked);
             Object store = storeConstructor.newInstance(directory);
             long now = System.currentTimeMillis();
@@ -120,8 +122,12 @@ public final class BlackMarketOfferProbe extends JavaPlugin {
             Method getTrades = stateClass.getDeclaredMethod("trades"); getTrades.setAccessible(true);
             @SuppressWarnings("unchecked") List<BlackMarketTrade> read = (List<BlackMarketTrade>) getTrades.invoke(restored);
             for (int i = 0; i < 10; i++) {
-                if (!offers.get(i).result.equals(read.get(i).result) || !offers.get(i).costs.equals(read.get(i).costs)) {
-                    throw new AssertionError("Item data/quantity changed in offer " + i);
+                if (!offers.get(i).result.equals(read.get(i).result) || !costs(offers.get(i)).equals(costs(read.get(i)))
+                        || offers.get(i).isFree != read.get(i).isFree || offers.get(i).isHard != read.get(i).isHard) {
+                    throw new AssertionError("Item data/quantity/terms changed in offer " + i);
+                }
+                if (!originalResults.get(i).equals(offers.get(i).result) || !originalCosts.get(i).equals(costs(offers.get(i)))) {
+                    throw new AssertionError("The caller's offer template changed in offer " + i);
                 }
             }
             for (String field : List.of("purchased", "revealed")) {
@@ -135,6 +141,10 @@ public final class BlackMarketOfferProbe extends JavaPlugin {
             details.add("FAIL " + label + ": " + failure);
             if (failures <= 3) failure.printStackTrace();
         }
+    }
+
+    private static List<ItemStack> costs(BlackMarketTrade trade) {
+        return trade.costs == null ? List.of() : trade.costs;
     }
 
     private static String describe(ItemStack item) {
