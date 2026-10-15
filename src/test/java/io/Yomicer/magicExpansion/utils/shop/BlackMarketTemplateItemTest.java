@@ -80,8 +80,10 @@ class BlackMarketTemplateItemTest {
     }
 
     @Test void invalidZeroQuantityTemplateStillFailsWithoutCreatingAReceipt() {
+        TemplateStack depleted = new TemplateStack(Material.DIAMOND, 1);
+        depleted.setAmount(0);
         assertThrows(IOException.class, () -> store.savePlayer(owner, cycle,
-                new BlackMarketFileStore.PlayerState(offers(new TemplateStack(Material.DIAMOND, 0)), Set.of(), Set.of())));
+                new BlackMarketFileStore.PlayerState(offers(depleted), Set.of(), Set.of())));
         assertFalse(Files.exists(root.resolve("market/players/" + owner + ".yml")));
     }
 
@@ -100,6 +102,9 @@ class BlackMarketTemplateItemTest {
 
     public static final class TemplateStack extends ItemStack {
         TemplateStack(Material material, int amount) { super(material, amount); }
-        @Override public TemplateStack clone() { return (TemplateStack) super.clone(); }
+        private TemplateStack(ItemStack source) { super(source); }
+        // Paper delegates may return a normal stack from super.clone(). Rewrap it,
+        // just as SlimefunItemStack does, rather than casting that delegate.
+        @Override public TemplateStack clone() { return new TemplateStack(super.clone()); }
     }
 }
