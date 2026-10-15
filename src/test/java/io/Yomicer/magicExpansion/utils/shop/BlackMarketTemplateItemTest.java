@@ -50,18 +50,38 @@ class BlackMarketTemplateItemTest {
         store.savePlayer(owner, cycle, new BlackMarketFileStore.PlayerState(trades, Set.of(2), Set.of(2, 4)));
         Path ledger = root.resolve("market/players/" + owner + ".yml");
         assertFalse(Files.readString(ledger).contains("TemplateStack"));
-        assertEquals(before, template, "Do not mutate the registered template");
+        assertPreservedItem(before, template);
         var reboot = new BlackMarketFileStore(root.resolve("market"));
         var loaded = reboot.loadPlayer(owner, reboot.loadOrCreate(1_790_000_000_001L));
         assertEquals(Set.of(2), loaded.purchased());
         assertEquals(Set.of(2, 4), loaded.revealed());
-        assertEquals(before, loaded.trades().get(0).result);
-        assertEquals(List.of(before, before), loaded.trades().get(0).costs);
+        assertPreservedItem(before, loaded.trades().get(0).result);
+        assertEquals(2, loaded.trades().get(0).costs.size());
+        for (ItemStack cost : loaded.trades().get(0).costs) assertPreservedItem(before, cost);
         assertFalse(loaded.trades().get(0).result instanceof TemplateStack);
         assertArrayEquals(new byte[]{4, 2, 9, 0}, loaded.trades().get(0).result.getItemMeta()
                 .getPersistentDataContainer().get(new NamespacedKey("audit", "payload"), PersistentDataType.BYTE_ARRAY));
         loaded.trades().get(0).result.setAmount(1);
         assertEquals(7, template.getAmount(), "Saved/read copies must not alias the template");
+    }
+
+    private static void assertPreservedItem(ItemStack expected, ItemStack actual) {
+        assertEquals(expected.getType(), actual.getType());
+        assertEquals(expected.getAmount(), actual.getAmount());
+        var expectedMeta = expected.getItemMeta();
+        var actualMeta = actual.getItemMeta();
+        assertNotNull(expectedMeta);
+        assertNotNull(actualMeta);
+        assertEquals(expectedMeta.getPersistentDataContainer().getKeys(), actualMeta.getPersistentDataContainer().getKeys());
+        NamespacedKey binaryKey = new NamespacedKey("audit", "payload");
+        assertArrayEquals(expectedMeta.getPersistentDataContainer().get(binaryKey, PersistentDataType.BYTE_ARRAY),
+                actualMeta.getPersistentDataContainer().get(binaryKey, PersistentDataType.BYTE_ARRAY));
+        // MockBukkit's PDC equals uses Map.equals: byte[] values compare by identity.
+        // Compare those bytes above, then every other field on separate metadata
+        // snapshots below. Never modify the source or loaded item's actual metadata.
+        expectedMeta.getPersistentDataContainer().remove(binaryKey);
+        actualMeta.getPersistentDataContainer().remove(binaryKey);
+        assertEquals(expectedMeta, actualMeta, "Preserve all remaining metadata, including ID, name and lore");
     }
 
     @Test void plainBukkitRewardsRemainReadableWithTheExistingFormat() throws Exception {
