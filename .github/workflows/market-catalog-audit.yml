@@ -24,7 +24,7 @@ jobs:
       - uses: actions/checkout@v6
         with:
           persist-credentials: false
-      - name: Preserve exact source for offline review
+      - name: Preserve exact source and pinned item definitions for offline review
         shell: bash
         run: |
           set -euo pipefail
@@ -32,6 +32,23 @@ jobs:
           git rev-parse HEAD > audit/source.txt
           git archive --format=zip --output=audit/source-review.zip HEAD
           sha256sum audit/source-review.zip > audit/source-review.sha256
+          python3 - <<'PY'
+          import base64, hashlib, json, pathlib, urllib.request
+          pins = {
+              'core-items.java': ('Slimefun-Legacy', '92915d749775c3835fcdab5b6554bbac9a0e7284'),
+              'ie2-items.kt': ('SF_InfinityExpansion2', '49adba8d50aca35f7af8f201f41c50287e403f9c'),
+          }
+          for filename, (repo, sha) in pins.items():
+              url = f'https://api.github.com/repos/wickidcow/{repo}/git/blobs/{sha}'
+              request = urllib.request.Request(url, headers={'User-Agent': 'MagicExpansion-Catalog-Audit'})
+              with urllib.request.urlopen(request, timeout=60) as response:
+                  blob = json.load(response)
+              assert blob['encoding'] == 'base64'
+              data = base64.b64decode(blob['content'])
+              assert hashlib.sha1(b'blob ' + str(len(data)).encode() + b'\0' + data).hexdigest() == sha
+              pathlib.Path('audit', filename).write_bytes(data)
+          pathlib.Path('audit/item-source-pins.json').write_text(json.dumps(pins, indent=2) + '\n')
+          PY
       - uses: actions/upload-artifact@v7
         with:
           name: market-catalog-review-evidence
