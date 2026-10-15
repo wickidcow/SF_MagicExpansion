@@ -1,4 +1,4 @@
-name: Apply reviewed market catalog patch
+name: Apply reviewed market catalog source
 on:
   push:
     branches: [feature/slimefun-market-catalog-20261015]
@@ -13,11 +13,11 @@ jobs:
       - uses: actions/checkout@v6
         with:
           fetch-depth: 2
-      - name: Verify exact parent and apply checksum-verified patch
+      - name: Verify exact parent and apply reviewed non-workflow source only
         shell: bash
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD^)" = c1b8436e1fb2a2a1ede6aa585b545d28820d17b6
+          test "$(git rev-parse HEAD^)" = f98fcb260b0b43278cdd73cd7e6dfa8f501f34d3
           test "$(git ls-remote origin refs/heads/feature/slimefun-market-catalog-20261015 | cut -f1)" = "$GITHUB_SHA"
           python3 - <<'PY'
           import base64, hashlib, lzma, pathlib, subprocess
@@ -40,12 +40,13 @@ jobs:
           assert len(headers) == len(allowed) and set(headers) == allowed
           path = pathlib.Path('/tmp/reviewed-market-catalog.patch')
           path.write_bytes(patch)
-          subprocess.run(['git', 'apply', '--check', str(path)], check=True)
-          subprocess.run(['git', 'apply', str(path)], check=True)
+          subprocess.run(['git', 'apply', '--exclude=.github/workflows/*', '--check', str(path)], check=True)
+          subprocess.run(['git', 'apply', '--exclude=.github/workflows/*', str(path)], check=True)
           PY
-          git rm -r .market-catalog-patch .github/workflows/apply-market-catalog.yml
+          git rm -r .market-catalog-patch
           git add -A
           git diff --cached --check
+          test -z "$(git diff --cached --name-only -- .github/workflows/)"
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git commit -m 'Add 207 Slimefun market offers, safe catalog generation and NPC access'
