@@ -23,21 +23,26 @@ jobs:
           distribution: temurin
           java-version: '25'
           cache: maven
-      - name: Apply exact-baseline edits and fast-forward only this isolated branch
+      - name: Commit only Java source edits to the isolated branch
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
+          mkdir -p audit
           test "$GITHUB_REF" = refs/heads/test/portable-shops-20261015
           test "$(git ls-remote origin "$GITHUB_REF" | cut -f1)" = "$GITHUB_SHA"
           python3 tests/portable-shop-audit/apply_receipt_fix.py
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add src/main/java/io/Yomicer/magicExpansion/utils/shop/ShopManager.java src/main/java/io/Yomicer/magicExpansion/utils/shop/ShopGUI.java src/test/java/io/Yomicer/magicExpansion/utils/shop/ShopPurchaseLedgerTest.java .github/workflows/portable-shop-audit.yml tests/portable-shop-audit/PortableShopProbe.java
+          git add src/main/java/io/Yomicer/magicExpansion/utils/shop/ShopManager.java src/main/java/io/Yomicer/magicExpansion/utils/shop/ShopGUI.java src/test/java/io/Yomicer/magicExpansion/utils/shop/ShopPurchaseLedgerTest.java tests/portable-shop-audit/PortableShopProbe.java
+          git diff --cached --name-only | tee audit/committed-paths.txt
+          if git diff --cached --name-only | grep -q '^.github/'; then echo 'This token must not commit workflow changes'; exit 1; fi
           git commit -m 'fix: require saved portable-shop purchase counters before rewards and restore refused payments'
           test "$(git ls-remote origin "$GITHUB_REF" | cut -f1)" = "$GITHUB_SHA"
           git push origin HEAD:refs/heads/test/portable-shops-20261015
-      - name: Run the full native candidate audit from this exact source
+          git rev-parse HEAD > audit/pushed-source.txt
+          git diff -- .github/workflows/portable-shop-audit.yml > audit/local-audit-workflow.patch
+      - name: Test the pushed Java candidate with the local candidate-only runner
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
@@ -51,7 +56,7 @@ jobs:
                   print('EXECUTING:',step['name'],flush=True)
                   subprocess.run(['bash','-euo','pipefail','-c',step['run']],check=True,env=os.environ.copy())
           PY
-      - name: Preserve exact candidate test evidence, not a release
+      - name: Preserve exact candidate evidence without publishing
         if: always()
         uses: actions/upload-artifact@v7
         with:
@@ -60,6 +65,7 @@ jobs:
             audit/*.log
             audit/*.json
             audit/*.txt
+            audit/*.patch
             audit/*.sha256
             audit/server/*.log
             audit/server/*.yml
