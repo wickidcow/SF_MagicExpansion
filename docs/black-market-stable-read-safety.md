@@ -1,6 +1,6 @@
 # Black Market stable-read safety candidate
 
-This follow-up to published 1.1.13 is unreleased. Do not install a branch artifact as the published 1.1.13 JAR or replace the official addon ZIP with it.
+This is an unreleased follow-up to published 1.1.14. The review branch retains the inherited 1.1.14 build identity for coordinated validation only: do not install its artifact as the published JAR, merge to the publishing default branch, dispatch the release build or replace an official addon ZIP. A distinct version and controlled publication are required after validation.
 
 ## Problem and scope
 
@@ -16,10 +16,14 @@ This is additional change detection, not a filesystem lock or proof of an atomic
 
 One extra attribute read is performed per existing state-file read. No inventory, machine or reward path is otherwise changed. No measured server performance improvement is claimed.
 
-## Validation
+## Validation and integration
 
-A disposable Java 21 filesystem probe uses the exact baseline reader blob `26d2583ba6ec8b9307bf89479d3c58ffa569f610`. It reproduces a same-length rewrite after initial inspection that the baseline accepts and the candidate rejects. The probe also exercises deterministic post-read failure boundaries and synthetic metadata-provider changes. Baseline result: 7 passing and 11 failing new/retained expectations; candidate result: 18/18 passing. These are local filesystem checks, not Maven/JUnit or Minecraft runtime results.
+The original disposable Java 21 filesystem probe used baseline reader blob `26d2583ba6ec8b9307bf89479d3c58ffa569f610`. Its recorded baseline result was 7 passing and 11 failing expectations; candidate 18/18 passing. Those were filesystem checks, not Minecraft client tests.
 
-`BlackMarketStableReadTest` adds 14 permanent JUnit tests for rewrites/replacements, post-read deletion/access failures, symlink/directory substitutions, optional identities, access-time-only changes and byte-count/metadata disagreements. Existing reader and persistence tests are retained. Record actual exact-head CI results in the PR; do not infer their success from the local probe.
+The original PR head `bb44a5bf908e9cf2bfe92ad38661860e4d42d892` also completed build/API workflow `38670500775`. On October 15, the actual report artifact `11943611926` was independently downloaded and its SHA-256 verified as `42cefb20c366e739b0a0bc69de5a007cc6fea20640cbb942ece76367c68a69ea`. Its 15 XML suites contain 160 tests, zero failures/errors/skips, including all 14 `BlackMarketStableReadTest` cases. This is historical evidence for the old head, not evidence for the refreshed integration.
 
-Release still requires the complete source test/build workflow, supported API compilation and coordinated Slimefun/addon runtime validation. No release version, release workflow, core, source-selection matrix, addon ZIP or production record is changed by this candidate.
+The branch now incorporates current master `481e6c090baa28fc8a4b3a44b6155d236f28bf33`, preserving the published 1.1.14 native full-item serialization fix, its regression tests and runtime probes. The upstream comparison contained no overlapping production/test paths. The stable-read production blob remains `84c0b97ac88bc40344d87d1851a0c1811e2851ba` and its complete test blob remains `5c3d8b099ffc11a969e84e2e5ef55f0a6bb3ae00`; no assertions were removed or weakened.
+
+Fresh exact-head build/API, real-pool/player-flow and coordinated published-core/addon runtime results are required. The inherited audit workflows create disposable candidates only; an artifact carrying revision 138 or version 1.1.14 is not the previously approved published candidate. Preserve source hashes and do not promote these branch artifacts under an existing release identity. The default build workflow publishes on manual dispatch/default-branch/tag execution, so none of those release triggers is authorized by this review.
+
+No release version, release workflow, core source-selection matrix, addon ZIP or production record is changed by this candidate. The original master files, other than this isolated reader, are retained unchanged.
