@@ -26,6 +26,7 @@ public final class BlackMarketPlayerFlowProbe extends JavaPlugin {
     private int[] slots;
     private final ShopGUI gui = new ShopGUI();
     private int reveals, paid, free, duplicates, paymentFailures, refundChecks;
+    private String stage = "initialization";
 
     @Override public void onEnable() {
         if (!Boolean.getBoolean("blackmarket.offer.audit") || !Bukkit.getOnlinePlayers().isEmpty()) {
@@ -71,7 +72,7 @@ public final class BlackMarketPlayerFlowProbe extends JavaPlugin {
         } catch (Throwable error) {
             while (error instanceof InvocationTargetException && error.getCause() != null) error = error.getCause();
             error.printStackTrace();
-            try { Files.writeString(Path.of("flow-" + phase + "-fatal.txt"), error.toString()); } catch (Exception ignored) { }
+            try { Files.writeString(Path.of("flow-" + phase + "-fatal.txt"), stage + ": " + error); } catch (Exception ignored) { }
         } finally { Bukkit.shutdown(); }
     }
 
@@ -82,8 +83,9 @@ public final class BlackMarketPlayerFlowProbe extends JavaPlugin {
         ShopGUI.openBlackMarket(client.player);
         check(client.menu != null && client.menu.getHolder() instanceof ShopGUI.ShopHolder, "Market GUI did not open");
         for (int index = 0; index < offers.size(); index++) {
+            stage = name + "/" + index;
             BlackMarketTrade offer = offers.get(index);
-            ItemStack expectedReward = new ItemStack(offer.result);
+            ItemStack expectedReward = nativeStack(offer.result);
             client.storage.clear();
             invokeClick(client, index);
             check(BlackMarketManager.isRevealed(client.id, index), "Reveal not recorded");
@@ -95,7 +97,7 @@ public final class BlackMarketPlayerFlowProbe extends JavaPlugin {
                 invokeClick(client, index);
                 check(empty(client.storage) && !BlackMarketManager.hasPurchased(client.id, index), "Unpaid offer succeeded");
                 check(Arrays.equals(before, Files.readAllBytes(ledger(client.id))), "Failed payment changed receipt");
-                for (ItemStack cost : offer.costs) check(client.storage.addItem(new ItemStack(cost)).isEmpty(), "Payment fixture overflow");
+                for (ItemStack cost : offer.costs) check(client.storage.addItem(nativeStack(cost)).isEmpty(), "Payment fixture overflow");
                 paymentFailures++;
             }
             client.requireReceipt = index;
@@ -117,6 +119,7 @@ public final class BlackMarketPlayerFlowProbe extends JavaPlugin {
     }
 
     private void verifyRestart(String name) throws Exception {
+        stage = "restart/" + name;
         Client client = new Client(name);
         byte[] original = Files.readAllBytes(evidence.resolve(client.id + ".yml"));
         check(Arrays.equals(original, Files.readAllBytes(ledger(client.id))), "Saved ledger changed between boots");
@@ -134,15 +137,15 @@ public final class BlackMarketPlayerFlowProbe extends JavaPlugin {
     }
 
     private void verifyRefundOnRefusedReceipt() throws Exception {
+        stage = "refused-receipt";
         seedDeterministicPlayer("refused-receipt", true);
         Client client = new Client("refused-receipt");
         List<BlackMarketTrade> offers = BlackMarketManager.getTodayTrades(client.player);
         check(offers.size() == 10 && !offers.get(0).isFree, "Missing paid failure fixture");
         invokeClick(client, 0);
-        List<ItemStack> costs = offers.get(0).costs.stream().map(ItemStack::new).toList();
-        for (ItemStack cost : costs) check(client.storage.addItem(new ItemStack(cost)).isEmpty(), "Refund fixture overflow");
-        // Simulate an external writer in this generated test folder only. The
-        // unchanged receipt identity must not authorize overwriting different bytes.
+        List<ItemStack> costs = offers.get(0).costs.stream().map(BlackMarketPlayerFlowProbe::nativeStack).toList();
+        for (ItemStack cost : costs) check(client.storage.addItem(nativeStack(cost)).isEmpty(), "Refund fixture overflow");
+        // An external writer is simulated only in this generated test folder.
         Files.writeString(ledger(client.id), "\n# external audit writer\n", StandardOpenOption.APPEND);
         byte[] external = Files.readAllBytes(ledger(client.id));
         invokeClick(client, 0);
@@ -159,17 +162,17 @@ public final class BlackMarketPlayerFlowProbe extends JavaPlugin {
         ItemStack template = BlackMarketManager.getHardPool().keySet().stream()
                 .filter(i -> i != null && i.getClass().getSimpleName().equals("SlimefunItemStack"))
                 .findFirst().orElseThrow();
-        ItemStack rich = new ItemStack(template);
+        ItemStack rich = nativeStack(template);
         var meta = rich.getItemMeta();
         meta.getPersistentDataContainer().set(new NamespacedKey("audit", "binary"), PersistentDataType.BYTE_ARRAY, new byte[]{1, 3, 5, 7});
         rich.setItemMeta(meta);
         List<BlackMarketTrade> trades = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
             BlackMarketTrade trade = new BlackMarketTrade();
-            trade.result = new ItemStack(rich); trade.result.setAmount(2);
+            trade.result = nativeStack(rich); trade.result.setAmount(2);
             trade.isFree = !paidOnly && i % 2 == 0; trade.isHard = true;
-            ItemStack cost = new ItemStack(rich); cost.setAmount(3);
-            trade.costs = trade.isFree ? List.of() : List.of(cost, new ItemStack(cost));
+            ItemStack cost = nativeStack(rich); cost.setAmount(3);
+            trade.costs = trade.isFree ? List.of() : List.of(cost, nativeStack(cost));
             trades.add(trade);
         }
         Class<?> type = Class.forName("io.Yomicer.magicExpansion.utils.shop.BlackMarketFileStore", true, BlackMarketManager.class.getClassLoader());
@@ -186,6 +189,11 @@ public final class BlackMarketPlayerFlowProbe extends JavaPlugin {
         save.invoke(store, id(name), cycle, state.newInstance(trades, Set.of(), Set.of()));
     }
 
+    // Player payments originate in native inventories. A generic copy constructor
+    // around a template clone can retain a nested subclass delegate on Paper.
+    // Use the server's complete public serialization path for test inventory inputs;
+    // the actual shop reward, payment and refund code remains untouched and exercised.
+    private static ItemStack nativeStack(ItemStack item) { return ItemStack.deserialize(item.serialize()); }
     private void invokeClick(Client c, int index) throws Exception { click.invoke(gui, c.player, slots[index]); }
     private static UUID id(String name) { return UUID.nameUUIDFromBytes(("blackmarket-native-flow:" + name).getBytes(StandardCharsets.UTF_8)); }
     private Path ledger(UUID id) { return market.resolve("players/" + id + ".yml"); }
@@ -198,7 +206,7 @@ public final class BlackMarketPlayerFlowProbe extends JavaPlugin {
     }
     private static void assertContents(Inventory inventory, List<ItemStack> expected) {
         List<ItemStack> remaining = new ArrayList<>();
-        for (ItemStack i : inventory.getStorageContents()) if (i != null && !i.getType().isAir()) remaining.add(new ItemStack(i));
+        for (ItemStack i : inventory.getStorageContents()) if (i != null && !i.getType().isAir()) remaining.add(nativeStack(i));
         for (ItemStack item : expected) {
             int needed = item.getAmount();
             for (ItemStack stored : remaining) if (needed > 0 && stored.isSimilar(item)) {
