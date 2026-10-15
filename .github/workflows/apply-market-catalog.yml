@@ -1,0 +1,61 @@
+name: Apply reviewed market catalog patch
+on:
+  push:
+    branches: [feature/slimefun-market-catalog-20261015]
+    paths: ['.market-catalog-patch/**', '.github/workflows/apply-market-catalog.yml']
+permissions:
+  contents: write
+jobs:
+  apply-reviewed-patch:
+    if: github.repository == 'wickidcow/SF_MagicExpansion' && github.ref == 'refs/heads/feature/slimefun-market-catalog-20261015'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 2
+      - name: Verify exact parent and apply checksum-verified patch
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD^)" = c1b8436e1fb2a2a1ede6aa585b545d28820d17b6
+          test "$(git ls-remote origin refs/heads/feature/slimefun-market-catalog-20261015 | cut -f1)" = "$GITHUB_SHA"
+          python3 - <<'PY'
+          import base64, hashlib, lzma, pathlib, subprocess
+          data = ''.join(pathlib.Path(f'.market-catalog-patch/{i}.b64').read_text() for i in range(4))
+          patch = lzma.decompress(base64.b64decode(data, validate=True))
+          assert hashlib.sha256(patch).hexdigest() == 'e88575ef7c3a1871fd4a7ad09ce25372da33c88f34a7c322fcac32a69cbbcd9a'
+          allowed = {
+              '.github/workflows/market-catalog-audit.yml', 'docs/market-catalog.md',
+              'src/main/java/io/Yomicer/magicExpansion/utils/shop/CatalogItems.java',
+              'src/main/java/io/Yomicer/magicExpansion/utils/shop/MarketCatalog.java',
+              'src/main/java/io/Yomicer/magicExpansion/utils/shop/ShopCommand.java',
+              'src/main/java/io/Yomicer/magicExpansion/utils/shop/ShopFileStore.java',
+              'src/main/java/io/Yomicer/magicExpansion/utils/shop/ShopGUI.java',
+              'src/main/java/io/Yomicer/magicExpansion/utils/shop/ShopManager.java',
+              'src/main/resources/market_catalog.yml', 'src/main/resources/plugin.yml',
+              'src/test/java/io/Yomicer/magicExpansion/utils/shop/MarketCatalogTest.java',
+              'tests/market-catalog-audit/MarketCatalogProbe.java',
+          }
+          headers = [line.decode().split(' b/', 1)[1] for line in patch.splitlines() if line.startswith(b'diff --git ')]
+          assert len(headers) == len(allowed) and set(headers) == allowed
+          path = pathlib.Path('/tmp/reviewed-market-catalog.patch')
+          path.write_bytes(patch)
+          subprocess.run(['git', 'apply', '--check', str(path)], check=True)
+          subprocess.run(['git', 'apply', str(path)], check=True)
+          PY
+          git rm -r .market-catalog-patch .github/workflows/apply-market-catalog.yml
+          git add -A
+          git diff --cached --check
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'Add 207 Slimefun market offers, safe catalog generation and NPC access'
+          git push origin HEAD:refs/heads/feature/slimefun-market-catalog-20261015
+          mkdir -p /tmp/catalog-commit
+          git rev-parse HEAD > /tmp/catalog-commit/source.txt
+          git archive --format=zip HEAD > /tmp/catalog-commit/source.zip
+      - uses: actions/upload-artifact@v7
+        with:
+          name: applied-market-catalog-source
+          path: /tmp/catalog-commit/
+          if-no-files-found: error
+          retention-days: 7
