@@ -39,7 +39,7 @@ commands:
     aliases: [malt]
   magicshop:
     description: Open the portable MagicExpansion shop.
-    usage: /magicshop <open|admin>
+    usage: /magicshop <open [shop]|admin|generate|openfor player shop|blackmarket|blackmarketfor player>
     aliases: [mshop]
 
 permissions:
@@ -63,4 +63,8 @@ permissions:
     default: op
   magicexpansion.shop.admin:
     description: Allows access to the shop administration menu.
+    default: op
+
+  magicexpansion.shop.open.others:
+    description: Allows opening named shops and the rotating Black Market for another online player.
     default: op

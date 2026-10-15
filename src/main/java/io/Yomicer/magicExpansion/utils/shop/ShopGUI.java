@@ -92,7 +92,11 @@ public class ShopGUI implements Listener {
 
         inv.setItem(4, createInfoItem(Material.BOOK, ChatColor.AQUA + "Magic Market", Arrays.asList(ChatColor.GRAY + "Choose a shop to enter.")));
 
-        List<ShopManager.Shop> shops = ShopManager.getShops();
+        List<ShopManager.Shop> shops = ShopManager.getShops().stream()
+                .filter(ShopManager::isAvailable)
+                .filter(shop -> shop.trades.stream().anyMatch(trade -> trade.result != null
+                        && !trade.result.getType().isAir() && CatalogItems.isAvailable(trade)))
+                .toList();
         int maxPage = Math.max(0, (shops.size() - 1) / CONTENT_SLOTS.length);
         page = Math.min(page, maxPage);
 
@@ -102,7 +106,7 @@ public class ShopGUI implements Listener {
             ItemStack icon = new ItemStack(Material.CHEST);
             ItemMeta meta = icon.getItemMeta();
             meta.setDisplayName(ChatColor.GOLD + shop.name);
-            meta.setLore(Arrays.asList(ChatColor.GRAY + "Click to view available trades.", ChatColor.GRAY + "Total: " + shop.trades.size() + " trades"));
+            meta.setLore(Arrays.asList(ChatColor.GRAY + "Click to view available trades.", ChatColor.GRAY + "Available: " + shop.trades.stream().filter(CatalogItems::isAvailable).count() + " trades"));
             icon.setItemMeta(meta);
             inv.setItem(CONTENT_SLOTS[i], icon);
         }
@@ -144,7 +148,7 @@ public class ShopGUI implements Listener {
 
         for (int i = 0; i < CONTENT_SLOTS.length && (startIndex + i) < shop.trades.size(); i++) {
             ShopManager.Trade trade = shop.trades.get(startIndex + i);
-            if (trade.result == null) continue;
+            if (trade.result == null || !CatalogItems.isAvailable(trade)) continue;
             ItemStack display = trade.result.clone();
             ItemMeta meta = display.getItemMeta();
 
@@ -223,9 +227,11 @@ public class ShopGUI implements Listener {
         inv.setItem(49, createInfoItem(Material.WRITABLE_BOOK, ChatColor.GREEN + "Create New Shop", Arrays.asList(ChatColor.GRAY + "Click, then enter a name in chat.")));
         if (page < maxPage) inv.setItem(53, createInfoItem(Material.ARROW, ChatColor.YELLOW + "Next Page", null));
 
-        inv.setItem(51, createInfoItem(Material.SUNFLOWER, ChatColor.AQUA + "Reload Shop Data", Arrays.asList(
-                ChatColor.GRAY + "Click to reload data from disk.",
-                ChatColor.YELLOW + "Warning: Unsaved changes will be overwritten."
+        inv.setItem(51, createInfoItem(Material.SUNFLOWER, ChatColor.AQUA + "Update / Populate Shops", Arrays.asList(
+                ChatColor.GRAY + "Left-click: Add missing catalog offers.",
+                ChatColor.GRAY + "Right-click: Reload saved shop data only.",
+                ChatColor.GREEN + "Existing purchase limits are never reset.",
+                ChatColor.YELLOW + "Random Black Market refresh is the skull."
         )));
 
         // 新增:强制刷新黑市按钮
@@ -592,6 +598,12 @@ public class ShopGUI implements Listener {
 
         String title = e.getView().getTitle();
         Player player = (Player) e.getWhoClicked();
+        if (title.startsWith(ChatColor.DARK_RED.toString()) && !player.hasPermission("magicexpansion.shop.admin")) {
+            e.setCancelled(true);
+            player.closeInventory();
+            player.sendMessage(ChatColor.RED + "You no longer have shop administration permission.");
+            return;
+        }
 
         if (title.startsWith(ChatColor.DARK_RED + "Configure: ")) {
             if (e.getClick() == ClickType.SHIFT_LEFT || e.getClick() == ClickType.SHIFT_RIGHT) {
@@ -675,8 +687,12 @@ public class ShopGUI implements Listener {
         else if (title.equals(ChatColor.DARK_RED + "Magic Market Administration")) {
             if (slot == 51) {
                 player.closeInventory();
-                ShopManager.reload();
-                player.sendMessage(ChatColor.GREEN + "Magic Market data reloaded!");
+                if (e.isRightClick()) {
+                    ShopManager.reload();
+                    player.sendMessage(ChatColor.GREEN + "Saved shops reloaded. No offers were generated or restocked.");
+                } else if (e.isLeftClick()) {
+                    MarketCatalog.populate(player);
+                }
                 player.playSound(player.getLocation(), org.bukkit.Sound.BLOCK_BEACON_ACTIVATE, 1f, 2f);
                 Bukkit.getScheduler().runTaskLater(MagicExpansion.getInstance(), () -> openAdminMainMenu(player, adminMainPage.getOrDefault(player.getUniqueId(), 0)), 1L);
                 return;
@@ -940,6 +956,10 @@ public class ShopGUI implements Listener {
         if (index == -1) return;
 
         ShopManager.Trade trade = shop.trades.get(index);
+        if (!CatalogItems.isAvailable(trade)) {
+            player.sendMessage(ChatColor.RED + "This offer is unavailable because a required addon or item is disabled.");
+            return;
+        }
         if (trade.result == null || trade.result.getType().isAir() || trade.result.getAmount() <= 0) return;
         ItemStack reward = trade.result.clone();
 

@@ -15,6 +15,9 @@ public class ShopManager {
             message -> MagicExpansion.getInstance().getLogger().severe(message));
 
     public static class Trade {
+        /** Stable catalog identity. Null for preexisting or manually created trades. */
+        public String catalogId;
+        public List<String> catalogPlugins = new ArrayList<>();
         public ItemStack result;
         public List<ItemStack> costItems = new ArrayList<>();
         public int globalLimit = 0;   // Zero retains the existing unlimited convention.
@@ -26,6 +29,8 @@ public class ShopManager {
     public static class Shop {
         public String name;
         public List<Trade> trades = new ArrayList<>();
+        /** Includes deleted catalog offers so populate cannot recreate their unused allowance. */
+        public java.util.Set<String> catalogHistory = new java.util.LinkedHashSet<>();
     }
 
     private static final List<Shop> shops = new ArrayList<>();
@@ -96,6 +101,7 @@ public class ShopManager {
     }
 
     public static boolean canPurchase(UUID playerId, Trade trade) {
+        if (playerId == null || trade == null || !CatalogItems.isAvailable(trade)) return false;
         if (trade.globalLimit > 0 && trade.globalUsed >= trade.globalLimit) return false;
         if (trade.personalLimit > 0) {
             int used = trade.personalUsed.getOrDefault(playerId, 0);

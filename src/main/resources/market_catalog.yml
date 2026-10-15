@@ -1,0 +1,886 @@
+# Albion Magic Market catalog - append-only installation, not live shop storage.
+# Requires the market-catalog feature build; old MagicExpansion 1.1.14 does NOT read this file.
+# Left-click the admin sunflower or run /magicshop generate to install missing offers.
+# Repeating that action never resets usage, edits installed prices, or duplicates an offer ID.
+# Keep IDs permanent. A NEW ID grants a NEW independent allowance. Never rename IDs to edit prices.
+# All prices below use PHYSICAL inventory items, not Vault/server money. Starting prices need balancing.
+# personalLimit counts transactions: result amount 16 with limit 16 permits 256 items per player.
+# globalLimit is deliberately always 0 (no shared server cap); there is no automatic stock reset.
+# Missing/disabled rewards OR payment items skip the complete offer. Optional addons are not dependencies.
+# Existing portable_shops files and black_market receipt/cycle files are not replaced by this catalog.
+# Each armor piece is a separate once-per-player offer; buying armor does not unlock its research.
+# The example is a real, low-cost, once-per-player trade, independent from Xur's stock.
+version: 1
+shops:
+  - name: "Example - Slimefun Trade"
+    offers:
+      - id: albion.magic-lump-1.v1
+        result: {"slimefun": "MAGIC_LUMP_1", "amount": 8}
+        cost: [{"material": "EMERALD", "amount": 4}]
+        personalLimit: 1
+  - name: "Artificer - Dusts and Metals"
+    offers:
+      - id: albion.iron-dust.v1
+        result: {"slimefun": "IRON_DUST", "amount": 16}
+        cost: [{"material": "IRON_INGOT", "amount": 16}, {"material": "EMERALD", "amount": 4}]
+        personalLimit: 1
+      - id: albion.gold-dust.v1
+        result: {"slimefun": "GOLD_DUST", "amount": 16}
+        cost: [{"material": "GOLD_INGOT", "amount": 16}, {"material": "EMERALD", "amount": 4}]
+        personalLimit: 1
+      - id: albion.copper-dust.v1
+        result: {"slimefun": "COPPER_DUST", "amount": 16}
+        cost: [{"material": "COPPER_INGOT", "amount": 16}, {"material": "EMERALD", "amount": 4}]
+        personalLimit: 1
+      - id: albion.tin-dust.v1
+        result: {"slimefun": "TIN_DUST", "amount": 16}
+        cost: [{"material": "IRON_INGOT", "amount": 16}, {"material": "EMERALD", "amount": 4}]
+        personalLimit: 1
+      - id: albion.silver-dust.v1
+        result: {"slimefun": "SILVER_DUST", "amount": 16}
+        cost: [{"material": "IRON_INGOT", "amount": 16}, {"material": "EMERALD", "amount": 4}]
+        personalLimit: 1
+      - id: albion.aluminum-dust.v1
+        result: {"slimefun": "ALUMINUM_DUST", "amount": 16}
+        cost: [{"material": "IRON_INGOT", "amount": 16}, {"material": "EMERALD", "amount": 4}]
+        personalLimit: 1
+      - id: albion.lead-dust.v1
+        result: {"slimefun": "LEAD_DUST", "amount": 16}
+        cost: [{"material": "IRON_INGOT", "amount": 16}, {"material": "EMERALD", "amount": 4}]
+        personalLimit: 1
+      - id: albion.zinc-dust.v1
+        result: {"slimefun": "ZINC_DUST", "amount": 16}
+        cost: [{"material": "IRON_INGOT", "amount": 16}, {"material": "EMERALD", "amount": 4}]
+        personalLimit: 1
+      - id: albion.magnesium-dust.v1
+        result: {"slimefun": "MAGNESIUM_DUST", "amount": 16}
+        cost: [{"material": "IRON_INGOT", "amount": 16}, {"material": "EMERALD", "amount": 4}]
+        personalLimit: 1
+      - id: albion.copper-ingot.v1
+        result: {"slimefun": "COPPER_INGOT", "amount": 16}
+        cost: [{"material": "IRON_INGOT", "amount": 16}, {"material": "EMERALD", "amount": 8}]
+        personalLimit: 1
+      - id: albion.tin-ingot.v1
+        result: {"slimefun": "TIN_INGOT", "amount": 16}
+        cost: [{"material": "IRON_INGOT", "amount": 16}, {"material": "EMERALD", "amount": 8}]
+        personalLimit: 1
+      - id: albion.silver-ingot.v1
+        result: {"slimefun": "SILVER_INGOT", "amount": 16}
+        cost: [{"material": "IRON_INGOT", "amount": 16}, {"material": "EMERALD", "amount": 8}]
+        personalLimit: 1
+      - id: albion.aluminum-ingot.v1
+        result: {"slimefun": "ALUMINUM_INGOT", "amount": 16}
+        cost: [{"material": "IRON_INGOT", "amount": 16}, {"material": "EMERALD", "amount": 8}]
+        personalLimit: 1
+      - id: albion.lead-ingot.v1
+        result: {"slimefun": "LEAD_INGOT", "amount": 16}
+        cost: [{"material": "IRON_INGOT", "amount": 16}, {"material": "EMERALD", "amount": 8}]
+        personalLimit: 1
+      - id: albion.zinc-ingot.v1
+        result: {"slimefun": "ZINC_INGOT", "amount": 16}
+        cost: [{"material": "IRON_INGOT", "amount": 16}, {"material": "EMERALD", "amount": 8}]
+        personalLimit: 1
+      - id: albion.magnesium-ingot.v1
+        result: {"slimefun": "MAGNESIUM_INGOT", "amount": 16}
+        cost: [{"material": "IRON_INGOT", "amount": 16}, {"material": "EMERALD", "amount": 8}]
+        personalLimit: 1
+      - id: albion.steel-ingot.v1
+        result: {"slimefun": "STEEL_INGOT", "amount": 8}
+        cost: [{"material": "IRON_INGOT", "amount": 16}, {"material": "GOLD_INGOT", "amount": 4}, {"material": "EMERALD", "amount": 8}]
+        personalLimit: 1
+      - id: albion.bronze-ingot.v1
+        result: {"slimefun": "BRONZE_INGOT", "amount": 8}
+        cost: [{"material": "IRON_INGOT", "amount": 16}, {"material": "GOLD_INGOT", "amount": 4}, {"material": "EMERALD", "amount": 8}]
+        personalLimit: 1
+      - id: albion.brass-ingot.v1
+        result: {"slimefun": "BRASS_INGOT", "amount": 8}
+        cost: [{"material": "IRON_INGOT", "amount": 16}, {"material": "GOLD_INGOT", "amount": 4}, {"material": "EMERALD", "amount": 8}]
+        personalLimit: 1
+      - id: albion.duralumin-ingot.v1
+        result: {"slimefun": "DURALUMIN_INGOT", "amount": 8}
+        cost: [{"material": "IRON_INGOT", "amount": 16}, {"material": "GOLD_INGOT", "amount": 4}, {"material": "EMERALD", "amount": 8}]
+        personalLimit: 1
+      - id: albion.solder-ingot.v1
+        result: {"slimefun": "SOLDER_INGOT", "amount": 8}
+        cost: [{"material": "IRON_INGOT", "amount": 16}, {"material": "GOLD_INGOT", "amount": 4}, {"material": "EMERALD", "amount": 8}]
+        personalLimit: 1
+      - id: albion.billon-ingot.v1
+        result: {"slimefun": "BILLON_INGOT", "amount": 8}
+        cost: [{"material": "IRON_INGOT", "amount": 16}, {"material": "GOLD_INGOT", "amount": 4}, {"material": "EMERALD", "amount": 8}]
+        personalLimit: 1
+      - id: albion.aluminum-brass-ingot.v1
+        result: {"slimefun": "ALUMINUM_BRASS_INGOT", "amount": 8}
+        cost: [{"material": "IRON_INGOT", "amount": 16}, {"material": "GOLD_INGOT", "amount": 4}, {"material": "EMERALD", "amount": 8}]
+        personalLimit: 1
+      - id: albion.aluminum-bronze-ingot.v1
+        result: {"slimefun": "ALUMINUM_BRONZE_INGOT", "amount": 8}
+        cost: [{"material": "IRON_INGOT", "amount": 16}, {"material": "GOLD_INGOT", "amount": 4}, {"material": "EMERALD", "amount": 8}]
+        personalLimit: 1
+      - id: albion.corinthian-bronze-ingot.v1
+        result: {"slimefun": "CORINTHIAN_BRONZE_INGOT", "amount": 8}
+        cost: [{"material": "IRON_INGOT", "amount": 16}, {"material": "GOLD_INGOT", "amount": 4}, {"material": "EMERALD", "amount": 8}]
+        personalLimit: 1
+      - id: albion.hardened-metal-ingot.v1
+        result: {"slimefun": "HARDENED_METAL_INGOT", "amount": 8}
+        cost: [{"material": "IRON_INGOT", "amount": 16}, {"material": "GOLD_INGOT", "amount": 4}, {"material": "EMERALD", "amount": 8}]
+        personalLimit: 1
+      - id: albion.damascus-steel-ingot.v1
+        result: {"slimefun": "DAMASCUS_STEEL_INGOT", "amount": 8}
+        cost: [{"material": "IRON_INGOT", "amount": 16}, {"material": "GOLD_INGOT", "amount": 4}, {"material": "EMERALD", "amount": 8}]
+        personalLimit: 1
+      - id: albion.reinforced-alloy-ingot.v1
+        result: {"slimefun": "REINFORCED_ALLOY_INGOT", "amount": 4}
+        cost: [{"material": "IRON_BLOCK", "amount": 8}, {"material": "GOLD_BLOCK", "amount": 4}, {"material": "DIAMOND", "amount": 8}]
+        personalLimit: 1
+      - id: albion.gilded-iron.v1
+        result: {"slimefun": "GILDED_IRON", "amount": 4}
+        cost: [{"material": "IRON_BLOCK", "amount": 8}, {"material": "GOLD_BLOCK", "amount": 4}, {"material": "DIAMOND", "amount": 8}]
+        personalLimit: 1
+      - id: albion.redstone-alloy.v1
+        result: {"slimefun": "REDSTONE_ALLOY", "amount": 4}
+        cost: [{"material": "IRON_BLOCK", "amount": 8}, {"material": "GOLD_BLOCK", "amount": 4}, {"material": "DIAMOND", "amount": 8}]
+        personalLimit: 1
+  - name: "Artificer - Components"
+    offers:
+      - id: albion.silicon.v1
+        result: {"slimefun": "SILICON", "amount": 8}
+        cost: [{"material": "IRON_BLOCK", "amount": 4}, {"material": "GOLD_INGOT", "amount": 16}, {"material": "DIAMOND", "amount": 2}]
+        personalLimit: 1
+      - id: albion.carbon.v1
+        result: {"slimefun": "CARBON", "amount": 8}
+        cost: [{"material": "IRON_BLOCK", "amount": 4}, {"material": "GOLD_INGOT", "amount": 16}, {"material": "DIAMOND", "amount": 2}]
+        personalLimit: 1
+      - id: albion.compressed-carbon.v1
+        result: {"slimefun": "COMPRESSED_CARBON", "amount": 8}
+        cost: [{"material": "IRON_BLOCK", "amount": 4}, {"material": "GOLD_INGOT", "amount": 16}, {"material": "DIAMOND", "amount": 2}]
+        personalLimit: 1
+      - id: albion.carbon-chunk.v1
+        result: {"slimefun": "CARBON_CHUNK", "amount": 8}
+        cost: [{"material": "IRON_BLOCK", "amount": 4}, {"material": "GOLD_INGOT", "amount": 16}, {"material": "DIAMOND", "amount": 2}]
+        personalLimit: 1
+      - id: albion.synthetic-diamond.v1
+        result: {"slimefun": "SYNTHETIC_DIAMOND", "amount": 8}
+        cost: [{"material": "IRON_BLOCK", "amount": 4}, {"material": "GOLD_INGOT", "amount": 16}, {"material": "DIAMOND", "amount": 2}]
+        personalLimit: 1
+      - id: albion.synthetic-emerald.v1
+        result: {"slimefun": "SYNTHETIC_EMERALD", "amount": 8}
+        cost: [{"material": "IRON_BLOCK", "amount": 4}, {"material": "GOLD_INGOT", "amount": 16}, {"material": "DIAMOND", "amount": 2}]
+        personalLimit: 1
+      - id: albion.synthetic-sapphire.v1
+        result: {"slimefun": "SYNTHETIC_SAPPHIRE", "amount": 8}
+        cost: [{"material": "IRON_BLOCK", "amount": 4}, {"material": "GOLD_INGOT", "amount": 16}, {"material": "DIAMOND", "amount": 2}]
+        personalLimit: 1
+      - id: albion.carbonado.v1
+        result: {"slimefun": "CARBONADO", "amount": 2}
+        cost: [{"material": "IRON_BLOCK", "amount": 4}, {"material": "GOLD_INGOT", "amount": 16}, {"material": "DIAMOND", "amount": 8}]
+        personalLimit: 1
+      - id: albion.hardened-glass.v1
+        result: {"slimefun": "HARDENED_GLASS", "amount": 8}
+        cost: [{"material": "IRON_BLOCK", "amount": 4}, {"material": "GOLD_INGOT", "amount": 16}, {"material": "DIAMOND", "amount": 2}]
+        personalLimit: 1
+      - id: albion.reinforced-plate.v1
+        result: {"slimefun": "REINFORCED_PLATE", "amount": 2}
+        cost: [{"material": "IRON_BLOCK", "amount": 4}, {"material": "GOLD_INGOT", "amount": 16}, {"material": "DIAMOND", "amount": 8}]
+        personalLimit: 1
+      - id: albion.electric-motor.v1
+        result: {"slimefun": "ELECTRIC_MOTOR", "amount": 8}
+        cost: [{"material": "IRON_BLOCK", "amount": 4}, {"material": "GOLD_INGOT", "amount": 16}, {"material": "DIAMOND", "amount": 2}]
+        personalLimit: 1
+      - id: albion.heating-coil.v1
+        result: {"slimefun": "HEATING_COIL", "amount": 8}
+        cost: [{"material": "IRON_BLOCK", "amount": 4}, {"material": "GOLD_INGOT", "amount": 16}, {"material": "DIAMOND", "amount": 2}]
+        personalLimit: 1
+      - id: albion.electro-magnet.v1
+        result: {"slimefun": "ELECTRO_MAGNET", "amount": 8}
+        cost: [{"material": "IRON_BLOCK", "amount": 4}, {"material": "GOLD_INGOT", "amount": 16}, {"material": "DIAMOND", "amount": 2}]
+        personalLimit: 1
+      - id: albion.battery.v1
+        result: {"slimefun": "BATTERY", "amount": 8}
+        cost: [{"material": "IRON_BLOCK", "amount": 4}, {"material": "GOLD_INGOT", "amount": 16}, {"material": "DIAMOND", "amount": 2}]
+        personalLimit: 1
+      - id: albion.basic-circuit-board.v1
+        result: {"slimefun": "BASIC_CIRCUIT_BOARD", "amount": 8}
+        cost: [{"material": "IRON_BLOCK", "amount": 4}, {"material": "GOLD_INGOT", "amount": 16}, {"material": "DIAMOND", "amount": 2}]
+        personalLimit: 1
+      - id: albion.advanced-circuit-board.v1
+        result: {"slimefun": "ADVANCED_CIRCUIT_BOARD", "amount": 2}
+        cost: [{"material": "IRON_BLOCK", "amount": 4}, {"material": "GOLD_INGOT", "amount": 16}, {"material": "DIAMOND", "amount": 8}]
+        personalLimit: 1
+      - id: albion.power-crystal.v1
+        result: {"slimefun": "POWER_CRYSTAL", "amount": 2}
+        cost: [{"material": "IRON_BLOCK", "amount": 4}, {"material": "GOLD_INGOT", "amount": 16}, {"material": "DIAMOND", "amount": 8}]
+        personalLimit: 1
+      - id: albion.cargo-motor.v1
+        result: {"slimefun": "CARGO_MOTOR", "amount": 8}
+        cost: [{"material": "IRON_BLOCK", "amount": 4}, {"material": "GOLD_INGOT", "amount": 16}, {"material": "DIAMOND", "amount": 2}]
+        personalLimit: 1
+      - id: albion.plastic-sheet.v1
+        result: {"slimefun": "PLASTIC_SHEET", "amount": 8}
+        cost: [{"material": "IRON_BLOCK", "amount": 4}, {"material": "GOLD_INGOT", "amount": 16}, {"material": "DIAMOND", "amount": 2}]
+        personalLimit: 1
+      - id: albion.steel-plate.v1
+        result: {"slimefun": "STEEL_PLATE", "amount": 8}
+        cost: [{"material": "IRON_BLOCK", "amount": 4}, {"material": "GOLD_INGOT", "amount": 16}, {"material": "DIAMOND", "amount": 2}]
+        personalLimit: 1
+  - name: "Artificer - Electric Machines"
+    offers:
+      - id: albion.electric-furnace.v1
+        result: {"slimefun": "ELECTRIC_FURNACE", "amount": 1}
+        cost: [{"material": "IRON_BLOCK", "amount": 4}, {"material": "REDSTONE_BLOCK", "amount": 4}, {"material": "DIAMOND", "amount": 4}]
+        personalLimit: 1
+      - id: albion.electric-furnace-2.v1
+        result: {"slimefun": "ELECTRIC_FURNACE_2", "amount": 1}
+        cost: [{"material": "IRON_BLOCK", "amount": 8}, {"material": "REDSTONE_BLOCK", "amount": 8}, {"material": "DIAMOND", "amount": 8}]
+        personalLimit: 1
+      - id: albion.electric-furnace-3.v1
+        result: {"slimefun": "ELECTRIC_FURNACE_3", "amount": 1}
+        cost: [{"material": "IRON_BLOCK", "amount": 12}, {"material": "REDSTONE_BLOCK", "amount": 12}, {"material": "DIAMOND", "amount": 12}]
+        personalLimit: 1
+      - id: albion.electric-ore-grinder.v1
+        result: {"slimefun": "ELECTRIC_ORE_GRINDER", "amount": 1}
+        cost: [{"material": "IRON_BLOCK", "amount": 4}, {"material": "REDSTONE_BLOCK", "amount": 4}, {"material": "DIAMOND", "amount": 4}]
+        personalLimit: 1
+      - id: albion.electric-ore-grinder-2.v1
+        result: {"slimefun": "ELECTRIC_ORE_GRINDER_2", "amount": 1}
+        cost: [{"material": "IRON_BLOCK", "amount": 8}, {"material": "REDSTONE_BLOCK", "amount": 8}, {"material": "DIAMOND", "amount": 8}]
+        personalLimit: 1
+      - id: albion.electric-ore-grinder-3.v1
+        result: {"slimefun": "ELECTRIC_ORE_GRINDER_3", "amount": 1}
+        cost: [{"material": "IRON_BLOCK", "amount": 12}, {"material": "REDSTONE_BLOCK", "amount": 12}, {"material": "DIAMOND", "amount": 12}]
+        personalLimit: 1
+      - id: albion.electric-ingot-pulverizer.v1
+        result: {"slimefun": "ELECTRIC_INGOT_PULVERIZER", "amount": 1}
+        cost: [{"material": "IRON_BLOCK", "amount": 4}, {"material": "REDSTONE_BLOCK", "amount": 4}, {"material": "DIAMOND", "amount": 4}]
+        personalLimit: 1
+      - id: albion.electric-smeltery.v1
+        result: {"slimefun": "ELECTRIC_SMELTERY", "amount": 1}
+        cost: [{"material": "IRON_BLOCK", "amount": 4}, {"material": "REDSTONE_BLOCK", "amount": 4}, {"material": "DIAMOND", "amount": 4}]
+        personalLimit: 1
+      - id: albion.electric-smeltery-2.v1
+        result: {"slimefun": "ELECTRIC_SMELTERY_2", "amount": 1}
+        cost: [{"material": "IRON_BLOCK", "amount": 8}, {"material": "REDSTONE_BLOCK", "amount": 8}, {"material": "DIAMOND", "amount": 8}]
+        personalLimit: 1
+      - id: albion.electric-press.v1
+        result: {"slimefun": "ELECTRIC_PRESS", "amount": 1}
+        cost: [{"material": "IRON_BLOCK", "amount": 4}, {"material": "REDSTONE_BLOCK", "amount": 4}, {"material": "DIAMOND", "amount": 4}]
+        personalLimit: 1
+      - id: albion.electric-press-2.v1
+        result: {"slimefun": "ELECTRIC_PRESS_2", "amount": 1}
+        cost: [{"material": "IRON_BLOCK", "amount": 8}, {"material": "REDSTONE_BLOCK", "amount": 8}, {"material": "DIAMOND", "amount": 8}]
+        personalLimit: 1
+      - id: albion.electric-gold-pan.v1
+        result: {"slimefun": "ELECTRIC_GOLD_PAN", "amount": 1}
+        cost: [{"material": "IRON_BLOCK", "amount": 4}, {"material": "REDSTONE_BLOCK", "amount": 4}, {"material": "DIAMOND", "amount": 4}]
+        personalLimit: 1
+      - id: albion.electric-gold-pan-2.v1
+        result: {"slimefun": "ELECTRIC_GOLD_PAN_2", "amount": 1}
+        cost: [{"material": "IRON_BLOCK", "amount": 8}, {"material": "REDSTONE_BLOCK", "amount": 8}, {"material": "DIAMOND", "amount": 8}]
+        personalLimit: 1
+      - id: albion.electric-gold-pan-3.v1
+        result: {"slimefun": "ELECTRIC_GOLD_PAN_3", "amount": 1}
+        cost: [{"material": "IRON_BLOCK", "amount": 12}, {"material": "REDSTONE_BLOCK", "amount": 12}, {"material": "DIAMOND", "amount": 12}]
+        personalLimit: 1
+      - id: albion.electric-dust-washer.v1
+        result: {"slimefun": "ELECTRIC_DUST_WASHER", "amount": 1}
+        cost: [{"material": "IRON_BLOCK", "amount": 4}, {"material": "REDSTONE_BLOCK", "amount": 4}, {"material": "DIAMOND", "amount": 4}]
+        personalLimit: 1
+      - id: albion.electric-dust-washer-2.v1
+        result: {"slimefun": "ELECTRIC_DUST_WASHER_2", "amount": 1}
+        cost: [{"material": "IRON_BLOCK", "amount": 8}, {"material": "REDSTONE_BLOCK", "amount": 8}, {"material": "DIAMOND", "amount": 8}]
+        personalLimit: 1
+      - id: albion.electric-dust-washer-3.v1
+        result: {"slimefun": "ELECTRIC_DUST_WASHER_3", "amount": 1}
+        cost: [{"material": "IRON_BLOCK", "amount": 12}, {"material": "REDSTONE_BLOCK", "amount": 12}, {"material": "DIAMOND", "amount": 12}]
+        personalLimit: 1
+      - id: albion.electric-ingot-factory.v1
+        result: {"slimefun": "ELECTRIC_INGOT_FACTORY", "amount": 1}
+        cost: [{"material": "IRON_BLOCK", "amount": 4}, {"material": "REDSTONE_BLOCK", "amount": 4}, {"material": "DIAMOND", "amount": 4}]
+        personalLimit: 1
+      - id: albion.electric-ingot-factory-2.v1
+        result: {"slimefun": "ELECTRIC_INGOT_FACTORY_2", "amount": 1}
+        cost: [{"material": "IRON_BLOCK", "amount": 8}, {"material": "REDSTONE_BLOCK", "amount": 8}, {"material": "DIAMOND", "amount": 8}]
+        personalLimit: 1
+      - id: albion.electric-ingot-factory-3.v1
+        result: {"slimefun": "ELECTRIC_INGOT_FACTORY_3", "amount": 1}
+        cost: [{"material": "IRON_BLOCK", "amount": 12}, {"material": "REDSTONE_BLOCK", "amount": 12}, {"material": "DIAMOND", "amount": 12}]
+        personalLimit: 1
+      - id: albion.auto-enchanter.v1
+        result: {"slimefun": "AUTO_ENCHANTER", "amount": 1}
+        cost: [{"material": "IRON_BLOCK", "amount": 4}, {"material": "REDSTONE_BLOCK", "amount": 4}, {"material": "DIAMOND", "amount": 4}]
+        personalLimit: 1
+      - id: albion.auto-disenchanter.v1
+        result: {"slimefun": "AUTO_DISENCHANTER", "amount": 1}
+        cost: [{"material": "IRON_BLOCK", "amount": 4}, {"material": "REDSTONE_BLOCK", "amount": 4}, {"material": "DIAMOND", "amount": 4}]
+        personalLimit: 1
+      - id: albion.auto-anvil.v1
+        result: {"slimefun": "AUTO_ANVIL", "amount": 1}
+        cost: [{"material": "IRON_BLOCK", "amount": 4}, {"material": "REDSTONE_BLOCK", "amount": 4}, {"material": "DIAMOND", "amount": 4}]
+        personalLimit: 1
+      - id: albion.charging-bench.v1
+        result: {"slimefun": "CHARGING_BENCH", "amount": 1}
+        cost: [{"material": "IRON_BLOCK", "amount": 4}, {"material": "REDSTONE_BLOCK", "amount": 4}, {"material": "DIAMOND", "amount": 4}]
+        personalLimit: 1
+      - id: albion.geo-miner.v1
+        result: {"slimefun": "GEO_MINER", "amount": 1}
+        cost: [{"material": "IRON_BLOCK", "amount": 4}, {"material": "REDSTONE_BLOCK", "amount": 4}, {"material": "DIAMOND", "amount": 4}]
+        personalLimit: 1
+      - id: albion.oil-pump.v1
+        result: {"slimefun": "OIL_PUMP", "amount": 1}
+        cost: [{"material": "IRON_BLOCK", "amount": 4}, {"material": "REDSTONE_BLOCK", "amount": 4}, {"material": "DIAMOND", "amount": 4}]
+        personalLimit: 1
+      - id: albion.refinery.v1
+        result: {"slimefun": "REFINERY", "amount": 1}
+        cost: [{"material": "IRON_BLOCK", "amount": 4}, {"material": "REDSTONE_BLOCK", "amount": 4}, {"material": "DIAMOND", "amount": 4}]
+        personalLimit: 1
+      - id: albion.tree-growth-accelerator.v1
+        result: {"slimefun": "TREE_GROWTH_ACCELERATOR", "amount": 1}
+        cost: [{"material": "IRON_BLOCK", "amount": 4}, {"material": "REDSTONE_BLOCK", "amount": 4}, {"material": "DIAMOND", "amount": 4}]
+        personalLimit: 1
+      - id: albion.crop-growth-accelerator.v1
+        result: {"slimefun": "CROP_GROWTH_ACCELERATOR", "amount": 1}
+        cost: [{"material": "IRON_BLOCK", "amount": 4}, {"material": "REDSTONE_BLOCK", "amount": 4}, {"material": "DIAMOND", "amount": 4}]
+        personalLimit: 1
+      - id: albion.auto-brewer.v1
+        result: {"slimefun": "AUTO_BREWER", "amount": 1}
+        cost: [{"material": "IRON_BLOCK", "amount": 4}, {"material": "REDSTONE_BLOCK", "amount": 4}, {"material": "DIAMOND", "amount": 4}]
+        personalLimit: 1
+      - id: albion.food-fabricator.v1
+        result: {"slimefun": "FOOD_FABRICATOR", "amount": 1}
+        cost: [{"material": "IRON_BLOCK", "amount": 4}, {"material": "REDSTONE_BLOCK", "amount": 4}, {"material": "DIAMOND", "amount": 4}]
+        personalLimit: 1
+      - id: albion.auto-drier.v1
+        result: {"slimefun": "AUTO_DRIER", "amount": 1}
+        cost: [{"material": "IRON_BLOCK", "amount": 4}, {"material": "REDSTONE_BLOCK", "amount": 4}, {"material": "DIAMOND", "amount": 4}]
+        personalLimit: 1
+  - name: "Artificer - Power"
+    offers:
+      - id: albion.energy-regulator.v1
+        result: {"slimefun": "ENERGY_REGULATOR", "amount": 1}
+        cost: [{"material": "IRON_BLOCK", "amount": 4}, {"material": "REDSTONE_BLOCK", "amount": 4}, {"material": "DIAMOND", "amount": 4}]
+        personalLimit: 1
+      - id: albion.energy-connector.v1
+        result: {"slimefun": "ENERGY_CONNECTOR", "amount": 8}
+        cost: [{"material": "IRON_BLOCK", "amount": 4}, {"material": "REDSTONE_BLOCK", "amount": 4}, {"material": "DIAMOND", "amount": 4}]
+        personalLimit: 16
+      - id: albion.small-capacitor.v1
+        result: {"slimefun": "SMALL_CAPACITOR", "amount": 1}
+        cost: [{"material": "IRON_BLOCK", "amount": 4}, {"material": "REDSTONE_BLOCK", "amount": 4}, {"material": "DIAMOND", "amount": 4}]
+        personalLimit: 1
+      - id: albion.medium-capacitor.v1
+        result: {"slimefun": "MEDIUM_CAPACITOR", "amount": 1}
+        cost: [{"material": "IRON_BLOCK", "amount": 8}, {"material": "REDSTONE_BLOCK", "amount": 8}, {"material": "DIAMOND", "amount": 8}]
+        personalLimit: 1
+      - id: albion.big-capacitor.v1
+        result: {"slimefun": "BIG_CAPACITOR", "amount": 1}
+        cost: [{"material": "IRON_BLOCK", "amount": 8}, {"material": "REDSTONE_BLOCK", "amount": 8}, {"material": "DIAMOND", "amount": 8}]
+        personalLimit: 1
+      - id: albion.large-capacitor.v1
+        result: {"slimefun": "LARGE_CAPACITOR", "amount": 1}
+        cost: [{"material": "IRON_BLOCK", "amount": 12}, {"material": "REDSTONE_BLOCK", "amount": 12}, {"material": "DIAMOND", "amount": 12}]
+        personalLimit: 1
+      - id: albion.carbonado-edged-capacitor.v1
+        result: {"slimefun": "CARBONADO_EDGED_CAPACITOR", "amount": 1}
+        cost: [{"material": "IRON_BLOCK", "amount": 12}, {"material": "REDSTONE_BLOCK", "amount": 12}, {"material": "DIAMOND", "amount": 12}]
+        personalLimit: 1
+      - id: albion.energized-capacitor.v1
+        result: {"slimefun": "ENERGIZED_CAPACITOR", "amount": 1}
+        cost: [{"material": "IRON_BLOCK", "amount": 16}, {"material": "REDSTONE_BLOCK", "amount": 16}, {"material": "DIAMOND", "amount": 16}]
+        personalLimit: 1
+      - id: albion.solar-generator.v1
+        result: {"slimefun": "SOLAR_GENERATOR", "amount": 1}
+        cost: [{"material": "IRON_BLOCK", "amount": 4}, {"material": "REDSTONE_BLOCK", "amount": 4}, {"material": "DIAMOND", "amount": 4}]
+        personalLimit: 1
+      - id: albion.solar-generator-2.v1
+        result: {"slimefun": "SOLAR_GENERATOR_2", "amount": 1}
+        cost: [{"material": "IRON_BLOCK", "amount": 8}, {"material": "REDSTONE_BLOCK", "amount": 8}, {"material": "DIAMOND", "amount": 8}]
+        personalLimit: 1
+      - id: albion.solar-generator-3.v1
+        result: {"slimefun": "SOLAR_GENERATOR_3", "amount": 1}
+        cost: [{"material": "IRON_BLOCK", "amount": 12}, {"material": "REDSTONE_BLOCK", "amount": 12}, {"material": "DIAMOND", "amount": 12}]
+        personalLimit: 1
+      - id: albion.solar-generator-4.v1
+        result: {"slimefun": "SOLAR_GENERATOR_4", "amount": 1}
+        cost: [{"material": "IRON_BLOCK", "amount": 16}, {"material": "REDSTONE_BLOCK", "amount": 16}, {"material": "DIAMOND", "amount": 16}]
+        personalLimit: 1
+      - id: albion.coal-generator.v1
+        result: {"slimefun": "COAL_GENERATOR", "amount": 1}
+        cost: [{"material": "IRON_BLOCK", "amount": 4}, {"material": "REDSTONE_BLOCK", "amount": 4}, {"material": "DIAMOND", "amount": 4}]
+        personalLimit: 1
+      - id: albion.coal-generator-2.v1
+        result: {"slimefun": "COAL_GENERATOR_2", "amount": 1}
+        cost: [{"material": "IRON_BLOCK", "amount": 8}, {"material": "REDSTONE_BLOCK", "amount": 8}, {"material": "DIAMOND", "amount": 8}]
+        personalLimit: 1
+      - id: albion.lava-generator.v1
+        result: {"slimefun": "LAVA_GENERATOR", "amount": 1}
+        cost: [{"material": "IRON_BLOCK", "amount": 4}, {"material": "REDSTONE_BLOCK", "amount": 4}, {"material": "DIAMOND", "amount": 4}]
+        personalLimit: 1
+      - id: albion.lava-generator-2.v1
+        result: {"slimefun": "LAVA_GENERATOR_2", "amount": 1}
+        cost: [{"material": "IRON_BLOCK", "amount": 8}, {"material": "REDSTONE_BLOCK", "amount": 8}, {"material": "DIAMOND", "amount": 8}]
+        personalLimit: 1
+      - id: albion.magnesium-generator.v1
+        result: {"slimefun": "MAGNESIUM_GENERATOR", "amount": 1}
+        cost: [{"material": "IRON_BLOCK", "amount": 4}, {"material": "REDSTONE_BLOCK", "amount": 4}, {"material": "DIAMOND", "amount": 4}]
+        personalLimit: 1
+  - name: "Garran - Cargo"
+    offers:
+      - id: albion.cargo-manager.v1
+        result: {"slimefun": "CARGO_MANAGER", "amount": 1}
+        cost: [{"material": "IRON_BLOCK", "amount": 4}, {"material": "GOLD_BLOCK", "amount": 2}, {"material": "DIAMOND", "amount": 4}]
+        personalLimit: 4
+      - id: albion.cargo-node.v1
+        result: {"slimefun": "CARGO_NODE", "amount": 16}
+        cost: [{"material": "IRON_INGOT", "amount": 32}, {"material": "REDSTONE", "amount": 32}, {"material": "EMERALD", "amount": 8}]
+        personalLimit: 16
+      - id: albion.cargo-node-input.v1
+        result: {"slimefun": "CARGO_NODE_INPUT", "amount": 8}
+        cost: [{"material": "IRON_INGOT", "amount": 32}, {"material": "HOPPER", "amount": 4}, {"material": "EMERALD", "amount": 8}]
+        personalLimit: 16
+      - id: albion.cargo-node-output.v1
+        result: {"slimefun": "CARGO_NODE_OUTPUT", "amount": 8}
+        cost: [{"material": "IRON_INGOT", "amount": 32}, {"material": "DROPPER", "amount": 4}, {"material": "EMERALD", "amount": 8}]
+        personalLimit: 16
+      - id: albion.cargo-node-output-advanced.v1
+        result: {"slimefun": "CARGO_NODE_OUTPUT_ADVANCED", "amount": 4}
+        cost: [{"material": "IRON_BLOCK", "amount": 4}, {"material": "COMPARATOR", "amount": 4}, {"material": "DIAMOND", "amount": 4}]
+        personalLimit: 16
+  - name: "Garran - Tools"
+    offers:
+      - id: albion.grappling-hook.v1
+        result: {"slimefun": "GRAPPLING_HOOK", "amount": 1}
+        cost: [{"material": "DIAMOND", "amount": 8}, {"material": "IRON_BLOCK", "amount": 4}, {"material": "EMERALD", "amount": 16}]
+        personalLimit: 1
+      - id: albion.smelters-pickaxe.v1
+        result: {"slimefun": "SMELTERS_PICKAXE", "amount": 1}
+        cost: [{"material": "DIAMOND", "amount": 8}, {"material": "IRON_BLOCK", "amount": 4}, {"material": "EMERALD", "amount": 16}]
+        personalLimit: 1
+      - id: albion.pickaxe-of-containment.v1
+        result: {"slimefun": "PICKAXE_OF_CONTAINMENT", "amount": 1}
+        cost: [{"material": "DIAMOND", "amount": 8}, {"material": "IRON_BLOCK", "amount": 4}, {"material": "EMERALD", "amount": 16}]
+        personalLimit: 1
+      - id: albion.explosive-pickaxe.v1
+        result: {"slimefun": "EXPLOSIVE_PICKAXE", "amount": 1}
+        cost: [{"material": "DIAMOND", "amount": 8}, {"material": "IRON_BLOCK", "amount": 4}, {"material": "EMERALD", "amount": 16}]
+        personalLimit: 1
+      - id: albion.pickaxe-of-the-seeker.v1
+        result: {"slimefun": "PICKAXE_OF_THE_SEEKER", "amount": 1}
+        cost: [{"material": "DIAMOND", "amount": 8}, {"material": "IRON_BLOCK", "amount": 4}, {"material": "EMERALD", "amount": 16}]
+        personalLimit: 1
+      - id: albion.cobalt-pickaxe.v1
+        result: {"slimefun": "COBALT_PICKAXE", "amount": 1}
+        cost: [{"material": "DIAMOND", "amount": 8}, {"material": "IRON_BLOCK", "amount": 4}, {"material": "EMERALD", "amount": 16}]
+        personalLimit: 1
+      - id: albion.pickaxe-of-vein-mining.v1
+        result: {"slimefun": "PICKAXE_OF_VEIN_MINING", "amount": 1}
+        cost: [{"material": "DIAMOND", "amount": 8}, {"material": "IRON_BLOCK", "amount": 4}, {"material": "EMERALD", "amount": 16}]
+        personalLimit: 1
+      - id: albion.lumber-axe.v1
+        result: {"slimefun": "LUMBER_AXE", "amount": 1}
+        cost: [{"material": "DIAMOND", "amount": 8}, {"material": "IRON_BLOCK", "amount": 4}, {"material": "EMERALD", "amount": 16}]
+        personalLimit: 1
+      - id: albion.explosive-shovel.v1
+        result: {"slimefun": "EXPLOSIVE_SHOVEL", "amount": 1}
+        cost: [{"material": "DIAMOND", "amount": 8}, {"material": "IRON_BLOCK", "amount": 4}, {"material": "EMERALD", "amount": 16}]
+        personalLimit: 1
+      - id: albion.explosive-bow.v1
+        result: {"slimefun": "EXPLOSIVE_BOW", "amount": 1}
+        cost: [{"material": "DIAMOND", "amount": 8}, {"material": "IRON_BLOCK", "amount": 4}, {"material": "EMERALD", "amount": 16}]
+        personalLimit: 1
+      - id: albion.seismic-axe.v1
+        result: {"slimefun": "SEISMIC_AXE", "amount": 1}
+        cost: [{"material": "DIAMOND", "amount": 8}, {"material": "IRON_BLOCK", "amount": 4}, {"material": "EMERALD", "amount": 16}]
+        personalLimit: 1
+      - id: albion.portable-geo-scanner.v1
+        result: {"slimefun": "PORTABLE_GEO_SCANNER", "amount": 1}
+        cost: [{"material": "DIAMOND", "amount": 8}, {"material": "IRON_BLOCK", "amount": 4}, {"material": "EMERALD", "amount": 16}]
+        personalLimit: 1
+  - name: "Garran - Storage and Travel"
+    offers:
+      - id: albion.small-backpack.v1
+        result: {"slimefun": "SMALL_BACKPACK", "amount": 1}
+        cost: [{"material": "DIAMOND", "amount": 16}, {"material": "GOLD_BLOCK", "amount": 4}, {"material": "LEATHER", "amount": 32}]
+        personalLimit: 1
+      - id: albion.medium-backpack.v1
+        result: {"slimefun": "MEDIUM_BACKPACK", "amount": 1}
+        cost: [{"material": "DIAMOND", "amount": 16}, {"material": "GOLD_BLOCK", "amount": 4}, {"material": "LEATHER", "amount": 32}]
+        personalLimit: 1
+      - id: albion.large-backpack.v1
+        result: {"slimefun": "LARGE_BACKPACK", "amount": 1}
+        cost: [{"material": "DIAMOND", "amount": 16}, {"material": "GOLD_BLOCK", "amount": 4}, {"material": "LEATHER", "amount": 32}]
+        personalLimit: 1
+      - id: albion.woven-backpack.v1
+        result: {"slimefun": "WOVEN_BACKPACK", "amount": 1}
+        cost: [{"material": "DIAMOND", "amount": 16}, {"material": "GOLD_BLOCK", "amount": 4}, {"material": "LEATHER", "amount": 32}]
+        personalLimit: 1
+      - id: albion.gilded-backpack.v1
+        result: {"slimefun": "GILDED_BACKPACK", "amount": 1}
+        cost: [{"material": "DIAMOND", "amount": 16}, {"material": "GOLD_BLOCK", "amount": 4}, {"material": "LEATHER", "amount": 32}]
+        personalLimit: 1
+      - id: albion.ender-backpack.v1
+        result: {"slimefun": "ENDER_BACKPACK", "amount": 1}
+        cost: [{"material": "DIAMOND", "amount": 16}, {"material": "GOLD_BLOCK", "amount": 4}, {"material": "LEATHER", "amount": 32}]
+        personalLimit: 1
+      - id: albion.duralumin-jetpack.v1
+        result: {"slimefun": "DURALUMIN_JETPACK", "amount": 1}
+        cost: [{"material": "DIAMOND", "amount": 16}, {"material": "GOLD_BLOCK", "amount": 4}, {"material": "LEATHER", "amount": 32}]
+        personalLimit: 1
+      - id: albion.duralumin-jetboots.v1
+        result: {"slimefun": "DURALUMIN_JETBOOTS", "amount": 1}
+        cost: [{"material": "DIAMOND", "amount": 16}, {"material": "GOLD_BLOCK", "amount": 4}, {"material": "LEATHER", "amount": 32}]
+        personalLimit: 1
+  - name: "Armorer - Damascus"
+    offers:
+      - id: albion.damascus-steel-helmet.v1
+        result: {"slimefun": "DAMASCUS_STEEL_HELMET", "amount": 1}
+        cost: [{"material": "DIAMOND", "amount": 8}, {"material": "IRON_BLOCK", "amount": 4}]
+        personalLimit: 1
+      - id: albion.damascus-steel-chestplate.v1
+        result: {"slimefun": "DAMASCUS_STEEL_CHESTPLATE", "amount": 1}
+        cost: [{"material": "DIAMOND", "amount": 16}, {"material": "IRON_BLOCK", "amount": 8}]
+        personalLimit: 1
+      - id: albion.damascus-steel-leggings.v1
+        result: {"slimefun": "DAMASCUS_STEEL_LEGGINGS", "amount": 1}
+        cost: [{"material": "DIAMOND", "amount": 12}, {"material": "IRON_BLOCK", "amount": 6}]
+        personalLimit: 1
+      - id: albion.damascus-steel-boots.v1
+        result: {"slimefun": "DAMASCUS_STEEL_BOOTS", "amount": 1}
+        cost: [{"material": "DIAMOND", "amount": 8}, {"material": "IRON_BLOCK", "amount": 4}]
+        personalLimit: 1
+  - name: "Armorer - Reinforced"
+    offers:
+      - id: albion.reinforced-alloy-helmet.v1
+        result: {"slimefun": "REINFORCED_ALLOY_HELMET", "amount": 1}
+        cost: [{"material": "DIAMOND", "amount": 8}, {"material": "IRON_BLOCK", "amount": 4}, {"material": "NETHERITE_INGOT", "amount": 2}]
+        personalLimit: 1
+      - id: albion.reinforced-alloy-chestplate.v1
+        result: {"slimefun": "REINFORCED_ALLOY_CHESTPLATE", "amount": 1}
+        cost: [{"material": "DIAMOND", "amount": 16}, {"material": "IRON_BLOCK", "amount": 8}, {"material": "NETHERITE_INGOT", "amount": 4}]
+        personalLimit: 1
+      - id: albion.reinforced-alloy-leggings.v1
+        result: {"slimefun": "REINFORCED_ALLOY_LEGGINGS", "amount": 1}
+        cost: [{"material": "DIAMOND", "amount": 12}, {"material": "IRON_BLOCK", "amount": 6}, {"material": "NETHERITE_INGOT", "amount": 3}]
+        personalLimit: 1
+      - id: albion.reinforced-alloy-boots.v1
+        result: {"slimefun": "REINFORCED_ALLOY_BOOTS", "amount": 1}
+        cost: [{"material": "DIAMOND", "amount": 8}, {"material": "IRON_BLOCK", "amount": 4}, {"material": "NETHERITE_INGOT", "amount": 2}]
+        personalLimit: 1
+  - name: "Xur - Soulbound Armor"
+    offers:
+      - id: albion.soulbound-helmet.v1
+        result: {"slimefun": "SOULBOUND_HELMET", "amount": 1}
+        cost: [{"material": "DIAMOND", "amount": 8}, {"material": "IRON_BLOCK", "amount": 4}, {"material": "NETHERITE_INGOT", "amount": 2}, {"material": "NETHER_STAR", "amount": 1}]
+        personalLimit: 1
+      - id: albion.soulbound-chestplate.v1
+        result: {"slimefun": "SOULBOUND_CHESTPLATE", "amount": 1}
+        cost: [{"material": "DIAMOND", "amount": 16}, {"material": "IRON_BLOCK", "amount": 8}, {"material": "NETHERITE_INGOT", "amount": 4}, {"material": "NETHER_STAR", "amount": 1}]
+        personalLimit: 1
+      - id: albion.soulbound-leggings.v1
+        result: {"slimefun": "SOULBOUND_LEGGINGS", "amount": 1}
+        cost: [{"material": "DIAMOND", "amount": 12}, {"material": "IRON_BLOCK", "amount": 6}, {"material": "NETHERITE_INGOT", "amount": 3}, {"material": "NETHER_STAR", "amount": 1}]
+        personalLimit: 1
+      - id: albion.soulbound-boots.v1
+        result: {"slimefun": "SOULBOUND_BOOTS", "amount": 1}
+        cost: [{"material": "DIAMOND", "amount": 8}, {"material": "IRON_BLOCK", "amount": 4}, {"material": "NETHERITE_INGOT", "amount": 2}, {"material": "NETHER_STAR", "amount": 1}]
+        personalLimit: 1
+  - name: "Armorer - Hazmat"
+    offers:
+      - id: albion.scuba-helmet.v1
+        result: {"slimefun": "SCUBA_HELMET", "amount": 1}
+        cost: [{"material": "LEATHER", "amount": 16}, {"material": "GLASS", "amount": 16}, {"material": "EMERALD", "amount": 8}]
+        personalLimit: 1
+      - id: albion.hazmat-chestplate.v1
+        result: {"slimefun": "HAZMAT_CHESTPLATE", "amount": 1}
+        cost: [{"material": "LEATHER", "amount": 16}, {"material": "GLASS", "amount": 16}, {"material": "EMERALD", "amount": 8}]
+        personalLimit: 1
+      - id: albion.hazmat-leggings.v1
+        result: {"slimefun": "HAZMAT_LEGGINGS", "amount": 1}
+        cost: [{"material": "LEATHER", "amount": 16}, {"material": "GLASS", "amount": 16}, {"material": "EMERALD", "amount": 8}]
+        personalLimit: 1
+      - id: albion.rubber-boots.v1
+        result: {"slimefun": "RUBBER_BOOTS", "amount": 1}
+        cost: [{"material": "LEATHER", "amount": 16}, {"material": "GLASS", "amount": 16}, {"material": "EMERALD", "amount": 8}]
+        personalLimit: 1
+  - name: "Xur - Runes and Relics"
+    offers:
+      - id: albion.ancient-rune-air.v1
+        result: {"slimefun": "ANCIENT_RUNE_AIR", "amount": 1}
+        cost: [{"material": "DIAMOND", "amount": 16}, {"material": "AMETHYST_SHARD", "amount": 32}, {"material": "EMERALD", "amount": 16}]
+        personalLimit: 1
+      - id: albion.ancient-rune-water.v1
+        result: {"slimefun": "ANCIENT_RUNE_WATER", "amount": 1}
+        cost: [{"material": "DIAMOND", "amount": 16}, {"material": "AMETHYST_SHARD", "amount": 32}, {"material": "EMERALD", "amount": 16}]
+        personalLimit: 1
+      - id: albion.ancient-rune-fire.v1
+        result: {"slimefun": "ANCIENT_RUNE_FIRE", "amount": 1}
+        cost: [{"material": "DIAMOND", "amount": 16}, {"material": "AMETHYST_SHARD", "amount": 32}, {"material": "EMERALD", "amount": 16}]
+        personalLimit: 1
+      - id: albion.ancient-rune-earth.v1
+        result: {"slimefun": "ANCIENT_RUNE_EARTH", "amount": 1}
+        cost: [{"material": "DIAMOND", "amount": 16}, {"material": "AMETHYST_SHARD", "amount": 32}, {"material": "EMERALD", "amount": 16}]
+        personalLimit: 1
+      - id: albion.ancient-rune-ender.v1
+        result: {"slimefun": "ANCIENT_RUNE_ENDER", "amount": 1}
+        cost: [{"material": "DIAMOND", "amount": 16}, {"material": "AMETHYST_SHARD", "amount": 32}, {"material": "EMERALD", "amount": 16}]
+        personalLimit: 1
+      - id: albion.ancient-rune-rainbow.v1
+        result: {"slimefun": "ANCIENT_RUNE_RAINBOW", "amount": 1}
+        cost: [{"material": "DIAMOND", "amount": 16}, {"material": "AMETHYST_SHARD", "amount": 32}, {"material": "EMERALD", "amount": 16}]
+        personalLimit: 1
+      - id: albion.ancient-rune-lightning.v1
+        result: {"slimefun": "ANCIENT_RUNE_LIGHTNING", "amount": 1}
+        cost: [{"material": "DIAMOND", "amount": 16}, {"material": "AMETHYST_SHARD", "amount": 32}, {"material": "EMERALD", "amount": 16}]
+        personalLimit: 1
+      - id: albion.ancient-rune-soulbound.v1
+        result: {"slimefun": "ANCIENT_RUNE_SOULBOUND", "amount": 1}
+        cost: [{"material": "DIAMOND", "amount": 16}, {"material": "AMETHYST_SHARD", "amount": 32}, {"material": "EMERALD", "amount": 16}, {"material": "NETHER_STAR", "amount": 1}]
+        personalLimit: 1
+      - id: albion.ancient-rune-enchantment.v1
+        result: {"slimefun": "ANCIENT_RUNE_ENCHANTMENT", "amount": 1}
+        cost: [{"material": "DIAMOND", "amount": 16}, {"material": "AMETHYST_SHARD", "amount": 32}, {"material": "EMERALD", "amount": 16}, {"material": "NETHER_STAR", "amount": 1}]
+        personalLimit: 1
+      - id: albion.ancient-rune-villagers.v1
+        result: {"slimefun": "ANCIENT_RUNE_VILLAGERS", "amount": 1}
+        cost: [{"material": "DIAMOND", "amount": 16}, {"material": "AMETHYST_SHARD", "amount": 32}, {"material": "EMERALD", "amount": 16}]
+        personalLimit: 1
+  - name: "Artificer - Infinity Materials"
+    requiresPlugins: [InfinityExpansion2]
+    offers:
+      - id: albion.ie-magsteel.v1
+        result: {"slimefun": "IE_MAGSTEEL", "amount": 8}
+        cost: [{"material": "DIAMOND_BLOCK", "amount": 2}, {"material": "GOLD_BLOCK", "amount": 8}, {"material": "NETHERITE_INGOT", "amount": 1}]
+        personalLimit: 1
+      - id: albion.ie-titanium.v1
+        result: {"slimefun": "IE_TITANIUM", "amount": 8}
+        cost: [{"material": "DIAMOND_BLOCK", "amount": 2}, {"material": "GOLD_BLOCK", "amount": 8}, {"material": "NETHERITE_INGOT", "amount": 1}]
+        personalLimit: 1
+      - id: albion.ie-mythril.v1
+        result: {"slimefun": "IE_MYTHRIL", "amount": 8}
+        cost: [{"material": "DIAMOND_BLOCK", "amount": 2}, {"material": "GOLD_BLOCK", "amount": 8}, {"material": "NETHERITE_INGOT", "amount": 1}]
+        personalLimit: 1
+      - id: albion.ie-adamantite.v1
+        result: {"slimefun": "IE_ADAMANTITE", "amount": 8}
+        cost: [{"material": "DIAMOND_BLOCK", "amount": 2}, {"material": "GOLD_BLOCK", "amount": 8}, {"material": "NETHERITE_INGOT", "amount": 1}]
+        personalLimit: 1
+      - id: albion.ie-magnonium.v1
+        result: {"slimefun": "IE_MAGNONIUM", "amount": 8}
+        cost: [{"material": "DIAMOND_BLOCK", "amount": 2}, {"material": "GOLD_BLOCK", "amount": 8}, {"material": "NETHERITE_INGOT", "amount": 1}]
+        personalLimit: 1
+      - id: albion.ie-ender-essence.v1
+        result: {"slimefun": "IE_ENDER_ESSENCE", "amount": 8}
+        cost: [{"material": "DIAMOND_BLOCK", "amount": 2}, {"material": "GOLD_BLOCK", "amount": 8}, {"material": "NETHERITE_INGOT", "amount": 1}]
+        personalLimit: 1
+      - id: albion.ie-magsteel-plate.v1
+        result: {"slimefun": "IE_MAGSTEEL_PLATE", "amount": 8}
+        cost: [{"material": "DIAMOND_BLOCK", "amount": 2}, {"material": "GOLD_BLOCK", "amount": 8}, {"material": "NETHERITE_INGOT", "amount": 1}]
+        personalLimit: 1
+      - id: albion.ie-machine-circuit.v1
+        result: {"slimefun": "IE_MACHINE_CIRCUIT", "amount": 8}
+        cost: [{"material": "DIAMOND_BLOCK", "amount": 2}, {"material": "GOLD_BLOCK", "amount": 8}, {"material": "NETHERITE_INGOT", "amount": 1}]
+        personalLimit: 1
+      - id: albion.ie-machine-plate.v1
+        result: {"slimefun": "IE_MACHINE_PLATE", "amount": 8}
+        cost: [{"material": "DIAMOND_BLOCK", "amount": 2}, {"material": "GOLD_BLOCK", "amount": 8}, {"material": "NETHERITE_INGOT", "amount": 1}]
+        personalLimit: 1
+      - id: albion.ie-machine-core.v1
+        result: {"slimefun": "IE_MACHINE_CORE", "amount": 8}
+        cost: [{"material": "DIAMOND_BLOCK", "amount": 2}, {"material": "GOLD_BLOCK", "amount": 8}, {"material": "NETHERITE_INGOT", "amount": 1}]
+        personalLimit: 1
+      - id: albion.ie-void-ingot.v1
+        result: {"slimefun": "IE_VOID_INGOT", "amount": 8}
+        cost: [{"material": "DIAMOND_BLOCK", "amount": 2}, {"material": "GOLD_BLOCK", "amount": 8}, {"material": "NETHERITE_INGOT", "amount": 1}]
+        personalLimit: 1
+      - id: albion.ie-infinity-ingot.v1
+        result: {"slimefun": "IE_INFINITY_INGOT", "amount": 2}
+        cost: [{"material": "DIAMOND_BLOCK", "amount": 8}, {"material": "GOLD_BLOCK", "amount": 16}, {"material": "NETHERITE_INGOT", "amount": 4}, {"material": "NETHER_STAR", "amount": 2}]
+        personalLimit: 1
+      - id: albion.ie-infinity-machine-circuit.v1
+        result: {"slimefun": "IE_INFINITY_MACHINE_CIRCUIT", "amount": 2}
+        cost: [{"material": "DIAMOND_BLOCK", "amount": 8}, {"material": "GOLD_BLOCK", "amount": 16}, {"material": "NETHERITE_INGOT", "amount": 4}, {"material": "NETHER_STAR", "amount": 2}]
+        personalLimit: 1
+      - id: albion.ie-infinity-machine-core.v1
+        result: {"slimefun": "IE_INFINITY_MACHINE_CORE", "amount": 2}
+        cost: [{"material": "DIAMOND_BLOCK", "amount": 8}, {"material": "GOLD_BLOCK", "amount": 16}, {"material": "NETHERITE_INGOT", "amount": 4}, {"material": "NETHER_STAR", "amount": 2}]
+        personalLimit: 1
+  - name: "Artificer - Infinity Machines"
+    requiresPlugins: [InfinityExpansion2]
+    offers:
+      - id: albion.ie-cobblestone-generator.v1
+        result: {"slimefun": "IE_COBBLESTONE_GENERATOR", "amount": 1}
+        cost: [{"material": "DIAMOND_BLOCK", "amount": 2}, {"material": "IRON_BLOCK", "amount": 8}, {"material": "NETHERITE_INGOT", "amount": 1}]
+        personalLimit: 1
+      - id: albion.ie-cobblestone-generator-2.v1
+        result: {"slimefun": "IE_COBBLESTONE_GENERATOR_2", "amount": 1}
+        cost: [{"material": "DIAMOND_BLOCK", "amount": 4}, {"material": "IRON_BLOCK", "amount": 16}, {"material": "NETHERITE_INGOT", "amount": 2}]
+        personalLimit: 1
+      - id: albion.ie-virtual-farm.v1
+        result: {"slimefun": "IE_VIRTUAL_FARM", "amount": 1}
+        cost: [{"material": "DIAMOND_BLOCK", "amount": 2}, {"material": "IRON_BLOCK", "amount": 8}, {"material": "NETHERITE_INGOT", "amount": 1}]
+        personalLimit: 1
+      - id: albion.ie-virtual-farm-2.v1
+        result: {"slimefun": "IE_VIRTUAL_FARM_2", "amount": 1}
+        cost: [{"material": "DIAMOND_BLOCK", "amount": 4}, {"material": "IRON_BLOCK", "amount": 16}, {"material": "NETHERITE_INGOT", "amount": 2}]
+        personalLimit: 1
+      - id: albion.ie-tree-grower.v1
+        result: {"slimefun": "IE_TREE_GROWER", "amount": 1}
+        cost: [{"material": "DIAMOND_BLOCK", "amount": 2}, {"material": "IRON_BLOCK", "amount": 8}, {"material": "NETHERITE_INGOT", "amount": 1}]
+        personalLimit: 1
+      - id: albion.ie-flower-grower.v1
+        result: {"slimefun": "IE_FLOWER_GROWER", "amount": 1}
+        cost: [{"material": "DIAMOND_BLOCK", "amount": 2}, {"material": "IRON_BLOCK", "amount": 8}, {"material": "NETHERITE_INGOT", "amount": 1}]
+        personalLimit: 1
+      - id: albion.ie-stoneworks-factory.v1
+        result: {"slimefun": "IE_STONEWORKS_FACTORY", "amount": 1}
+        cost: [{"material": "DIAMOND_BLOCK", "amount": 2}, {"material": "IRON_BLOCK", "amount": 8}, {"material": "NETHERITE_INGOT", "amount": 1}]
+        personalLimit: 1
+      - id: albion.ie-stoneworks-factory-2.v1
+        result: {"slimefun": "IE_STONEWORKS_FACTORY_2", "amount": 1}
+        cost: [{"material": "DIAMOND_BLOCK", "amount": 4}, {"material": "IRON_BLOCK", "amount": 16}, {"material": "NETHERITE_INGOT", "amount": 2}]
+        personalLimit: 1
+      - id: albion.ie-ingot-former.v1
+        result: {"slimefun": "IE_INGOT_FORMER", "amount": 1}
+        cost: [{"material": "DIAMOND_BLOCK", "amount": 2}, {"material": "IRON_BLOCK", "amount": 8}, {"material": "NETHERITE_INGOT", "amount": 1}]
+        personalLimit: 1
+      - id: albion.ie-obsidian-generator.v1
+        result: {"slimefun": "IE_OBSIDIAN_GENERATOR", "amount": 1}
+        cost: [{"material": "DIAMOND_BLOCK", "amount": 2}, {"material": "IRON_BLOCK", "amount": 8}, {"material": "NETHERITE_INGOT", "amount": 1}]
+        personalLimit: 1
+      - id: albion.ie-extreme-freezer.v1
+        result: {"slimefun": "IE_EXTREME_FREEZER", "amount": 1}
+        cost: [{"material": "DIAMOND_BLOCK", "amount": 2}, {"material": "IRON_BLOCK", "amount": 8}, {"material": "NETHERITE_INGOT", "amount": 1}]
+        personalLimit: 1
+      - id: albion.ie-singularity-constructor.v1
+        result: {"slimefun": "IE_SINGULARITY_CONSTRUCTOR", "amount": 1}
+        cost: [{"material": "DIAMOND_BLOCK", "amount": 2}, {"material": "IRON_BLOCK", "amount": 8}, {"material": "NETHERITE_INGOT", "amount": 1}]
+        personalLimit: 1
+      - id: albion.ie-resource-synthesizer.v1
+        result: {"slimefun": "IE_RESOURCE_SYNTHESIZER", "amount": 1}
+        cost: [{"material": "DIAMOND_BLOCK", "amount": 8}, {"material": "IRON_BLOCK", "amount": 32}, {"material": "NETHERITE_INGOT", "amount": 4}]
+        personalLimit: 1
+      - id: albion.ie-geo-quarry.v1
+        result: {"slimefun": "IE_GEO_QUARRY", "amount": 1}
+        cost: [{"material": "DIAMOND_BLOCK", "amount": 8}, {"material": "IRON_BLOCK", "amount": 32}, {"material": "NETHERITE_INGOT", "amount": 4}]
+        personalLimit: 1
+      - id: albion.ie-storage-forge.v1
+        result: {"slimefun": "IE_STORAGE_FORGE", "amount": 1}
+        cost: [{"material": "DIAMOND_BLOCK", "amount": 2}, {"material": "IRON_BLOCK", "amount": 8}, {"material": "NETHERITE_INGOT", "amount": 1}]
+        personalLimit: 1
+      - id: albion.ie-infinity-workbench.v1
+        result: {"slimefun": "IE_INFINITY_WORKBENCH", "amount": 1}
+        cost: [{"material": "DIAMOND_BLOCK", "amount": 8}, {"material": "IRON_BLOCK", "amount": 32}, {"material": "NETHERITE_INGOT", "amount": 4}]
+        personalLimit: 1
+  - name: "Artificer - Infinity Power"
+    requiresPlugins: [InfinityExpansion2]
+    offers:
+      - id: albion.ie-hydro-generator.v1
+        result: {"slimefun": "IE_HYDRO_GENERATOR", "amount": 1}
+        cost: [{"material": "DIAMOND_BLOCK", "amount": 4}, {"material": "NETHERITE_INGOT", "amount": 2}, {"material": "NETHER_STAR", "amount": 1}]
+        personalLimit: 1
+      - id: albion.ie-hydro-generator-2.v1
+        result: {"slimefun": "IE_HYDRO_GENERATOR_2", "amount": 1}
+        cost: [{"material": "DIAMOND_BLOCK", "amount": 8}, {"material": "NETHERITE_INGOT", "amount": 4}, {"material": "NETHER_STAR", "amount": 2}]
+        personalLimit: 1
+      - id: albion.ie-geothermal-generator.v1
+        result: {"slimefun": "IE_GEOTHERMAL_GENERATOR", "amount": 1}
+        cost: [{"material": "DIAMOND_BLOCK", "amount": 4}, {"material": "NETHERITE_INGOT", "amount": 2}, {"material": "NETHER_STAR", "amount": 1}]
+        personalLimit: 1
+      - id: albion.ie-geothermal-generator-2.v1
+        result: {"slimefun": "IE_GEOTHERMAL_GENERATOR_2", "amount": 1}
+        cost: [{"material": "DIAMOND_BLOCK", "amount": 8}, {"material": "NETHERITE_INGOT", "amount": 4}, {"material": "NETHER_STAR", "amount": 2}]
+        personalLimit: 1
+      - id: albion.ie-solar-panel.v1
+        result: {"slimefun": "IE_SOLAR_PANEL", "amount": 1}
+        cost: [{"material": "DIAMOND_BLOCK", "amount": 4}, {"material": "NETHERITE_INGOT", "amount": 2}, {"material": "NETHER_STAR", "amount": 1}]
+        personalLimit: 1
+      - id: albion.ie-solar-panel-2.v1
+        result: {"slimefun": "IE_SOLAR_PANEL_2", "amount": 1}
+        cost: [{"material": "DIAMOND_BLOCK", "amount": 8}, {"material": "NETHERITE_INGOT", "amount": 4}, {"material": "NETHER_STAR", "amount": 2}]
+        personalLimit: 1
+      - id: albion.ie-solar-panel-3.v1
+        result: {"slimefun": "IE_SOLAR_PANEL_3", "amount": 1}
+        cost: [{"material": "DIAMOND_BLOCK", "amount": 16}, {"material": "NETHERITE_INGOT", "amount": 8}, {"material": "NETHER_STAR", "amount": 4}]
+        personalLimit: 1
+      - id: albion.ie-void-panel.v1
+        result: {"slimefun": "IE_VOID_PANEL", "amount": 1}
+        cost: [{"material": "DIAMOND_BLOCK", "amount": 24}, {"material": "NETHERITE_INGOT", "amount": 12}, {"material": "NETHER_STAR", "amount": 6}]
+        personalLimit: 1
+      - id: albion.ie-infinity-panel.v1
+        result: {"slimefun": "IE_INFINITY_PANEL", "amount": 1}
+        cost: [{"material": "DIAMOND_BLOCK", "amount": 32}, {"material": "NETHERITE_INGOT", "amount": 16}, {"material": "NETHER_STAR", "amount": 8}, {"slimefun": "IE_VOID_INGOT", "amount": 16}]
+        personalLimit: 1
+      - id: albion.ie-void-capacitor.v1
+        result: {"slimefun": "IE_VOID_CAPACITOR", "amount": 1}
+        cost: [{"material": "DIAMOND_BLOCK", "amount": 16}, {"material": "NETHERITE_INGOT", "amount": 8}, {"material": "NETHER_STAR", "amount": 4}]
+        personalLimit: 1
+      - id: albion.ie-infinity-capacitor.v1
+        result: {"slimefun": "IE_INFINITY_CAPACITOR", "amount": 1}
+        cost: [{"material": "DIAMOND_BLOCK", "amount": 32}, {"material": "NETHERITE_INGOT", "amount": 16}, {"material": "NETHER_STAR", "amount": 8}]
+        personalLimit: 1
+  - name: "Xur - Infinity Armor"
+    requiresPlugins: [InfinityExpansion2]
+    offers:
+      - id: albion.ie-infinity-helmet.v1
+        result: {"slimefun": "IE_INFINITY_HELMET", "amount": 1}
+        cost: [{"material": "DIAMOND_BLOCK", "amount": 16}, {"material": "NETHERITE_INGOT", "amount": 8}, {"material": "NETHER_STAR", "amount": 4}]
+        personalLimit: 1
+      - id: albion.ie-infinity-chestplate.v1
+        result: {"slimefun": "IE_INFINITY_CHESTPLATE", "amount": 1}
+        cost: [{"material": "DIAMOND_BLOCK", "amount": 32}, {"material": "NETHERITE_INGOT", "amount": 16}, {"material": "NETHER_STAR", "amount": 8}]
+        personalLimit: 1
+      - id: albion.ie-infinity-leggings.v1
+        result: {"slimefun": "IE_INFINITY_LEGGINGS", "amount": 1}
+        cost: [{"material": "DIAMOND_BLOCK", "amount": 24}, {"material": "NETHERITE_INGOT", "amount": 12}, {"material": "NETHER_STAR", "amount": 6}]
+        personalLimit: 1
+      - id: albion.ie-infinity-boots.v1
+        result: {"slimefun": "IE_INFINITY_BOOTS", "amount": 1}
+        cost: [{"material": "DIAMOND_BLOCK", "amount": 16}, {"material": "NETHERITE_INGOT", "amount": 8}, {"material": "NETHER_STAR", "amount": 4}]
+        personalLimit: 1
+  - name: "Xur - Infinity Tools"
+    requiresPlugins: [InfinityExpansion2]
+    offers:
+      - id: albion.ie-infinity-pickaxe.v1
+        result: {"slimefun": "IE_INFINITY_PICKAXE", "amount": 1}
+        cost: [{"material": "DIAMOND_BLOCK", "amount": 24}, {"material": "NETHERITE_INGOT", "amount": 12}, {"material": "NETHER_STAR", "amount": 4}]
+        personalLimit: 1
+      - id: albion.ie-infinity-axe.v1
+        result: {"slimefun": "IE_INFINITY_AXE", "amount": 1}
+        cost: [{"material": "DIAMOND_BLOCK", "amount": 24}, {"material": "NETHERITE_INGOT", "amount": 12}, {"material": "NETHER_STAR", "amount": 4}]
+        personalLimit: 1
+      - id: albion.ie-infinity-shovel.v1
+        result: {"slimefun": "IE_INFINITY_SHOVEL", "amount": 1}
+        cost: [{"material": "DIAMOND_BLOCK", "amount": 24}, {"material": "NETHERITE_INGOT", "amount": 12}, {"material": "NETHER_STAR", "amount": 4}]
+        personalLimit: 1
+      - id: albion.ie-infinity-hoe.v1
+        result: {"slimefun": "IE_INFINITY_HOE", "amount": 1}
+        cost: [{"material": "DIAMOND_BLOCK", "amount": 24}, {"material": "NETHERITE_INGOT", "amount": 12}, {"material": "NETHER_STAR", "amount": 4}]
+        personalLimit: 1
+      - id: albion.ie-infinity-shield.v1
+        result: {"slimefun": "IE_INFINITY_SHIELD", "amount": 1}
+        cost: [{"material": "DIAMOND_BLOCK", "amount": 24}, {"material": "NETHERITE_INGOT", "amount": 12}, {"material": "NETHER_STAR", "amount": 4}]
+        personalLimit: 1
+  - name: "Artificer - Infinity Storage"
+    requiresPlugins: [InfinityExpansion2]
+    offers:
+      - id: albion.ie-storage-unit-1.v1
+        result: {"slimefun": "IE_STORAGE_UNIT_1", "amount": 1}
+        cost: [{"material": "DIAMOND_BLOCK", "amount": 2}, {"material": "IRON_BLOCK", "amount": 4}, {"material": "NETHERITE_INGOT", "amount": 1}]
+        personalLimit: 1
+      - id: albion.ie-storage-unit-2.v1
+        result: {"slimefun": "IE_STORAGE_UNIT_2", "amount": 1}
+        cost: [{"material": "DIAMOND_BLOCK", "amount": 4}, {"material": "IRON_BLOCK", "amount": 8}, {"material": "NETHERITE_INGOT", "amount": 2}]
+        personalLimit: 1
+      - id: albion.ie-storage-unit-3.v1
+        result: {"slimefun": "IE_STORAGE_UNIT_3", "amount": 1}
+        cost: [{"material": "DIAMOND_BLOCK", "amount": 6}, {"material": "IRON_BLOCK", "amount": 12}, {"material": "NETHERITE_INGOT", "amount": 3}]
+        personalLimit: 1
+      - id: albion.ie-storage-unit-4.v1
+        result: {"slimefun": "IE_STORAGE_UNIT_4", "amount": 1}
+        cost: [{"material": "DIAMOND_BLOCK", "amount": 8}, {"material": "IRON_BLOCK", "amount": 16}, {"material": "NETHERITE_INGOT", "amount": 4}]
+        personalLimit: 1
+      - id: albion.ie-storage-unit-5.v1
+        result: {"slimefun": "IE_STORAGE_UNIT_5", "amount": 1}
+        cost: [{"material": "DIAMOND_BLOCK", "amount": 10}, {"material": "IRON_BLOCK", "amount": 20}, {"material": "NETHERITE_INGOT", "amount": 5}]
+        personalLimit: 1
+      - id: albion.ie-storage-unit-6.v1
+        result: {"slimefun": "IE_STORAGE_UNIT_6", "amount": 1}
+        cost: [{"material": "DIAMOND_BLOCK", "amount": 16}, {"material": "IRON_BLOCK", "amount": 32}, {"material": "NETHERITE_INGOT", "amount": 8}]
+        personalLimit: 1
