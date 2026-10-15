@@ -21,7 +21,7 @@ jobs:
         run: |
           set -euo pipefail
           python3 - <<'PY'
-          import hashlib, json, os, subprocess, pathlib, zipfile
+          import base64, hashlib, json, os, re, subprocess, pathlib, zipfile
           REPO='wickidcow/SF_MagicExpansion'
           SOURCE='1876e699b4557ab144bc36c4d8b6682aeb93e17d'
           MERGE='481e6c090baa28fc8a4b3a44b6155d236f28bf33'
@@ -35,11 +35,10 @@ jobs:
           pr=api('pulls/20')
           assert pr['merged'] and pr['head']['sha']==SOURCE and pr['merge_commit_sha']==MERGE
           assert api('git/ref/heads/master')['object']['sha']==MERGE, 'Default branch moved; re-evaluate before publication'
-          source_tree=api(f'git/commits/{SOURCE}')['tree']['sha']
-          assert api(f'git/commits/{MERGE}')['tree']['sha']==source_tree
+          assert api(f'git/commits/{MERGE}')['tree']['sha']==api(f'git/commits/{SOURCE}')['tree']['sha']
           for run_id in (38675709884,38675710097,38675710136,38675710068):
               run=api(f'actions/runs/{run_id}')
-              assert run['head_sha']==SOURCE and run['status']=='completed' and run['conclusion']=='success', run
+              assert run['head_sha']==SOURCE and run['status']=='completed' and run['conclusion']=='success'
           old=api('releases/tags/v1.1.13')
           old_assets={a['id']:(a['name'],a['digest'],a['size']) for a in old['assets']}
           assert old['id']==413342162 and old_assets[642331738][1]=='sha256:674aeac4dbf5ce09969131dbfdbadd1e037eebfed74588f98f135902ab81adde'
@@ -50,27 +49,22 @@ jobs:
           assert hashlib.sha256(artifact).hexdigest()==SHA
           pathlib.Path(NAME).write_bytes(artifact)
           with zipfile.ZipFile(NAME) as jar:
-              assert jar.testzip() is None and "version: '1.1.14'" in jar.read('plugin.yml').decode()
+              assert jar.testzip() is None
+              version=re.search(r'''(?m)^version:\s*['"]?([^'"\s]+)''',jar.read('plugin.yml').decode())
+              assert version and version.group(1)=='1.1.14'
               assert not any(n.startswith(('audit/','org/junit/','org/mockbukkit/')) for n in jar.namelist())
               assert all(int.from_bytes(jar.read(n)[6:8],'big')<=65 for n in jar.namelist() if n.endswith('.class') and not n.startswith('META-INF/versions/'))
-          notes='''# MagicExpansion 1.1.14 — Black Market item offers fixed
+          source_notes=api(f'contents/docs/releases/1.1.14.md?ref={SOURCE}')
+          notes=base64.b64decode(source_notes['content']).decode()
+          notes+='''
+          ## Final release verification
+          All checks completed at the versioned source: 150 tests / 15 suites / 44 Black Market tests, zero failures/errors/skips; 253 native offer cases passed with zero blocked synthetic manager users. The exact JAR was tested with all 45 addons against the published Slimefun 4.1.74 core on Paper 1.21.11 build 132, Paper 26.2 build 134, Paper 26.3 build 190 and experimental Purpur 26.3 build 2646. Each target completed 210 reveals and trades, rejected insufficient payments and 210 immediate duplicate purchases, then rejected 210 more duplicate purchases in a separate JVM after restart. Each also passed the deliberately refused-receipt refund/isolation check. All ordinary console logs passed the strict error/watchdog audit. These are actual native shop handlers/inventories with synthetic player identities, not network-client or power-loss tests.
 
-          Fixes normal Slimefun rewards and payment items being rejected with `Invalid or unreadable Black Market item`, which could block players even while status reported AVAILABLE and cycle MATCH. The fix normalizes complete item data through the public Bukkit serializer instead of retaining a template subclass. Existing item IDs, metadata, amounts, offers, four-hour rotation, purchase limits and receipt-before-reward ordering are preserved. No history deletion, forced refresh or automatic unlock.
-
-          ## Verified before publication
-          - 150 tests in 15 suites, including 44 Black Market tests: zero failures/errors/skips.
-          - All 253 native real-pool/generated-offer checks passed; 20/20 synthetic manager users received offers without being blocked.
-          - Full 45-addon tests against the exact published Slimefun 4.1.74 core on Paper 1.21.11 build 132, Paper 26.2 build 134, Paper 26.3 build 190 and experimental Purpur 26.3 build 2646.
-          - Each target completed 210 reveals and trades/claims, rejected insufficient payments and 210 immediate duplicates, preserved receipts through a separate-JVM restart and rejected 210 further duplicates. A deliberately refused receipt returned the exact payment without issuing a reward. All normal logs passed the error/watchdog audit.
-          - The actual native shop handlers and inventories were tested with synthetic player identities/menu handoff; this is not certification of network clients, every third-party interaction, historical corrupt file, full-inventory case or power-loss transaction.
-
-          The published JAR is the exact tested artifact, not a rebuild. Only one production class and version/POM metadata differ from 1.1.13. No test plugins are distributed. Separate stable-read PR #19 is not included.
-
-          ## Install
-          Stop normally, back up the server and the complete `plugins/magicexpansion/` folder, and replace the old MagicExpansion JAR with this one. Keep `black_market/cycle.yml`, every player record and all configs. Start normally, never with `/reload`. The restart removes the old runtime-only player lock; preserved valid records use the fixed item path. Run `/magicexpansion blackmarket status`, open the market, reveal an offer and complete a trade. A genuinely malformed old ledger or external cycle mismatch still needs investigation, not deletion.
+          This publication promotes the exact previously tested artifact; it does not rebuild it. Only one existing production class and version/POM metadata differ from 1.1.13. No test plugins or separate stable-read PR #19 are included. No production server was changed.
 
           Source: `1876e699b4557ab144bc36c4d8b6682aeb93e17d`
           JAR SHA-256: `e3552fc5d54dc282194428d593d08c939f71172182075667ac87d10571b192dd`
+          Verified r138 addon ZIP SHA-256: `3a5473e2dd994558045fa1c8854f6a2547b87a93fa294fb721f14b305a937468`
           PR and independent artifact audit: https://github.com/wickidcow/SF_MagicExpansion/pull/20
           Source/API CI: https://github.com/wickidcow/SF_MagicExpansion/actions/runs/38675709884
           Published-core full-stack gate: https://github.com/wickidcow/SF_MagicExpansion/actions/runs/38675710068
