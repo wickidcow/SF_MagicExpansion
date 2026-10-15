@@ -70,7 +70,7 @@ jobs:
           with zipfile.ZipFile(candidate) as jar:
               descriptor = jar.read('plugin.yml').decode()
               version = re.search(r'''(?m)^version:\s*['"]?([^'"\s]+)''', descriptor).group(1)
-              assert version == '1.1.14' and candidate.name == f'SF_MagicExpansion{version}.jar'
+              assert version == '1.1.15' and candidate.name == f'SF_MagicExpansion{version}.jar'
               assert not any(n.startswith(('audit/', 'org/junit/', 'org/mockbukkit/')) for n in jar.namelist())
           replaced = 0
           for addon in manifest['addons']:
@@ -91,9 +91,9 @@ jobs:
           data['SHA256SUMS.txt'] = ''.join(f'{digest(data[n])}  {n}\n' for n in sorted(data) if n.endswith('.jar')).encode()
           data['COMPATIBILITY.txt'] = ('Slimefun Legacy 4.1.74 addon bundle revision 138\n'
               'Minecraft 1.21.11 through 26.3; Java 21 bytecode.\n'
-              'Only MagicExpansion changed from r137: 1.1.13 -> 1.1.14.\n'
+              'Only MagicExpansion changed from r137: 1.1.13 -> 1.1.15.\n'
               'All 44 other addon JARs are byte-identical to r137.\n'
-              'Black Market: full-data native item serialization fixes rejected template rewards/payments.\n'
+              'MagicExpansion: automatic Slimefun Tick Monitor sampling; Black Market behavior remains unchanged.\n'
               'Preserve all configs, cycle markers, player offers and purchase receipts.\n'
               'Stop and back up before replacing the older JAR; start normally, never /reload.\n'
               'Install only the addons used by your server. No test plugins are included.\n'
