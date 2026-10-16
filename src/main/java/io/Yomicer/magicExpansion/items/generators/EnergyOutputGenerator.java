@@ -7,6 +7,7 @@ import io.Yomicer.magicExpansion.core.MagicExpansionItems;
 import io.Yomicer.magicExpansion.items.abstracts.MenuBlock;
 import io.Yomicer.magicExpansion.utils.ColorGradient;
 import io.Yomicer.magicExpansion.utils.machineLore.ChargeLore;
+import io.Yomicer.magicExpansion.utils.energy.PowerRelayMath;
 import io.github.thebusybiscuit.slimefun4.api.items.ItemGroup;
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItemStack;
 import io.github.thebusybiscuit.slimefun4.api.recipes.RecipeType;
@@ -193,29 +194,25 @@ public class EnergyOutputGenerator extends MenuBlock implements EnergyNetProvide
         long nowPower = pdc.get(NowPower, PersistentDataType.LONG);
         long maxPower = pdc.get(MaxPower, PersistentDataType.LONG);
 
-        int machineCharge = getCharge(l);
-        int machineMaxCharge = getCapacity();
+        if (maxPower <= 0L || nowPower < 0L) {
+            return 0;
+        }
 
-        long newNowPower;
-        if (nowPower <= 0) {
-            if(null == menu.getItemInSlot(25)) {
+        if (nowPower == 0L) {
+            if (menu.getItemInSlot(25) == null) {
                 menu.replaceExistingItem(19, null);
                 menu.replaceExistingItem(25, PowerCard);
-            }else{
             }
+            return 0;
         }
-        long availablePower = nowPower;
-        int spaceLeftInMachine = machineMaxCharge - machineCharge;
 
-        if (spaceLeftInMachine <= 0) {
-            newNowPower = nowPower;
-        } else if (availablePower > spaceLeftInMachine) {
-            gen = spaceLeftInMachine;
-            newNowPower = nowPower - gen;
-        } else {
-            gen = (int) availablePower;
-            newNowPower = 0;
-        }
+        int machineCharge = getCharge(l);
+        int machineMaxCharge = getCapacity();
+        int spaceLeftInMachine = Math.max(0, machineMaxCharge - machineCharge);
+
+        PowerRelayMath.Transfer transfer = PowerRelayMath.drain(nowPower, spaceLeftInMachine);
+        gen = transfer.transferred();
+        long newNowPower = transfer.storedEnergy();
 
         int num = 3;
         if(SlimefunUtils.isItemSimilar(PowerCard, MagicExpansionItems.POWER_CARD, false,true,true)){
