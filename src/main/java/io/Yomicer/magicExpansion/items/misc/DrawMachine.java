@@ -687,7 +687,7 @@ public class DrawMachine extends SlimefunItem implements EnergyNetComponent {
             player.sendMessage(ChatColor.GREEN + "Withdrew " + actualTake + " template items!");
         } else {
             // 部分取出
-            int actuallyTaken = actualTake - leftover.get(0).getAmount();
+            int actuallyTaken = actualTake - totalLeftover(leftover);
             if (actuallyTaken > 0) {
                 setStoredTemplateAmount(block, storedAmount - actuallyTaken);
                 player.sendMessage(ChatColor.YELLOW + "Withdrew " + actuallyTaken + " template items before the inventory became full!");
@@ -720,7 +720,7 @@ public class DrawMachine extends SlimefunItem implements EnergyNetComponent {
                 storedAmount -= thisTake;
                 playerCanTake = getMaxCanTake(player, templateItem);
             } else {
-                int actuallyTaken = thisTake - leftover.get(0).getAmount();
+                int actuallyTaken = thisTake - totalLeftover(leftover);
                 if (actuallyTaken > 0) {
                     totalTaken += actuallyTaken;
                     storedAmount -= actuallyTaken;
@@ -780,14 +780,24 @@ public class DrawMachine extends SlimefunItem implements EnergyNetComponent {
     // 计算玩家背包能容纳指定物品的最大数量
     private int getMaxCanTake(Player player, ItemStack item) {
         int totalSpace = 0;
-        for (ItemStack stack : player.getInventory().getContents()) {
+        for (ItemStack stack : player.getInventory().getStorageContents()) {
             if (stack == null || stack.getType() == Material.AIR) {
                 totalSpace += item.getMaxStackSize();
             } else if (stack.isSimilar(item)) {
-                totalSpace += stack.getMaxStackSize() - stack.getAmount();
+                totalSpace += Math.max(0, stack.getMaxStackSize() - stack.getAmount());
             }
         }
         return totalSpace;
+    }
+
+    private int totalLeftover(Map<Integer, ItemStack> leftovers) {
+        int total = 0;
+        for (ItemStack stack : leftovers.values()) {
+            if (stack != null && !stack.getType().isAir()) {
+                total += stack.getAmount();
+            }
+        }
+        return total;
     }
 
     private void handleSettingsSlotClick(Player player, int slot, ItemStack item, ClickAction action) {
