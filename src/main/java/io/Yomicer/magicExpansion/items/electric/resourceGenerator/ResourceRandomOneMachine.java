@@ -142,7 +142,7 @@ public class ResourceRandomOneMachine extends AbstractElectricResourceMachine {
 
     @Override
     public boolean isSynchronized() {
-        return false;
+        return true;
     }
 
     private static void updateInfoStack(BlockMenu menu) {
