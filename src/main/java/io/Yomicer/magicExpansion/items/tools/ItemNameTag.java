@@ -190,6 +190,8 @@ public class ItemNameTag extends SimpleSlimefunItem<ItemUseHandler> implements L
             player.sendMessage(ColorGradient.getGradientNameVer2("Item renamed!"));
             player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1.0f, 1.5f);
         });
+    }
+
     private void onEntityInteract(
             PlayerInteractEntityEvent event, ItemStack item, boolean offHand) {
         if (offHand || event.isCancelled() || event.getRightClicked() instanceof Player) {
@@ -219,7 +221,4 @@ public class ItemNameTag extends SimpleSlimefunItem<ItemUseHandler> implements L
         player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1.0f, 1.5f);
         player.sendMessage(ColorGradient.getGradientNameVer2("Named the creature successfully!"));
     }
-
-    }
-
 }
