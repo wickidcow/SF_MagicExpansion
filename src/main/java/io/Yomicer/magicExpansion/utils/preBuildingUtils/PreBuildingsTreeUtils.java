@@ -7,6 +7,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockState;
 import org.bukkit.entity.Player;
 import org.bukkit.util.BlockIterator;
 
@@ -14,7 +15,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class PreBuildingsTreeUtils {
 
@@ -23,125 +27,155 @@ public class PreBuildingsTreeUtils {
     /**
      * 粘贴地图到玩家注视的目标方块上方
      */
-    public static boolean pasteMap(Player player, String fileName, String originName, String replaceName) {
-        // 从 resources/buildings 文件夹中读取 JSON 文件
-        InputStream inputStream = PreBuildingsTreeUtils.class.getClassLoader().getResourceAsStream("buildings/" + fileName + ".json");
+    public static boolean pasteMap(
+            Player player, String fileName, String originName, String replaceName) {
+        InputStream inputStream = PreBuildingsTreeUtils.class.getClassLoader()
+                .getResourceAsStream("buildings/" + fileName + ".json");
 
         if (inputStream == null) {
             player.sendMessage("§cThis prefabricated structure is not configured correctly!");
-            return false; // 文件不存在,返回 false
+            return false;
         }
 
-        // 获取玩家注视的目标方块
         Block targetBlock = getTargetBlock(player);
         if (targetBlock == null) {
-            player.sendMessage("§cyou requires!");
-            return false; // 没有目标方块,返回 false
+            player.sendMessage("§cYou need to look at a block!");
+            return false;
         }
 
-        // 粘贴位置为目标方块上方 1 格
         Location pasteLocation = targetBlock.getLocation().add(0, 1, 0);
 
         try (InputStreamReader reader = new InputStreamReader(inputStream)) {
             Type listType = new TypeToken<List<BlockData>>() {}.getType();
             List<BlockData> blocks = gson.fromJson(reader, listType);
+            if (blocks == null || blocks.isEmpty()) {
+                player.sendMessage("§cThe prefabricated structure file is empty or invalid.");
+                return false;
+            }
 
-            if (!(originName == null) && !(replaceName == null)) {
-                // 替换 "OAK" 为 "CHERRY"
+            if (originName != null && replaceName != null) {
                 for (BlockData blockData : blocks) {
-                    if (blockData.type != null && blockData.type.contains(originName)) {
+                    if (blockData != null
+                            && blockData.type != null
+                            && blockData.type.contains(originName)) {
                         blockData.type = blockData.type.replace(originName, replaceName);
                     }
                 }
             }
 
-            // 检查预期空间是否有权限冲突&&空间是否充足
-            if (hasPermissionConflicts(blocks, pasteLocation, player.getWorld(),player)) {
-                player.sendMessage("§cPart of the area is protected or too small. Choose another location.");
-                return false; // 存在冲突,返回 false
+            List<PasteTarget> targets = prepareTargets(blocks, pasteLocation, player);
+            if (targets == null) {
+                return false;
             }
 
-//            // 检查是否有冲突
-//            if (hasConflicts(blocks, pasteLocation, player.getWorld())) {
-//                player.sendMessage("§cThere is not enough room here. Choose another location.");
-//                return false; // 存在冲突,返回 false
-//            }
-
-            // 如果没有冲突,则开始粘贴
-            for (BlockData blockData : blocks) {
-                Location location = new Location(
-                        player.getWorld(),
-                        pasteLocation.getBlockX() + blockData.x,
-                        pasteLocation.getBlockY() + blockData.y,
-                        pasteLocation.getBlockZ() + blockData.z
-                );
-
-                try {
-                    if (blockData.blockState != null && !blockData.blockState.isEmpty()) {
-                        location.getBlock().setBlockData(Bukkit.createBlockData(blockData.blockState));
-                    } else {
-                        location.getBlock().setType(Material.valueOf(blockData.type));
-                    }
-                } catch (IllegalArgumentException e) {
-                    location.getBlock().setType(Material.GLASS);
+            List<PasteTarget> changed = new ArrayList<>();
+            try {
+                for (PasteTarget target : targets) {
+                    target.block().setBlockData(target.desired(), false);
+                    changed.add(target);
                 }
+            } catch (RuntimeException | LinkageError failure) {
+                rollback(changed);
+                player.sendMessage("§cThe structure could not be placed safely; all changes were rolled back.");
+                return false;
             }
 
-
-            player.sendMessage("§aPrefabricated structure placement started!");
-            return true; // 成功粘贴,返回 true
-        } catch (IOException e) {
-            player.sendMessage("§cFailed to create: " + e.getMessage());
-            e.printStackTrace();
-            return false; // 发生异常,返回 false
+            player.sendMessage("§aPrefabricated structure placed successfully!");
+            return true;
+        } catch (IOException | RuntimeException failure) {
+            player.sendMessage("§cFailed to create structure: " + failure.getMessage());
+            return false;
         }
     }
+
+    private static List<PasteTarget> prepareTargets(
+            List<BlockData> blocks, Location pasteLocation, Player player) {
+        org.bukkit.World world = pasteLocation.getWorld();
+        if (world == null) {
+            player.sendMessage("§cThe target world is unavailable.");
+            return null;
+        }
+
+        List<PasteTarget> targets = new ArrayList<>(blocks.size());
+        Set<String> coordinates = new HashSet<>();
+
+        for (BlockData blockData : blocks) {
+            if (blockData == null) {
+                player.sendMessage("§cThe structure file contains an invalid block entry.");
+                return null;
+            }
+
+            int x = pasteLocation.getBlockX() + blockData.x;
+            int y = pasteLocation.getBlockY() + blockData.y;
+            int z = pasteLocation.getBlockZ() + blockData.z;
+
+            if (y < world.getMinHeight() || y >= world.getMaxHeight()) {
+                player.sendMessage("§cPart of this structure would be outside the world height limit.");
+                return null;
+            }
+
+            String coordinateKey = x + ":" + y + ":" + z;
+            if (!coordinates.add(coordinateKey)) {
+                player.sendMessage("§cThe structure file contains duplicate block coordinates.");
+                return null;
+            }
+
+            if (!world.isChunkLoaded(x >> 4, z >> 4)) {
+                player.sendMessage("§cLoad the entire target area before placing this structure.");
+                return null;
+            }
+
+            Location location = new Location(world, x, y, z);
+            if (!ItemPermissionUtils.hasPermissionPoint(player, location)) {
+                player.sendMessage("§cPart of the target area is protected.");
+                return null;
+            }
+
+            Block block = location.getBlock();
+            if (!block.getType().isAir()) {
+                player.sendMessage("§cThere is not enough empty space for this structure.");
+                return null;
+            }
+
+            org.bukkit.block.data.BlockData desired;
+            try {
+                if (blockData.blockState != null && !blockData.blockState.isEmpty()) {
+                    desired = Bukkit.createBlockData(blockData.blockState);
+                } else {
+                    Material material = Material.valueOf(blockData.type);
+                    if (!material.isBlock()) {
+                        throw new IllegalArgumentException(material + " is not a block");
+                    }
+                    desired = material.createBlockData();
+                }
+            } catch (RuntimeException invalidState) {
+                // Preserve the historical fallback, but decide it before any world mutation.
+                desired = Material.GLASS.createBlockData();
+            }
+
+            targets.add(new PasteTarget(block, block.getBlockData().clone(), desired));
+        }
+
+        return targets;
+    }
+
+    private static void rollback(List<PasteTarget> changed) {
+        for (int i = changed.size() - 1; i >= 0; i--) {
+            PasteTarget target = changed.get(i);
+            try {
+                target.block().setBlockData(target.original(), false);
+            } catch (RuntimeException | LinkageError ignored) {
+            }
+        }
+    }
+
+    private record PasteTarget(
+            Block block,
+            org.bukkit.block.data.BlockData original,
+            org.bukkit.block.data.BlockData desired) {}
 
     public static boolean pasteMap(Player player, String fileName) {
         return pasteMap(player, fileName, null, null);
-    }
-
-    /**
-     * 检查是否有权限冲突
-     */
-    private static boolean hasPermissionConflicts(List<BlockData> blocks, Location pasteLocation, org.bukkit.World world, Player p) {
-        for (BlockData blockData : blocks) {
-            Location location = new Location(
-                    world,
-                    pasteLocation.getBlockX() + blockData.x,
-                    pasteLocation.getBlockY() + blockData.y,
-                    pasteLocation.getBlockZ() + blockData.z
-            );
-            if(!ItemPermissionUtils.hasPermissionPoint(p,location)){
-                return true; //发现冲突
-            }
-
-            Block block = location.getBlock();
-            if (!block.getType().isAir()) {
-                return true; // 发现冲突
-            }
-        }
-        return false; // 没有冲突
-    }
-
-    /**
-     * 检查是否有冲突
-     */
-    private static boolean hasConflicts(List<BlockData> blocks, Location pasteLocation, org.bukkit.World world) {
-        for (BlockData blockData : blocks) {
-            Location location = new Location(
-                    world,
-                    pasteLocation.getBlockX() + blockData.x,
-                    pasteLocation.getBlockY() + blockData.y,
-                    pasteLocation.getBlockZ() + blockData.z
-            );
-
-            Block block = location.getBlock();
-            if (!block.getType().isAir()) {
-                return true; // 发现冲突
-            }
-        }
-        return false; // 没有冲突
     }
 
     /**
