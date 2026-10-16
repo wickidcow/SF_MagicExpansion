@@ -18,6 +18,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.Sound;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
@@ -97,21 +98,24 @@ public class ItemNameTag extends SimpleSlimefunItem<ItemUseHandler> implements L
                     return;
                 }
 
-                // 消耗 1 个命名签
-                if (nameTag.getAmount() > 1) {
-                    nameTag.setAmount(nameTag.getAmount() - 1);
-                } else {
-                    player.getInventory().setItemInMainHand(new ItemStack(Material.AIR));
+                // Apply first; only consume the tag after the destination accepted the name.
+                ItemMeta offMeta = offHand.getItemMeta();
+                if (offMeta == null) {
+                    player.sendMessage(ColorGradient.getGradientNameVer2(
+                            "The off-hand item cannot accept a custom name."));
+                    return;
                 }
 
-                // 复制 displayName 到副手(保留原有 NBT,只改名字)
-                ItemMeta offMeta = offHand.getItemMeta();
-                if (offMeta != null) {
-                    offMeta.setDisplayName(displayName); // 直接复制,包括 § 颜色
-                    offHand.setItemMeta(offMeta);
-                    player.sendMessage(ColorGradient.getGradientNameVer2("Copied the name to the off-hand item!"));
-                    player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1.0f, 1.5f);
+                offMeta.setDisplayName(displayName);
+                offHand.setItemMeta(offMeta);
+
+                if (player.getGameMode() != GameMode.CREATIVE) {
+                    ItemUtils.consumeItem(nameTag, false);
                 }
+
+                player.sendMessage(ColorGradient.getGradientNameVer2(
+                        "Copied the name to the off-hand item!"));
+                player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1.0f, 1.5f);
             }
         };
     }
@@ -195,7 +199,10 @@ public class ItemNameTag extends SimpleSlimefunItem<ItemUseHandler> implements L
 
     private void onEntityInteract(
             PlayerInteractEntityEvent event, ItemStack item, boolean offHand) {
-        if (offHand || event.isCancelled() || event.getRightClicked() instanceof Player) {
+        if (offHand
+                || event.isCancelled()
+                || !(event.getRightClicked() instanceof LivingEntity)
+                || event.getRightClicked() instanceof Player) {
             return;
         }
 
