@@ -16,7 +16,9 @@ import io.github.thebusybiscuit.slimefun4.api.items.ItemGroup;
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItemStack;
 import io.github.thebusybiscuit.slimefun4.api.recipes.RecipeType;
 import io.github.thebusybiscuit.slimefun4.core.handlers.ItemUseHandler;
+import io.github.thebusybiscuit.slimefun4.implementation.Slimefun;
 import io.github.thebusybiscuit.slimefun4.implementation.items.SimpleSlimefunItem;
+import io.github.thebusybiscuit.slimefun4.libraries.dough.protection.Interaction;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -56,20 +58,33 @@ public class NewYearsDayFireworkYuanDan extends SimpleSlimefunItem<ItemUseHandle
             World world = player.getWorld();
 
             if (!e.getClickedBlock().isEmpty()){
-                ItemStack itemInHand = player.getInventory().getItemInMainHand();
-                // 检查玩家手上是否有物品
                 if (e.getHand()!= HAND) {
                     player.sendMessage(ColorGradient.getGradientName("Hold this item in your main hand to use it."));
                     return;
                 }
-                // 减少手上的物品数量
-                if (itemInHand.getAmount() > 1) {
-                    itemInHand.setAmount(itemInHand.getAmount() - 1);
-                } else {
-                    player.getInventory().setItemInMainHand(null); // 如果数量为 1,则直接移除
+
+                Block clicked = e.getClickedBlock().get();
+                if (!Slimefun.getProtectionManager().hasPermission(
+                        player, clicked.getLocation(), Interaction.INTERACT_BLOCK)) {
+                    player.sendMessage(ColorGradient.getGradientName(
+                            "You do not have permission to launch this firework here."));
+                    return;
                 }
 
-                Location blockLoc = e.getClickedBlock().get().getLocation().clone().add(0,1,0);
+                ItemStack itemInHand = player.getInventory().getItemInMainHand();
+                if (itemInHand == null || itemInHand.getType().isAir()) {
+                    return;
+                }
+
+                if (player.getGameMode() != GameMode.CREATIVE) {
+                    if (itemInHand.getAmount() > 1) {
+                        itemInHand.setAmount(itemInHand.getAmount() - 1);
+                    } else {
+                        player.getInventory().setItemInMainHand(null);
+                    }
+                }
+
+                Location blockLoc = clicked.getLocation().clone().add(0,1,0);
 
 
 
