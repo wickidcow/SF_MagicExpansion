@@ -132,29 +132,6 @@ public class ItemOriginBackTrackMachine extends AbstractElectricRecipeMachine {
         }
     }
 
-    protected void addOutputs(BlockMenu menu, Block b, ItemStack[] outputs) {
-        ItemStack OriginItem = findFirstSfItem(menu);
-        if (OriginItem != null) {
-            SlimefunItem OriginSfItem = getByItem(OriginItem);
-            ItemStack [] recipe = OriginSfItem.getRecipe().clone();
-            if (recipe.length == 0) {
-                return;
-            }
-            List<ItemStack> validItems = new ArrayList<>();
-            for (ItemStack item : recipe) {
-                if (item != null && !item.getType().isAir()) {
-                    validItems.add(item);
-                }
-            }
-            if (validItems.isEmpty()) {
-                return;
-            }
-            Random random = new Random();
-            ItemStack randomlySelected = validItems.get(random.nextInt(validItems.size()));
-            menu.pushItem(randomlySelected.clone(), getOutputSlots());
-        }
-    }
-
 
     private ItemStack findFirstSfItem(BlockMenu menu) {
         for (int slot : getInputSlots()) {
@@ -171,39 +148,43 @@ public class ItemOriginBackTrackMachine extends AbstractElectricRecipeMachine {
 
     @Override
     public MachineRecipe findNextRecipe(BlockMenu menu) {
-        Map<Integer, ItemStack> inv = new HashMap<>();
-
-        for (int slot : getInputSlots()) {
-            ItemStack item = menu.getItemInSlot(slot);
-
-            if (item != null) {
-                inv.put(slot, ItemStackWrapper.wrap(item));
-            }
+        ItemStack originItem = findFirstSfItem(menu);
+        if (originItem == null) {
+            return null;
         }
 
-        int maxedSlots = 0;
-        for (int slot : getOutputSlots()) {
-            ItemStack item = menu.getItemInSlot(slot);
-            if (item != null && item.getAmount() == item.getMaxStackSize()) {
-                maxedSlots += 1;
-            }
+        SlimefunItem originSfItem = getByItem(originItem);
+        if (originSfItem == null) {
+            return null;
         }
 
-        if (maxedSlots == getOutputSlots().length) { return null; }
-
-        ItemStack OriginItem = findFirstSfItem(menu);
-        if (OriginItem != null) {
-            SlimefunItem OriginSfItem = getByItem(OriginItem);
-            ItemStack [] recipe = null;
-            if (OriginSfItem != null) {
-                recipe = OriginSfItem.getRecipe();
-            }
-            if (recipe != null && recipe.length == 0) {
-                return null;
-            }
-            return new MachineRecipe(5, new ItemStack[]{new ItemStack(Material.BARRIER)}, new ItemStack[]{new ItemStack(Material.BARRIER)});
+        ItemStack[] recipe = originSfItem.getRecipe();
+        if (recipe == null || recipe.length == 0) {
+            return null;
         }
-        return null;
+
+        List<ItemStack> validItems = new ArrayList<>();
+        for (ItemStack ingredient : recipe) {
+            if (ingredient != null && !ingredient.getType().isAir()) {
+                validItems.add(ingredient.clone());
+            }
+        }
+        if (validItems.isEmpty()) {
+            return null;
+        }
+
+        ItemStack selected = validItems.get(new Random().nextInt(validItems.size()));
+        if (!InvUtils.fitAll(menu.toInventory(), new ItemStack[] {selected}, getOutputSlots())) {
+            return null;
+        }
+
+        // The template itself is intentionally not consumed. Snapshot the randomly
+        // selected ingredient into the operation now so swapping templates while the
+        // timer runs cannot change the completed reward.
+        return new MachineRecipe(
+                5,
+                new ItemStack[] {new ItemStack(Material.BARRIER)},
+                new ItemStack[] {selected});
     }
 
     @Override
