@@ -7,6 +7,8 @@ import io.Yomicer.magicExpansion.items.generators.FishEnergyGenerator;
 import io.Yomicer.magicExpansion.items.generators.NumberEnergyGenerator;
 import io.Yomicer.magicExpansion.items.generators.TypeEnergyGenerator;
 import io.Yomicer.magicExpansion.items.misc.fish.FishKeys;
+import io.Yomicer.magicExpansion.utils.AcceleratableMachine;
+import io.Yomicer.magicExpansion.utils.MachineBuffManager;
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItem;
 import io.github.thebusybiscuit.slimefun4.implementation.Slimefun;
 import java.nio.file.Files;
@@ -168,6 +170,7 @@ public final class GeneratorBehaviorProbe extends JavaPlugin {
         try {
             SlimefunItem item = SlimefunItem.getById(id);
             check(item instanceof FishEnergyGenerator, id + " is not FishEnergyGenerator");
+            check(item instanceof AcceleratableMachine, id + " does not advertise acceleration support");
             FishEnergyGenerator generator = (FishEnergyGenerator) item;
             fixture = createFixture(item, location);
             BlockMenu menu = fixture.menu();
@@ -186,6 +189,13 @@ public final class GeneratorBehaviorProbe extends JavaPlugin {
             check(generator.getGeneratedOutput(location, fixture.data()) == 700_000,
                     id + " did not apply fish weight-rarity multiplier");
 
+            MachineBuffManager.apply(location, 300L, 2.0D);
+            check(generator.getGeneratedOutputLong(location, fixture.data()) == 1_400_000L,
+                    id + " did not apply the live acceleration-fish multiplier");
+            MachineBuffManager.remove(location);
+            check(generator.getGeneratedOutputLong(location, fixture.data()) == 700_000L,
+                    id + " kept acceleration output after the buff was removed");
+
             ItemStack maxWeight = fish("MYSTIC_EEL", 21.0D, "MAX_WEIGHT_FISH");
             menu.replaceExistingItem(13, maxWeight);
             long expectedMaxWeight = 10_498_950_000L;
@@ -199,7 +209,7 @@ public final class GeneratorBehaviorProbe extends JavaPlugin {
             check(generator.getGeneratedOutput(location, fixture.data()) == 0,
                     id + " generated from an unknown fish type");
 
-            passes.add(id + " empty/valid/rarity/long-boundary/invalid fish data");
+            passes.add(id + " empty/valid/rarity/acceleration/long-boundary/invalid fish data");
         } catch (Throwable error) {
             failures.add(id + ": " + error.getClass().getSimpleName() + ": " + error.getMessage());
         } finally {
@@ -247,6 +257,7 @@ public final class GeneratorBehaviorProbe extends JavaPlugin {
 
     private void cleanup(Location location) {
         try {
+            MachineBuffManager.remove(location);
             Slimefun.getTickerTask().resumeMachineTicker(location);
             BlockDataController blocks = Slimefun.getDatabaseManager().getBlockDataController();
             blocks.removeBlockData(location);
