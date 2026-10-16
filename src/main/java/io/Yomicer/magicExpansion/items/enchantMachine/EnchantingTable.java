@@ -457,30 +457,15 @@ public class EnchantingTable extends SimpleSlimefunItem<ItemUseHandler> implemen
             ATTRIBUTE_POOL_USE = ATTRIBUTE_POOL_T; // 三叉戟
         }
         Map<String, Integer> finalATTRIBUTE_POOL_USE = ATTRIBUTE_POOL_USE;
+        ItemStack expectedWeapon = weaponItem.clone();
+        ItemStack expectedResource = resourceItem.clone();
 
         if(resourceItem.getAmount()>=1) {
             menu.addItem(29, newItem.themed(doGlow(Material.NETHER_STAR), "=======⚡ Tier I Empowerment ⚡=======",
                             generateRandomLore(), 1),
                     (player1, slot, item, action) -> {
-
-                        if(!isItemSimilar(menu.getItemInSlot(weaponSlot), weaponItem, true)){
-                            player1.sendMessage(ColorGradient.getGradientName("The input item changed while the menu was open. Please try again."));
-                            return false;
-                        }
-                        if(resourceItem.getAmount()<1||!isItemSimilar(menu.getItemInSlot(resourceSlot), resourceItem, true)){
-                            player1.sendMessage(ColorGradient.getGradientName("Surprise—this interaction has been fixed too."));
-                            return false;
-                        }
-                        ItemStack output = randomizeAttributes(weaponItem, finalresourceLevel, finalATTRIBUTE_POOL_USE,1);
-
-                        if (!menu.fits(output, getOutputSlots())) {
-                            return false;
-                        }
-                        if(resourceItem.getAmount()<1){
-                            return false;
-                        }
-                        removeCharge(block.getLocation(), getEnergyConsumption());
-                        craftI1(output, menu);
+                        tryEmpower(player1, block, menu, expectedWeapon, expectedResource,
+                                finalresourceLevel, finalATTRIBUTE_POOL_USE, 1);
                         return false;
                     });
         }else {
@@ -491,25 +476,8 @@ public class EnchantingTable extends SimpleSlimefunItem<ItemUseHandler> implemen
         menu.addItem(31, newItem.themed(doGlow(Material.NETHER_STAR), "=======⚡ Tier II Empowerment ⚡=======",
                         generateRandomLore(),1),
                 (player1, slot, item, action) -> {
-
-                    if(!isItemSimilar(menu.getItemInSlot(weaponSlot), weaponItem, true)){
-                        player1.sendMessage(ColorGradient.getGradientName("The input item changed while the menu was open. Please try again."));
-                        return false;
-                    }
-                    if(resourceItem.getAmount()<2||!isItemSimilar(menu.getItemInSlot(resourceSlot), resourceItem, true)){
-                        player1.sendMessage(ColorGradient.getGradientName("Surprise—this interaction has been fixed too."));
-                        return false;
-                    }
-                    ItemStack output = randomizeAttributes(weaponItem, finalresourceLevel,finalATTRIBUTE_POOL_USE,2);
-
-                    if (!menu.fits(output, getOutputSlots())) {
-                        return false;
-                    }
-                    if(resourceItem.getAmount()<2){
-                        return false;
-                    }
-                    removeCharge(block.getLocation(), getEnergyConsumption());
-                    craftI2(output, menu);
+                    tryEmpower(player1, block, menu, expectedWeapon, expectedResource,
+                            finalresourceLevel, finalATTRIBUTE_POOL_USE, 2);
                     return false;
                 });
         }else {
@@ -520,25 +488,8 @@ public class EnchantingTable extends SimpleSlimefunItem<ItemUseHandler> implemen
         menu.addItem(33, newItem.themed(doGlow(Material.NETHER_STAR), "=======⚡ Tier III Empowerment ⚡=======",
                         generateRandomLore(),1),
                 (player1, slot, item, action) -> {
-
-                    if(!isItemSimilar(menu.getItemInSlot(weaponSlot), weaponItem, true)){
-                        player1.sendMessage(ColorGradient.getGradientName("The input item changed while the menu was open. Please try again."));
-                        return false;
-                    }
-                    if(resourceItem.getAmount()<3||!isItemSimilar(menu.getItemInSlot(resourceSlot), resourceItem, true)){
-                        player1.sendMessage(ColorGradient.getGradientName("Surprise—this interaction has been fixed too."));
-                        return false;
-                    }
-                    ItemStack output = randomizeAttributes(weaponItem, finalresourceLevel,finalATTRIBUTE_POOL_USE,3);
-
-                    if (!menu.fits(output, getOutputSlots())) {
-                        return false;
-                    }
-                    if(resourceItem.getAmount()<3){
-                        return false;
-                    }
-                    removeCharge(block.getLocation(), getEnergyConsumption());
-                    craftI3(output, menu);
+                    tryEmpower(player1, block, menu, expectedWeapon, expectedResource,
+                            finalresourceLevel, finalATTRIBUTE_POOL_USE, 3);
                     return false;
                 });
         }else {
@@ -555,6 +506,67 @@ public class EnchantingTable extends SimpleSlimefunItem<ItemUseHandler> implemen
 //            craft(output, menu);
 
 
+    }
+
+    private boolean tryEmpower(
+            Player player,
+            Block block,
+            BlockMenu menu,
+            ItemStack expectedWeapon,
+            ItemStack expectedResource,
+            int resourceLevel,
+            Map<String, Integer> attributePool,
+            int tier) {
+        ItemStack liveWeapon = menu.getItemInSlot(weaponSlot);
+        ItemStack liveResource = menu.getItemInSlot(resourceSlot);
+
+        if (liveWeapon == null
+                || liveWeapon.getType().isAir()
+                || !isItemSimilar(liveWeapon, expectedWeapon, true)
+                || hasAnyAttribute(liveWeapon)) {
+            player.sendMessage(ColorGradient.getGradientName(
+                    "The weapon changed while the menu was open. Please try again."));
+            return false;
+        }
+
+        if (liveResource == null
+                || liveResource.getType().isAir()
+                || liveResource.getAmount() < tier
+                || !isItemSimilar(liveResource, expectedResource, true)) {
+            player.sendMessage(ColorGradient.getGradientName(
+                    "Not enough of the required empowerment stone remains."));
+            return false;
+        }
+
+        if (getCharge(block.getLocation()) < getEnergyConsumption()) {
+            player.sendMessage(ColorGradient.getGradientName(
+                    "This empowerment requires 10,000 J."));
+            return false;
+        }
+
+        ItemStack output = randomizeAttributes(
+                liveWeapon.clone(), resourceLevel, attributePool, tier);
+        if (output == null
+                || output.getType().isAir()
+                || !menu.fits(output, getOutputSlots())) {
+            player.sendMessage(ColorGradient.getGradientName(
+                    "The output slot does not have enough space."));
+            return false;
+        }
+
+        // Commit only after every live preflight succeeds.
+        menu.consumeItem(weaponSlot, 1);
+        menu.consumeItem(resourceSlot, tier);
+        removeCharge(block.getLocation(), getEnergyConsumption());
+        ItemStack leftover = menu.pushItem(output, outputSlot);
+        if (leftover != null && !leftover.getType().isAir() && leftover.getAmount() > 0) {
+            // This should be unreachable after fits(); log loudly rather than hiding loss.
+            MagicExpansion.getInstance().getLogger().severe(
+                    "Magic Enchanting Table output changed after preflight at "
+                            + block.getLocation() + "; leftover=" + leftover.getAmount());
+            block.getWorld().dropItemNaturally(block.getLocation().add(0.5, 1.0, 0.5), leftover);
+        }
+        return true;
     }
 
     // Helper method to check if an item is a weapon
