@@ -238,7 +238,7 @@ public class CargoFragmentExtract extends SimpleSlimefunItem<ItemUseHandler> imp
         }
 
         executeExtract(player, operation, extractAmount);
-        finishExtractInput(player.getUniqueId());
+        finishExtractInput(playerId, operation);
     }
 
     private void finishExtractInput(UUID playerId, ExtractOperation expected) {
