@@ -86,6 +86,7 @@ public class WindElfMB extends MultiBlockMachine {
         double maxHealth = 200.0; // 自定义最大生命值
         mob.getAttribute(Attribute.MAX_HEALTH).setBaseValue(maxHealth);
         mob.setHealth(maxHealth); // 设置初始血量为最大生命值
+        startWindSpiritRegeneration(mob);
 
 
         // 添加雷击效果
@@ -162,7 +163,7 @@ public class WindElfMB extends MultiBlockMachine {
                     mob.teleport(newLocation);
                 }
             }
-        }.runTaskTimer(MagicExpansion.getInstance(), 0L, 80L); // 每4秒执行一次
+        }.runTaskTimer(MagicExpansion.getInstance(), 0L, 40L); // every 2 seconds
 
 
 
