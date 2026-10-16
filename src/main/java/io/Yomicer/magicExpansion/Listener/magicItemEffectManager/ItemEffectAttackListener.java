@@ -1,6 +1,8 @@
 package io.Yomicer.magicExpansion.Listener.magicItemEffectManager;
 
 import io.Yomicer.magicExpansion.Listener.weaponApply.SlownessManager;
+import io.github.thebusybiscuit.slimefun4.implementation.Slimefun;
+import io.github.thebusybiscuit.slimefun4.libraries.dough.protection.Interaction;
 import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Entity;
@@ -20,11 +22,10 @@ import org.bukkit.util.Vector;
 import java.util.Random;
 
 import static io.Yomicer.magicExpansion.items.enchantMachine.EnchantingTable.ATTRIBUTE_POOL;
-import static io.Yomicer.magicExpansion.utils.ItemPermissionUtils.hasPermissionOnAttack;
 
 public class ItemEffectAttackListener implements Listener {
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onPlayerAttack(EntityDamageByEntityEvent event) {
         if (event.getDamager() instanceof Player) {
             Player player = (Player) event.getDamager();
@@ -53,7 +54,7 @@ public class ItemEffectAttackListener implements Listener {
 
     private void applyEffect(String attribute, Object value, Entity target, Player player) {
         if (!(target instanceof LivingEntity livingTarget)) return;
-        if(!hasPermissionOnAttack(player)) return;
+        if (!canAttackTarget(player, target)) return;
         switch (attribute) {
             case "MagicExpansion.Knockback": // 击退效果
                 if (value instanceof Integer knockbackStrength) {
@@ -109,6 +110,18 @@ public class ItemEffectAttackListener implements Listener {
         }
     }
 
+
+    private boolean canAttackTarget(Player player, Entity target) {
+        if (player.hasPermission("slimefun.inventory.bypass")) {
+            return true;
+        }
+
+        Interaction interaction = target instanceof Player
+                ? Interaction.ATTACK_PLAYER
+                : Interaction.ATTACK_ENTITY;
+        return Slimefun.getProtectionManager().hasPermission(
+                player, target.getLocation(), interaction);
+    }
 
     private Vector calculateKnockbackVelocity(LivingEntity target, double strength) {
         Random random = new Random();
