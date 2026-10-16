@@ -219,7 +219,11 @@ public class PortableCargoTransporter extends SlimefunItem implements Listener {
             int remainder = amountToGive - Math.max(0, actuallyGiven);
             if (newAmount <= 0) {
                 if (updateFragmentAmount(sourceSnapshot, remainder)) {
-                    player.getInventory().addItem(sourceSnapshot);
+                    Map<Integer, ItemStack> restoreLeftover =
+                            player.getInventory().addItem(sourceSnapshot);
+                    for (ItemStack leftover : restoreLeftover.values()) {
+                        player.getWorld().dropItemNaturally(player.getLocation(), leftover);
+                    }
                 }
             } else {
                 updateFragmentAmount(cargoFragment, newAmount + remainder);
