@@ -160,6 +160,11 @@ public class RecipeRandomMachineDefault extends AbstractElectricRecipeMachine {
 
 
     @Override
+    public boolean isSynchronized() {
+        return true;
+    }
+
+    @Override
     public ItemStack getProgressBar() {
         return PROGRESS_ITEM;
     }
