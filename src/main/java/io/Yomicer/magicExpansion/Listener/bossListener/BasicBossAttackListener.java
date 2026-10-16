@@ -41,10 +41,16 @@ public class BasicBossAttackListener implements Listener {
             }
         }
 
-        if (mob.getType() == EntityType.ALLAY
-                && mob.hasMetadata("isInvincibleWindElf")
-                && mob.getMetadata("isInvincibleWindElf").get(0).asBoolean()) {
-            event.setCancelled(true);
+        if (mob.getType() == EntityType.ALLAY && mob.hasMetadata("isInvincibleWindElf")) {
+            boolean invincible = mob.getMetadata("isInvincibleWindElf").stream()
+                    .anyMatch(value -> value.asBoolean());
+
+            // Wind Spirit's guide contract is sword-only damage. During the cast
+            // phase it is fully invulnerable; during the vulnerable phase only the
+            // EntityDamageByEntity handler may approve a coordinated sword hit.
+            if (invincible || !(event instanceof EntityDamageByEntityEvent)) {
+                event.setCancelled(true);
+            }
         }
 
     }
