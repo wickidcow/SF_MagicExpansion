@@ -9,6 +9,7 @@ import io.github.thebusybiscuit.slimefun4.core.attributes.NotPlaceable;
 import io.github.thebusybiscuit.slimefun4.core.handlers.ItemUseHandler;
 import io.github.thebusybiscuit.slimefun4.implementation.items.SimpleSlimefunItem;
 import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
@@ -54,6 +55,12 @@ public class FishWeightEnhancer extends SimpleSlimefunItem<ItemUseHandler> imple
 
             if (fishItem == null || fishItem.getType().isAir()) {
                 player.sendMessage(ChatColor.RED + "Place the Magic Fish you want to increase in your off hand!");
+                player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 0.5f, 0.5f);
+                return;
+            }
+            if (fishItem.getAmount() != 1) {
+                player.sendMessage(ChatColor.RED
+                        + "Hold exactly one Magic Fish in your off hand so only one fish is upgraded.");
                 player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 0.5f, 0.5f);
                 return;
             }
@@ -150,12 +157,14 @@ public class FishWeightEnhancer extends SimpleSlimefunItem<ItemUseHandler> imple
             fishMeta.setLore(lore);
             fishItem.setItemMeta(fishMeta);
 
-            // 消耗主手道具
-            if (enhancerItem.getAmount() > 1) {
-                enhancerItem.setAmount(enhancerItem.getAmount() - 1);
-                player.getInventory().setItemInMainHand(enhancerItem);
-            } else {
-                player.getInventory().setItemInMainHand(null);
+            // Consume one feed only after a successful single-fish update.
+            if (player.getGameMode() != GameMode.CREATIVE) {
+                if (enhancerItem.getAmount() > 1) {
+                    enhancerItem.setAmount(enhancerItem.getAmount() - 1);
+                    player.getInventory().setItemInMainHand(enhancerItem);
+                } else {
+                    player.getInventory().setItemInMainHand(null);
+                }
             }
 
             // 更新副手鱼物品
