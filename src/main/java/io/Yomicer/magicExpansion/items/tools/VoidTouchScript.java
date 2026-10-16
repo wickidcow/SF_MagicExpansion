@@ -6,7 +6,9 @@ import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItemStack;
 import io.github.thebusybiscuit.slimefun4.api.recipes.RecipeType;
 import io.github.thebusybiscuit.slimefun4.core.attributes.NotPlaceable;
 import io.github.thebusybiscuit.slimefun4.core.handlers.ItemUseHandler;
+import io.github.thebusybiscuit.slimefun4.implementation.Slimefun;
 import io.github.thebusybiscuit.slimefun4.implementation.items.SimpleSlimefunItem;
+import io.github.thebusybiscuit.slimefun4.libraries.dough.protection.Interaction;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -109,10 +111,17 @@ public class VoidTouchScript extends SimpleSlimefunItem<ItemUseHandler> implemen
                     double distance = targetLoc.distance(playerLoc);
 
                     if (distance > 250) {
-                        player.sendMessage("⚠️ The target location is unavailable or more than 100 blocks away.");
+                        player.sendMessage("⚠️ The target location is unavailable or more than 250 blocks away.");
                         player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1.0f, 1.0f);
                         return;
                     }
+                    if (!Slimefun.getProtectionManager()
+                            .hasPermission(player, targetLoc, Interaction.INTERACT_BLOCK)) {
+                        player.sendMessage("§cYou do not have permission to interact with the bound target.");
+                        player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1.0f, 1.0f);
+                        return;
+                    }
+
                     Block targetBlock = targetLoc.getBlock();
 
                     // 模拟右键点击该方块
@@ -126,7 +135,7 @@ public class VoidTouchScript extends SimpleSlimefunItem<ItemUseHandler> implemen
 
                     Bukkit.getPluginManager().callEvent(interactEvent);
 
-                    player.sendMessage("🔁 Void Touchcan:" + formatLocation(targetLoc));
+                    player.sendMessage("🔁 Void Touch: " + formatLocation(targetLoc));
                     player.playSound(player.getLocation(), Sound.BLOCK_ENDER_CHEST_OPEN, 1.0f, 1.0f);
                 }
             }
