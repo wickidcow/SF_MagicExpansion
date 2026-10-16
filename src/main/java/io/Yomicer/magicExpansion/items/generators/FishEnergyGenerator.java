@@ -1,5 +1,6 @@
 package io.Yomicer.magicExpansion.items.generators;
 
+import com.xzavier0722.mc.plugin.slimefun4.storage.controller.ASlimefunDataContainer;
 import com.xzavier0722.mc.plugin.slimefun4.storage.controller.SlimefunBlockData;
 import com.xzavier0722.mc.plugin.slimefun4.storage.util.StorageCacheUtils;
 import io.Yomicer.magicExpansion.items.abstracts.MenuBlock;
@@ -118,10 +119,18 @@ public class FishEnergyGenerator extends MenuBlock implements EnergyNetProvider,
 
     @Override
     public int getGeneratedOutput(Location l, SlimefunBlockData data) {
+        return (int) Math.min(Integer.MAX_VALUE, calculateGeneratedOutput(l));
+    }
 
+    @Override
+    public long getGeneratedOutputLong(Location l, ASlimefunDataContainer data) {
+        return calculateGeneratedOutput(l);
+    }
+
+    private long calculateGeneratedOutput(Location l) {
         BlockMenu inv = StorageCacheUtils.getMenu(l);
 
-        int gen = 0;
+        long gen = 0L;
         ItemStack fish = null;
         ItemMeta meta = null;
         if (inv != null) {
@@ -130,46 +139,37 @@ public class FishEnergyGenerator extends MenuBlock implements EnergyNetProvider,
                 fish = fish.clone();
             }
         }
-        if(fish != null) {
+        if (fish != null) {
             meta = fish.getItemMeta();
         }
-        if(meta != null) {
-
+        if (meta != null) {
             PersistentDataContainer pdc = meta.getPersistentDataContainer();
 
-            String fishType = null;
-            double weight = 0.0;
-            String weightRarityName = null;
+            String fishType = pdc.get(FishKeys.FISH_TYPE, PersistentDataType.STRING);
+            Double weight = pdc.get(FishKeys.FISH_WEIGHT, PersistentDataType.DOUBLE);
+            String weightRarityName =
+                    pdc.get(FishKeys.FISH_WEIGHT_RARITY, PersistentDataType.STRING);
 
-            if (pdc.has(FishKeys.FISH_TYPE, PersistentDataType.STRING)) {
-                fishType = pdc.get(FishKeys.FISH_TYPE, PersistentDataType.STRING);
-            }
-
-            if (pdc.has(FishKeys.FISH_WEIGHT, PersistentDataType.DOUBLE)) {
-                weight = pdc.get(FishKeys.FISH_WEIGHT, PersistentDataType.DOUBLE);
-            }
-
-            if (pdc.has(FishKeys.FISH_WEIGHT_RARITY, PersistentDataType.STRING)) {
-                weightRarityName = pdc.get(FishKeys.FISH_WEIGHT_RARITY, PersistentDataType.STRING);
-            }
-
-            // ✅ 核心逻辑:从映射表中查找该鱼的能量基础值
-            if (fishType != null && weight > 0.0 && weightRarityName != null) {
+            if (fishType != null && weight != null && weight > 0.0D && weightRarityName != null) {
                 Integer basePower = FISH_POWER_MAP.get(fishType);
                 if (basePower != null) {
-                    double multiplier = Fish.WeightRarity.getMultiplierByName(weightRarityName);
-                    gen = (int) (basePower * weight * multiplier);
+                    long multiplier = Fish.WeightRarity.getMultiplierByName(weightRarityName);
+                    double raw = basePower.doubleValue() * weight * multiplier;
+                    if (Double.isFinite(raw) && raw > 0.0D) {
+                        gen = raw >= Long.MAX_VALUE ? Long.MAX_VALUE : (long) raw;
+                    }
                 }
             }
         }
+
         if (inv != null && inv.hasViewer()) {
-            if (gen == 0) {
+            if (gen == 0L) {
                 inv.replaceExistingItem(40, new CustomItemStack(
                         Material.LANTERN,
                         getGradientName("Fish Bucket Map"),
                         getGradientName("Stored: " + ChargeLore.format(getCharge(l)) + " J")
                 ));
-            } else if (gen > 0) {
+            } else {
                 inv.replaceExistingItem(40, new CustomItemStack(
                         Material.SOUL_LANTERN,
                         getGradientName("Generating"),
@@ -179,6 +179,7 @@ public class FishEnergyGenerator extends MenuBlock implements EnergyNetProvider,
                 ));
             }
         }
+
         return gen;
     }
 
