@@ -168,85 +168,49 @@ public class RightClickMan extends SlimefunItem implements EnergyNetComponent {
             if (up) {
                 Location loc1 = block.getLocation().clone().add(0, 1, 0);
                 Block targetBlock1 = loc1.getBlock();
-                PlayerInteractEvent interactEvent = new PlayerInteractEvent(
-                        nearestPlayer,
-                        Action.RIGHT_CLICK_BLOCK,
-                        new ItemStack(Material.AIR),
-                        targetBlock1,
-                        BlockFace.SELF
-                );
-                Bukkit.getPluginManager().callEvent(interactEvent);
-                directions += "Up ";
+                if (simulateRightClick(nearestPlayer, targetBlock1)) {
+                    directions += "Up ";
+                }
             }
 
             if (down) {
                 Location loc2 = block.getLocation().clone().add(0, -1, 0);
                 Block targetBlock2 = loc2.getBlock();
-                PlayerInteractEvent interactEvent = new PlayerInteractEvent(
-                        nearestPlayer,
-                        Action.RIGHT_CLICK_BLOCK,
-                        new ItemStack(Material.AIR),
-                        targetBlock2,
-                        BlockFace.SELF
-                );
-                Bukkit.getPluginManager().callEvent(interactEvent);
-                directions += "Down ";
+                if (simulateRightClick(nearestPlayer, targetBlock2)) {
+                    directions += "Down ";
+                }
             }
 
             if (east) {
                 Location loc3 = block.getLocation().clone().add(1, 0, 0);
                 Block targetBlock3 = loc3.getBlock();
-                PlayerInteractEvent interactEvent = new PlayerInteractEvent(
-                        nearestPlayer,
-                        Action.RIGHT_CLICK_BLOCK,
-                        new ItemStack(Material.AIR),
-                        targetBlock3,
-                        BlockFace.SELF
-                );
-                Bukkit.getPluginManager().callEvent(interactEvent);
-                directions += "East ";
+                if (simulateRightClick(nearestPlayer, targetBlock3)) {
+                    directions += "East ";
+                }
             }
 
             if (south) {
                 Location loc4 = block.getLocation().clone().add(0, 0, 1);
                 Block targetBlock4 = loc4.getBlock();
-                PlayerInteractEvent interactEvent = new PlayerInteractEvent(
-                        nearestPlayer,
-                        Action.RIGHT_CLICK_BLOCK,
-                        new ItemStack(Material.AIR),
-                        targetBlock4,
-                        BlockFace.SELF
-                );
-                Bukkit.getPluginManager().callEvent(interactEvent);
-                directions += "South ";
+                if (simulateRightClick(nearestPlayer, targetBlock4)) {
+                    directions += "South ";
+                }
             }
 
             if (west) {
                 Location loc5 = block.getLocation().clone().add(-1, 0, 0);
                 Block targetBlock5 = loc5.getBlock();
-                PlayerInteractEvent interactEvent = new PlayerInteractEvent(
-                        nearestPlayer,
-                        Action.RIGHT_CLICK_BLOCK,
-                        new ItemStack(Material.AIR),
-                        targetBlock5,
-                        BlockFace.SELF
-                );
-                Bukkit.getPluginManager().callEvent(interactEvent);
-                directions += "West ";
+                if (simulateRightClick(nearestPlayer, targetBlock5)) {
+                    directions += "West ";
+                }
             }
 
             if (north) {
                 Location loc6 = block.getLocation().clone().add(0, 0, -1);
                 Block targetBlock6 = loc6.getBlock();
-                PlayerInteractEvent interactEvent = new PlayerInteractEvent(
-                        nearestPlayer,
-                        Action.RIGHT_CLICK_BLOCK,
-                        new ItemStack(Material.AIR),
-                        targetBlock6,
-                        BlockFace.SELF
-                );
-                Bukkit.getPluginManager().callEvent(interactEvent);
-                directions += "North";
+                if (simulateRightClick(nearestPlayer, targetBlock6)) {
+                    directions += "North";
+                }
             }
 
             // 更新状态显示
@@ -269,6 +233,23 @@ public class RightClickMan extends SlimefunItem implements EnergyNetComponent {
                 }
             }
         }
+    }
+
+    private boolean simulateRightClick(Player player, Block target) {
+        if (!Slimefun.getProtectionManager()
+                .hasPermission(player, target.getLocation(), Interaction.INTERACT_BLOCK)) {
+            return false;
+        }
+
+        PlayerInteractEvent interactEvent = new PlayerInteractEvent(
+                player,
+                Action.RIGHT_CLICK_BLOCK,
+                new ItemStack(Material.AIR),
+                target,
+                BlockFace.SELF
+        );
+        Bukkit.getPluginManager().callEvent(interactEvent);
+        return !interactEvent.isCancelled();
     }
 
     /**
