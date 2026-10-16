@@ -99,37 +99,44 @@ public class QuickMachineMBUtilsMBVersion {
     }
 
     private static boolean consumeMaterials(Player player, Map<String, Integer> recipe, int amount,BlockMenu menu) {
+        if (!QuickCraftSafety.hasEnoughMaterials(getInventoryItems(menu), recipe, amount)) {
+            return true;
+        }
 
         for (Map.Entry<String, Integer> requiredEntry : recipe.entrySet()) {
             String requiredKey = requiredEntry.getKey();
-            int requiredAmountPerCraft = requiredEntry.getValue();
-            int totalRequiredAmount = requiredAmountPerCraft * amount;
+            int totalRequiredAmount =
+                    QuickCraftSafety.totalRequiredAmount(requiredEntry.getValue(), amount);
+            if (totalRequiredAmount <= 0) {
+                return true;
+            }
 
             if (requiredKey.startsWith("mc:")) {
-                // 原版物品
                 Material material = Material.matchMaterial(requiredKey.substring(3));
-                if (material != null) {
-                    ItemStack targetItem = new ItemStack(material);
-                    if (!removeVanillaItemsFromMenu(menu, targetItem, totalRequiredAmount)) {
-                        player.sendMessage("§cCould not remove enough vanilla materials. Check the machine.");
-                        return true;
-                    }
+                if (material == null) {
+                    return true;
+                }
+                ItemStack targetItem = new ItemStack(material);
+                if (!removeVanillaItemsFromMenu(menu, targetItem, totalRequiredAmount)) {
+                    player.sendMessage("§cCould not remove enough vanilla materials. Check the machine.");
+                    return true;
                 }
             } else if (requiredKey.startsWith("sf:")) {
-                // Slimefun 物品
                 String slimefunId = requiredKey.substring(3);
                 SlimefunItem slimefunItem = SlimefunItem.getById(slimefunId);
-                if (slimefunItem != null) {
-                    ItemStack targetItem = slimefunItem.getItem().clone();
-                    if (!removeSlimefunItemsFromMenu(menu, targetItem, totalRequiredAmount)) {
-                        player.sendMessage("§cCould not remove enough Slimefun materials. Check the machine.");
-                        return true;
-                    }
+                if (slimefunItem == null) {
+                    return true;
                 }
+                ItemStack targetItem = slimefunItem.getItem().clone();
+                if (!removeSlimefunItemsFromMenu(menu, targetItem, totalRequiredAmount)) {
+                    player.sendMessage("§cCould not remove enough Slimefun materials. Check the machine.");
+                    return true;
+                }
+            } else {
+                return true;
             }
         }
 
-        // 所有材料都已成功移除
         return false;
     }
 
@@ -145,7 +152,7 @@ public class QuickMachineMBUtilsMBVersion {
         int remainingAmount = amount; // 剩余需要移除的数量
 
         // 遍历 BlockMenu 的所有槽位
-        for (int slot = 0; slot < menu.getSize() && remainingAmount > 0; slot++) {
+        for (int slot = 0; slot <= 35 && remainingAmount > 0; slot++) {
             ItemStack itemInSlot = menu.getItemInSlot(slot); // 获取当前槽位的物品
 
             // 检查槽位中是否有符合条件的物品
@@ -179,7 +186,7 @@ public class QuickMachineMBUtilsMBVersion {
         int remainingAmount = amount; // 剩余需要移除的数量
 
         // 遍历 BlockMenu 的所有槽位
-        for (int slot = 0; slot < menu.getSize() && remainingAmount > 0; slot++) {
+        for (int slot = 0; slot <= 35 && remainingAmount > 0; slot++) {
             ItemStack itemInSlot = menu.getItemInSlot(slot); // 获取当前槽位的物品
 
             // 检查槽位中是否有符合条件的 Slimefun 物品
@@ -287,17 +294,7 @@ public class QuickMachineMBUtilsMBVersion {
      * 计算玩家最多可以合成的数量
      */
     private static int calculateMaxCraftableAmount(Map<String, Integer> playerItems, Map<String, Integer> recipe) {
-        int maxCraftableAmount = Integer.MAX_VALUE;
-
-        for (Map.Entry<String, Integer> requiredEntry : recipe.entrySet()) {
-            String requiredKey = requiredEntry.getKey();
-            int requiredAmount = requiredEntry.getValue();
-
-            int availableAmount = playerItems.getOrDefault(requiredKey, 0);
-            maxCraftableAmount = Math.min(maxCraftableAmount, availableAmount / requiredAmount);
-        }
-
-        return maxCraftableAmount;
+        return QuickCraftSafety.calculateMaxCraftableAmount(playerItems, recipe);
     }
 
 
@@ -346,17 +343,7 @@ public class QuickMachineMBUtilsMBVersion {
      * @return 如果玩家有足够的物品,则返回 true,否则返回 false
      */
     private static boolean hasEnoughMaterials(Map<String, Integer> playerItems, Map<String, Integer> recipe, int amount) {
-        // 检查玩家是否有足够的物品
-        for (Map.Entry<String, Integer> requiredEntry : recipe.entrySet()) {
-            String requiredKey = requiredEntry.getKey();
-            int requiredAmount = requiredEntry.getValue() * amount; // 根据合成数量调整所需材料
-
-            int availableAmount = playerItems.getOrDefault(requiredKey, 0);
-            if (availableAmount < requiredAmount) {
-                return false;
-            }
-        }
-        return true;
+        return QuickCraftSafety.hasEnoughMaterials(playerItems, recipe, amount);
     }
 
     // 默认 amount=1 的重载方法
