@@ -8,6 +8,7 @@ on:
       - 'tests/runtime/ItemCatalogProbe.java'
       - 'tests/runtime/MachineTransactionProbe.java'
       - 'tests/runtime/GeneratorBehaviorProbe.java'
+      - 'tests/runtime/PowerRelayProbe.java'
       - '.github/workflows/item-catalog-runtime.yml'
   push:
     branches: ['audit/item-feature-verification-*']
@@ -55,7 +56,7 @@ jobs:
       - name: Build exact MagicExpansion source and audit plugin
         run: |
           set -euo pipefail
-          mkdir -p audit/classes/item-catalog audit/classes/machine-transaction audit/classes/generator-behavior
+          mkdir -p audit/classes/item-catalog audit/classes/machine-transaction audit/classes/generator-behavior audit/classes/power-relay
           git rev-parse HEAD > audit/source-commit.txt
           bash scripts/install_slimefun_api.sh > audit/build.log 2>&1
           mvn -B -ntp clean verify >> audit/build.log 2>&1 || { tail -n 120 audit/build.log; exit 1; }
@@ -71,6 +72,9 @@ jobs:
           javac --release 21 -cp "$CANDIDATE:$(cat classpath.txt)" -d audit/classes/generator-behavior tests/runtime/GeneratorBehaviorProbe.java
           printf "name: MagicExpansionGeneratorBehaviorProbe\nmain: audit.GeneratorBehaviorProbe\nversion: '1'\napi-version: '1.21.11'\ndepend: [Slimefun, magicexpansion]\n" > audit/classes/generator-behavior/plugin.yml
           jar --create --file audit/GeneratorBehaviorProbe.jar -C audit/classes/generator-behavior .
+          javac --release 21 -cp "$CANDIDATE:$(cat classpath.txt)" -d audit/classes/power-relay tests/runtime/PowerRelayProbe.java
+          printf "name: MagicExpansionPowerRelayProbe\nmain: audit.PowerRelayProbe\nversion: '1'\napi-version: '1.21.11'\ndepend: [Slimefun, magicexpansion]\n" > audit/classes/power-relay/plugin.yml
+          jar --create --file audit/PowerRelayProbe.jar -C audit/classes/power-relay .
 
       - name: Build disposable full 45-addon bundle with exact candidate
         env:
@@ -216,6 +220,18 @@ jobs:
           grep -Fxq GENERATOR_BEHAVIOR_PASS <(head -n 1 generator-behavior-result.txt)
           ! grep -Eq 'GENERATOR_BEHAVIOR_FATAL|NoSuchMethodError|NoClassDefFoundError|Error occurred while enabling|Could not load plugin' generator-behavior.console.log
 
+      - name: Exercise Power Card input/output relays
+        run: |
+          set -euo pipefail
+          rm -f audit/full-stack/plugins/GeneratorBehaviorProbe.jar
+          cp audit/PowerRelayProbe.jar audit/full-stack/plugins/
+          cd audit/full-stack
+          timeout --kill-after=20s 420s java -Xms768M -Xmx3G -jar server.jar --nogui > power-relay.console.log 2>&1
+          test -s power-relay-result.txt
+          cat power-relay-result.txt
+          grep -Fxq POWER_RELAY_PASS <(head -n 1 power-relay-result.txt)
+          ! grep -Eq 'POWER_RELAY_FATAL|NoSuchMethodError|NoClassDefFoundError|Error occurred while enabling|Could not load plugin' power-relay.console.log
+
       - name: Preserve item catalog evidence
         if: always()
         uses: actions/upload-artifact@v7
@@ -232,6 +248,8 @@ jobs:
             audit/full-stack/machine-transaction.console.log
             audit/full-stack/generator-behavior-result.txt
             audit/full-stack/generator-behavior.console.log
+            audit/full-stack/power-relay-result.txt
+            audit/full-stack/power-relay.console.log
             audit/full-stack/smoke-result.txt
             target/surefire-reports/TEST-*.xml
           if-no-files-found: warn
