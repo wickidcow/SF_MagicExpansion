@@ -192,9 +192,14 @@ public class CargoFragmentExtract extends SimpleSlimefunItem<ItemUseHandler> imp
      * 处理玩家提取输入
      */
     private void processExtractInput(Player player, ExtractOperation operation, String input) {
+        UUID playerId = player.getUniqueId();
+        if (pendingExtracts.get(playerId) != operation) {
+            return;
+        }
+
         if (input.equalsIgnoreCase("cancel")) {
             player.sendMessage(ChatColor.YELLOW + "Extraction cancelled.");
-            finishExtractInput(player.getUniqueId());
+            finishExtractInput(playerId, operation);
             return;
         }
 
@@ -228,7 +233,7 @@ public class CargoFragmentExtract extends SimpleSlimefunItem<ItemUseHandler> imp
 
         if (!validateItemsUnchanged(player, operation)) {
             player.sendMessage(ChatColor.RED + "Extraction cancelled because one of the items changed!");
-            finishExtractInput(player.getUniqueId());
+            finishExtractInput(playerId, operation);
             return;
         }
 
@@ -236,8 +241,8 @@ public class CargoFragmentExtract extends SimpleSlimefunItem<ItemUseHandler> imp
         finishExtractInput(player.getUniqueId());
     }
 
-    private void finishExtractInput(UUID playerId) {
-        pendingExtracts.remove(playerId);
+    private void finishExtractInput(UUID playerId, ExtractOperation expected) {
+        pendingExtracts.remove(playerId, expected);
         cleanupListenerIfNeeded();
     }
 
