@@ -319,7 +319,7 @@ public class EnchantingTable extends SimpleSlimefunItem<ItemUseHandler> implemen
         if (lore == null) {
             lore = new ArrayList<>();
         }
-        lore.add(getGradientName("Random1"));
+        lore.add(getGradientName("Magic Empowerment:"));
 
         for (String attribute : selectedAttributes) {
             NamespacedKey key = new NamespacedKey("magicexpansion", attribute.toLowerCase().replace(".", "_"));
@@ -332,7 +332,7 @@ public class EnchantingTable extends SimpleSlimefunItem<ItemUseHandler> implemen
             } else if (pdc.has(key, PersistentDataType.BOOLEAN)) {
                 // 布尔型属性
                 boolean value = pdc.get(key, PersistentDataType.BOOLEAN);
-                lore.add("§f- " + getGradientName(chineseName) + ": " + (value ? "Random1" : "Random1"));
+                lore.add("§f- " + getGradientName(chineseName) + ": " + (value ? "§aEnabled" : "§7Disabled"));
             }
         }
         meta.setLore(lore);
