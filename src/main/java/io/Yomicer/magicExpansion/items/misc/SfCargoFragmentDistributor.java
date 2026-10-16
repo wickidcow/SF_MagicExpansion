@@ -25,6 +25,7 @@ import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
@@ -609,15 +610,15 @@ public class SfCargoFragmentDistributor extends SlimefunItem implements EnergyNe
         ItemStack playerHeadItem = createPlayerHeadDisplay(null);
 
         preset.addItem(playerHeadSlot, playerHeadItem, (p, slot, item, action) -> {
-            // 使用玩家打开菜单时所在的方块位置
-            Block b = p.getTargetBlockExact(5);
-            if (b == null) return false;
+            Inventory top = p.getOpenInventory().getTopInventory();
+            if (!(top.getHolder() instanceof BlockMenu menu)) {
+                return false;
+            }
 
-            Location location = b.getLocation();
-
-            // 获取 BlockMenu 实例
-            BlockMenu menu = StorageCacheUtils.getMenu(location);
-            if (menu == null) return false;
+            Location location = menu.getLocation();
+            if (!(BlockStorage.check(location) instanceof SfCargoFragmentDistributor)) {
+                return false;
+            }
 
             if (action.isRightClicked()) {
                 // 右键清除玩家设置
