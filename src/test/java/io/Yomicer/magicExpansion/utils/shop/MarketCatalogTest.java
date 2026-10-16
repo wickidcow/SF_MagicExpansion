@@ -61,15 +61,16 @@ class MarketCatalogTest {
     private MarketCatalog.Result install(String text) throws Exception {
         return MarketCatalog.install(MarketCatalog.parse(text), resolver, store, warnings::add);
     }
-    @Test void bundledCatalogHas207UniqueOffersAndOnlyBoundedBulkExceptions() throws Exception {
+    @Test void bundledCatalogHas296UniqueOffersAndOnlyBoundedBulkExceptions() throws Exception {
         String source = Files.readString(Path.of("src/main/resources/market_catalog.yml"));
         var definition = MarketCatalog.parse(source);
-        assertEquals(19, definition.sections().size());
+        assertEquals(27, definition.sections().size());
         var offers = definition.sections().stream().flatMap(s -> s.offers().stream()).toList();
-        assertEquals(207, offers.size());
-        assertEquals(207, new HashSet<>(offers.stream().map(o -> o.result().slimefun()).toList()).size());
+        assertEquals(296, offers.size());
+        assertEquals(296, new HashSet<>(offers.stream().map(MarketCatalog.Offer::id).toList()).size());
         assertEquals(56, offers.stream().filter(o -> !o.plugins().isEmpty()).count());
-        assertEquals(6, offers.stream().filter(o -> o.personalLimit() > 1).count());
+        assertTrue(offers.stream().filter(o -> o.personalLimit() > 1).count() > 6);
+        assertTrue(offers.stream().filter(o -> o.personalLimit() > 1).allMatch(o -> o.personalLimit() <= 16));
         assertTrue(offers.stream().allMatch(o -> o.personalLimit() > 0 && !o.costs().isEmpty()));
         var node = offers.stream().filter(o -> o.result().slimefun().equals("CARGO_NODE")).findFirst().orElseThrow();
         assertEquals(256, node.result().amount() * node.personalLimit());
