@@ -1,4 +1,5 @@
 package io.Yomicer.magicExpansion.items.enchantMachine;
+import io.Yomicer.magicExpansion.MagicExpansion;
 import com.xzavier0722.mc.plugin.slimefun4.storage.controller.SlimefunBlockData;
 import com.xzavier0722.mc.plugin.slimefun4.storage.util.StorageCacheUtils;
 import io.Yomicer.magicExpansion.utils.ColorGradient;
