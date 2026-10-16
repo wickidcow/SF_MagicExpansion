@@ -7,6 +7,7 @@ import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItemStack;
 import io.github.thebusybiscuit.slimefun4.api.recipes.RecipeType;
 import io.github.thebusybiscuit.slimefun4.core.handlers.ItemUseHandler;
 import io.github.thebusybiscuit.slimefun4.implementation.items.SimpleSlimefunItem;
+import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Sound;
@@ -71,11 +72,13 @@ public class EnchantmentEraser extends SimpleSlimefunItem<ItemUseHandler> {
                 // 设置副手物品为清除后的物品
                 player.getInventory().setItemInOffHand(result);
 
-                // 消耗主手的清除器
-                if (mainHandItem.getAmount() > 1) {
-                    mainHandItem.setAmount(mainHandItem.getAmount() - 1);
-                } else {
-                    player.getInventory().setItemInMainHand(new ItemStack(Material.AIR));
+                // Consume only after a successful erase; Creative keeps the eraser.
+                if (player.getGameMode() != GameMode.CREATIVE) {
+                    if (mainHandItem.getAmount() > 1) {
+                        mainHandItem.setAmount(mainHandItem.getAmount() - 1);
+                    } else {
+                        player.getInventory().setItemInMainHand(new ItemStack(Material.AIR));
+                    }
                 }
 
                 player.sendMessage(ColorGradient.getGradientNameVer2("Magic Empowerment attributes cleared successfully!"));
@@ -99,99 +102,108 @@ public class EnchantmentEraser extends SimpleSlimefunItem<ItemUseHandler> {
         }
 
         PersistentDataContainer pdc = meta.getPersistentDataContainer();
-        Set<String> attributesToRemove = new HashSet<>();
-        boolean hasRemovedAttributes = false;
+        boolean changedPdc = false;
 
-        // 检查并移除所有魔法赋能属性
         for (String attribute : EnchantingTable.ATTRIBUTE_POOL.keySet()) {
-            NamespacedKey key = new NamespacedKey("magicexpansion", attribute.toLowerCase().replace(".", "_"));
-
-            if (pdc.has(key, PersistentDataType.INTEGER) || pdc.has(key, PersistentDataType.BOOLEAN)) {
+            NamespacedKey key = new NamespacedKey(
+                    "magicexpansion", attribute.toLowerCase().replace(".", "_"));
+            if (pdc.has(key, PersistentDataType.INTEGER)
+                    || pdc.has(key, PersistentDataType.BOOLEAN)) {
                 pdc.remove(key);
-                attributesToRemove.add(attribute);
-                hasRemovedAttributes = true;
+                changedPdc = true;
             }
         }
 
-        // 如果没有属性被移除,返回原物品
-        if (!hasRemovedAttributes) {
-            return item;
+        boolean changedLore = removeEnchantmentLore(meta);
+        if (!changedPdc && !changedLore) {
+            return null;
         }
-
-        // 更新Lore,移除整个魔法赋能段落
-        removeEnchantmentLore(meta, attributesToRemove);
 
         item.setItemMeta(meta);
         return item;
     }
 
     /**
-     * 从Lore中移除整个魔法赋能段落
+     * Remove both the current "Magic Empowerment:" lore section and the historical
+     * "Random1" header used by older MagicExpansion builds.
      */
-    private static void removeEnchantmentLore(ItemMeta meta, Set<String> attributesToRemove) {
+    private static boolean removeEnchantmentLore(ItemMeta meta) {
         List<String> lore = meta.getLore();
         if (lore == null || lore.isEmpty()) {
-            return;
+            return false;
         }
 
         List<String> newLore = new ArrayList<>();
-        boolean inEnchantmentSection = false;
-        int enchantmentSectionStart = -1;
-        int sectionCount = 0;
+        boolean changed = false;
+        boolean inSection = false;
 
         for (int i = 0; i < lore.size(); i++) {
             String line = lore.get(i);
-            String strippedLine = stripAllColorCodes(line);
+            String stripped = stripAllColorCodes(line).trim();
 
-            // 检查是否是"Magic Empowerment:"标题行
-            if ((strippedLine.contains("Magic Empowerment") || strippedLine.contains("\u9b54\u6cd5\u8d4b\u80fd")) && (strippedLine.contains(":") || strippedLine.contains(":"))) {
-                // 如果已经在赋能段落中,先结束之前的段落
-                if (inEnchantmentSection) {
-                    // 跳过之前段落的所有行
-//                    MagicExpansion.getInstance().getLogger().info("Ended Magic Empowerment section " + sectionCount + ", from line " + enchantmentSectionStart + " to " + (i-1));
-                }
+            boolean currentTitle = stripped.contains("Magic Empowerment")
+                    || stripped.contains("魔法赋能");
+            boolean legacyTitle = stripped.equalsIgnoreCase("Random1")
+                    && i + 1 < lore.size()
+                    && isEmpowermentAttributeLine(stripAllColorCodes(lore.get(i + 1)).trim());
 
-                // 开始新的赋能段落
-                inEnchantmentSection = true;
-                enchantmentSectionStart = i;
-                sectionCount++;
-//                MagicExpansion.getInstance().getLogger().info("Found Magic Empowerment section " + sectionCount + ", title line: " + strippedLine);
-                continue; // 跳过标题行
+            if (currentTitle || legacyTitle) {
+                inSection = true;
+                changed = true;
+                continue;
             }
 
-            // 如果在赋能段落中
-            if (inEnchantmentSection) {
-                // 检查是否是属性行(去色后以"- "开头)
-                if (strippedLine.startsWith("- ")) {
-//                    MagicExpansion.getInstance().getLogger().info("Skipping attribute line: " + strippedLine);
-                    continue; // 跳过属性行
-                }
+            if (inSection && isEmpowermentAttributeLine(stripped)) {
+                changed = true;
+                continue;
+            }
 
-                // 如果不是属性行,结束当前赋能段落
-//                MagicExpansion.getInstance().getLogger().info("Ended Magic Empowerment section " + sectionCount + ", from line " + enchantmentSectionStart + " to " + (i-1));
-                inEnchantmentSection = false;
+            if (inSection) {
+                inSection = false;
+            }
 
-                // 当前行不是属性行,添加到新Lore
-                newLore.add(line);
-            } else {
-                // 不在赋能段落中,直接添加
-                newLore.add(line);
+            newLore.add(line);
+        }
+
+        if (changed) {
+            meta.setLore(newLore.isEmpty() ? null : newLore);
+        }
+        return changed;
+    }
+
+    private static boolean isEmpowermentAttributeLine(String stripped) {
+        if (stripped == null || !stripped.startsWith("- ")) {
+            return false;
+        }
+
+        for (String displayName : EnchantingTable.ATTRIBUTE_NAME_MAP.values()) {
+            if (stripped.regionMatches(true, 2, displayName, 0, displayName.length())) {
+                return true;
             }
         }
+        return false;
+    }
 
-        // 如果最后还在赋能段落中,结束它
-        if (inEnchantmentSection) {
-//            MagicExpansion.getInstance().getLogger().info("Ended Magic Empowerment section " + sectionCount + ", from line " + enchantmentSectionStart + " to the end");
+    private static boolean hasEmpowermentLore(ItemMeta meta) {
+        List<String> lore = meta.getLore();
+        if (lore == null || lore.isEmpty()) {
+            return false;
         }
 
-//        MagicExpansion.getInstance().getLogger().info("Original lore lines: " + lore.size() + ", new lore lines: " + newLore.size());
-
-        // 如果移除了整个赋能段落导致Lore为空,设为null
-        if (newLore.isEmpty()) {
-            meta.setLore(null);
-        } else {
-            meta.setLore(newLore);
+        for (int i = 0; i < lore.size(); i++) {
+            String stripped = stripAllColorCodes(lore.get(i)).trim();
+            if (stripped.contains("Magic Empowerment")
+                    || stripped.contains("魔法赋能")) {
+                return true;
+            }
+            if (stripped.equalsIgnoreCase("Random1")
+                    && i + 1 < lore.size()
+                    && isEmpowermentAttributeLine(
+                            stripAllColorCodes(lore.get(i + 1)).trim())) {
+                return true;
+            }
         }
+        return false;
     }
 
     /**
@@ -291,17 +303,7 @@ public class EnchantmentEraser extends SimpleSlimefunItem<ItemUseHandler> {
             }
         }
 
-        // 如果PDC中没有,检查Lore中是否有"Magic Empowerment:"字样
-        List<String> lore = meta.getLore();
-        if (lore != null) {
-            for (String line : lore) {
-                String strippedLine = stripAllColorCodes(line);
-                if ((strippedLine.contains("Magic Empowerment") || strippedLine.contains("\u9b54\u6cd5\u8d4b\u80fd")) && (strippedLine.contains(":") || strippedLine.contains(":"))) {
-                    return true;
-                }
-            }
-        }
-
-        return false;
+        // Legacy builds may only have the old lore marker.
+        return hasEmpowermentLore(meta);
     }
 }
