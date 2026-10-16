@@ -186,12 +186,20 @@ public final class GeneratorBehaviorProbe extends JavaPlugin {
             check(generator.getGeneratedOutput(location, fixture.data()) == 700_000,
                     id + " did not apply fish weight-rarity multiplier");
 
+            ItemStack maxWeight = fish("MYSTIC_EEL", 21.0D, "MAX_WEIGHT_FISH");
+            menu.replaceExistingItem(13, maxWeight);
+            long expectedMaxWeight = 10_498_950_000L;
+            check(generator.getGeneratedOutputLong(location, fixture.data()) == expectedMaxWeight,
+                    id + " long output overflowed for max-weight Mystic Eel");
+            check(generator.getGeneratedOutput(location, fixture.data()) == Integer.MAX_VALUE,
+                    id + " legacy int output should clamp instead of wrapping negative");
+
             ItemStack invalid = fish("NOT_A_REAL_FISH", 2.0D, "COMMON_FISH");
             menu.replaceExistingItem(13, invalid);
             check(generator.getGeneratedOutput(location, fixture.data()) == 0,
                     id + " generated from an unknown fish type");
 
-            passes.add(id + " empty/valid/rarity/invalid fish data");
+            passes.add(id + " empty/valid/rarity/long-boundary/invalid fish data");
         } catch (Throwable error) {
             failures.add(id + ": " + error.getClass().getSimpleName() + ": " + error.getMessage());
         } finally {
