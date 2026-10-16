@@ -31,6 +31,11 @@ public class ZKBTMPlayer {
 
             @Override
             public void run() {
+                if (!player.isOnline()) {
+                    this.cancel();
+                    return;
+                }
+
                 // === 轻柔鼓点:每拍响一次铃铛,第2、4拍加沙锤 ===
                 if (beat % TICKS_PER_BEAT == 0) {
                     world.playSound(loc, Sound.BLOCK_NOTE_BLOCK_BELL, 0.4f, 0.8f);
