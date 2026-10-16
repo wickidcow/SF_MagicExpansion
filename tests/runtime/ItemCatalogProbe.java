@@ -2,9 +2,14 @@ package audit;
 
 import io.Yomicer.magicExpansion.MagicExpansion;
 import io.Yomicer.magicExpansion.core.MagicExpansionItems;
+import io.Yomicer.magicExpansion.items.abstracts.AbstractElectricRecipeMachine;
+import io.Yomicer.magicExpansion.items.abstracts.AbstractElectricResourceMachine;
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItem;
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItemStack;
 import io.github.thebusybiscuit.slimefun4.core.attributes.EnergyNetComponent;
+import io.github.thebusybiscuit.slimefun4.core.attributes.EnergyNetProvider;
+import io.github.thebusybiscuit.slimefun4.core.attributes.RecipeDisplayItem;
+import io.github.thebusybiscuit.slimefun4.implementation.items.SimpleSlimefunItem;
 import io.github.thebusybiscuit.slimefun4.implementation.Slimefun;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -107,6 +112,12 @@ public final class ItemCatalogProbe extends JavaPlugin {
         int energy = 0;
         int recipesWithInputs = 0;
         int ingredientSlots = 0;
+        int simpleHandlerItems = 0;
+        int displayRecipeItems = 0;
+        int configuredRecipeMachines = 0;
+        int configuredResourceMachines = 0;
+        int energyProviders = 0;
+        List<String> warnings = new ArrayList<>();
 
         StringBuilder catalog = new StringBuilder();
         catalog.append("id\tclass\tticker\tsynchronized\tenergy_type\tcapacity\trecipe_inputs\n");
@@ -178,6 +189,76 @@ public final class ItemCatalogProbe extends JavaPlugin {
                 if (capacity < 0L) {
                     failures.add("negative energy capacity: " + id + "=" + capacity);
                 }
+                if (item instanceof EnergyNetProvider) {
+                    energyProviders++;
+                    if (capacity <= 0L) {
+                        failures.add("energy provider has nonpositive capacity: " + id + "=" + capacity);
+                    }
+                }
+            }
+
+            if (item instanceof SimpleSlimefunItem<?> simple) {
+                simpleHandlerItems++;
+                try {
+                    if (simple.getItemHandler() == null) {
+                        failures.add("simple item returned null handler: " + id);
+                    }
+                } catch (RuntimeException | LinkageError error) {
+                    failures.add("simple item handler failed: " + id + " -> "
+                            + error.getClass().getSimpleName() + ": " + error.getMessage());
+                }
+            }
+
+            if (item instanceof RecipeDisplayItem display) {
+                displayRecipeItems++;
+                try {
+                    List<ItemStack> displayRecipes = display.getDisplayRecipes();
+                    if (displayRecipes == null) {
+                        failures.add("recipe display returned null list: " + id);
+                    }
+                } catch (RuntimeException | LinkageError error) {
+                    failures.add("recipe display failed: " + id + " -> "
+                            + error.getClass().getSimpleName() + ": " + error.getMessage());
+                }
+            }
+
+            if (item instanceof AbstractElectricRecipeMachine machine) {
+                configuredRecipeMachines++;
+                if (machine.getCapacity() <= 0) {
+                    failures.add("recipe machine capacity not configured: " + id + "=" + machine.getCapacity());
+                }
+                if (machine.getEnergyConsumption() <= 0
+                        || machine.getEnergyConsumption() >= machine.getCapacity()) {
+                    failures.add("recipe machine consumption invalid: " + id + "="
+                            + machine.getEnergyConsumption() + "/" + machine.getCapacity());
+                }
+                if (machine.getSpeed() <= 0) {
+                    failures.add("recipe machine speed not configured: " + id + "=" + machine.getSpeed());
+                }
+                if (machine.getRecipes().isEmpty()) {
+                    warnings.add("recipe machine currently exposes zero registered recipes: " + id);
+                }
+            }
+
+            if (item instanceof AbstractElectricResourceMachine machine) {
+                configuredResourceMachines++;
+                if (machine.getCapacity() <= 0) {
+                    failures.add("resource machine capacity not configured: " + id + "=" + machine.getCapacity());
+                }
+                if (machine.getEnergyConsumption() <= 0
+                        || machine.getEnergyConsumption() >= machine.getCapacity()) {
+                    failures.add("resource machine consumption invalid: " + id + "="
+                            + machine.getEnergyConsumption() + "/" + machine.getCapacity());
+                }
+                if (machine.getSpeed() <= 0) {
+                    failures.add("resource machine speed not configured: " + id + "=" + machine.getSpeed());
+                }
+                if (machine.getItemStackOutputs() == null || machine.getItemStackOutputs().length == 0) {
+                    failures.add("resource machine has no configured output templates: " + id);
+                }
+                if (machine.getRecipes().isEmpty()) {
+                    warnings.add("resource machine currently exposes zero registered recipes: " + id);
+                }
             }
 
             int nonNullRecipeSlots = 0;
@@ -219,12 +300,20 @@ public final class ItemCatalogProbe extends JavaPlugin {
         result.append("recipes_with_inputs=").append(recipesWithInputs).append('\n');
         result.append("recipe_ingredient_slots=").append(ingredientSlots).append('\n');
         result.append("duplicate_declared_ids=").append(duplicateDeclared.size()).append('\n');
+        result.append("simple_handler_items=").append(simpleHandlerItems).append('\n');
+        result.append("recipe_display_items=").append(displayRecipeItems).append('\n');
+        result.append("configured_recipe_machines=").append(configuredRecipeMachines).append('\n');
+        result.append("configured_resource_machines=").append(configuredResourceMachines).append('\n');
+        result.append("energy_providers=").append(energyProviders).append('\n');
 
         if (!missingDeclared.isEmpty()) {
             result.append("missing_ids=").append(String.join(",", missingDeclared)).append('\n');
         }
         if (!extraRegistered.isEmpty()) {
             result.append("extra_ids=").append(String.join(",", extraRegistered)).append('\n');
+        }
+        for (String warning : warnings) {
+            result.append("warning=").append(warning).append('\n');
         }
         for (String failure : failures) {
             result.append("failure=").append(failure).append('\n');
@@ -237,7 +326,11 @@ public final class ItemCatalogProbe extends JavaPlugin {
                 + " registered=" + registered.size()
                 + " ticker=" + ticking
                 + " energy=" + energy
+                + " providers=" + energyProviders
+                + " simpleHandlers=" + simpleHandlerItems
+                + " displayItems=" + displayRecipeItems
                 + " missing=" + missingDeclared.size()
+                + " warnings=" + warnings.size()
                 + " failures=" + failures.size());
 
         Bukkit.shutdown();
