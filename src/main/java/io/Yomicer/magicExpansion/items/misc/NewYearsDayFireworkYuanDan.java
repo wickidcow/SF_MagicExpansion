@@ -4,6 +4,7 @@ import io.Yomicer.magicExpansion.MagicExpansion;
 import io.Yomicer.magicExpansion.utils.ColorGradient;
 import io.github.thebusybiscuit.slimefun4.core.attributes.NotPlaceable;
 import org.bukkit.*;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Firework;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
