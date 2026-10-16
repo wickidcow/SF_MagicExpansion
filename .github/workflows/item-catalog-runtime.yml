@@ -10,6 +10,7 @@ on:
       - 'tests/runtime/GeneratorBehaviorProbe.java'
       - 'tests/runtime/PowerRelayProbe.java'
       - 'tests/runtime/StackedVivariumProbe.java'
+      - 'tests/runtime/NoveltyContainerProbe.java'
       - '.github/workflows/item-catalog-runtime.yml'
   push:
     branches: ['audit/item-feature-verification-*']
@@ -57,7 +58,7 @@ jobs:
       - name: Build exact MagicExpansion source and audit plugin
         run: |
           set -euo pipefail
-          mkdir -p audit/classes/item-catalog audit/classes/machine-transaction audit/classes/generator-behavior audit/classes/power-relay audit/classes/stacked-vivarium
+          mkdir -p audit/classes/item-catalog audit/classes/machine-transaction audit/classes/generator-behavior audit/classes/power-relay audit/classes/stacked-vivarium audit/classes/novelty-container
           git rev-parse HEAD > audit/source-commit.txt
           bash scripts/install_slimefun_api.sh > audit/build.log 2>&1
           mvn -B -ntp clean verify >> audit/build.log 2>&1 || { tail -n 120 audit/build.log; exit 1; }
@@ -79,6 +80,9 @@ jobs:
           javac --release 21 -cp "$CANDIDATE:$(cat classpath.txt)" -d audit/classes/stacked-vivarium tests/runtime/StackedVivariumProbe.java
           printf "name: MagicExpansionStackedVivariumProbe\nmain: audit.StackedVivariumProbe\nversion: '1'\napi-version: '1.21.11'\ndepend: [Slimefun, magicexpansion]\n" > audit/classes/stacked-vivarium/plugin.yml
           jar --create --file audit/StackedVivariumProbe.jar -C audit/classes/stacked-vivarium .
+          javac --release 21 -cp "$CANDIDATE:$(cat classpath.txt)" -d audit/classes/novelty-container tests/runtime/NoveltyContainerProbe.java
+          printf "name: MagicExpansionNoveltyContainerProbe\nmain: audit.NoveltyContainerProbe\nversion: '1'\napi-version: '1.21.11'\ndepend: [Slimefun, magicexpansion]\n" > audit/classes/novelty-container/plugin.yml
+          jar --create --file audit/NoveltyContainerProbe.jar -C audit/classes/novelty-container .
 
       - name: Build disposable full 45-addon bundle with exact candidate
         env:
@@ -248,6 +252,18 @@ jobs:
           grep -Fxq STACKED_VIVARIUM_PASS <(head -n 1 stacked-vivarium-result.txt)
           ! grep -Eq 'STACKED_VIVARIUM_FATAL|NoSuchMethodError|NoClassDefFoundError|Error occurred while enabling|Could not load plugin' stacked-vivarium.console.log
 
+      - name: Exercise Page Chest and One Block conservation
+        run: |
+          set -euo pipefail
+          rm -f audit/full-stack/plugins/StackedVivariumProbe.jar
+          cp audit/NoveltyContainerProbe.jar audit/full-stack/plugins/
+          cd audit/full-stack
+          timeout --kill-after=20s 420s java -Xms768M -Xmx3G -jar server.jar --nogui > novelty-container.console.log 2>&1
+          test -s novelty-container-result.txt
+          cat novelty-container-result.txt
+          grep -Fxq NOVELTY_CONTAINER_PASS <(head -n 1 novelty-container-result.txt)
+          ! grep -Eq 'NOVELTY_CONTAINER_FATAL|NoSuchMethodError|NoClassDefFoundError|Error occurred while enabling|Could not load plugin' novelty-container.console.log
+
       - name: Preserve item catalog evidence
         if: always()
         uses: actions/upload-artifact@v7
@@ -268,6 +284,8 @@ jobs:
             audit/full-stack/power-relay.console.log
             audit/full-stack/stacked-vivarium-result.txt
             audit/full-stack/stacked-vivarium.console.log
+            audit/full-stack/novelty-container-result.txt
+            audit/full-stack/novelty-container.console.log
             audit/full-stack/smoke-result.txt
             target/surefire-reports/TEST-*.xml
           if-no-files-found: warn
