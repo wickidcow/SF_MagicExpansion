@@ -631,7 +631,9 @@ public class CustomSequenceTool extends SimpleSlimefunItem<ItemUseHandler> imple
 
         private void simulateLeftClick(Location location) {
             if (!Slimefun.getProtectionManager()
-                    .hasPermission(player, location, Interaction.INTERACT_BLOCK)) {
+                            .hasPermission(player, location, Interaction.INTERACT_BLOCK)
+                    || !Slimefun.getProtectionManager()
+                            .hasPermission(player, location, Interaction.BREAK_BLOCK)) {
                 player.sendMessage("§cSequence skipped a protected left-click target.");
                 return;
             }
