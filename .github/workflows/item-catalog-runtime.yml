@@ -21,7 +21,7 @@ concurrency:
 jobs:
   item-catalog:
     runs-on: ubuntu-latest
-    timeout-minutes: 35
+    timeout-minutes: 40
     strategy:
       fail-fast: false
       matrix:
@@ -53,7 +53,7 @@ jobs:
       - name: Build exact MagicExpansion source and audit plugin
         run: |
           set -euo pipefail
-          mkdir -p audit/classes audit/bundle
+          mkdir -p audit/classes
           git rev-parse HEAD > audit/source-commit.txt
           bash scripts/install_slimefun_api.sh > audit/build.log 2>&1
           mvn -B -ntp clean verify >> audit/build.log 2>&1 || { tail -n 120 audit/build.log; exit 1; }
@@ -63,49 +63,92 @@ jobs:
           javac --release 21 -cp "$CANDIDATE:$(cat classpath.txt)" -d audit/classes tests/runtime/ItemCatalogProbe.java
           printf "name: MagicExpansionItemCatalogProbe\nmain: audit.ItemCatalogProbe\nversion: '1'\napi-version: '1.21.11'\ndepend: [Slimefun, magicexpansion]\n" > audit/classes/plugin.yml
           jar --create --file audit/ItemCatalogProbe.jar -C audit/classes .
-          cp "$CANDIDATE" audit/bundle/
+
+      - name: Build disposable full 45-addon bundle with exact candidate
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p audit/release
+          gh api repos/wickidcow/Slimefun-Legacy/releases/tags/v4.1.74 > audit/release.json
+          gh release download v4.1.74 --repo wickidcow/Slimefun-Legacy \
+            --pattern 'Slimefun-Legacy4.1.74.jar' \
+            --pattern 'SF_Addons_1.21.11-26.3.zip' \
+            --dir audit/release
           python3 - <<'PY'
           import hashlib, json, re, zipfile
           from pathlib import Path
 
-          jars=list(Path('audit/bundle').glob('SF_MagicExpansion*.jar'))
-          assert len(jars)==1
-          jar=jars[0]
-          with zipfile.ZipFile(jar) as archive:
-              descriptor=archive.read('plugin.yml').decode()
-              version=re.search(r'''(?m)^version:\s*['"]?([^'"\s]+)''', descriptor).group(1)
-          digest=hashlib.sha256(jar.read_bytes()).hexdigest()
-          commit=Path('audit/source-commit.txt').read_text().strip()
-          manifest={
-              'bundle':'MagicExpansion item audit',
-              'bundle_revision':1,
-              'core_source_commit':'4f8aa1e9c288751aeefb9a9f72dbac17a6322b5a',
-              'compatibility':{'minecraft_versions':{'minimum':'1.21.11','primary':'26.3'}},
-              'addons':[{
+          release=json.loads(Path('audit/release.json').read_text())
+          assets={a['name']:a for a in release['assets']}
+          for name in ('Slimefun-Legacy4.1.74.jar','SF_Addons_1.21.11-26.3.zip'):
+              path=Path('audit/release')/name
+              assert path.is_file() and path.stat().st_size>0
+              digest='sha256:'+hashlib.sha256(path.read_bytes()).hexdigest()
+              assert assets[name].get('digest')==digest, (name,digest,assets[name].get('digest'))
+
+          candidate=list(Path('target').glob('SF_MagicExpansion*.jar'))
+          assert len(candidate)==1
+          candidate=candidate[0]
+          jar_bytes=candidate.read_bytes()
+          jar_sha=hashlib.sha256(jar_bytes).hexdigest()
+          with zipfile.ZipFile(candidate) as jar:
+              descriptor=jar.read('plugin.yml').decode('utf-8')
+              version=re.search(r'''(?m)^version:\s*['"]?([^'"\s]+)''',descriptor).group(1)
+              assert not any(n.startswith(('audit/','org/junit/','org/mockbukkit/')) for n in jar.namelist())
+
+          original_path=Path('audit/release/SF_Addons_1.21.11-26.3.zip')
+          with zipfile.ZipFile(original_path) as original:
+              members={n:original.read(n) for n in original.namelist()}
+              manifest=json.loads(members['SF_ADDON_MANIFEST.json'])
+              assert len(manifest['addons'])==45
+              rows=[r for r in manifest['addons'] if r['repository']=='wickidcow/SF_MagicExpansion']
+              assert len(rows)==1
+              old_jar=rows[0]['jar']
+              old_other={n:members[n] for n in members if n.endswith('.jar') and n!=old_jar}
+              assert len(old_other)==44
+              del members[old_jar]
+              rows[0].update(
+                  jar=candidate.name,
+                  source_jar=candidate.name,
+                  version=version,
+                  sha256=jar_sha,
+                  commit=Path('audit/source-commit.txt').read_text().strip(),
+              )
+              members[candidate.name]=jar_bytes
+              manifest['item_catalog_audit']={
                   'repository':'wickidcow/SF_MagicExpansion',
-                  'commit':commit,
-                  'jar':jar.name,
-                  'source_jar':jar.name,
-                  'version':version,
-                  'sha256':digest
-              }]
-          }
-          Path('audit/bundle/SF_ADDON_MANIFEST.json').write_text(json.dumps(manifest,indent=2)+'\n')
-          Path('audit/bundle/SHA256SUMS.txt').write_text(f'{digest}  {jar.name}\n')
-          Path('audit/bundle/COMPATIBILITY.txt').write_text('Disposable MagicExpansion item catalog audit bundle.\n')
+                  'candidate_commit':Path('audit/source-commit.txt').read_text().strip(),
+                  'candidate_sha256':jar_sha,
+                  'publication':'NOT_PUBLISHED',
+              }
+              members['SF_ADDON_MANIFEST.json']=(json.dumps(manifest,indent=2)+'\n').encode()
+              members['SHA256SUMS.txt']=''.join(
+                  f"{hashlib.sha256(members[n]).hexdigest()}  {n}\n"
+                  for n in sorted(members) if n.endswith('.jar')
+              ).encode()
+              members['COMPATIBILITY.txt'] += (
+                  '\nDisposable MagicExpansion item catalog candidate; not a release asset.\n'
+              ).encode()
           with zipfile.ZipFile('audit/item-audit-bundle.zip','w',zipfile.ZIP_DEFLATED) as out:
-              for path in sorted(Path('audit/bundle').iterdir()):
-                  out.write(path,path.name)
+              for n in sorted(members):
+                  info=zipfile.ZipInfo(n,(2026,10,15,0,0,0))
+                  info.compress_type=zipfile.ZIP_DEFLATED
+                  out.writestr(info,members[n])
+          with zipfile.ZipFile('audit/item-audit-bundle.zip') as out:
+              names=[n for n in out.namelist() if n.endswith('.jar')]
+              assert len(names)==45
+              assert candidate.name in names
+              assert all(out.read(n)==blob for n,blob in old_other.items())
           PY
-          curl -fL --retry 3 'https://github.com/wickidcow/Slimefun-Legacy/releases/download/v4.1.74/Slimefun-Legacy4.1.74.jar' -o audit/Slimefun-Legacy4.1.74.jar
-          echo '72a524d7c0d6f75a9decbf06679515887273ae53673d3f5ee38f355bef952c96  audit/Slimefun-Legacy4.1.74.jar' | sha256sum -c -
+          cp audit/release/Slimefun-Legacy4.1.74.jar audit/Slimefun-Legacy4.1.74.jar
           python3 - <<'PY'
           from pathlib import Path
           p=Path('legacy-validation/scripts/full_stack_runtime_smoke.sh')
           text=p.read_text()
           needle='motd=Slimefun Legacy full-stack runtime smoke\n'
           assert text.count(needle)==1
-          p.write_text(text.replace(needle, needle+'server-ip=127.0.0.1\nserver-port=0\n'))
+          p.write_text(text.replace(needle,needle+'server-ip=127.0.0.1\nserver-port=0\n'))
           PY
 
       - uses: actions/setup-java@v5
@@ -113,7 +156,7 @@ jobs:
           distribution: temurin
           java-version: ${{ matrix.java }}
 
-      - name: Boot Slimefun and MagicExpansion twice
+      - name: Boot exact 45-addon candidate twice
         env:
           SERVER_SOFTWARE: ${{ matrix.software }}
           SERVER_MINECRAFT_VERSION: ${{ matrix.minecraft }}
@@ -125,15 +168,17 @@ jobs:
           bash legacy-validation/scripts/full_stack_runtime_smoke.sh \
             audit/Slimefun-Legacy4.1.74.jar \
             audit/item-audit-bundle.zip \
-            audit/full-stack > audit/runtime-smoke.log 2>&1 || { tail -n 120 audit/runtime-smoke.log; exit 1; }
+            audit/full-stack > audit/runtime-smoke.log 2>&1 || { tail -n 160 audit/runtime-smoke.log; exit 1; }
           grep -Fq 'runtime smoke: PASS' audit/full-stack/smoke-result.txt
+          test "$(wc -l < audit/full-stack/expected-addons.txt)" = 45
+          test ! -s audit/full-stack/dependency-gated-addons.txt
 
       - name: Audit every registered MagicExpansion item
         run: |
           set -euo pipefail
           cp audit/ItemCatalogProbe.jar audit/full-stack/plugins/
           cd audit/full-stack
-          timeout --kill-after=20s 420s java -Xms512M -Xmx2G -jar server.jar --nogui > item-catalog.console.log 2>&1
+          timeout --kill-after=20s 420s java -Xms768M -Xmx3G -jar server.jar --nogui > item-catalog.console.log 2>&1
           test -s item-catalog-result.txt
           cat item-catalog-result.txt
           grep -Fxq ITEM_CATALOG_PASS <(head -n 1 item-catalog-result.txt)
@@ -147,6 +192,7 @@ jobs:
           path: |
             audit/build.log
             audit/runtime-smoke.log
+            audit/item-audit-bundle.zip
             audit/full-stack/item-catalog-result.txt
             audit/full-stack/item-catalog.tsv
             audit/full-stack/item-catalog.console.log
