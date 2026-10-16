@@ -61,8 +61,8 @@ public class BasicBossDropListener implements Listener {
         if(new Random().nextInt(100000)>91888){
             return;
         }
-        ItemStack DropItem = MagicExpansionItems.WIND_SPIRIT;
-        ItemStack DropItem2 = SlimefunItems.ADVANCED_CIRCUIT_BOARD;
+        ItemStack DropItem = MagicExpansionItems.WIND_SPIRIT.clone();
+        ItemStack DropItem2 = SlimefunItems.ADVANCED_CIRCUIT_BOARD.clone();
 
         // 掉落物品到世界中
         dropLocation.getWorld().dropItemNaturally(dropLocation, DropItem);
@@ -86,8 +86,8 @@ public class BasicBossDropListener implements Listener {
         if(new Random().nextInt(100000)>91888){
             return;
         }
-        ItemStack DropItem = MagicExpansionItems.BASIC_ENCHANT_STONE;
-        ItemStack DropItem2 = SlimefunItems.BASIC_CIRCUIT_BOARD;
+        ItemStack DropItem = MagicExpansionItems.BASIC_ENCHANT_STONE.clone();
+        ItemStack DropItem2 = SlimefunItems.BASIC_CIRCUIT_BOARD.clone();
 
         // 掉落物品到世界中
         dropLocation.getWorld().dropItemNaturally(dropLocation, DropItem);
