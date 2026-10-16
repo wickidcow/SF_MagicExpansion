@@ -1,11 +1,14 @@
 package io.Yomicer.magicExpansion.items.summonBossItem.bossSkill;
 
+import io.Yomicer.magicExpansion.MagicExpansion;
 import io.Yomicer.magicExpansion.utils.log.Debug;
 import org.bukkit.*;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.List;
 import java.util.Random;
@@ -13,6 +16,33 @@ import java.util.stream.Collectors;
 
 public class FireZombieSkill {
 
+    /**
+     * Wind Spirit passive: regenerate exactly 2 health every second while alive.
+     * The task owns no world/chunk tickets and stops as soon as the entity is gone.
+     */
+    public static void startWindSpiritRegeneration(LivingEntity mob) {
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                if (!mob.isValid() || mob.isDead()) {
+                    cancel();
+                    return;
+                }
+
+                var maxHealthAttribute = mob.getAttribute(Attribute.MAX_HEALTH);
+                if (maxHealthAttribute == null) {
+                    cancel();
+                    return;
+                }
+
+                double current = mob.getHealth();
+                double max = maxHealthAttribute.getValue();
+                if (current > 0.0D && current < max) {
+                    mob.setHealth(Math.min(max, current + 2.0D));
+                }
+            }
+        }.runTaskTimer(MagicExpansion.getInstance(), 20L, 20L);
+    }
 
 
     // 生成粒子特效
