@@ -19,6 +19,7 @@ import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.metadata.MetadataValue;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -43,7 +44,7 @@ public class WordClear extends SimpleSlimefunItem<ItemUseHandler> implements Not
             }
 
             // --- 查找最近的全息盔甲架 ---
-            List<Entity> entities = (List<Entity>) (List<?>) loc.getNearbyEntities(3, 3, 3);
+            List<Entity> entities = new ArrayList<>(loc.getNearbyEntities(3, 3, 3));
             ArmorStand nearestHologram = null;
             double nearestDistance = 999;
 
