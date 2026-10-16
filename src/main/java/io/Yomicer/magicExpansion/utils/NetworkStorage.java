@@ -1,6 +1,7 @@
 package io.Yomicer.magicExpansion.utils;
 
 import com.jeff_media.morepersistentdatatypes.DataType;
+import io.Yomicer.magicExpansion.MagicExpansion;
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItem;
 import io.github.thebusybiscuit.slimefun4.utils.SlimefunUtils;
 import me.mrCookieSlime.Slimefun.api.inventory.BlockMenu;
