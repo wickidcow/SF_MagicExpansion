@@ -34,11 +34,14 @@ import java.util.Arrays;
 import java.util.Base64;
 import java.util.List;
 
-import static io.Yomicer.magicExpansion.core.MagicExpansionItems.ORIGIN_MATERIAL_GEN;
 import static io.Yomicer.magicExpansion.core.MagicExpansionItems.ORIGIN_MATERIAL_GEN_ULTRA;
 import static io.Yomicer.magicExpansion.utils.ColorGradient.getGradientNameVer2;
 
 public class OriginMaterialGenUltra extends AbstractElectricResourceMachine implements DistinctiveItem {
+
+    private static final String PENDING_OUTPUT_KEY = "origin_ultra_pending";
+    private static final String PENDING_OUTPUT_PDC_KEY = "origin_ultra_pending";
+    private static final long OUTPUT_PER_OPERATION = 2_304L;
 
     private static final int[] BACKGROUND_SLOTS = new int[] { 0, 4, 8, 9, 13, 17 };
     private static final int[] OUTPUT_BORDER_SLOTS = new int[] { 10, 11, 12, 14, 15, 16};
@@ -92,11 +95,22 @@ public class OriginMaterialGenUltra extends AbstractElectricResourceMachine impl
             meta.setLore(lore);
 
             NamespacedKey key = new NamespacedKey(MagicExpansion.getInstance(), "origin_material");
-            // 将 Base64 字符串存储到掉落物的 PDC 中
             meta.getPersistentDataContainer().set(key, PersistentDataType.STRING, base64Item);
+
+            long pending = getPending(data);
+            if (pending > 0L) {
+                meta.getPersistentDataContainer().set(
+                        new NamespacedKey(MagicExpansion.getInstance(), PENDING_OUTPUT_PDC_KEY),
+                        PersistentDataType.LONG,
+                        pending);
+                lore.add(getGradientNameVer2("Pending Output: " + pending));
+                meta.setLore(lore);
+            }
+
             drop.setItemMeta(meta);
         }
         loc.getWorld().dropItemNaturally(loc, drop);
+        data.removeData(PENDING_OUTPUT_KEY);
         data.removeData("origin_material");
     }
 
@@ -117,8 +131,16 @@ public class OriginMaterialGenUltra extends AbstractElectricResourceMachine impl
         SlimefunBlockData data = StorageCacheUtils.getBlock(loc);
         if (data == null) return;
 
-        // 存入 Base64 字符串
         data.setData("origin_material", base64Item);
+
+        Long pending = meta.getPersistentDataContainer().get(
+                new NamespacedKey(MagicExpansion.getInstance(), PENDING_OUTPUT_PDC_KEY),
+                PersistentDataType.LONG);
+        if (pending != null && pending > 0L) {
+            data.setData(PENDING_OUTPUT_KEY, Long.toString(pending));
+        } else {
+            data.removeData(PENDING_OUTPUT_KEY);
+        }
     }
 
 
@@ -135,52 +157,99 @@ public class OriginMaterialGenUltra extends AbstractElectricResourceMachine impl
 //    }
 
     @Override
-	public MachineRecipe findNextRecipe(BlockMenu menu) {
-
-        int maxedSlots = 0;
-        for (int slots : getOutputSlots()) {
-            ItemStack item = menu.getItemInSlot(slots);
-            if (item != null && item.getMaxStackSize() == item.getAmount()) {
-                maxedSlots += 1;
-            }
+    public MachineRecipe findNextRecipe(BlockMenu menu) {
+        SlimefunBlockData data = StorageCacheUtils.getBlock(menu.getBlock().getLocation());
+        if (data == null || !flushPending(menu, data)) {
+            return null;
         }
 
-        if (maxedSlots == getOutputSlots().length) { return null; }
+        String base64Item = data.getData("origin_material");
+        ItemStack prototype = deserializeItemStack(base64Item);
+        if (prototype == null || prototype.getType().isAir()) {
+            return null;
+        }
 
-        MachineRecipe recipe = recipes.get(0);
-
-        return recipe;
-
+        return recipes.isEmpty() ? null : recipes.get(0);
     }
 
 
     protected void addOutputs(BlockMenu menu, Block b, ItemStack[] outputs) {
-        Location loc = b.getLocation();
-        SlimefunBlockData data = StorageCacheUtils.getBlock(loc);
-        if (data == null) return;
+        SlimefunBlockData data = StorageCacheUtils.getBlock(b.getLocation());
+        if (data == null) {
+            return;
+        }
 
-        // 取出 Base64 字符串
         String base64Item = data.getData("origin_material");
-        ItemStack output = null;
-        if (base64Item != null) {
-            // 反序列化得到带有完整属性的原始物品
-            output = deserializeItemStack(base64Item);
-            if (output != null) {
-                output.setAmount(64); // 设定单次推出的数量
-            }
+        ItemStack prototype = deserializeItemStack(base64Item);
+        if (prototype == null || prototype.getType().isAir()) {
+            menu.replaceExistingItem(4, PROGRESS_STACK.clone());
+            return;
         }
 
-        if (output != null) {
-            for (int i = 0; i < 36; i++){
-                menu.pushItem(output.clone(), getOutputSlots());
-            }
-            updateInfoStack(menu, output);
-        } else {
-            ItemStack item = PROGRESS_STACK.clone();
-            menu.replaceExistingItem(4, item);
-        }
+        long pending = getPending(data);
+        pending = Long.MAX_VALUE - pending < OUTPUT_PER_OPERATION
+                ? Long.MAX_VALUE
+                : pending + OUTPUT_PER_OPERATION;
+        data.setData(PENDING_OUTPUT_KEY, Long.toString(pending));
+
+        flushPending(menu, data);
+        prototype.setAmount(1);
+        updateInfoStack(menu, prototype);
     }
 
+    private boolean flushPending(BlockMenu menu, SlimefunBlockData data) {
+        long pending = getPending(data);
+        if (pending <= 0L) {
+            data.removeData(PENDING_OUTPUT_KEY);
+            return true;
+        }
+
+        ItemStack prototype = deserializeItemStack(data.getData("origin_material"));
+        if (prototype == null || prototype.getType().isAir()) {
+            return false;
+        }
+        prototype.setAmount(1);
+        int maxStack = Math.max(1, prototype.getMaxStackSize());
+
+        while (pending > 0L) {
+            int batch = (int) Math.min((long) maxStack, pending);
+            ItemStack output = prototype.clone();
+            output.setAmount(batch);
+
+            ItemStack leftover = menu.pushItem(output, getOutputSlots());
+            int notStored = leftover == null || leftover.getType().isAir()
+                    ? 0
+                    : Math.max(0, leftover.getAmount());
+            int accepted = batch - notStored;
+            if (accepted <= 0) {
+                break;
+            }
+            pending -= accepted;
+            if (notStored > 0) {
+                break;
+            }
+        }
+
+        if (pending <= 0L) {
+            data.removeData(PENDING_OUTPUT_KEY);
+            return true;
+        }
+
+        data.setData(PENDING_OUTPUT_KEY, Long.toString(pending));
+        return false;
+    }
+
+    private static long getPending(SlimefunBlockData data) {
+        String raw = data.getData(PENDING_OUTPUT_KEY);
+        if (raw == null || raw.isEmpty()) {
+            return 0L;
+        }
+        try {
+            return Math.max(0L, Long.parseLong(raw));
+        } catch (NumberFormatException invalid) {
+            return 0L;
+        }
+    }
 
 
     @Override
@@ -227,7 +296,7 @@ public class OriginMaterialGenUltra extends AbstractElectricResourceMachine impl
 
     @Override
     public boolean isSynchronized() {
-        return false;
+        return true;
     }
 
     private void updateInfoStack(BlockMenu menu, ItemStack output) {
