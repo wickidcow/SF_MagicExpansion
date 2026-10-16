@@ -18,6 +18,7 @@ import io.github.thebusybiscuit.slimefun4.implementation.handlers.SimpleBlockBre
 import io.github.thebusybiscuit.slimefun4.libraries.dough.items.CustomItemStack;
 import io.github.thebusybiscuit.slimefun4.libraries.dough.protection.Interaction;
 import io.github.thebusybiscuit.slimefun4.utils.SlimefunUtils;
+import me.mrCookieSlime.Slimefun.Objects.handlers.BlockTicker;
 import me.mrCookieSlime.Slimefun.api.BlockStorage;
 import me.mrCookieSlime.Slimefun.api.inventory.BlockMenu;
 import me.mrCookieSlime.Slimefun.api.inventory.BlockMenuPreset;
@@ -26,6 +27,7 @@ import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
@@ -65,6 +67,22 @@ public class CargoFragmentDistributor extends SlimefunItem implements EnergyNetC
 
         // 启动全局 tick 任务
         startGlobalTickTask();
+    }
+
+    @Override
+    public void preRegister() {
+        addItemHandler(new BlockTicker() {
+            @Override
+            public void tick(Block block, SlimefunItem item, SlimefunBlockData data) {
+                // Rehydrate registry state for blocks loaded after restart/chunk reload.
+                machineStates.computeIfAbsent(block.getLocation(), ignored -> new MachineState());
+            }
+
+            @Override
+            public boolean isSynchronized() {
+                return true;
+            }
+        });
     }
 
     /**
@@ -646,15 +664,15 @@ public class CargoFragmentDistributor extends SlimefunItem implements EnergyNetC
         ItemStack playerHeadItem = createPlayerHeadDisplay(null);
 
         preset.addItem(playerHeadSlot, playerHeadItem, (p, slot, item, action) -> {
-            // 使用玩家打开菜单时所在的方块位置
-            Block b = p.getTargetBlockExact(5);
-            if (b == null) return false;
+            Inventory top = p.getOpenInventory().getTopInventory();
+            if (!(top.getHolder() instanceof BlockMenu menu)) {
+                return false;
+            }
 
-            Location location = b.getLocation();
-
-            // 获取 BlockMenu 实例
-            BlockMenu menu = BlockStorage.getInventory(b);
-            if (menu == null) return false;
+            Location location = menu.getLocation();
+            if (!(BlockStorage.check(location) instanceof CargoFragmentDistributor)) {
+                return false;
+            }
 
             if (action.isRightClicked()) {
                 // 右键清除玩家设置
