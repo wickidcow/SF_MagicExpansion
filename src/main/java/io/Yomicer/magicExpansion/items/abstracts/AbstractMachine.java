@@ -7,6 +7,7 @@ import io.github.thebusybiscuit.slimefun4.core.attributes.MachineProcessHolder;
 import io.github.thebusybiscuit.slimefun4.core.attributes.RecipeDisplayItem;
 import io.github.thebusybiscuit.slimefun4.core.machines.MachineProcessor;
 import io.github.thebusybiscuit.slimefun4.implementation.operations.CraftingOperation;
+import io.github.thebusybiscuit.slimefun4.libraries.dough.inventory.InvUtils;
 import io.github.thebusybiscuit.slimefun4.libraries.dough.items.CustomItemStack;
 import me.mrCookieSlime.Slimefun.Objects.SlimefunItem.abstractItems.MachineRecipe;
 import me.mrCookieSlime.Slimefun.api.inventory.BlockMenu;
@@ -72,8 +73,15 @@ public abstract class AbstractMachine extends AbstractTickingContainer implement
         CraftingOperation currentOp = processor.getOperation(b);
 
         if (currentOp != null) {
-            if (checkCraftPreconditions(b)) {
+            if (currentOp.isFinished()
+                    && !InvUtils.fitAll(menu.toInventory(), currentOp.getResults(), getOutputSlots())) {
+                // Cargo or a player may have filled the output while this operation
+                // was processing. Keep the completed operation pending rather than
+                // deleting its result or burning power while blocked.
+                return;
+            }
 
+            if (checkCraftPreconditions(b)) {
                 if(!currentOp.isFinished()) {
                     processor.updateProgressBar(menu, getProgressSlot(), currentOp);
                     currentOp.addProgress(1);
