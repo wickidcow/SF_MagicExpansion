@@ -884,3 +884,377 @@ shops:
         result: {"slimefun": "IE_STORAGE_UNIT_6", "amount": 1}
         cost: [{"material": "DIAMOND_BLOCK", "amount": 16}, {"material": "IRON_BLOCK", "amount": 32}, {"material": "NETHERITE_INGOT", "amount": 8}]
         personalLimit: 1
+
+# Additional Albion themed portable-shop catalog wave.
+  - name: "Artificer - Quick Machines"
+    offers:
+      - id: albion.magic-quick-crafting.v1
+        result: {"slimefun": "MAGIC_EXPANSION_QUICK_ENHANCED_CRAFTING_TABLE", "amount": 1}
+        cost: [{"material": "IRON_BLOCK", "amount": 4}, {"material": "REDSTONE_BLOCK", "amount": 4}, {"material": "DIAMOND", "amount": 8}]
+        personalLimit: 1
+      - id: albion.magic-quick-smeltery.v1
+        result: {"slimefun": "MAGIC_EXPANSION_QUICK_SMELTERY", "amount": 1}
+        cost: [{"material": "IRON_BLOCK", "amount": 6}, {"material": "REDSTONE_BLOCK", "amount": 4}, {"material": "DIAMOND", "amount": 8}]
+        personalLimit: 1
+      - id: albion.magic-quick-grindstone.v1
+        result: {"slimefun": "MAGIC_EXPANSION_QUICK_GRIND_STONE", "amount": 1}
+        cost: [{"material": "IRON_BLOCK", "amount": 4}, {"material": "REDSTONE_BLOCK", "amount": 4}, {"material": "DIAMOND", "amount": 6}]
+        personalLimit: 1
+      - id: albion.magic-quick-ore-crusher.v1
+        result: {"slimefun": "MAGIC_EXPANSION_QUICK_ORE_CRUSHER", "amount": 1}
+        cost: [{"material": "IRON_BLOCK", "amount": 6}, {"material": "REDSTONE_BLOCK", "amount": 6}, {"material": "DIAMOND", "amount": 8}]
+        personalLimit: 1
+      - id: albion.magic-quick-armor-forge.v1
+        result: {"slimefun": "MAGIC_EXPANSION_QUICK_ARMOR_FORGE", "amount": 1}
+        cost: [{"material": "IRON_BLOCK", "amount": 8}, {"material": "ANVIL", "amount": 1}, {"material": "DIAMOND", "amount": 12}]
+        personalLimit: 1
+      - id: albion.magic-quick-compressor.v1
+        result: {"slimefun": "MAGIC_EXPANSION_QUICK_COMPRESSOR", "amount": 1}
+        cost: [{"material": "IRON_BLOCK", "amount": 6}, {"material": "PISTON", "amount": 8}, {"material": "DIAMOND", "amount": 8}]
+        personalLimit: 1
+      - id: albion.magic-quick-pressure.v1
+        result: {"slimefun": "MAGIC_EXPANSION_QUICK_PRESSURE_CHAMBER", "amount": 1}
+        cost: [{"material": "IRON_BLOCK", "amount": 6}, {"material": "GLASS", "amount": 32}, {"material": "DIAMOND", "amount": 8}]
+        personalLimit: 1
+      - id: albion.magic-quick-workbench.v1
+        result: {"slimefun": "MAGIC_EXPANSION_QUICK_MAGIC_WORKBENCH", "amount": 1}
+        cost: [{"material": "BOOKSHELF", "amount": 8}, {"material": "GOLD_BLOCK", "amount": 4}, {"material": "DIAMOND", "amount": 12}]
+        personalLimit: 1
+      - id: albion.magic-quick-panning.v1
+        result: {"slimefun": "MAGIC_EXPANSION_QUICK_AUTOMATED_PANNING_MACHINE", "amount": 1}
+        cost: [{"material": "GOLD_BLOCK", "amount": 6}, {"material": "IRON_BLOCK", "amount": 6}, {"material": "DIAMOND", "amount": 8}]
+        personalLimit: 1
+      - id: albion.magic-quick-altar.v1
+        result: {"slimefun": "MAGIC_EXPANSION_QUICK_AUTOMATED_ANCIENT_ALTAR", "amount": 1}
+        cost: [{"material": "ENCHANTING_TABLE", "amount": 1}, {"material": "AMETHYST_BLOCK", "amount": 8}, {"material": "DIAMOND", "amount": 16}]
+        personalLimit: 1
+      - id: albion.magic-quick-heated-pressure.v1
+        result: {"slimefun": "MAGIC_EXPANSION_QUICK_HEATED_PRESSURE_CHAMBER", "amount": 1}
+        cost: [{"material": "IRON_BLOCK", "amount": 10}, {"material": "BLAZE_ROD", "amount": 16}, {"material": "DIAMOND", "amount": 16}]
+        personalLimit: 1
+  - name: "Artificer - Magic Utilities"
+    offers:
+      - id: albion.magic-page-chest.v1
+        result: {"slimefun": "PAGE_CHEST", "amount": 1}
+        cost: [{"material": "CHEST", "amount": 16}, {"material": "IRON_BLOCK", "amount": 4}, {"material": "EMERALD", "amount": 16}]
+        personalLimit: 4
+      - id: albion.magic-mineral-cave.v1
+        result: {"slimefun": "MAGIC_EXPANSION_MINERAL_CAVE", "amount": 1}
+        cost: [{"material": "SMOOTH_STONE", "amount": 64}, {"material": "AMETHYST_SHARD", "amount": 32}, {"material": "DIAMOND", "amount": 8}]
+        personalLimit: 1
+      - id: albion.magic-scythe.v1
+        result: {"slimefun": "MAGIC_EXPANSION_SCYTHE", "amount": 1}
+        cost: [{"material": "IRON_BLOCK", "amount": 4}, {"material": "DIAMOND", "amount": 8}, {"material": "EMERALD", "amount": 16}]
+        personalLimit: 1
+      - id: albion.magic-enchanting-table.v1
+        result: {"slimefun": "ENCHANTING_TABLE", "amount": 1}
+        cost: [{"material": "ENCHANTING_TABLE", "amount": 1}, {"material": "LAPIS_BLOCK", "amount": 8}, {"material": "DIAMOND", "amount": 12}]
+        personalLimit: 1
+      - id: albion.magic-five-element-touch.v1
+        result: {"slimefun": "FIVE_ELEMENT_TOUCH", "amount": 1}
+        cost: [{"material": "DIAMOND_BLOCK", "amount": 4}, {"material": "AMETHYST_BLOCK", "amount": 8}, {"material": "NETHER_STAR", "amount": 1}]
+        personalLimit: 1
+      - id: albion.magic-five-element-touch-rc.v1
+        result: {"slimefun": "FIVE_ELEMENT_TOUCH_RIGHT_CLICK", "amount": 1}
+        cost: [{"material": "DIAMOND_BLOCK", "amount": 6}, {"material": "AMETHYST_BLOCK", "amount": 12}, {"material": "NETHER_STAR", "amount": 2}]
+        personalLimit: 1
+      - id: albion.magic-void-touch.v1
+        result: {"slimefun": "VOID_TOUCH", "amount": 1}
+        cost: [{"material": "OBSIDIAN", "amount": 32}, {"material": "ENDER_PEARL", "amount": 32}, {"material": "NETHER_STAR", "amount": 2}]
+        personalLimit: 1
+      - id: albion.magic-random-spawner.v1
+        result: {"slimefun": "MAGIC_EXPANSION_RANDOM_SPAWNER", "amount": 1}
+        cost: [{"material": "ENDER_PEARL", "amount": 32}, {"material": "DIAMOND", "amount": 16}, {"material": "EMERALD", "amount": 32}]
+        personalLimit: 2
+      - id: albion.magic-interactive-core.v1
+        result: {"slimefun": "MAGIC_EXPANSION_INTERACTIVE_CORE", "amount": 1}
+        cost: [{"material": "REDSTONE_BLOCK", "amount": 8}, {"material": "IRON_BLOCK", "amount": 8}, {"material": "DIAMOND", "amount": 8}]
+        personalLimit: 4
+  - name: "Artificer - Resource Generators"
+    offers:
+      - id: albion.magic-resource-wood-basic.v1
+        result: {"slimefun": "RESOURCE_MACHINE_WOOD_BASIC", "amount": 1}
+        cost: [{"material": "OAK_LOG", "amount": 64}, {"material": "IRON_BLOCK", "amount": 4}, {"material": "REDSTONE_BLOCK", "amount": 4}]
+        personalLimit: 2
+      - id: albion.magic-resource-wood-ultra.v1
+        result: {"slimefun": "RESOURCE_MACHINE_WOOD_ULTRA", "amount": 1}
+        cost: [{"material": "OAK_LOG", "amount": 64}, {"material": "DIAMOND_BLOCK", "amount": 2}, {"material": "NETHERITE_INGOT", "amount": 1}]
+        personalLimit: 1
+      - id: albion.magic-light-gen-basic.v1
+        result: {"slimefun": "LIGHT_GEN_BASIC", "amount": 1}
+        cost: [{"material": "GLOWSTONE", "amount": 32}, {"material": "IRON_BLOCK", "amount": 4}, {"material": "REDSTONE_BLOCK", "amount": 4}]
+        personalLimit: 2
+      - id: albion.magic-string-gen-basic.v1
+        result: {"slimefun": "STRING_GEN_BASIC", "amount": 1}
+        cost: [{"material": "STRING", "amount": 64}, {"material": "IRON_BLOCK", "amount": 4}, {"material": "REDSTONE_BLOCK", "amount": 4}]
+        personalLimit: 2
+      - id: albion.magic-string-gen-ultra.v1
+        result: {"slimefun": "STRING_GEN_ULTRA", "amount": 1}
+        cost: [{"material": "STRING", "amount": 64}, {"material": "DIAMOND_BLOCK", "amount": 2}, {"material": "NETHERITE_INGOT", "amount": 1}]
+        personalLimit: 1
+      - id: albion.magic-quartz-miner.v1
+        result: {"slimefun": "MINE_MAN_QUARTZ_BASIC", "amount": 1}
+        cost: [{"material": "QUARTZ_BLOCK", "amount": 32}, {"material": "IRON_BLOCK", "amount": 6}, {"material": "DIAMOND", "amount": 8}]
+        personalLimit: 1
+      - id: albion.magic-amethyst-miner.v1
+        result: {"slimefun": "MINE_MAN_AMETHYST_SHARD_BASIC", "amount": 1}
+        cost: [{"material": "AMETHYST_BLOCK", "amount": 16}, {"material": "IRON_BLOCK", "amount": 6}, {"material": "DIAMOND", "amount": 8}]
+        personalLimit: 1
+      - id: albion.magic-redstone-miner.v1
+        result: {"slimefun": "MINE_MAN_REDSTONE_BASIC", "amount": 1}
+        cost: [{"material": "REDSTONE_BLOCK", "amount": 16}, {"material": "IRON_BLOCK", "amount": 6}, {"material": "DIAMOND", "amount": 8}]
+        personalLimit: 1
+      - id: albion.magic-diamond-miner.v1
+        result: {"slimefun": "MINE_MAN_DIAMOND_BASIC", "amount": 1}
+        cost: [{"material": "DIAMOND_BLOCK", "amount": 2}, {"material": "IRON_BLOCK", "amount": 12}, {"material": "NETHERITE_INGOT", "amount": 1}]
+        personalLimit: 1
+      - id: albion.magic-lapis-miner.v1
+        result: {"slimefun": "MINE_MAN_LAPIS_LAZULI_BASIC", "amount": 1}
+        cost: [{"material": "LAPIS_BLOCK", "amount": 16}, {"material": "IRON_BLOCK", "amount": 6}, {"material": "DIAMOND", "amount": 8}]
+        personalLimit: 1
+      - id: albion.magic-emerald-miner.v1
+        result: {"slimefun": "MINE_MAN_EMERALD_BASIC", "amount": 1}
+        cost: [{"material": "EMERALD_BLOCK", "amount": 8}, {"material": "IRON_BLOCK", "amount": 8}, {"material": "DIAMOND", "amount": 8}]
+        personalLimit: 1
+      - id: albion.magic-coal-miner.v1
+        result: {"slimefun": "MINE_MAN_COAL_BASIC", "amount": 1}
+        cost: [{"material": "COAL_BLOCK", "amount": 32}, {"material": "IRON_BLOCK", "amount": 4}, {"material": "REDSTONE_BLOCK", "amount": 4}]
+        personalLimit: 2
+      - id: albion.magic-netherite-scrap-miner.v1
+        result: {"slimefun": "MINE_MAN_NETHERITE_SCRAP_BASIC", "amount": 1}
+        cost: [{"material": "ANCIENT_DEBRIS", "amount": 8}, {"material": "DIAMOND_BLOCK", "amount": 4}, {"material": "NETHER_STAR", "amount": 1}]
+        personalLimit: 1
+      - id: albion.magic-mineral-basic.v1
+        result: {"slimefun": "MINE_MAN_MINERAL_BASIC", "amount": 1}
+        cost: [{"material": "IRON_BLOCK", "amount": 16}, {"material": "DIAMOND_BLOCK", "amount": 2}, {"material": "EMERALD_BLOCK", "amount": 4}]
+        personalLimit: 1
+      - id: albion.magic-mineral-ultra.v1
+        result: {"slimefun": "MINE_MAN_MINERAL_ULTRA", "amount": 1}
+        cost: [{"material": "IRON_BLOCK", "amount": 32}, {"material": "DIAMOND_BLOCK", "amount": 8}, {"material": "NETHERITE_INGOT", "amount": 4}]
+        personalLimit: 1
+      - id: albion.magic-light-extractor.v1
+        result: {"slimefun": "LIGHT_EXTRACT_BASIC", "amount": 1}
+        cost: [{"material": "SEA_LANTERN", "amount": 16}, {"material": "IRON_BLOCK", "amount": 8}, {"material": "DIAMOND", "amount": 12}]
+        personalLimit: 1
+      - id: albion.magic-wood-transform-basic.v1
+        result: {"slimefun": "WOOD_TRANSFORM_BASIC", "amount": 1}
+        cost: [{"material": "OAK_LOG", "amount": 64}, {"material": "GOLD_BLOCK", "amount": 4}, {"material": "DIAMOND", "amount": 8}]
+        personalLimit: 2
+      - id: albion.magic-wood-transform-ultra.v1
+        result: {"slimefun": "WOOD_TRANSFORM_ULTRA", "amount": 1}
+        cost: [{"material": "OAK_LOG", "amount": 64}, {"material": "DIAMOND_BLOCK", "amount": 4}, {"material": "NETHERITE_INGOT", "amount": 2}]
+        personalLimit: 1
+      - id: albion.magic-quartz-pure-basic.v1
+        result: {"slimefun": "QUARTZ_PURE_MACHINE_BAISC", "amount": 1}
+        cost: [{"material": "QUARTZ_BLOCK", "amount": 32}, {"material": "IRON_BLOCK", "amount": 8}, {"material": "DIAMOND", "amount": 8}]
+        personalLimit: 1
+      - id: albion.magic-quartz-pure-ultra.v1
+        result: {"slimefun": "QUARTZ_PURE_MACHINE_ULTRA", "amount": 1}
+        cost: [{"material": "QUARTZ_BLOCK", "amount": 64}, {"material": "DIAMOND_BLOCK", "amount": 4}, {"material": "NETHERITE_INGOT", "amount": 2}]
+        personalLimit: 1
+  - name: "Fisher - Magic Fishing"
+    offers:
+      - id: albion.magic-fish-lure-basic.v1
+        result: {"slimefun": "FISH_LURE_BASIC", "amount": 8}
+        cost: [{"material": "COD", "amount": 16}, {"material": "STRING", "amount": 16}, {"material": "EMERALD", "amount": 4}]
+        personalLimit: 8
+      - id: albion.magic-fish-lure-dust.v1
+        result: {"slimefun": "FISH_LURE_DUST", "amount": 4}
+        cost: [{"material": "COD", "amount": 16}, {"material": "REDSTONE", "amount": 32}, {"material": "EMERALD", "amount": 8}]
+        personalLimit: 6
+      - id: albion.magic-fish-lure-ore.v1
+        result: {"slimefun": "FISH_LURE_ORE", "amount": 4}
+        cost: [{"material": "SALMON", "amount": 16}, {"material": "IRON_INGOT", "amount": 16}, {"material": "EMERALD", "amount": 8}]
+        personalLimit: 6
+      - id: albion.magic-fish-lure-alloy.v1
+        result: {"slimefun": "FISH_LURE_ALLOY_INGOT", "amount": 4}
+        cost: [{"material": "SALMON", "amount": 16}, {"material": "GOLD_INGOT", "amount": 16}, {"material": "EMERALD", "amount": 12}]
+        personalLimit: 4
+      - id: albion.magic-fish-common.v1
+        result: {"slimefun": "RANDOM_FISH_COMMON", "amount": 4}
+        cost: [{"material": "COD", "amount": 32}, {"material": "EMERALD", "amount": 4}]
+        personalLimit: 4
+      - id: albion.magic-fish-uncommon.v1
+        result: {"slimefun": "RANDOM_FISH_UNCOMMON", "amount": 2}
+        cost: [{"material": "SALMON", "amount": 32}, {"material": "EMERALD", "amount": 8}]
+        personalLimit: 4
+      - id: albion.magic-fish-rare.v1
+        result: {"slimefun": "RANDOM_FISH_RARE", "amount": 1}
+        cost: [{"material": "TROPICAL_FISH", "amount": 16}, {"material": "DIAMOND", "amount": 4}]
+        personalLimit: 4
+      - id: albion.magic-fish-epic.v1
+        result: {"slimefun": "RANDOM_FISH_EPIC", "amount": 1}
+        cost: [{"material": "TROPICAL_FISH", "amount": 32}, {"material": "DIAMOND", "amount": 8}]
+        personalLimit: 2
+      - id: albion.magic-fish-legendary.v1
+        result: {"slimefun": "RANDOM_FISH_LEGENDARY", "amount": 1}
+        cost: [{"material": "HEART_OF_THE_SEA", "amount": 1}, {"material": "DIAMOND_BLOCK", "amount": 2}]
+        personalLimit: 1
+      - id: albion.magic-fish-power-eel.v1
+        result: {"slimefun": "FISH_LEGENDARY_EEL_POWER", "amount": 1}
+        cost: [{"material": "HEART_OF_THE_SEA", "amount": 1}, {"material": "PRISMARINE_CRYSTALS", "amount": 32}, {"material": "DIAMOND_BLOCK", "amount": 2}]
+        personalLimit: 1
+      - id: albion.magic-fish-pool-dust.v1
+        result: {"slimefun": "RANDOM_FISH_RARE_POOL_DUST", "amount": 1}
+        cost: [{"material": "PUFFERFISH", "amount": 16}, {"material": "REDSTONE_BLOCK", "amount": 8}]
+        personalLimit: 2
+      - id: albion.magic-fish-pool-ore.v1
+        result: {"slimefun": "RANDOM_FISH_RARE_POOL_ORE", "amount": 1}
+        cost: [{"material": "PUFFERFISH", "amount": 16}, {"material": "IRON_BLOCK", "amount": 8}]
+        personalLimit: 2
+      - id: albion.magic-fish-pool-industry.v1
+        result: {"slimefun": "RANDOM_FISH_RARE_POOL_INDUSTRY", "amount": 1}
+        cost: [{"material": "PUFFERFISH", "amount": 16}, {"material": "GOLD_BLOCK", "amount": 8}]
+        personalLimit: 2
+      - id: albion.magic-fish-epic-industry.v1
+        result: {"slimefun": "RANDOM_FISH_EPIC_POOL_INDUSTRY", "amount": 1}
+        cost: [{"material": "HEART_OF_THE_SEA", "amount": 1}, {"material": "DIAMOND", "amount": 16}]
+        personalLimit: 1
+  - name: "Xur - Forbidden Relics"
+    offers:
+      - id: albion.magic-starfall-judgment.v1
+        result: {"slimefun": "MAGIC_EXPANSION_WEAPON_STAR_SHARDS_SWORD", "amount": 1}
+        cost: [{"material": "NETHERITE_SWORD", "amount": 1}, {"material": "NETHER_STAR", "amount": 8}, {"material": "DIAMOND_BLOCK", "amount": 24}]
+        personalLimit: 1
+      - id: albion.magic-power-core.v1
+        result: {"slimefun": "POWER_CORE", "amount": 1}
+        cost: [{"material": "NETHER_STAR", "amount": 2}, {"material": "DIAMOND_BLOCK", "amount": 8}, {"material": "REDSTONE_BLOCK", "amount": 16}]
+        personalLimit: 1
+      - id: albion.magic-pure-power-core.v1
+        result: {"slimefun": "PURE_INGOT_POWER_CORE", "amount": 1}
+        cost: [{"material": "NETHER_STAR", "amount": 4}, {"material": "DIAMOND_BLOCK", "amount": 12}, {"material": "NETHERITE_INGOT", "amount": 4}]
+        personalLimit: 1
+      - id: albion.magic-light-core.v1
+        result: {"slimefun": "LIGHT_CORE", "amount": 1}
+        cost: [{"material": "SEA_LANTERN", "amount": 32}, {"material": "DIAMOND_BLOCK", "amount": 4}, {"material": "NETHER_STAR", "amount": 1}]
+        personalLimit: 1
+      - id: albion.magic-quartz-core.v1
+        result: {"slimefun": "QUARTZ_CORE", "amount": 1}
+        cost: [{"material": "QUARTZ_BLOCK", "amount": 64}, {"material": "DIAMOND_BLOCK", "amount": 4}, {"material": "NETHER_STAR", "amount": 1}]
+        personalLimit: 1
+      - id: albion.magic-core-origin.v1
+        result: {"slimefun": "CORE_ORIGIN", "amount": 1}
+        cost: [{"material": "END_CRYSTAL", "amount": 4}, {"material": "DIAMOND_BLOCK", "amount": 8}, {"material": "NETHER_STAR", "amount": 2}]
+        personalLimit: 1
+      - id: albion.magic-infinity-flint.v1
+        result: {"slimefun": "INFINITY_FLINT_AND_STEEL", "amount": 1}
+        cost: [{"material": "FLINT_AND_STEEL", "amount": 1}, {"material": "NETHERITE_INGOT", "amount": 4}, {"material": "NETHER_STAR", "amount": 2}]
+        personalLimit: 1
+      - id: albion.magic-pandora-capacity.v1
+        result: {"slimefun": "PANDORA_CAPACITY", "amount": 1}
+        cost: [{"material": "ENDER_CHEST", "amount": 8}, {"material": "DIAMOND_BLOCK", "amount": 8}, {"material": "NETHER_STAR", "amount": 2}]
+        personalLimit: 1
+      - id: albion.magic-bad-luck-capacity.v1
+        result: {"slimefun": "BAD_LUCK_CAPACITY", "amount": 1}
+        cost: [{"material": "WITHER_SKELETON_SKULL", "amount": 3}, {"material": "DIAMOND_BLOCK", "amount": 6}, {"material": "NETHER_STAR", "amount": 1}]
+        personalLimit: 1
+      - id: albion.magic-ultra-capacity.v1
+        result: {"slimefun": "MAGIC_CAPACITY_ULTRA", "amount": 1}
+        cost: [{"material": "DIAMOND_BLOCK", "amount": 12}, {"material": "NETHERITE_INGOT", "amount": 4}, {"material": "NETHER_STAR", "amount": 4}]
+        personalLimit: 1
+  - name: "Builder - Magic Construction"
+    offers:
+      - id: albion.magic-prebuilding-machine.v1
+        result: {"slimefun": "PRE_BUILDINGS_MACHINE", "amount": 1}
+        cost: [{"material": "BRICKS", "amount": 64}, {"material": "IRON_BLOCK", "amount": 8}, {"material": "DIAMOND", "amount": 8}]
+        personalLimit: 1
+      - id: albion.magic-prebuilding-oak.v1
+        result: {"slimefun": "PRE_BUILDING_OAK_TREE", "amount": 1}
+        cost: [{"material": "OAK_LOG", "amount": 64}, {"material": "BONE_MEAL", "amount": 64}, {"material": "EMERALD", "amount": 16}]
+        personalLimit: 4
+      - id: albion.magic-prebuilding-cherry.v1
+        result: {"slimefun": "PRE_BUILDING_CHERRY_TREE", "amount": 1}
+        cost: [{"material": "CHERRY_LOG", "amount": 64}, {"material": "BONE_MEAL", "amount": 64}, {"material": "EMERALD", "amount": 16}]
+        personalLimit: 4
+      - id: albion.magic-single-cube-origin.v1
+        result: {"slimefun": "SINGLE_CUBE_ORIGIN", "amount": 1}
+        cost: [{"material": "OBSIDIAN", "amount": 32}, {"material": "DIAMOND", "amount": 8}, {"material": "EMERALD", "amount": 16}]
+        personalLimit: 2
+      - id: albion.magic-single-cube-ore.v1
+        result: {"slimefun": "SINGLE_CUBE_ORE", "amount": 1}
+        cost: [{"material": "STONE", "amount": 64}, {"material": "IRON_BLOCK", "amount": 8}, {"material": "DIAMOND", "amount": 8}]
+        personalLimit: 2
+      - id: albion.magic-log-mix.v1
+        result: {"slimefun": "LOG_MIX", "amount": 16}
+        cost: [{"material": "OAK_LOG", "amount": 32}, {"material": "SPRUCE_LOG", "amount": 32}, {"material": "BIRCH_LOG", "amount": 32}]
+        personalLimit: 8
+      - id: albion.magic-redstone-element.v1
+        result: {"slimefun": "REDSTONE_EXECUTE_ELEMENT", "amount": 8}
+        cost: [{"material": "REDSTONE_BLOCK", "amount": 8}, {"material": "QUARTZ", "amount": 16}, {"material": "EMERALD", "amount": 8}]
+        personalLimit: 4
+      - id: albion.magic-five-element.v1
+        result: {"slimefun": "FIVE_ELEMENT", "amount": 4}
+        cost: [{"material": "AMETHYST_SHARD", "amount": 32}, {"material": "DIAMOND", "amount": 8}, {"material": "EMERALD", "amount": 16}]
+        personalLimit: 4
+  - name: "Wayfinder - Skyblock Tools"
+    offers:
+      - id: albion.magic-single-pickaxe.v1
+        result: {"slimefun": "SINGLE_DIAMOND_PICKAXE", "amount": 1}
+        cost: [{"material": "DIAMOND_PICKAXE", "amount": 1}, {"material": "EMERALD", "amount": 16}]
+        personalLimit: 1
+      - id: albion.magic-single-axe.v1
+        result: {"slimefun": "SINGLE_DIAMOND_AXE", "amount": 1}
+        cost: [{"material": "DIAMOND_AXE", "amount": 1}, {"material": "EMERALD", "amount": 16}]
+        personalLimit: 1
+      - id: albion.magic-single-shovel.v1
+        result: {"slimefun": "SINGLE_DIAMOND_SHOVEL", "amount": 1}
+        cost: [{"material": "DIAMOND_SHOVEL", "amount": 1}, {"material": "EMERALD", "amount": 16}]
+        personalLimit: 1
+      - id: albion.magic-single-hoe.v1
+        result: {"slimefun": "SINGLE_DIAMOND_HOE", "amount": 1}
+        cost: [{"material": "DIAMOND_HOE", "amount": 1}, {"material": "EMERALD", "amount": 16}]
+        personalLimit: 1
+      - id: albion.magic-right-click-man.v1
+        result: {"slimefun": "RIGHT_CLICK_MAN", "amount": 1}
+        cost: [{"material": "DIAMOND_BLOCK", "amount": 2}, {"material": "EMERALD_BLOCK", "amount": 4}]
+        personalLimit: 1
+      - id: albion.magic-rsc-miner.v1
+        result: {"slimefun": "RSC_MAGIC_MINER", "amount": 1}
+        cost: [{"material": "DIAMOND_BLOCK", "amount": 8}, {"material": "NETHERITE_INGOT", "amount": 4}, {"material": "NETHER_STAR", "amount": 2}]
+        personalLimit: 1
+      - id: albion.magic-five-element-miner.v1
+        result: {"slimefun": "FIVE_ELEMENT_MINER", "amount": 1}
+        cost: [{"material": "DIAMOND_BLOCK", "amount": 8}, {"material": "AMETHYST_BLOCK", "amount": 16}, {"material": "NETHER_STAR", "amount": 2}]
+        personalLimit: 1
+  - name: "Artificer - Magic Cores"
+    offers:
+      - id: albion.magic-basic-material.v1
+        result: {"slimefun": "MAGIC_EXPANSION_TO_MAGIC_ITEM_BASIC", "amount": 8}
+        cost: [{"material": "AMETHYST_SHARD", "amount": 32}, {"material": "REDSTONE", "amount": 32}, {"material": "EMERALD", "amount": 8}]
+        personalLimit: 6
+      - id: albion.magic-advanced-material.v1
+        result: {"slimefun": "MAGIC_EXPANSION_TO_MAGIC_ITEM_ADVANCED", "amount": 4}
+        cost: [{"material": "AMETHYST_BLOCK", "amount": 8}, {"material": "DIAMOND", "amount": 8}, {"material": "EMERALD", "amount": 16}]
+        personalLimit: 4
+      - id: albion.magic-power-card.v1
+        result: {"slimefun": "POWER_CARD", "amount": 4}
+        cost: [{"material": "REDSTONE_BLOCK", "amount": 4}, {"material": "GOLD_INGOT", "amount": 16}, {"material": "EMERALD", "amount": 8}]
+        personalLimit: 4
+      - id: albion.magic-capacity-basic.v1
+        result: {"slimefun": "MAGIC_CAPACITY_BASIC", "amount": 1}
+        cost: [{"material": "IRON_BLOCK", "amount": 8}, {"material": "REDSTONE_BLOCK", "amount": 8}, {"material": "DIAMOND", "amount": 8}]
+        personalLimit: 2
+      - id: albion.magic-light-energy-alpha.v1
+        result: {"slimefun": "LIGHT_ENERGY_ALPHA", "amount": 8}
+        cost: [{"material": "GLOWSTONE_DUST", "amount": 64}, {"material": "AMETHYST_SHARD", "amount": 32}, {"material": "EMERALD", "amount": 8}]
+        personalLimit: 4
+      - id: albion.magic-element-ingot.v1
+        result: {"slimefun": "ELEMENT_INGOT", "amount": 8}
+        cost: [{"material": "IRON_BLOCK", "amount": 4}, {"material": "GOLD_BLOCK", "amount": 4}, {"material": "AMETHYST_SHARD", "amount": 32}]
+        personalLimit: 4
+      - id: albion.magic-pure-five-element.v1
+        result: {"slimefun": "PURE_FIVE_ELEMENT", "amount": 4}
+        cost: [{"material": "DIAMOND", "amount": 16}, {"material": "AMETHYST_BLOCK", "amount": 8}, {"material": "EMERALD_BLOCK", "amount": 4}]
+        personalLimit: 2
+      - id: albion.magic-power-core-shop.v1
+        result: {"slimefun": "POWER_CORE", "amount": 1}
+        cost: [{"material": "REDSTONE_BLOCK", "amount": 16}, {"material": "DIAMOND_BLOCK", "amount": 4}, {"material": "NETHER_STAR", "amount": 1}]
+        personalLimit: 1
+      - id: albion.magic-light-core-shop.v1
+        result: {"slimefun": "LIGHT_CORE", "amount": 1}
+        cost: [{"material": "GLOWSTONE", "amount": 64}, {"material": "DIAMOND_BLOCK", "amount": 4}, {"material": "NETHER_STAR", "amount": 1}]
+        personalLimit: 1
+      - id: albion.magic-quartz-core-shop.v1
+        result: {"slimefun": "QUARTZ_CORE", "amount": 1}
+        cost: [{"material": "QUARTZ_BLOCK", "amount": 64}, {"material": "DIAMOND_BLOCK", "amount": 4}, {"material": "NETHER_STAR", "amount": 1}]
+        personalLimit: 1
