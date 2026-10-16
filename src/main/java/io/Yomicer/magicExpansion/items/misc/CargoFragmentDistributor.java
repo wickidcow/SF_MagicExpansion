@@ -133,7 +133,11 @@ public class CargoFragmentDistributor extends SlimefunItem implements EnergyNetC
      * 检查方块是否有效
      */
     private boolean isBlockValid(Location location) {
-        if (!location.getChunk().isLoaded()) return false;
+        World world = location.getWorld();
+        if (world == null || !world.isChunkLoaded(
+                location.getBlockX() >> 4, location.getBlockZ() >> 4)) {
+            return false;
+        }
 
         Block block = location.getBlock();
         if (block.getType() == Material.AIR) return false;
