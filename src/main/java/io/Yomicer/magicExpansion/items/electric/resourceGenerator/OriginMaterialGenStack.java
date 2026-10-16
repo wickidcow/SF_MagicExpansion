@@ -266,7 +266,7 @@ public class OriginMaterialGenStack extends AbstractElectricResourceMachine {
         StringBuilder encoded = new StringBuilder();
         amounts.entrySet().stream()
                 .filter(entry -> entry.getValue() != null && entry.getValue() > 0L)
-                .sorted(Map.Entry.comparingByKey(Comparator.comparing(Enum::name)))
+                .sorted(Map.Entry.comparingByKey(Comparator.comparing(Material::name)))
                 .forEach(entry -> {
                     if (encoded.length() > 0) {
                         encoded.append(';');
