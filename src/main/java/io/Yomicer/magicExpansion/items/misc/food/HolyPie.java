@@ -20,13 +20,11 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class HolyPie extends SimpleSlimefunItem<ItemConsumptionHandler> implements Listener {
 
-    private static final Set<UUID> holyProtectedPlayers = ConcurrentHashMap.newKeySet();
+    private static final HolyProtectionState PROTECTION = new HolyProtectionState();
 
     public HolyPie(ItemGroup itemGroup, SlimefunItemStack item, RecipeType recipeType, ItemStack[] recipe) {
         super(itemGroup, item, recipeType, recipe);
@@ -44,17 +42,18 @@ public class HolyPie extends SimpleSlimefunItem<ItemConsumptionHandler> implemen
             p.setHealth(Math.min(p.getHealth() + 12.0, maxHealth)); // 回 6 颗心
             p.addPotionEffect(new PotionEffect(PotionEffectType.RESISTANCE, 30, 254));
             removeNegativeEffects(p);
-            holyProtectedPlayers.add(p.getUniqueId());
+            UUID protectionToken = PROTECTION.activate(p.getUniqueId());
             new BukkitRunnable() {
                 @Override
                 public void run() {
-                    holyProtectedPlayers.remove(p.getUniqueId());
-                    if (p.isOnline()) {
+                    // A newer Holy Pie refresh owns the protection now; an older timer
+                    // must never shorten the newly refreshed immunity window.
+                    if (PROTECTION.expire(p.getUniqueId(), protectionToken) && p.isOnline()) {
                         p.sendMessage(ChatColor.GRAY + "§7Divine Protection faded...");
                     }
                 }
             }.runTaskLater(MagicExpansion.getInstance(), 30L);
-            playHolyEffects(p);
+            playHolyEffects(p, protectionToken);
             p.sendMessage(ChatColor.GOLD + "✨ " + ChatColor.BOLD + "Divine Protection activated!" + ChatColor.RESET + ChatColor.GRAY + " (immune to all damage)");
         };
     }
@@ -62,7 +61,7 @@ public class HolyPie extends SimpleSlimefunItem<ItemConsumptionHandler> implemen
     /**
      * 播放神圣特效
      */
-    private void playHolyEffects(Player p) {
+    private void playHolyEffects(Player p, UUID protectionToken) {
         Location loc = p.getLocation().add(0, 1, 0);
         World world = p.getWorld();
         p.playSound(loc, Sound.BLOCK_END_PORTAL_SPAWN, 0.8f, 1.5f); // 空灵感
@@ -75,7 +74,7 @@ public class HolyPie extends SimpleSlimefunItem<ItemConsumptionHandler> implemen
             int ticks = 0;
             @Override
             public void run() {
-                if (!p.isOnline() || !holyProtectedPlayers.contains(p.getUniqueId())) {
+                if (!p.isOnline() || !PROTECTION.owns(p.getUniqueId(), protectionToken)) {
                     this.cancel();
                     return;
                 }
@@ -120,7 +119,7 @@ public class HolyPie extends SimpleSlimefunItem<ItemConsumptionHandler> implemen
     public void onEntityDamage(EntityDamageEvent event) {
         if (!(event.getEntity() instanceof Player)) return;
         Player p = (Player) event.getEntity();
-        if (holyProtectedPlayers.contains(p.getUniqueId())) {
+        if (PROTECTION.isActive(p.getUniqueId())) {
             event.setCancelled(true);
             if (event.getCause() != EntityDamageEvent.DamageCause.VOID) {
                 p.getWorld().spawnParticle(Particle.CLOUD, p.getLocation().add(0, 0.5, 0), 5, 0.2, 0.2, 0.2, 0.01);
