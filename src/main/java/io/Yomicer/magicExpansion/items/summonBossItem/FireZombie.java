@@ -2,6 +2,7 @@ package io.Yomicer.magicExpansion.items.summonBossItem;
 
 import io.Yomicer.magicExpansion.MagicExpansion;
 import io.Yomicer.magicExpansion.utils.ColorGradient;
+import io.Yomicer.magicExpansion.utils.ItemPermissionUtils;
 import io.github.thebusybiscuit.slimefun4.api.events.PlayerRightClickEvent;
 import io.github.thebusybiscuit.slimefun4.api.items.ItemGroup;
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItemStack;
@@ -48,25 +49,39 @@ public class FireZombie extends SimpleSlimefunItem<ItemUseHandler> implements No
                 return;
             }
 
-            // 减少手上的物品数量
-            if (itemInHand.getAmount() > 1) {
-                itemInHand.setAmount(itemInHand.getAmount() - 1);
-            } else {
-                player.getInventory().setItemInMainHand(null); // 如果数量为 1,则直接移除
+            if (!ItemPermissionUtils.hasPermissionRe(player)) {
+                return;
             }
 
-            spawnFireZombie(e);
+            if (!spawnFireZombie(e)) {
+                player.sendMessage(ColorGradient.getGradientName(
+                        "The Flame Zombie could not be summoned."));
+                return;
+            }
+
+            if (player.getGameMode() != GameMode.CREATIVE) {
+                if (itemInHand.getAmount() > 1) {
+                    itemInHand.setAmount(itemInHand.getAmount() - 1);
+                } else {
+                    player.getInventory().setItemInMainHand(null);
+                }
+            }
 
         };
     }
 
 
-    private void spawnFireZombie(PlayerRightClickEvent e) {
+    private boolean spawnFireZombie(PlayerRightClickEvent e) {
 
         Player player = e.getPlayer();
         // 获取玩家位置并生成怪物
         Location location = player.getLocation();
-        LivingEntity mob = (LivingEntity) location.getWorld().spawnEntity(location, EntityType.ZOMBIE);
+        LivingEntity mob;
+        try {
+            mob = (LivingEntity) location.getWorld().spawnEntity(location, EntityType.ZOMBIE);
+        } catch (RuntimeException | LinkageError failure) {
+            return false;
+        }
 
         // 设置怪物名称
         String zombieName = "§c§lFlame Zombie";
@@ -77,6 +92,10 @@ public class FireZombie extends SimpleSlimefunItem<ItemUseHandler> implements No
         mob.setMetadata("isInvincibleFireZombie", new FixedMetadataValue(MagicExpansion.getInstance(), false)); // 设置无敌元数据
         // 调整最大生命值并设置初始血量
         double maxHealth = 200.0; // 自定义最大生命值
+        if (mob.getAttribute(Attribute.MAX_HEALTH) == null) {
+            mob.remove();
+            return false;
+        }
         mob.getAttribute(Attribute.MAX_HEALTH).setBaseValue(maxHealth);
         mob.setHealth(maxHealth); // 设置初始血量为最大生命值
 
@@ -150,25 +169,39 @@ public class FireZombie extends SimpleSlimefunItem<ItemUseHandler> implements No
                 double y = playerLocation.getY() + random.nextDouble() * 4;       // Y坐标+0到+4
                 double z = playerLocation.getZ() + (random.nextDouble() * 18 - 9); // 半径5范围内的随机Z坐标
 
-                Location newLocation = new Location(mob.getWorld(), x, y, z);
-
-                // 确保新位置是安全的(避免卡在方块中)
-                while (!newLocation.getBlock().getType().isAir() || !newLocation.clone().add(0, 1, 0).getBlock().getType().isAir()) {
-                    y += 1; // 向上移动直到找到空旷位置
-                    newLocation.setY(y);
+                Location newLocation = findSafeTeleportLocation(mob, x, y, z);
+                if (newLocation != null) {
+                    mob.teleport(newLocation);
                 }
-
-                // 传送怪物到新位置
-                mob.teleport(newLocation);
             }
         }.runTaskTimer(MagicExpansion.getInstance(), 0L, 220L); // 每11秒执行一次
 
-
-
-
+        return true;
     }
 
 
+
+    private Location findSafeTeleportLocation(
+            LivingEntity mob, double x, double startY, double z) {
+        int minY = mob.getWorld().getMinHeight();
+        int maxY = mob.getWorld().getMaxHeight() - 2;
+        double y = Math.max(minY, Math.min(startY, maxY));
+
+        Location candidate = new Location(mob.getWorld(), x, y, z);
+        if (!mob.getWorld().isChunkLoaded(
+                candidate.getBlockX() >> 4, candidate.getBlockZ() >> 4)) {
+            return null;
+        }
+
+        for (int attempts = 0; attempts < 32 && y <= maxY; attempts++, y += 1.0D) {
+            candidate.setY(y);
+            if (candidate.getBlock().getType().isAir()
+                    && candidate.clone().add(0, 1, 0).getBlock().getType().isAir()) {
+                return candidate;
+            }
+        }
+        return null;
+    }
 
     // 生成雷击效果
     public void worldStrikeLightningEffect(Location location) {
