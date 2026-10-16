@@ -82,75 +82,86 @@ public class ForceTwoToRsc extends SlimefunItem implements EnergyNetComponent {
     }
 
     protected void tick(Block block) {
-
         BlockMenu menu = StorageCacheUtils.getMenu(block.getLocation());
-        if (menu == null) return;
-        Location loc = block.getLocation();
-        int energyConsumption = getEnergyConsumption();
-        if(menu != null && menu.hasViewer()) {
-        if (getCharge(block.getLocation()) < getEnergyConsumption()) {
-            //电量不足
-            menu.addItem(4, new CustomItemStack(new ItemStack (Material.CAMPFIRE), "§cNot Enough Energy"),
-                    (p, slot, item, action) -> false);
+        if (menu == null) {
             return;
         }
-            //电量不足
-            menu.addItem(4, new CustomItemStack(new ItemStack(Material.SOUL_CAMPFIRE), "§bResource Converter",
-                            "§bType: §e" + "2.0RSC",
-                            "§bEnergy Use: §e" + getEnergyConsumption() * 2 + " J/s",
-                            "§bStored Energy: §e" + getCharge(block.getLocation()) + " J"),
-                    (p, slot, item, action) -> false);
 
+        Location loc = block.getLocation();
+        int energyConsumption = getEnergyConsumption();
+        long charge = getCharge(loc);
+
+        if (charge < energyConsumption) {
+            if (menu.hasViewer()) {
+                menu.addItem(4, new CustomItemStack(
+                                new ItemStack(Material.CAMPFIRE),
+                                "§cNot Enough Energy",
+                                "§bRequired: §e" + energyConsumption + " J/tick",
+                                "§bStored Energy: §e" + charge + " J"),
+                        (p, slot, item, action) -> false);
+            }
+            return;
         }
-        // 转换映射
-        java.util.Map<ItemStack, String> conversionMap = new java.util.HashMap<>();
+
+        if (menu.hasViewer()) {
+            menu.addItem(4, new CustomItemStack(
+                            new ItemStack(Material.SOUL_CAMPFIRE),
+                            "§bResource Converter",
+                            "§bType: §e2.0RSC",
+                            "§bEnergy Use: §e" + energyConsumption * 2 + " J/s",
+                            "§bStored Energy: §e" + charge + " J"),
+                    (p, slot, item, action) -> false);
+        }
+
+        java.util.Map<ItemStack, String> conversionMap = new java.util.LinkedHashMap<>();
         conversionMap.put(MagicExpansionItems.RSC_MAGIC_REDSTONE, "MAGIC_REDSTONE");
         conversionMap.put(MagicExpansionItems.RSC_MAGIC_COSMIC_DUST, "MAGIC_COSMIC_DUST");
         conversionMap.put(MagicExpansionItems.RSC_MAGIC_SOUL, "MAGIC_SOUL");
 
-        // 🔍 先检查 outputSlots 是否有空间(空槽 或 可叠加槽)
-        boolean hasOutputSpace = false;
-        for (int slot : outputSlots) {
-            ItemStack existing = menu.getItemInSlot(slot);
-            if (existing == null || existing.getType() == Material.AIR) {
-                hasOutputSpace = true;
-                break;
-            }
-        }
-        if (!hasOutputSpace) {
-            return;
-        }
         for (int inputSlot : inputSlots) {
             ItemStack inputItem = menu.getItemInSlot(inputSlot);
-            if (inputItem == null || inputItem.getType() == Material.AIR) continue;
+            if (inputItem == null || inputItem.getType().isAir()) {
+                continue;
+            }
 
-            // 检查是否是目标 RSC 物品
-            for (ItemStack rscItem : conversionMap.keySet()) {
-                if (inputItem.isSimilar(rscItem)) {
-                    String targetKey = conversionMap.get(rscItem);
-                    ItemStack outputTemplate = ConvertItem.stoneCreateItem(targetKey);
-                    if (outputTemplate == null || outputTemplate.getType() == Material.AIR) {
-                        break;
-                    }
+            for (java.util.Map.Entry<ItemStack, String> conversion : conversionMap.entrySet()) {
+                if (!inputItem.isSimilar(conversion.getKey())) {
+                    continue;
+                }
 
-                    int amount = inputItem.getAmount();
-                    menu.replaceExistingItem(inputSlot, null);
-
-                    ItemStack toPush = outputTemplate.clone();
-                    toPush.setAmount(amount);
-                    menu.pushItem(toPush, outputSlots);
-
-                    removeCharge(loc, energyConsumption);
-
+                ItemStack outputTemplate = ConvertItem.stoneCreateItem(conversion.getValue());
+                if (outputTemplate == null || outputTemplate.getType().isAir()) {
                     return;
                 }
+
+                ItemStack output = outputTemplate.clone();
+                output.setAmount(inputItem.getAmount());
+
+                // Exact preflight: never consume the source unless the complete output fits.
+                if (!menu.fits(output, outputSlots)) {
+                    return;
+                }
+
+                int sourceAmount = inputItem.getAmount();
+                menu.consumeItem(inputSlot, sourceAmount);
+                ItemStack leftover = menu.pushItem(output, outputSlots);
+                if (leftover != null && !leftover.getType().isAir() && leftover.getAmount() > 0) {
+                    // The ticker is synchronized, so this should be unreachable after fits().
+                    // Restore the unaccepted portion instead of silently deleting it.
+                    ItemStack restored = inputItem.clone();
+                    restored.setAmount(leftover.getAmount());
+                    menu.pushItem(restored, inputSlots);
+                    MagicExpansion.getInstance().getLogger().severe(
+                            "Force 2.0 -> RSC output changed after capacity preflight at "
+                                    + loc + "; restored " + leftover.getAmount() + " source item(s).");
+                    return;
+                }
+
+                setCharge(loc, Math.max(0L, charge - energyConsumption));
+                return;
             }
         }
-
-
-
     }
-
 
 
     private void constructMenu(String displayName) {
