@@ -5,7 +5,9 @@ import com.xzavier0722.mc.plugin.slimefun4.storage.controller.SlimefunBlockData;
 import io.Yomicer.magicExpansion.MagicExpansion;
 import io.Yomicer.magicExpansion.items.abstracts.AbstractElectricRecipeMachine;
 import io.Yomicer.magicExpansion.items.abstracts.AbstractElectricResourceMachine;
+import io.Yomicer.magicExpansion.items.electric.recipeMachine.RandomBoxMachine;
 import io.Yomicer.magicExpansion.items.electric.recipeMachine.RecipeRandomMachine;
+import io.Yomicer.magicExpansion.items.misc.CHEST_BLOCK;
 import io.Yomicer.magicExpansion.items.electric.resourceGenerator.OriginMaterialGen;
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItem;
 import io.github.thebusybiscuit.slimefun4.core.attributes.EnergyNetComponent;
@@ -93,10 +95,22 @@ public final class MachineTransactionProbe extends JavaPlugin {
         int underfillChecks = 0;
         int resourceDefinitions = 0;
         int resourceTransactions = 0;
+        int specialUntimedTransactions = 0;
         int locationIndex = 0;
 
         for (AbstractElectricRecipeMachine machine : recipeMachines) {
             try {
+                if (machine instanceof RandomBoxMachine randomBox) {
+                    auditRandomBoxMachine(randomBox, ++locationIndex, passed, failures);
+                    specialUntimedTransactions++;
+                    continue;
+                }
+                if (machine instanceof CHEST_BLOCK chest) {
+                    auditStorageChest(chest, ++locationIndex, passed, failures);
+                    specialUntimedTransactions++;
+                    continue;
+                }
+
                 recipeDefinitions += auditRecipes(machine, failures);
                 MachineRecipe recipe = chooseRunnableRecipe(machine.getRecipes(), inputSlots(machine).length);
                 if (recipe == null) {
@@ -254,6 +268,7 @@ public final class MachineTransactionProbe extends JavaPlugin {
         result.append("resource_machines=").append(resourceMachines.size()).append('\n');
         result.append("resource_definitions=").append(resourceDefinitions).append('\n');
         result.append("resource_transactions=").append(resourceTransactions).append('\n');
+        result.append("special_untimed_transactions=").append(specialUntimedTransactions).append('\n');
         for (String item : passed) result.append("pass=").append(item).append('\n');
         for (String warning : warnings) result.append("warning=").append(warning).append('\n');
         for (String failure : failures) result.append("failure=").append(failure).append('\n');
@@ -266,6 +281,105 @@ public final class MachineTransactionProbe extends JavaPlugin {
                 + " resourceTransactions=" + resourceTransactions
                 + " failures=" + failures.size());
         Bukkit.shutdown();
+    }
+
+    private void auditRandomBoxMachine(
+            RandomBoxMachine machine,
+            int locationIndex,
+            List<String> passed,
+            List<String> failures) {
+        Location location = location(locationIndex);
+        Fixture fixture = createFixture(machine, location);
+        int[] inputs = inputSlots(machine);
+        int[] outputs = outputSlots(machine);
+
+        try {
+            clearSlots(fixture.menu(), inputs);
+            clearSlots(fixture.menu(), outputs);
+
+            SlimefunItem boxItem = SlimefunItem.getById("HONKAI_STAR_RAIL_BOX");
+            check(boxItem != null, "HONKAI_STAR_RAIL_BOX registration missing");
+            ItemStack box = boxItem.getItem().clone();
+            box.setAmount(1);
+            fixture.menu().replaceExistingItem(inputs[0], box);
+
+            tick(machine, fixture, false);
+
+            ItemStack remaining = fixture.menu().getItemInSlot(inputs[0]);
+            check(remaining == null || remaining.getType().isAir(),
+                    "Honkai scanner did not consume exactly one box");
+
+            List<ItemStack> expectedRewards = new ArrayList<>();
+            for (MachineRecipe recipe : machine.getRecipes()) {
+                if (recipe == null || recipe.getOutput() == null) continue;
+                for (ItemStack output : recipe.getOutput()) {
+                    if (output != null && !output.getType().isAir()) {
+                        expectedRewards.add(output);
+                    }
+                }
+            }
+            check(!expectedRewards.isEmpty(), "Honkai scanner exposes no registered reward templates");
+            check(containsOneExpectedOutput(
+                            fixture.menu(), outputs, expectedRewards.toArray(ItemStack[]::new)),
+                    "Honkai scanner output did not match any registered reward");
+
+            // Backpressure must never consume another box.
+            clearSlots(fixture.menu(), inputs);
+            clearSlots(fixture.menu(), outputs);
+            for (int slot : outputs) {
+                fixture.menu().replaceExistingItem(slot, new ItemStack(Material.COBBLESTONE, 64));
+            }
+            fixture.menu().replaceExistingItem(inputs[0], box.clone());
+            tick(machine, fixture, false);
+
+            ItemStack blockedBox = fixture.menu().getItemInSlot(inputs[0]);
+            check(blockedBox != null
+                            && SlimefunUtils.isItemSimilar(blockedBox, box, true, false)
+                            && blockedBox.getAmount() == 1,
+                    "Honkai scanner consumed a box while every output slot was blocked");
+
+            passed.add(machine.getId()
+                    + ": untimed random box transaction conserves input under backpressure");
+        } finally {
+            cleanup(location);
+        }
+    }
+
+    private void auditStorageChest(
+            CHEST_BLOCK chest,
+            int locationIndex,
+            List<String> passed,
+            List<String> failures) {
+        Location location = location(locationIndex);
+        Fixture fixture = createFixture(chest, location);
+        int[] inputs = inputSlots(chest);
+        int[] outputs = outputSlots(chest);
+
+        try {
+            check(inputs.length == 53, "53-slot chest exposes " + inputs.length + " input slots");
+            check(outputs.length == 53, "53-slot chest exposes " + outputs.length + " output slots");
+
+            clearSlots(fixture.menu(), inputs);
+            ItemStack first = new ItemStack(Material.DIAMOND, 17);
+            ItemStack last = new ItemStack(Material.EMERALD, 23);
+            fixture.menu().replaceExistingItem(inputs[0], first.clone());
+            fixture.menu().replaceExistingItem(inputs[inputs.length - 1], last.clone());
+
+            for (int i = 0; i < 8; i++) {
+                tick(chest, fixture, false);
+            }
+
+            ItemStack firstAfter = fixture.menu().getItemInSlot(inputs[0]);
+            ItemStack lastAfter = fixture.menu().getItemInSlot(inputs[inputs.length - 1]);
+            check(first.equals(firstAfter),
+                    "53-slot chest mutated first storage slot during inert ticks");
+            check(last.equals(lastAfter),
+                    "53-slot chest mutated final storage slot during inert ticks");
+
+            passed.add(chest.getId() + ": all 53 storage slots remain inert and persistent");
+        } finally {
+            cleanup(location);
+        }
     }
 
     private void auditOriginMaterialPending(
