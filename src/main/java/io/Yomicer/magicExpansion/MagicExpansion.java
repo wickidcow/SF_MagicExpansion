@@ -23,6 +23,7 @@ import io.Yomicer.magicExpansion.items.misc.DrawMachine;
 import io.Yomicer.magicExpansion.items.misc.magicAlter.PluginInitializer;
 import io.Yomicer.magicExpansion.specialActions.Command.*;
 import io.Yomicer.magicExpansion.utils.Language;
+import io.Yomicer.magicExpansion.utils.energy.PowerCardConfigurationManager;
 import io.Yomicer.magicExpansion.utils.aiManager.AIManager;
 import io.Yomicer.magicExpansion.utils.shop.BlackMarketManager;
 import io.Yomicer.magicExpansion.utils.shop.ShopCommand;
@@ -199,6 +200,7 @@ public class MagicExpansion extends JavaPlugin implements SlimefunAddon {
         onPluginDisable();
         ShopManager.saveAll();
         BlackMarketManager.shutdown();
+        PowerCardConfigurationManager.shutdown();
 
         if (aiManager != null) {
             aiManager.shutdown();
