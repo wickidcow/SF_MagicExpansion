@@ -387,13 +387,12 @@ public class FishOutputMachineStack extends MenuBlock implements EnergyNetCompon
                             SlimefunItem sfItem = StorageCacheUtils.getSlimefunItem(targetLocation);
 
                             if (sfItem instanceof CargoCoreMore) {
-                                if (pushItemToCargoCoreLong(targetLocation, outItems, outAmount)){
+                                if (pushItemToCargoCoreLong(targetLocation, outItems, outAmount)) {
                                     removeCharge(block.getLocation(), getEnergyConsumption());
                                 }
                             } else if (NetworkStorage.isQuantumStorageBlock(sfItem)) {
-                                // 新增：虚空之触绑定网络量子存储方块（long 批量存入，可突破 int 上限）
-                                long leftover = NetworkStorage.storeToQuantumStorageBlock(targetLocation, outItems, outAmount);
-                                if (leftover < outAmount) {
+                                if (NetworkStorage.storeToQuantumStorageBlockExact(
+                                        targetLocation, outItems, outAmount)) {
                                     removeCharge(block.getLocation(), getEnergyConsumption());
                                 }
                             } else {
@@ -406,8 +405,7 @@ public class FishOutputMachineStack extends MenuBlock implements EnergyNetCompon
             }
             // ② 量子存储物品：直接存入（long 批量存入，最大值/溢出保护封装在 NetworkStorage 中）
             else if (VoidTouchSlotItem.getAmount() == 1 && NetworkStorage.isQuantumStorageItem(VoidTouchSlotItem)) {
-                long leftover = NetworkStorage.store(VoidTouchSlotItem, outItems, outAmount);
-                if (leftover < outAmount) {
+                if (NetworkStorage.storeExact(VoidTouchSlotItem, outItems, outAmount)) {
                     inv.replaceExistingItem(VoidTouchSlot, VoidTouchSlotItem);
                     removeCharge(block.getLocation(), getEnergyConsumption());
                 }
@@ -460,20 +458,19 @@ public class FishOutputMachineStack extends MenuBlock implements EnergyNetCompon
      * long 版本：把"物品模板 + long 数量"批量写入 CargoCore 已有槽位，
      * 不依赖 ItemStack#getAmount()（int 上限），可突破 21 亿（以太生态阵列场景）。
      */
-    private boolean pushItemToCargoCoreLong (Location loc, ItemStack item, long amountToStore) {
+    private boolean pushItemToCargoCoreLong(Location loc, ItemStack item, long amountToStore) {
         BlockMenu inv = StorageCacheUtils.getMenu(loc);
-        if (inv != null) {
-            SlimefunBlockData data = StorageCacheUtils.getBlock(loc);
-            if (data == null) return false;
-            if (hasStoredItem(data, item)) {
-                // 写入共享缓存的 long 版本（复用 CargoCoreCache，溢出用 long 加法保护）
-                FishOutputMachine.storeItemToExistingSlotCachedLong(data, item, amountToStore);
-                return true;
-            } else {
-                return false;
-            }
+        if (inv == null) {
+            return false;
         }
-        return false;
+
+        SlimefunBlockData data = StorageCacheUtils.getBlock(loc);
+        if (data == null || !hasStoredItem(data, item)) {
+            return false;
+        }
+
+        return FishOutputMachine.storeItemToExistingSlotCachedLongExact(
+                data, item, amountToStore);
     }
     /**
      * 检查CargoCore中是否已经有该物品
