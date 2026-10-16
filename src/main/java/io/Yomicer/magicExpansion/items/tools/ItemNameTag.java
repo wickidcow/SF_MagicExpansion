@@ -1,15 +1,20 @@
 package io.Yomicer.magicExpansion.items.tools;
 
-import io.Yomicer.magicExpansion.MagicExpansion; // ← 替换为你的主类
+import io.Yomicer.magicExpansion.MagicExpansion;
+import io.github.bakedlibs.dough.items.ItemUtils;
+import io.github.bakedlibs.dough.protection.Interaction;
 import io.Yomicer.magicExpansion.utils.ColorGradient;
 import io.Yomicer.magicExpansion.utils.playerMessage.MainHandMessage;
 import io.github.thebusybiscuit.slimefun4.api.items.ItemGroup;
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItemStack;
 import io.github.thebusybiscuit.slimefun4.api.recipes.RecipeType;
+import io.github.thebusybiscuit.slimefun4.core.handlers.EntityInteractHandler;
 import io.github.thebusybiscuit.slimefun4.core.handlers.ItemUseHandler;
+import io.github.thebusybiscuit.slimefun4.implementation.Slimefun;
 import io.github.thebusybiscuit.slimefun4.implementation.items.SimpleSlimefunItem;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
@@ -18,6 +23,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -29,11 +35,14 @@ import java.util.UUID;
 
 public class ItemNameTag extends SimpleSlimefunItem<ItemUseHandler> implements Listener {
 
-    private final Map<UUID, Long> renameStartTime = new ConcurrentHashMap<>(); // 存储 System.currentTimeMillis()
+    private record RenameSession(UUID token, long startedAt) {}
+
+    private final Map<UUID, RenameSession> renameSessions = new ConcurrentHashMap<>();
 
     public ItemNameTag(ItemGroup itemGroup, SlimefunItemStack item, RecipeType recipeType, ItemStack[] recipe) {
         super(itemGroup, item, recipeType, recipe);
         Bukkit.getPluginManager().registerEvents(this, MagicExpansion.getInstance());
+        addItemHandler((EntityInteractHandler) this::onEntityInteract);
     }
 
     @Override
@@ -57,11 +66,12 @@ public class ItemNameTag extends SimpleSlimefunItem<ItemUseHandler> implements L
                 player.sendMessage(ColorGradient.getGradientNameVer2("Enter the new item name within 60 seconds."));
                 player.sendMessage(ColorGradient.getGradientNameVer2("Use & color codes, <g1>text, or <g2>text. Type 'cancel' to stop."));
                 UUID uuid = player.getUniqueId();
-                renameStartTime.put(uuid, System.currentTimeMillis()); // 记录开始时间
+                RenameSession session = new RenameSession(UUID.randomUUID(), System.currentTimeMillis());
+                renameSessions.put(uuid, session);
 
-                // 60秒后自动清理(可选,防止内存泄漏)
+                // Only the timeout belonging to the current session may close it.
                 Bukkit.getScheduler().runTaskLater(MagicExpansion.getInstance(), () -> {
-                    if (renameStartTime.remove(uuid) != null && player.isOnline()) {
+                    if (renameSessions.remove(uuid, session) && player.isOnline()) {
                         player.sendMessage(ColorGradient.getGradientNameVer2("The renaming request timed out."));
                     }
                 }, 20 * 60);
@@ -111,23 +121,23 @@ public class ItemNameTag extends SimpleSlimefunItem<ItemUseHandler> implements L
         Player player = event.getPlayer();
         UUID uuid = player.getUniqueId();
 
-        Long startTime = renameStartTime.get(uuid);
-        if (startTime == null) {
+        RenameSession session = renameSessions.get(uuid);
+        if (session == null) {
             return;
         }
 
         event.setCancelled(true);
         String input = event.getMessage().trim();
 
-        if (System.currentTimeMillis() - startTime > 60_000L) {
-            renameStartTime.remove(uuid);
+        if (System.currentTimeMillis() - session.startedAt() > 60_000L) {
+            renameSessions.remove(uuid, session);
             Bukkit.getScheduler().runTask(MagicExpansion.getInstance(), () ->
                     player.sendMessage(ColorGradient.getGradientNameVer2("The renaming request timed out.")));
             return;
         }
 
         if (input.equalsIgnoreCase("cancel")) {
-            renameStartTime.remove(uuid);
+            renameSessions.remove(uuid, session);
             Bukkit.getScheduler().runTask(MagicExpansion.getInstance(), () ->
                     player.sendMessage(ColorGradient.getGradientNameVer2("Renaming cancelled.")));
             return;
@@ -160,11 +170,12 @@ public class ItemNameTag extends SimpleSlimefunItem<ItemUseHandler> implements L
             finalName = ChatColor.translateAlternateColorCodes('&', input);
         }
 
-        renameStartTime.remove(uuid);
+        renameSessions.remove(uuid, session);
         Bukkit.getScheduler().runTask(MagicExpansion.getInstance(), () -> {
             ItemStack mainHand = player.getInventory().getItemInMainHand();
-            if (mainHand.getType() == Material.AIR) {
-                player.sendMessage(ColorGradient.getGradientNameVer2("Hold the item you want to rename in your main hand."));
+            if (mainHand.getType() == Material.AIR || SlimefunItem.getByItem(mainHand) != this) {
+                player.sendMessage(ColorGradient.getGradientNameVer2(
+                        "Renaming cancelled because the Portable Item Name Tag is no longer in your main hand."));
                 return;
             }
 
@@ -179,6 +190,36 @@ public class ItemNameTag extends SimpleSlimefunItem<ItemUseHandler> implements L
             player.sendMessage(ColorGradient.getGradientNameVer2("Item renamed!"));
             player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1.0f, 1.5f);
         });
+    private void onEntityInteract(
+            PlayerInteractEntityEvent event, ItemStack item, boolean offHand) {
+        if (offHand || event.isCancelled() || event.getRightClicked() instanceof Player) {
+            return;
+        }
+
+        Player player = event.getPlayer();
+        if (!Slimefun.getProtectionManager().hasPermission(
+                player, event.getRightClicked().getLocation(), Interaction.INTERACT_ENTITY)) {
+            return;
+        }
+
+        ItemMeta meta = item.getItemMeta();
+        if (meta == null || !meta.hasDisplayName() || meta.getDisplayName().trim().isEmpty()) {
+            player.sendMessage(ColorGradient.getGradientNameVer2(
+                    "Sneak-right-click the tag first to set a name."));
+            return;
+        }
+
+        event.setCancelled(true);
+        event.getRightClicked().setCustomName(meta.getDisplayName());
+
+        if (player.getGameMode() != GameMode.CREATIVE) {
+            ItemUtils.consumeItem(item, false);
+        }
+
+        player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1.0f, 1.5f);
+        player.sendMessage(ColorGradient.getGradientNameVer2("Named the creature successfully!"));
+    }
+
     }
 
 }
