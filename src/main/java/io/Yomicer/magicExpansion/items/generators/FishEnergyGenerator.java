@@ -6,7 +6,9 @@ import com.xzavier0722.mc.plugin.slimefun4.storage.util.StorageCacheUtils;
 import io.Yomicer.magicExpansion.items.abstracts.MenuBlock;
 import io.Yomicer.magicExpansion.items.misc.fish.Fish;
 import io.Yomicer.magicExpansion.items.misc.fish.FishKeys;
+import io.Yomicer.magicExpansion.utils.AcceleratableMachine;
 import io.Yomicer.magicExpansion.utils.CustomHeadUtils.CustomHead;
+import io.Yomicer.magicExpansion.utils.MachineBuffManager;
 import io.Yomicer.magicExpansion.utils.machineLore.ChargeLore;
 import io.github.thebusybiscuit.slimefun4.api.items.ItemGroup;
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItemStack;
@@ -37,7 +39,7 @@ import static io.Yomicer.magicExpansion.items.misc.fish.Fish.XueFish;
 import static io.Yomicer.magicExpansion.utils.ColorGradient.getGradientName;
 
 
-public class FishEnergyGenerator extends MenuBlock implements EnergyNetProvider, RecipeDisplayItem {
+public class FishEnergyGenerator extends MenuBlock implements EnergyNetProvider, RecipeDisplayItem, AcceleratableMachine {
 
 
     private final int Capacity;
@@ -161,6 +163,8 @@ public class FishEnergyGenerator extends MenuBlock implements EnergyNetProvider,
                 }
             }
         }
+
+        gen = MachineBuffManager.scaleAmount(l, gen);
 
         if (inv != null && inv.hasViewer()) {
             if (gen == 0L) {
