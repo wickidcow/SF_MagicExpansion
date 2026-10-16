@@ -1,8 +1,6 @@
 package io.Yomicer.magicExpansion.items.electric.geoMachine;
 
-import com.xzavier0722.mc.plugin.slimefun4.storage.callback.IAsyncReadCallback;
 import com.xzavier0722.mc.plugin.slimefun4.storage.controller.SlimefunBlockData;
-import com.xzavier0722.mc.plugin.slimefun4.storage.controller.SlimefunChunkData;
 import com.xzavier0722.mc.plugin.slimefun4.storage.util.StorageCacheUtils;
 import io.Yomicer.magicExpansion.MagicExpansion;
 import io.github.thebusybiscuit.slimefun4.api.geo.GEOResource;
@@ -151,7 +149,7 @@ public class RSCMagicMiner extends AContainer implements RecipeDisplayItem , Hol
 
             @Override
             public boolean isSynchronized() {
-                return false;
+                return true;
             }
         });
     }
@@ -189,51 +187,64 @@ public class RSCMagicMiner extends AContainer implements RecipeDisplayItem , Hol
 
 
     protected void tick(Block b) {
-
-        Slimefun.getDatabaseManager()
-                .getBlockDataController()
-                .getChunkDataAsync(b.getChunk(), new IAsyncReadCallback<>() {
-                    @Override
-                    public void onResult(SlimefunChunkData result) {
-                        if (result.getAllData().isEmpty()) {
-                            updateHologram(b, "&4requires!");
-                        }else{
-                            startTick(b);
-                        }
-                    }
-                });
+        // This machine mutates inventories, machine operations, GEO supplies and
+        // holograms, so the complete transaction belongs on the synchronized ticker.
+        startTick(b);
     }
 
     private void startTick(Block b){
         BlockMenu inv = StorageCacheUtils.getMenu(b.getLocation());
+        if (inv == null) {
+            return;
+        }
+
         CraftingOperation currentOperation = processor.getOperation(b);
 
         if (currentOperation != null) {
-            if (takeCharge(b.getLocation())) {
-
-                if (!currentOperation.isFinished()) {
-                    processor.updateProgressBar(inv, 31, currentOperation);
-                    currentOperation.addProgress(1);
-                } else {
-                    inv.replaceExistingItem(31, PROGRESS_ITEM);
-
-                    for (ItemStack output : currentOperation.getResults()) {
-                        inv.pushItem(output.clone(), getOutputSlots());
+            if (currentOperation.isFinished()) {
+                for (ItemStack output : currentOperation.getResults()) {
+                    if (output != null
+                            && !output.getType().isAir()
+                            && !inv.fits(output, getOutputSlots())) {
+                        // Keep the finished operation pending until its entire result fits.
+                        return;
                     }
-
-                    processor.endOperation(b);
                 }
+
+                if (!takeCharge(b.getLocation())) {
+                    return;
+                }
+
+                inv.replaceExistingItem(31, PROGRESS_ITEM);
+                for (ItemStack output : currentOperation.getResults()) {
+                    if (output != null && !output.getType().isAir()) {
+                        ItemStack leftover = inv.pushItem(output.clone(), getOutputSlots());
+                        if (leftover != null
+                                && !leftover.getType().isAir()
+                                && leftover.getAmount() > 0) {
+                            MagicExpansion.getInstance().getLogger().severe(
+                                    getId() + " output changed after capacity preflight at "
+                                            + b.getLocation() + "; leftover=" + leftover.getAmount());
+                            return;
+                        }
+                    }
+                }
+                processor.endOperation(b);
+                return;
             }
-        }else {
-            MachineRecipe next = findNextRecipe(inv);
 
-            if (next != null) {
-                currentOperation = new CraftingOperation(next);
-                processor.startOperation(b, currentOperation);
-
-                // Fixes #3534 - Update indicator immediately
+            if (takeCharge(b.getLocation())) {
                 processor.updateProgressBar(inv, 31, currentOperation);
+                currentOperation.addProgress(1);
             }
+            return;
+        }
+
+        MachineRecipe next = findNextRecipe(inv);
+        if (next != null) {
+            currentOperation = new CraftingOperation(next);
+            processor.startOperation(b, currentOperation);
+            processor.updateProgressBar(inv, 31, currentOperation);
         }
     }
 
@@ -287,10 +298,25 @@ public class RSCMagicMiner extends AContainer implements RecipeDisplayItem , Hol
 
                     return recipe;
                 } else {
-                    // 资源不足,把空桶之类的东西移到输出槽,避免重复尝试(防卡顿)
+                    // GEO exhausted: return the catalyst only when its complete stack fits.
                     ItemStack item = itemInSlot.clone();
+                    if (!inv.fits(item, getOutputSlots())) {
+                        return null;
+                    }
+
                     inv.replaceExistingItem(slot, null);
-                    inv.pushItem(item, getOutputSlots());
+                    ItemStack leftover = inv.pushItem(item, getOutputSlots());
+                    if (leftover != null
+                            && !leftover.getType().isAir()
+                            && leftover.getAmount() > 0) {
+                        // Synchronized preflight should make this unreachable. Restore
+                        // anything unaccepted instead of deleting the catalyst.
+                        inv.pushItem(leftover, getInputSlots());
+                        MagicExpansion.getInstance().getLogger().severe(
+                                getId() + " catalyst return changed after preflight at "
+                                        + b.getLocation());
+                        return null;
+                    }
                     this.updateHologram(b, resourceType.getName()+ "&7 Mining Complete");
                     return null;
                 }
