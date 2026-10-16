@@ -10,11 +10,13 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.projectiles.ProjectileSource;
 
 public class BasicBossAttackListener implements Listener {
 
@@ -48,44 +50,71 @@ public class BasicBossAttackListener implements Listener {
     }
 
     @EventHandler(ignoreCancelled = true)
-    public void onEntityDamageByEntity(EntityDamageByEntityEvent e) {
+    public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
+        if (!(event.getEntity() instanceof LivingEntity mob)
+                || mob.getType() != EntityType.ALLAY
+                || !mob.hasMetadata("isInvincibleWindElf")) {
+            return;
+        }
 
-        Entity damager = e.getDamager();
-        ItemStack weapon = null;
+        boolean invincible = mob.getMetadata("isInvincibleWindElf").stream()
+                .anyMatch(value -> value.asBoolean());
+        if (invincible) {
+            event.setCancelled(true);
+            return;
+        }
 
-        Location mobLocation = e.getEntity().getLocation();
+        Player attacker = resolvePlayerAttacker(event.getDamager());
+        if (attacker == null) {
+            // Wind Spirit's combat mechanic is explicitly a coordinated player/sword fight.
+            event.setDamage(0.0D);
+            return;
+        }
+
+        int nearbyPlayers = 0;
+        Location mobLocation = mob.getLocation();
         World world = mobLocation.getWorld();
-        double radius = 20.0; // 范围:20 方块
-        double radiusSquared = radius * radius;
-        int playerCount = 0;
-        for (Player player : world.getPlayers()) {
-            if (player.getLocation().distanceSquared(mobLocation) <= radiusSquared) {
-                playerCount++;
+        if (world != null) {
+            double radiusSquared = 20.0D * 20.0D;
+            for (Player player : world.getPlayers()) {
+                if (player.getLocation().distanceSquared(mobLocation) <= radiusSquared) {
+                    nearbyPlayers++;
+                }
             }
         }
-        if (damager instanceof Player player) {
-            weapon = player.getInventory().getItemInMainHand();
-                if (e.getEntity() instanceof LivingEntity mob && mob.getType() == EntityType.ALLAY) {
-                    if (mob.hasMetadata("isInvincibleWindElf")) {
 
-                        boolean isInvincibleWindElf = mob.getMetadata("isInvincibleWindElf").get(0).asBoolean();
+        ItemStack weapon = attacker.getInventory().getItemInMainHand();
 
-                        if (isInvincibleWindElf) {
-                            e.setCancelled(true);
-                        } else if (!isSword(weapon) || playerCount < 2 || playerCount > 5) {
-                            e.setDamage(0.0);
-                        } else {
-                            double damage = e.getDamage();
-                            double maxHealth = mob.getMaxHealth();
-                            double threshold = maxHealth * 0.33;
-                            if (damage > threshold) {
-                                e.setDamage(threshold);
-                            }
-                        }
-                    }
-                }
+        // Projectile attacks are never sword attacks, even when the shooter currently
+        // happens to be holding a sword.
+        if (event.getDamager() instanceof Projectile
+                || !isSword(weapon)
+                || nearbyPlayers < 2
+                || nearbyPlayers > 5) {
+            event.setDamage(0.0D);
+            return;
         }
 
+        double maxHealth = mob.getMaxHealth();
+        double threshold = maxHealth * 0.33D;
+        if (event.getDamage() > threshold) {
+            event.setDamage(threshold);
+        }
+    }
+
+    private Player resolvePlayerAttacker(Entity damager) {
+        if (damager instanceof Player player) {
+            return player;
+        }
+
+        if (damager instanceof Projectile projectile) {
+            ProjectileSource shooter = projectile.getShooter();
+            if (shooter instanceof Player player) {
+                return player;
+            }
+        }
+
+        return null;
     }
 
 
