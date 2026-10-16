@@ -100,6 +100,13 @@ public class VoidTouchScript extends SimpleSlimefunItem<ItemUseHandler> implemen
                 }
 
                 if (targetLoc != null) {
+                    World targetWorld = targetLoc.getWorld();
+                    if (targetWorld == null || !targetWorld.isChunkLoaded(
+                            targetLoc.getBlockX() >> 4, targetLoc.getBlockZ() >> 4)) {
+                        player.sendMessage("§cThe bound target chunk is not currently loaded.");
+                        player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1.0f, 1.0f);
+                        return;
+                    }
                     Location playerLoc = player.getLocation();
                     // ✅ 检查是否在同一世界
                     if (!playerLoc.getWorld().equals(targetLoc.getWorld())) {
