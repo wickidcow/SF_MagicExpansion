@@ -1,10 +1,12 @@
 package io.Yomicer.magicExpansion.items.electric;
 
+import com.xzavier0722.mc.plugin.slimefun4.storage.util.StorageCacheUtils;
 import io.Yomicer.magicExpansion.MagicExpansion;
 import io.Yomicer.magicExpansion.items.abstracts.MenuBlock;
 import io.Yomicer.magicExpansion.items.misc.fish.FishAttributeGenerator;
 import io.Yomicer.magicExpansion.items.misc.fish.Gen2Fish;
 import io.github.thebusybiscuit.slimefun4.api.items.ItemGroup;
+import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItem;
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItemStack;
 import io.github.thebusybiscuit.slimefun4.api.recipes.RecipeType;
 import io.github.thebusybiscuit.slimefun4.libraries.dough.items.CustomItemStack;
@@ -12,10 +14,15 @@ import me.mrCookieSlime.Slimefun.api.inventory.BlockMenu;
 import me.mrCookieSlime.Slimefun.api.inventory.BlockMenuPreset;
 import me.mrCookieSlime.Slimefun.api.inventory.DirtyChestMenu;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
 import static io.Yomicer.magicExpansion.utils.ColorGradient.getGradientNameVer2;
@@ -33,6 +40,12 @@ import static io.Yomicer.magicExpansion.utils.Utils.doGlow;
  * </ul>
  */
 public class FishBreedPool extends MenuBlock {
+
+    /**
+     * One in-flight breeding transaction per placed pool.
+     * Access is confined to the owning server/region thread.
+     */
+    private final Map<Location, UUID> activeBreeds = new HashMap<>();
 
     // ===== 27 格(3×9) 按用户图片布局 =====
     // 第一行第5格: 信息栏(提示杂交方式与系数公式)
@@ -118,6 +131,12 @@ public class FishBreedPool extends MenuBlock {
     }
 
     @Override
+    protected void onBreak(BlockBreakEvent event, BlockMenu menu) {
+        activeBreeds.remove(event.getBlock().getLocation());
+        super.onBreak(event, menu);
+    }
+
+    @Override
     protected int[] getInputSlots() {
         return new int[]{SLOT_PARENT_1, SLOT_PARENT_2};
     }
@@ -154,22 +173,48 @@ public class FishBreedPool extends MenuBlock {
 
         // 校验用户是否持有该机器放置权限(可选, 沿用 MenuBlock 默认行为即可)
 
-        // 锁定按钮为"制作中", 防止 2 秒内重复点击
+        Location location = menu.getLocation().clone();
+        if (activeBreeds.containsKey(location)) {
+            player.sendMessage(getGradientNameVer2("Breeding Pool: this pool is already breeding."));
+            return;
+        }
+
+        UUID token = UUID.randomUUID();
+        activeBreeds.put(location, token);
+
+        // Lock the button and bind completion to this exact live block transaction.
         menu.replaceExistingItem(SLOT_BUTTON, craftingItem());
         player.sendMessage(getGradientNameVer2("Breeding... processing for 2 seconds."));
 
-        // 2 秒(40 tick)后执行真正杂交
         Bukkit.getScheduler().runTaskLater(MagicExpansion.getInstance(), () -> {
-            // 重新从菜单读取当前父鱼, 避免制作期间玩家取走/更换
-            ItemStack cur1 = menu.getItemInSlot(SLOT_PARENT_1);
-            ItemStack cur2 = menu.getItemInSlot(SLOT_PARENT_2);
-            BlockMenu fresh = menu;
+            if (!token.equals(activeBreeds.get(location))) {
+                return;
+            }
+
+            SlimefunItem liveItem = StorageCacheUtils.getSlimefunItem(location);
+            BlockMenu fresh = StorageCacheUtils.getMenu(location);
+            if (liveItem != this || fresh == null) {
+                activeBreeds.remove(location, token);
+                return;
+            }
+
+            ItemStack cur1 = fresh.getItemInSlot(SLOT_PARENT_1);
+            ItemStack cur2 = fresh.getItemInSlot(SLOT_PARENT_2);
             if (!FishAttributeGenerator.isGen2Fish(cur1) || !FishAttributeGenerator.isGen2Fish(cur2)) {
-                player.sendMessage(getGradientNameVer2("Breeding Pool: a parent fish was removed; breeding cancelled."));
+                activeBreeds.remove(location, token);
+                if (player.isOnline()) {
+                    player.sendMessage(getGradientNameVer2(
+                            "Breeding Pool: a parent fish was removed; breeding cancelled."));
+                }
                 resetButton(fresh);
                 return;
             }
-            completeBreed(player, fresh, cur1, cur2);
+
+            try {
+                completeBreed(player, fresh, cur1, cur2);
+            } finally {
+                activeBreeds.remove(location, token);
+            }
         }, 40L);
     }
 
