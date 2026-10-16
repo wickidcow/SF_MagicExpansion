@@ -682,7 +682,12 @@ public class EnchantingTable extends SimpleSlimefunItem<ItemUseHandler> implemen
     @Nonnull
     @Override
     public ItemUseHandler getItemHandler() {
-        return null;
+        // This is a placed GUI machine. Deny vanilla item/block behavior while
+        // still honoring SimpleSlimefunItem's non-null handler contract.
+        return event -> {
+            event.setUseItem(org.bukkit.event.Event.Result.DENY);
+            event.setUseBlock(org.bukkit.event.Event.Result.DENY);
+        };
     }
 
 
