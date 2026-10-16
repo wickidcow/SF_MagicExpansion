@@ -37,7 +37,7 @@ import java.util.UUID;
 
 public class ItemNameTag extends SimpleSlimefunItem<ItemUseHandler> implements Listener {
 
-    private record RenameSession(UUID token, long startedAt) {}
+    private record RenameSession(UUID token, long startedAt, ItemStack expectedTag) {}
 
     private final Map<UUID, RenameSession> renameSessions = new ConcurrentHashMap<>();
 
@@ -68,7 +68,8 @@ public class ItemNameTag extends SimpleSlimefunItem<ItemUseHandler> implements L
                 player.sendMessage(ColorGradient.getGradientNameVer2("Enter the new item name within 60 seconds."));
                 player.sendMessage(ColorGradient.getGradientNameVer2("Use & color codes, <g1>text, or <g2>text. Type 'cancel' to stop."));
                 UUID uuid = player.getUniqueId();
-                RenameSession session = new RenameSession(UUID.randomUUID(), System.currentTimeMillis());
+                RenameSession session = new RenameSession(
+                        UUID.randomUUID(), System.currentTimeMillis(), e.getItem().clone());
                 renameSessions.put(uuid, session);
 
                 // Only the timeout belonging to the current session may close it.
@@ -108,6 +109,7 @@ public class ItemNameTag extends SimpleSlimefunItem<ItemUseHandler> implements L
 
                 offMeta.setDisplayName(displayName);
                 offHand.setItemMeta(offMeta);
+                player.getInventory().setItemInOffHand(offHand);
 
                 if (player.getGameMode() != GameMode.CREATIVE) {
                     ItemUtils.consumeItem(nameTag, false);
@@ -178,9 +180,11 @@ public class ItemNameTag extends SimpleSlimefunItem<ItemUseHandler> implements L
         renameSessions.remove(uuid, session);
         Bukkit.getScheduler().runTask(MagicExpansion.getInstance(), () -> {
             ItemStack mainHand = player.getInventory().getItemInMainHand();
-            if (mainHand.getType() == Material.AIR || SlimefunItem.getByItem(mainHand) != this) {
+            if (mainHand.getType() == Material.AIR
+                    || SlimefunItem.getByItem(mainHand) != this
+                    || !mainHand.isSimilar(session.expectedTag())) {
                 player.sendMessage(ColorGradient.getGradientNameVer2(
-                        "Renaming cancelled because the Portable Item Name Tag is no longer in your main hand."));
+                        "Renaming cancelled because the Portable Item Name Tag moved or changed."));
                 return;
             }
 
