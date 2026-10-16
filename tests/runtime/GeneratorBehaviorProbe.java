@@ -3,6 +3,7 @@ package audit;
 import com.xzavier0722.mc.plugin.slimefun4.storage.controller.BlockDataController;
 import com.xzavier0722.mc.plugin.slimefun4.storage.controller.SlimefunBlockData;
 import io.Yomicer.magicExpansion.MagicExpansion;
+import io.Yomicer.magicExpansion.items.electric.entitykillMachinee.EntityKillMachine;
 import io.Yomicer.magicExpansion.items.generators.FishEnergyGenerator;
 import io.Yomicer.magicExpansion.items.generators.NumberEnergyGenerator;
 import io.Yomicer.magicExpansion.items.generators.TypeEnergyGenerator;
@@ -10,6 +11,7 @@ import io.Yomicer.magicExpansion.items.misc.fish.FishKeys;
 import io.Yomicer.magicExpansion.utils.AcceleratableMachine;
 import io.Yomicer.magicExpansion.utils.MachineBuffManager;
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItem;
+import io.github.thebusybiscuit.slimefun4.core.attributes.EnergyNetComponent;
 import io.github.thebusybiscuit.slimefun4.implementation.Slimefun;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -24,6 +26,8 @@ import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -63,10 +67,11 @@ public final class GeneratorBehaviorProbe extends JavaPlugin {
                 ++index, passes, failures);
         testNumber(++index, passes, failures);
         testFish(++index, passes, failures);
+        testEntitySuppression(++index, passes, failures);
 
         StringBuilder result = new StringBuilder();
         result.append(failures.isEmpty() ? "GENERATOR_BEHAVIOR_PASS\n" : "GENERATOR_BEHAVIOR_FAIL\n");
-        result.append("cases=5\n");
+        result.append("cases=6\n");
         result.append("passed=").append(passes.size()).append('\n');
         for (String pass : passes) result.append("pass=").append(pass).append('\n');
         for (String failure : failures) result.append("failure=").append(failure).append('\n');
@@ -213,6 +218,48 @@ public final class GeneratorBehaviorProbe extends JavaPlugin {
         } catch (Throwable error) {
             failures.add(id + ": " + error.getClass().getSimpleName() + ": " + error.getMessage());
         } finally {
+            if (fixture != null) cleanup(location);
+        }
+    }
+
+    private void testEntitySuppression(
+            int index, List<String> passes, List<String> failures) {
+        String id = "PHANTON_SUPPRESSION";
+        Location location = location(index);
+        Fixture fixture = null;
+        Entity phantom = null;
+        try {
+            SlimefunItem item = SlimefunItem.getById(id);
+            check(item instanceof EntityKillMachine, id + " is not EntityKillMachine");
+            check(item instanceof EnergyNetComponent, id + " is not an energy component");
+            check(item.getBlockTicker() != null, id + " has no ticker");
+            fixture = createFixture(item, location);
+
+            EnergyNetComponent energy = (EnergyNetComponent) item;
+            energy.setCharge(location, 0L, fixture.data());
+
+            phantom = location.getWorld().spawnEntity(
+                    location.clone().add(2.0, 2.0, 0.0), EntityType.PHANTOM);
+            item.getBlockTicker().tick(fixture.block(), item, fixture.data());
+            check(phantom.isValid() && !phantom.isDead(),
+                    id + " removed a phantom with zero stored energy");
+
+            energy.setCharge(location, 1_000L, fixture.data());
+            item.getBlockTicker().tick(fixture.block(), item, fixture.data());
+
+            check(!phantom.isValid() || phantom.isDead(),
+                    id + " did not remove a phantom with sufficient energy");
+            long remaining = energy.getChargeLong(location, fixture.data());
+            check(remaining == 740L,
+                    id + " expected exact 260 J debit from 1000 J, got " + remaining);
+
+            passes.add(id + " zero-power gate and exact suppression debit");
+        } catch (Throwable error) {
+            failures.add(id + ": " + error.getClass().getSimpleName() + ": " + error.getMessage());
+        } finally {
+            if (phantom != null && phantom.isValid()) {
+                phantom.remove();
+            }
             if (fixture != null) cleanup(location);
         }
     }
