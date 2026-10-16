@@ -3,101 +3,121 @@ package io.Yomicer.magicExpansion.Listener.magicItemEffectManager;
 import io.Yomicer.magicExpansion.utils.GiveItem;
 import io.Yomicer.magicExpansion.utils.entity.EntityEgg;
 import io.Yomicer.magicExpansion.utils.compat.EntityHelper;
+import io.github.thebusybiscuit.slimefun4.implementation.Slimefun;
+import io.github.thebusybiscuit.slimefun4.libraries.dough.protection.Interaction;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
+import org.bukkit.World;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.ProjectileHitEvent;
+import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 
-import java.util.Random;
 
-import static io.Yomicer.magicExpansion.items.enchantMachine.EnchantingTable.ATTRIBUTE_POOL;
 
 public class ArrowHitLocationListener implements Listener {
 
+    private static final NamespacedKey WEAPON_ARROW_TP_KEY =
+            new NamespacedKey("magicexpansion", "magicexpansion_arrowtp");
+    private static final NamespacedKey PROJECTILE_ARROW_TP_KEY =
+            new NamespacedKey("magicexpansion", "arrow_tp_projectile");
+
+    @EventHandler(ignoreCancelled = true)
+    public void onArrowLaunch(ProjectileLaunchEvent event) {
+        if (!(event.getEntity() instanceof Arrow arrow)
+                || !(arrow.getShooter() instanceof Player player)) {
+            return;
+        }
+
+        if (hasArrowTeleport(player.getInventory().getItemInMainHand())
+                || hasArrowTeleport(player.getInventory().getItemInOffHand())) {
+            arrow.getPersistentDataContainer().set(
+                    PROJECTILE_ARROW_TP_KEY, PersistentDataType.BYTE, (byte) 1);
+        }
+    }
 
     @EventHandler
     public void onArrowHit(ProjectileHitEvent event) {
-        // 检查投射物是否是箭
-        if (event.getEntity().getType() == EntityType.ARROW) {
-            Arrow arrow = (Arrow) event.getEntity();
+        if (!(event.getEntity() instanceof Arrow arrow)
+                || !(arrow.getShooter() instanceof Player player)
+                || !player.isOnline()
+                || player.isDead()) {
+            return;
+        }
 
-            // 获取射出箭的玩家(如果有的话)
-            if (arrow.getShooter() instanceof Player player) {
+        Byte marker = arrow.getPersistentDataContainer().get(
+                PROJECTILE_ARROW_TP_KEY, PersistentDataType.BYTE);
+        if (marker == null || marker == 0) {
+            return;
+        }
 
-                ItemStack item = player.getInventory().getItemInMainHand().clone();
-                // 获取物品的 PDC
-                ItemMeta meta = item.getItemMeta();
-                if (meta != null && meta.getPersistentDataContainer() != null) {
-                    PersistentDataContainer pdc = meta.getPersistentDataContainer();
-
-                    // 遍历所有属性
-                    for (String attribute : ATTRIBUTE_POOL.keySet()) {
-                        NamespacedKey key = new NamespacedKey("magicexpansion", attribute.toLowerCase().replace(".", "_"));
-
-                        if (pdc.has(key, PersistentDataType.INTEGER)) {
-                            int value = pdc.get(key, PersistentDataType.INTEGER);
-                            applyEffect(attribute, value, event, player, arrow);
-                        } else if (pdc.has(key, PersistentDataType.BOOLEAN)) {
-                            boolean value = pdc.get(key, PersistentDataType.BOOLEAN);
-                            applyEffect(attribute, value, event, player, arrow);
-                        }
-                    }
-                }
+        Location hitLocation;
+        if (event.getHitEntity() != null) {
+            Entity hitEntity = event.getHitEntity();
+            if (!Slimefun.getProtectionManager().hasPermission(
+                    player, hitEntity.getLocation(), Interaction.INTERACT_ENTITY)) {
+                player.sendMessage("§cThe Ender Pearl Arrow cannot teleport you to that protected target.");
+                return;
+            }
+            hitLocation = hitEntity.getLocation().clone();
+        } else if (event.getHitBlock() != null) {
+            hitLocation = event.getHitBlock().getLocation().clone();
+            if (!Slimefun.getProtectionManager().hasPermission(
+                    player, hitLocation, Interaction.INTERACT_BLOCK)) {
+                player.sendMessage("§cThe Ender Pearl Arrow cannot teleport you into that protected area.");
+                return;
+            }
+        } else {
+            hitLocation = arrow.getLocation().clone();
+            if (!Slimefun.getProtectionManager().hasPermission(
+                    player, hitLocation, Interaction.INTERACT_BLOCK)) {
+                return;
             }
         }
-    }
 
-
-
-    private void applyEffect(String attribute, Object value, ProjectileHitEvent event, Player player, Arrow arrow) {
-        switch (attribute) {
-            case "MagicExpansion.ArrowTp": // 击退效果
-                if (value instanceof Boolean ArrowTp && ArrowTp) {
-
-                    // 获取箭的落点位置
-                    Location hitLocation = null;
-
-                    // 检查箭是否击中了方块
-                    if (event.getHitBlock() != null) {
-                        hitLocation = event.getHitBlock().getLocation();
-                    }
-
-                    // 检查箭是否击中了实体
-                    if (event.getHitEntity() != null) {
-                        hitLocation = event.getHitEntity().getLocation();
-                    }
-
-                    // 如果既没有击中方块也没有击中实体,可能是射到了空气
-                    if (hitLocation == null) {
-                        hitLocation = arrow.getLocation(); // 获取箭的最终位置
-                    }
-
-                    // 将玩家传送到箭的落点位置
-                    if (hitLocation != null) {
-                        hitLocation.add(0,1,0);
-                        player.teleport(hitLocation);
-                        player.sendMessage("§byou to Location");
-                    }
-
-
-
-
-                }
-                break;
-
-
+        World world = hitLocation.getWorld();
+        if (world == null) {
+            return;
         }
 
+        double y = Math.min(world.getMaxHeight() - 2.0D, hitLocation.getY() + 1.0D);
+        y = Math.max(world.getMinHeight(), y);
+        hitLocation.setY(y);
 
+        if (!world.isChunkLoaded(hitLocation.getBlockX() >> 4, hitLocation.getBlockZ() >> 4)) {
+            return;
+        }
+
+        if (!hitLocation.getBlock().getType().isAir()
+                || !hitLocation.clone().add(0, 1, 0).getBlock().getType().isAir()) {
+            player.sendMessage("§cThe Ender Pearl Arrow landing point is obstructed.");
+            return;
+        }
+
+        player.teleport(hitLocation);
+        player.sendMessage("§bTeleported to the Ender Pearl Arrow landing point.");
     }
 
+    private boolean hasArrowTeleport(ItemStack item) {
+        if (item == null || item.getType().isAir()) {
+            return false;
+        }
+
+        ItemMeta meta = item.getItemMeta();
+        if (meta == null) {
+            return false;
+        }
+
+        Boolean enabled = meta.getPersistentDataContainer().get(
+                WEAPON_ARROW_TP_KEY, PersistentDataType.BOOLEAN);
+        return Boolean.TRUE.equals(enabled);
+    }
 
 
 
