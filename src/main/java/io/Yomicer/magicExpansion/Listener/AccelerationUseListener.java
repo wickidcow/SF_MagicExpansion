@@ -93,10 +93,10 @@ public class AccelerationUseListener implements Listener {
                 + ItemStackHelper.getDisplayName(target.getItem())
                 + " §rwith an acceleration buff (×"
                 + String.format("%.2f", multiplier) + ", 5 minutes)");
-    
+    }
+
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onMachineBreak(BlockBreakEvent event) {
         MachineBuffManager.remove(event.getBlock().getLocation());
     }
-}
 }
