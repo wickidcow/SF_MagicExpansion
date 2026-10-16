@@ -1,6 +1,7 @@
 package io.Yomicer.magicExpansion.items.misc;
 
 import com.xzavier0722.mc.plugin.slimefun4.storage.util.StorageCacheUtils;
+import io.Yomicer.magicExpansion.MagicExpansion;
 import io.Yomicer.magicExpansion.items.abstracts.AbstractContainer;
 import io.github.thebusybiscuit.slimefun4.api.items.ItemGroup;
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItemStack;
@@ -12,6 +13,7 @@ import me.mrCookieSlime.Slimefun.api.inventory.BlockMenuPreset;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Chest;
@@ -23,6 +25,7 @@ import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 
 import javax.annotation.Nonnull;
+import java.util.Arrays;
 import java.util.Random;
 
 import static io.Yomicer.magicExpansion.utils.ColorGradient.getRandomGradientName;
@@ -120,6 +123,14 @@ public class PageChest extends AbstractContainer {
 
     @Override
     protected void onBreak(@Nonnull BlockBreakEvent e, @Nonnull BlockMenu menu, @Nonnull Location location) {
+        if (!canSafelyReadAllStoredPages(location)) {
+            e.setCancelled(true);
+            e.getPlayer().sendMessage(
+                    "§cThis Page Chest contains unreadable saved page data and was not broken.");
+            MagicExpansion.getInstance().getLogger().severe(
+                    "Prevented Page Chest break with unreadable saved data at " + location);
+            return;
+        }
         dropAllPages(location, menu);
     }
 
@@ -131,6 +142,12 @@ public class PageChest extends AbstractContainer {
         if (menu == null) {
             return;
         }
+
+        if (menu.hasViewer() && !menu.contains(player)) {
+            player.sendMessage("§cThis Page Chest is currently being used by another player.");
+            return;
+        }
+
         menu.open(player);
         player.getOpenInventory().setTitle(title(currentPage(location)));
         playAnimation(player, location, true);
@@ -157,9 +174,12 @@ public class PageChest extends AbstractContainer {
 
     public static void flip(@Nonnull Player player, @Nonnull Location location, int direction) {
         BlockMenu menu = StorageCacheUtils.getMenu(location);
-        if (menu == null) {
+        if (menu == null
+                || player.getOpenInventory().getTopInventory().getHolder() != menu
+                || !menu.contains(player)) {
             return;
         }
+
         int page = currentPage(location);
         int next = page + direction;
         if (next < 1) {
@@ -168,18 +188,36 @@ public class PageChest extends AbstractContainer {
             next = 1;
         }
 
-        // 旧页(玩家改动已直接生效于 BlockMenu)写回存档
-        savePage(location, page, menu.toInventory().getContents());
-        BlockStorage.addBlockInfo(location, DATA_CURRENT_PAGE, String.valueOf(next));
+        // Load and validate the destination before mutating the current page or page marker.
+        ItemStack[] nextContents = loadPageStrict(location, next);
+        if (nextContents == null) {
+            player.sendMessage(
+                    "§cThat Page Chest page contains unreadable saved data. The page was not changed.");
+            MagicExpansion.getInstance().getLogger().severe(
+                    "Prevented Page Chest flip to unreadable page " + next + " at " + location);
+            return;
+        }
 
-        // 载入新页到 BlockMenu, 界面与货运同时切换到新页
-        menu.toInventory().setContents(loadPage(location, next));
+        ItemStack[] currentContents = Arrays.stream(menu.toInventory().getContents())
+                .map(item -> item == null ? null : item.clone())
+                .toArray(ItemStack[]::new);
+
+        if (!savePageStrict(location, page, currentContents)) {
+            player.sendMessage(
+                    "§cThe current Page Chest page could not be saved. The page was not changed.");
+            return;
+        }
+
+        BlockStorage.addBlockInfo(location, DATA_CURRENT_PAGE, String.valueOf(next));
+        menu.toInventory().setContents(nextContents);
         menu.markDirty();
         player.getOpenInventory().setTitle(title(next));
 
-        // 翻页音效: 随机音符盒音色
         Sound flipSound = FLIP_SOUNDS[new Random().nextInt(FLIP_SOUNDS.length)];
-        location.getWorld().playSound(location, flipSound, 0.5f, 1.0f);
+        World world = location.getWorld();
+        if (world != null) {
+            world.playSound(location, flipSound, 0.5f, 1.0f);
+        }
     }
 
     // ===================== 数据存取 =====================
@@ -189,23 +227,68 @@ public class PageChest extends AbstractContainer {
     }
 
     public static ItemStack[] loadPage(@Nonnull Location location, int page) {
+        ItemStack[] strict = loadPageStrict(location, page);
+        return strict == null ? new ItemStack[CHEST_SIZE] : strict;
+    }
+
+    private static ItemStack[] loadPageStrict(@Nonnull Location location, int page) {
         ItemStack[] contents = new ItemStack[CHEST_SIZE];
         for (int i = 0; i < CHEST_SIZE; i++) {
             String data = BlockStorage.getLocationInfo(location, slotKey(page, i));
-            contents[i] = (data == null || data.isEmpty()) ? null : itemFromBase64(data);
+            if (data == null || data.isEmpty()) {
+                contents[i] = null;
+                continue;
+            }
+
+            ItemStack decoded = itemFromBase64(data);
+            if (decoded == null || decoded.getType().isAir()) {
+                return null;
+            }
+            contents[i] = decoded;
         }
         return contents;
     }
 
     public static void savePage(@Nonnull Location location, int page, @Nonnull ItemStack[] contents) {
+        savePageStrict(location, page, contents);
+    }
+
+    private static boolean savePageStrict(
+            @Nonnull Location location, int page, @Nonnull ItemStack[] contents) {
+        String[] serialized = new String[CHEST_SIZE];
+
+        // Serialize the complete page first so a failure cannot partially rewrite it.
         for (int i = 0; i < CHEST_SIZE; i++) {
-            ItemStack item = (i < contents.length) ? contents[i] : null;
-            if (item == null || item.getType() == Material.AIR) {
-                BlockStorage.addBlockInfo(location, slotKey(page, i), "");
-            } else {
-                BlockStorage.addBlockInfo(location, slotKey(page, i), itemToBase64(item));
+            ItemStack item = i < contents.length ? contents[i] : null;
+            if (item == null || item.getType().isAir()) {
+                serialized[i] = "";
+                continue;
+            }
+
+            String data = itemToBase64(item);
+            if (data == null || data.isEmpty()) {
+                MagicExpansion.getInstance().getLogger().severe(
+                        "Could not serialize Page Chest slot " + i + " on page " + page
+                                + " at " + location);
+                return false;
+            }
+            serialized[i] = data;
+        }
+
+        for (int i = 0; i < CHEST_SIZE; i++) {
+            BlockStorage.addBlockInfo(location, slotKey(page, i), serialized[i]);
+        }
+        return true;
+    }
+
+    private static boolean canSafelyReadAllStoredPages(@Nonnull Location location) {
+        int activePage = currentPage(location);
+        for (int page = 1; page <= TOTAL_PAGES; page++) {
+            if (page != activePage && loadPageStrict(location, page) == null) {
+                return false;
             }
         }
+        return true;
     }
 
     // ===================== 破坏掉落 =====================
