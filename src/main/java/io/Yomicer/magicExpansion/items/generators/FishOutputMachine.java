@@ -473,6 +473,72 @@ public class FishOutputMachine extends MenuBlock implements EnergyNetComponent, 
         // 如果没有找到匹配的槽位,什么也不做(不存储新物品)
     }
 
+    /**
+     * All-or-nothing long write used by the stacked vivarium.
+     * A partial write would destroy the remainder because that machine has no local
+     * output slots, so verify the complete destination capacity before mutating data.
+     */
+    static boolean storeItemToExistingSlotCachedLongExact(
+            SlimefunBlockData data, ItemStack item, long amountToStore) {
+        if (item == null || item.getType() == Material.AIR || amountToStore <= 0L) {
+            return false;
+        }
+
+        ItemStack prototype = item.clone();
+        prototype.setAmount(1);
+
+        synchronized (data) {
+            for (int i = 0; i < MAX_STORED_ITEMS; i++) {
+                String jsonData = data.getData("item_type_" + i);
+                if (jsonData == null || jsonData.isEmpty()) {
+                    continue;
+                }
+
+                try {
+                    ItemStack storedItem = itemFromBase64(jsonData);
+                    if (storedItem == null || storedItem.getType() == Material.AIR) {
+                        continue;
+                    }
+                    storedItem.setAmount(1);
+                    if (!SlimefunUtils.isItemSimilar(prototype, storedItem, true)) {
+                        continue;
+                    }
+
+                    String countStr = data.getData("item_count_" + i);
+                    long current = countStr == null || countStr.isEmpty()
+                            ? 0L
+                            : Long.parseLong(countStr);
+                    if (current < 0L) {
+                        return false;
+                    }
+
+                    String maxStr = data.getData("item_max_" + i);
+                    long ceiling = Long.MAX_VALUE;
+                    if (maxStr != null && !maxStr.isEmpty()) {
+                        long configured = Long.parseLong(maxStr);
+                        if (configured < -1L) {
+                            return false;
+                        }
+                        if (configured >= 0L) {
+                            ceiling = configured;
+                        }
+                    }
+
+                    if (current > ceiling || amountToStore > ceiling - current) {
+                        return false;
+                    }
+
+                    data.setData("item_count_" + i, Long.toString(current + amountToStore));
+                    return true;
+                } catch (RuntimeException ignored) {
+                    return false;
+                }
+            }
+        }
+
+        return false;
+    }
+
     // Long-safe write used by large-output machines. It intentionally reuses the
     // fork's direct CargoCore storage format instead of the upstream cache layer.
     static void storeItemToExistingSlotCachedLong(SlimefunBlockData data, ItemStack item, long amountToStore) {
