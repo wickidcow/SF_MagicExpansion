@@ -77,33 +77,44 @@ public class MapUtils {
                 return;
             }
 
-            List<PasteTarget> targets = preparePasteTargets(player, pasteLocation, blocks);
-            if (targets == null) {
-                return;
+            if (pasteBlocks(player, pasteLocation, blocks)) {
+                player.sendMessage(ChatColor.GREEN + "Map pasted successfully above the target block!");
             }
-
-            List<PasteTarget> changed = new ArrayList<>();
-            try {
-                for (PasteTarget target : targets) {
-                    target.block().setBlockData(target.desired(), false);
-                    changed.add(target);
-                }
-            } catch (RuntimeException | LinkageError failure) {
-                for (int i = changed.size() - 1; i >= 0; i--) {
-                    PasteTarget target = changed.get(i);
-                    try {
-                        target.block().setBlockData(target.original(), false);
-                    } catch (RuntimeException | LinkageError ignored) {
-                    }
-                }
-                player.sendMessage(ChatColor.RED
-                        + "Map paste failed and all completed block changes were rolled back.");
-                return;
-            }
-
-            player.sendMessage(ChatColor.GREEN + "Map pasted successfully above the target block!");
         } catch (IOException | RuntimeException failure) {
             player.sendMessage(ChatColor.RED + "Failed to paste map: " + failure.getMessage());
+        }
+    }
+
+    public static boolean pasteBlocks(
+            Player player, Location pasteLocation, List<BlockData> blocks) {
+        if (blocks == null || blocks.isEmpty()) {
+            player.sendMessage(ChatColor.RED + "There are no blocks to paste.");
+            return false;
+        }
+
+        List<PasteTarget> targets = preparePasteTargets(player, pasteLocation, blocks);
+        if (targets == null) {
+            return false;
+        }
+
+        List<PasteTarget> changed = new ArrayList<>();
+        try {
+            for (PasteTarget target : targets) {
+                target.block().setBlockData(target.desired(), false);
+                changed.add(target);
+            }
+            return true;
+        } catch (RuntimeException | LinkageError failure) {
+            for (int i = changed.size() - 1; i >= 0; i--) {
+                PasteTarget target = changed.get(i);
+                try {
+                    target.block().setBlockData(target.original(), false);
+                } catch (RuntimeException | LinkageError ignored) {
+                }
+            }
+            player.sendMessage(ChatColor.RED
+                    + "Map paste failed and all completed block changes were rolled back.");
+            return false;
         }
     }
 
