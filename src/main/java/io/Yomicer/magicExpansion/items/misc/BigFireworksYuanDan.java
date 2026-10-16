@@ -77,11 +77,13 @@ public class BigFireworksYuanDan extends SimpleSlimefunItem<ItemUseHandler> impl
                 return;
             }
 
-            // 减少物品数量
-            if (itemInHand.getAmount() > 1) {
-                itemInHand.setAmount(itemInHand.getAmount() - 1);
-            } else {
-                player.getInventory().setItemInMainHand(null);
+            // Survival/adventure consumes one item; Creative keeps the item.
+            if (player.getGameMode() != GameMode.CREATIVE) {
+                if (itemInHand.getAmount() > 1) {
+                    itemInHand.setAmount(itemInHand.getAmount() - 1);
+                } else {
+                    player.getInventory().setItemInMainHand(null);
+                }
             }
 
             // 发射超级烟花
