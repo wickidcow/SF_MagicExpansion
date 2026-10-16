@@ -97,7 +97,9 @@ public class LuckCapacitor extends SlimefunItem implements EnergyNetComponent {
         return new BlockBreakHandler(false,false) {
             public void onPlayerBreak(BlockBreakEvent e, ItemStack item, List<ItemStack> drops) {
                 e.setDropItems(false);
-                int charge = CHARGE_CACHE.getOrDefault(e.getBlock().getLocation(), 0);
+                int charge = Math.max(0, Math.min(
+                        LuckCapacitor.this.getCapacity(),
+                        LuckCapacitor.this.getCharge(e.getBlock().getLocation())));
                 ItemStack itemStack = LuckCapacitor.this.getItem();
                 ItemStack drop = itemStack.clone();
                 ItemMeta meta = drop.getItemMeta();
@@ -126,12 +128,18 @@ public class LuckCapacitor extends SlimefunItem implements EnergyNetComponent {
                 if (meta == null) return;
                 PersistentDataContainer pdc = meta.getPersistentDataContainer();
 
-                Integer storedCharge = pdc.getOrDefault(CHARGE_KEY, PersistentDataType.INTEGER,0);
+                Integer storedCharge = pdc.getOrDefault(
+                        CHARGE_KEY, PersistentDataType.INTEGER, 0);
 
-                if (storedCharge != null && storedCharge != 0) {
-                    addCharge(e.getBlockPlaced().getLocation(), storedCharge);
+                int safeCharge = storedCharge == null
+                        ? 0
+                        : Math.max(0, Math.min(getCapacity(), storedCharge));
+                if (safeCharge > 0) {
+                    addCharge(e.getBlockPlaced().getLocation(), safeCharge);
                 }
-                CHARGE_CACHE.put(e.getBlockPlaced().getLocation(), getCharge(e.getBlockPlaced().getLocation()));
+                CHARGE_CACHE.put(
+                        e.getBlockPlaced().getLocation(),
+                        getCharge(e.getBlockPlaced().getLocation()));
             }
         };
     }
