@@ -76,46 +76,52 @@ public class EntityKillMachine extends SlimefunItem implements EnergyNetComponen
     }
 
     protected void tick(Block block) {
-
         BlockMenu menu = StorageCacheUtils.getMenu(block.getLocation());
-        if(menu != null && menu.hasViewer()) {
-        if (getCharge(block.getLocation()) < getEnergyConsumption()) {
-            //电量不足
-            menu.addItem(13, new CustomItemStack(new ItemStack (Material.GHAST_TEAR), "§cNot Enough Energy"),
-                    (p, slot, item, action) -> false);
+        if (menu == null) {
             return;
         }
-            //电量不足
-            menu.addItem(13, new CustomItemStack(new ItemStack(Material.BLUE_BED), "§bSuppressing",
-                            "§bType: §e" + name,
-                            "§bEnergy Use: §e" + getEnergyConsumption() * 2 + " J/s",
-                            "§bStored Energy: §e" + getCharge(block.getLocation()) + " J"),
-                    (p, slot, item, action) -> false);
 
-        }
-        Location center = block.getLocation();
-        int radius = 19;
+        Location location = block.getLocation();
+        int consumption = getEnergyConsumption();
+        long charge = getCharge(location);
 
-        Runnable removeEntitiesTask = () -> {
-            for (Entity entity : center.getWorld().getNearbyEntities(center, radius, radius, radius)) {
-                if (entity.getType() == entityType) {
-                    entity.remove();
-                }
+        if (charge < consumption) {
+            if (menu.hasViewer()) {
+                menu.addItem(13, new CustomItemStack(
+                                new ItemStack(Material.GHAST_TEAR),
+                                "§cNot Enough Energy",
+                                "§bRequired: §e" + consumption + " J/tick",
+                                "§bStored Energy: §e" + charge + " J"),
+                        (p, slot, item, action) -> false);
             }
-        };
-
-        if (Bukkit.isPrimaryThread()) {
-            // 当前是主线程,直接执行
-            removeEntitiesTask.run();
-        } else {
-            // 当前是异步线程,调度到主线程执行
-            Bukkit.getScheduler().runTask(MagicExpansion.getInstance(), removeEntitiesTask);
+            return;
         }
 
+        if (menu.hasViewer()) {
+            menu.addItem(13, new CustomItemStack(
+                            new ItemStack(Material.BLUE_BED),
+                            "§bSuppressing",
+                            "§bType: §e" + name,
+                            "§bEnergy Use: §e" + consumption * 2 + " J/s",
+                            "§bStored Energy: §e" + charge + " J"),
+                    (p, slot, item, action) -> false);
+        }
 
+        int radius = 19;
+        boolean removedAny = false;
+        for (Entity entity : location.getWorld().getNearbyEntities(
+                location, radius, radius, radius)) {
+            if (entity.getType() == entityType) {
+                entity.remove();
+                removedAny = true;
+            }
+        }
 
+        // Charge exactly once for a suppression tick that actually did work.
+        if (removedAny) {
+            setCharge(location, Math.max(0L, charge - consumption));
+        }
     }
-
 
 
     private void constructMenu(String displayName) {
