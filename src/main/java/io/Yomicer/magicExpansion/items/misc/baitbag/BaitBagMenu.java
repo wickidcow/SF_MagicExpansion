@@ -293,9 +293,9 @@ public final class BaitBagMenu {
         if (bag == null || !bag.hasItemMeta()) return 0;
         PersistentDataContainer c = bag.getItemMeta().getPersistentDataContainer();
         Long v = c.get(amountKey(entry.id()), PersistentDataType.LONG);
-        if (v != null) return v;
+        if (v != null) return Math.max(0L, v);
         Integer old = c.get(amountKey(entry.id()), PersistentDataType.INTEGER);
-        return old == null ? 0 : old;
+        return old == null ? 0L : Math.max(0L, old.longValue());
     }
 
     private static void setAmount(ItemStack bag, BaitEntry entry, long amount) {
@@ -820,12 +820,21 @@ public final class BaitBagMenu {
             player.sendMessage(getGradientNameVer2("That lure does not belong in this slot."));
             return;
         }
-        long cur = getAmount(bag, entry);
-        long add = cursor.getAmount();
-        long nv = cur + add;
-        if (nv < cur) nv = Long.MAX_VALUE; // 溢出保护
-        setAmount(bag, entry, nv);
-        player.setItemOnCursor(null);
+        BaitBagAmountMath.Transfer transfer =
+                BaitBagAmountMath.deposit(getAmount(bag, entry), cursor.getAmount());
+        if (transfer.accepted() <= 0) {
+            player.sendMessage(getGradientNameVer2("This lure slot has reached its maximum stored amount."));
+            return;
+        }
+
+        setAmount(bag, entry, transfer.stored());
+        if (transfer.remainder() <= 0) {
+            player.setItemOnCursor(null);
+        } else {
+            ItemStack remainder = cursor.clone();
+            remainder.setAmount(transfer.remainder());
+            player.setItemOnCursor(remainder);
+        }
         player.getInventory().setItem(bagSlot, bag);
         player.playSound(player.getLocation(), Sound.ENTITY_ITEM_PICKUP, 0.5f, 1.0f);
         refreshBaitSlot(menu, bag, entry);
@@ -892,41 +901,47 @@ public final class BaitBagMenu {
             return;
         }
 
-        placeIntoInput(player, menu, bag, bagSlot, cursor, true);
+        player.setItemOnCursor(placeIntoInput(player, menu, bag, bagSlot, cursor));
     }
 
-    /** 放入输入槽: 鱼饵直接吃掉存入, 其他物品持久化在槽中 */
-    private static void placeIntoInput(Player player, ChestMenu menu, ItemStack bag, int bagSlot, ItemStack item, boolean fromCursor) {
+    /** Put an item into the persistent input. Returns any unaccepted remainder. */
+    private static ItemStack placeIntoInput(
+            Player player, ChestMenu menu, ItemStack bag, int bagSlot, ItemStack item) {
         BaitEntry direct = matchBait(item);
         if (direct != null) {
-            // 鱼饵: 不持久化, 直接吃掉并存入对应槽位
-            long cur = getAmount(bag, direct);
-            long add = item.getAmount();
-            long nv = cur + add;
-            if (nv < cur) nv = Long.MAX_VALUE;
-            setAmount(bag, direct, nv);
-            player.getInventory().setItem(bagSlot, bag);
-            if (fromCursor) {
-                player.setItemOnCursor(null);
+            BaitBagAmountMath.Transfer transfer =
+                    BaitBagAmountMath.deposit(getAmount(bag, direct), item.getAmount());
+            if (transfer.accepted() <= 0) {
+                player.sendMessage(getGradientNameVer2(
+                        "This lure slot has reached its maximum stored amount."));
+                return item.clone();
             }
+
+            setAmount(bag, direct, transfer.stored());
+            player.getInventory().setItem(bagSlot, bag);
             refreshBaitSlot(menu, bag, direct);
-            return;
+
+            if (transfer.remainder() <= 0) {
+                return null;
+            }
+            ItemStack remainder = item.clone();
+            remainder.setAmount(transfer.remainder());
+            return remainder;
         }
 
-        // 其他物品: 持久化到输入槽, 关闭界面也不会吞掉
+        // Other supported source items persist in the bag input slot.
         setInputItem(bag, item.clone());
-        if (fromCursor) {
-            player.setItemOnCursor(null);
-        }
         player.getInventory().setItem(bagSlot, bag);
         processInputSource(player, menu, bag, bagSlot, item);
         refreshInputSlot(menu, bag);
+        return null;
     }
 
-    /** Shift+左键背包物品快速放入输入槽 */
-    private static void fastInputFromInventory(Player player, ChestMenu menu, ItemStack bag, int bagSlot, ItemStack item, int invSlot) {
-        player.getInventory().setItem(invSlot, null);
-        placeIntoInput(player, menu, bag, bagSlot, item, false);
+    /** Shift+left-click an inventory item into the input without losing overflow. */
+    private static void fastInputFromInventory(
+            Player player, ChestMenu menu, ItemStack bag, int bagSlot, ItemStack item, int invSlot) {
+        ItemStack remainder = placeIntoInput(player, menu, bag, bagSlot, item);
+        player.getInventory().setItem(invSlot, remainder);
     }
 
     /** 处理输入槽内持久化的来源物品(以太秘匣/量子存储/虚空之触) */
