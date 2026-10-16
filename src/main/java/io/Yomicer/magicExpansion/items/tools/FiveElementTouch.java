@@ -101,6 +101,13 @@ public class FiveElementTouch extends SimpleSlimefunItem<ItemUseHandler> impleme
                 }
 
                 if (targetLoc != null) {
+                    World targetWorld = targetLoc.getWorld();
+                    if (targetWorld == null || !targetWorld.isChunkLoaded(
+                            targetLoc.getBlockX() >> 4, targetLoc.getBlockZ() >> 4)) {
+                        player.sendMessage("§cThe bound target chunk is not currently loaded.");
+                        player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1.0f, 1.0f);
+                        return;
+                    }
                     if (!Slimefun.getProtectionManager()
                             .hasPermission(player, targetLoc, Interaction.INTERACT_BLOCK)) {
                         player.sendMessage("§cYou do not have permission to interact with the bound target.");
