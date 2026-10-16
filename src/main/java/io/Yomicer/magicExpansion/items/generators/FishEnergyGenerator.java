@@ -154,7 +154,7 @@ public class FishEnergyGenerator extends MenuBlock implements EnergyNetProvider,
             }
 
             // ✅ 核心逻辑:从映射表中查找该鱼的能量基础值
-            if (fishType != null && weight != 0.0 && weightRarityName != null) {
+            if (fishType != null && weight > 0.0 && weightRarityName != null) {
                 Integer basePower = FISH_POWER_MAP.get(fishType);
                 if (basePower != null) {
                     double multiplier = Fish.WeightRarity.getMultiplierByName(weightRarityName);
@@ -204,11 +204,11 @@ public class FishEnergyGenerator extends MenuBlock implements EnergyNetProvider,
         display.add(new CustomItemStack(Material.KNOWLEDGE_BOOK, getGradientName("Instructions ⇩"),getGradientName("Please read carefully.")));
         display.add(new CustomItemStack(Material.BOOK, getGradientName("Generation formula:"),getGradientName("Each machine can hold only one electric eel.")
                 ,getGradientName("Power = eel weight × power per weight unit × eel rarity")
-                ,getGradientName("Common / Rare / Super Rare: 1 / 4 / 11")));
+                ,getGradientName("Common / Rare / Ultra Rare / Max Weight: 1 / 7 / 15 / 9999")));
         display.add(new CustomItemStack(Material.KNOWLEDGE_BOOK, getGradientName("Instructions ⇩"),getGradientName("Please read carefully.")));
         display.add(new CustomItemStack(Material.BOOK, getGradientName("Generator update notes:"),getGradientName("Any special Magic Fish may be able to generate power.")
                 ,getGradientName("Power = fish weight × "+ " power per unit weight " +"× weight rarity")
-                ,getGradientName("Common / Rare / Super Rare: 1 / 4 / 11")));
+                ,getGradientName("Common / Rare / Ultra Rare / Max Weight: 1 / 7 / 15 / 9999")));
         display.add(new CustomItemStack(CustomHead.getHead("26314d31b095e4d421760497be6a156f459d8c9957b7e6b1c12deb4e47860d71"),getGradientName("Used by the MagicExpansion fishing system.")));
         display.add(new CustomItemStack(CustomHead.getHead("26314d31b095e4d421760497be6a156f459d8c9957b7e6b1c12deb4e47860d71"),getGradientName("Used by the MagicExpansion fishing system.")));
 //        display.add(new CustomItemStack(Material.TROPICAL_FISH_BUCKET,MYSTIC_EEL.getDisplayName(),getGradientName("Energy per kg per second: "+ChargeLore.formatEnergy(power)+" J")));
