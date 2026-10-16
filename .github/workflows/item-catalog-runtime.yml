@@ -6,6 +6,7 @@ on:
       - 'src/**'
       - 'pom.xml'
       - 'tests/runtime/ItemCatalogProbe.java'
+      - 'tests/runtime/MachineTransactionProbe.java'
       - '.github/workflows/item-catalog-runtime.yml'
   push:
     branches: ['audit/item-feature-verification-*']
@@ -53,16 +54,19 @@ jobs:
       - name: Build exact MagicExpansion source and audit plugin
         run: |
           set -euo pipefail
-          mkdir -p audit/classes
+          mkdir -p audit/classes/item-catalog audit/classes/machine-transaction
           git rev-parse HEAD > audit/source-commit.txt
           bash scripts/install_slimefun_api.sh > audit/build.log 2>&1
           mvn -B -ntp clean verify >> audit/build.log 2>&1 || { tail -n 120 audit/build.log; exit 1; }
           mvn -B -ntp dependency:build-classpath -Dmdep.outputFile=classpath.txt >> audit/build.log 2>&1
           CANDIDATE="$(find target -maxdepth 1 -type f -name 'SF_MagicExpansion*.jar' -print -quit)"
           test -s "$CANDIDATE"
-          javac --release 21 -cp "$CANDIDATE:$(cat classpath.txt)" -d audit/classes tests/runtime/ItemCatalogProbe.java
-          printf "name: MagicExpansionItemCatalogProbe\nmain: audit.ItemCatalogProbe\nversion: '1'\napi-version: '1.21.11'\ndepend: [Slimefun, magicexpansion]\n" > audit/classes/plugin.yml
-          jar --create --file audit/ItemCatalogProbe.jar -C audit/classes .
+          javac --release 21 -cp "$CANDIDATE:$(cat classpath.txt)" -d audit/classes/item-catalog tests/runtime/ItemCatalogProbe.java
+          printf "name: MagicExpansionItemCatalogProbe\nmain: audit.ItemCatalogProbe\nversion: '1'\napi-version: '1.21.11'\ndepend: [Slimefun, magicexpansion]\n" > audit/classes/item-catalog/plugin.yml
+          jar --create --file audit/ItemCatalogProbe.jar -C audit/classes/item-catalog .
+          javac --release 21 -cp "$CANDIDATE:$(cat classpath.txt)" -d audit/classes/machine-transaction tests/runtime/MachineTransactionProbe.java
+          printf "name: MagicExpansionMachineTransactionProbe\nmain: audit.MachineTransactionProbe\nversion: '1'\napi-version: '1.21.11'\ndepend: [Slimefun, magicexpansion]\n" > audit/classes/machine-transaction/plugin.yml
+          jar --create --file audit/MachineTransactionProbe.jar -C audit/classes/machine-transaction .
 
       - name: Build disposable full 45-addon bundle with exact candidate
         env:
@@ -184,6 +188,18 @@ jobs:
           grep -Fxq ITEM_CATALOG_PASS <(head -n 1 item-catalog-result.txt)
           ! grep -Eq 'ITEM_CATALOG_FATAL|NoSuchMethodError|NoClassDefFoundError|Error occurred while enabling|Could not load plugin' item-catalog.console.log
 
+      - name: Exercise electric recipe and resource machines
+        run: |
+          set -euo pipefail
+          rm -f audit/full-stack/plugins/ItemCatalogProbe.jar
+          cp audit/MachineTransactionProbe.jar audit/full-stack/plugins/
+          cd audit/full-stack
+          timeout --kill-after=20s 420s java -Xms768M -Xmx3G -jar server.jar --nogui > machine-transaction.console.log 2>&1
+          test -s machine-transaction-result.txt
+          cat machine-transaction-result.txt
+          grep -Fxq MACHINE_TRANSACTION_PASS <(head -n 1 machine-transaction-result.txt)
+          ! grep -Eq 'MACHINE_TRANSACTION_FATAL|NoSuchMethodError|NoClassDefFoundError|Error occurred while enabling|Could not load plugin' machine-transaction.console.log
+
       - name: Preserve item catalog evidence
         if: always()
         uses: actions/upload-artifact@v7
@@ -196,6 +212,8 @@ jobs:
             audit/full-stack/item-catalog-result.txt
             audit/full-stack/item-catalog.tsv
             audit/full-stack/item-catalog.console.log
+            audit/full-stack/machine-transaction-result.txt
+            audit/full-stack/machine-transaction.console.log
             audit/full-stack/smoke-result.txt
             target/surefire-reports/TEST-*.xml
           if-no-files-found: warn
