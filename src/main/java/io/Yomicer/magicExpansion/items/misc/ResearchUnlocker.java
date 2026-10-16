@@ -22,16 +22,14 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.Random;
-import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class ResearchUnlocker extends SimpleSlimefunItem<ItemUseHandler> {
 
     private final Random random = new Random();
-    private final Set<UUID> pendingUnlocks = ConcurrentHashMap.newKeySet();
+    private final ConcurrentHashMap<UUID, UUID> pendingUnlocks = new ConcurrentHashMap<>();
 
     public ResearchUnlocker(ItemGroup category, SlimefunItemStack item, RecipeType recipeType, ItemStack[] recipe) {
         super(category, item, recipeType, recipe);
@@ -49,17 +47,28 @@ public class ResearchUnlocker extends SimpleSlimefunItem<ItemUseHandler> {
 
             Player player = event.getPlayer();
             UUID playerId = player.getUniqueId();
-            if (!pendingUnlocks.add(playerId)) {
+            UUID requestId = UUID.randomUUID();
+            if (pendingUnlocks.putIfAbsent(playerId, requestId) != null) {
                 player.sendMessage(ChatColor.YELLOW + "A research page is already being read...");
                 return;
             }
 
             ItemStack expected = event.getItem().clone();
 
+            Bukkit.getScheduler().runTaskLater(MagicExpansion.getInstance(), () -> {
+                if (pendingUnlocks.remove(playerId, requestId) && player.isOnline()) {
+                    player.sendMessage(ChatColor.RED
+                            + "Research unlock timed out. The Lost Page was not consumed.");
+                }
+            }, 20L * 30L);
+
             PlayerProfile.get(player, profile -> Bukkit.getScheduler().runTask(
                     MagicExpansion.getInstance(),
                     () -> {
                         try {
+                            if (!requestId.equals(pendingUnlocks.get(playerId))) {
+                                return;
+                            }
                             if (!player.isOnline()) {
                                 return;
                             }
@@ -107,7 +116,7 @@ public class ResearchUnlocker extends SimpleSlimefunItem<ItemUseHandler> {
                             player.sendMessage(ChatColor.GREEN + "✓ Research unlocked: "
                                     + ChatColor.YELLOW + target.getName(player));
                         } finally {
-                            pendingUnlocks.remove(playerId);
+                            pendingUnlocks.remove(playerId, requestId);
                         }
                     }));
         };
