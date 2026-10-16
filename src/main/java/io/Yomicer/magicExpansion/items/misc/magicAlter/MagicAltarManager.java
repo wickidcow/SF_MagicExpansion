@@ -2,7 +2,9 @@ package io.Yomicer.magicExpansion.items.misc.magicAlter;
 
 import io.Yomicer.magicExpansion.MagicExpansion;
 import io.Yomicer.magicExpansion.utils.log.Debug;
+import io.github.thebusybiscuit.slimefun4.implementation.Slimefun;
 import io.github.thebusybiscuit.slimefun4.libraries.dough.items.CustomItemStack;
+import io.github.thebusybiscuit.slimefun4.libraries.dough.protection.Interaction;
 import io.Yomicer.magicExpansion.utils.compat.ItemStackHelper;
 import org.bukkit.*;
 import org.bukkit.block.Block;
@@ -125,26 +127,28 @@ public class MagicAltarManager {
         return dispenserCount == 9;
     }
 
-    // 检查物品展示框
+    // Check that the exact output frame exists and is empty.
     public boolean checkItemFrame(Location centerDispenserLoc) {
+        return findEmptyOutputFrame(centerDispenserLoc) != null;
+    }
+
+    private ItemFrame findEmptyOutputFrame(Location centerDispenserLoc) {
         Location frameLoc = centerDispenserLoc.clone().add(0, 1, 0);
-
-        for (org.bukkit.entity.ItemFrame itemFrame : frameLoc.getWorld().getEntitiesByClass(org.bukkit.entity.ItemFrame.class)) {
-            Location itemFrameLoc = itemFrame.getLocation();
-            if (itemFrameLoc.getBlockX() == frameLoc.getBlockX() &&
-                    itemFrameLoc.getBlockY() == frameLoc.getBlockY() &&
-                    itemFrameLoc.getBlockZ() == frameLoc.getBlockZ()) {
-
-                ItemStack frameItem = itemFrame.getItem();
-                if (frameItem == null || frameItem.getType() == Material.AIR) {
-                    return true;
-                } else {
-                    return false;
-                }
-            }
+        World world = frameLoc.getWorld();
+        if (world == null) {
+            return null;
         }
 
-        return false;
+        for (ItemFrame itemFrame : world.getNearbyEntitiesByType(ItemFrame.class, frameLoc, 0.75)) {
+            Location itemFrameLoc = itemFrame.getLocation();
+            if (itemFrameLoc.getBlockX() == frameLoc.getBlockX()
+                    && itemFrameLoc.getBlockY() == frameLoc.getBlockY()
+                    && itemFrameLoc.getBlockZ() == frameLoc.getBlockZ()) {
+                ItemStack frameItem = itemFrame.getItem();
+                return frameItem == null || frameItem.getType().isAir() ? itemFrame : null;
+            }
+        }
+        return null;
     }
 
     // 获取所有发射器的物品 - 按照固定顺序
@@ -186,6 +190,11 @@ public class MagicAltarManager {
     public boolean startCrafting(Location centerDispenserLoc, Player player) {
         if (activeAltars.contains(centerDispenserLoc)) {
             player.sendMessage("§c✗ This altar is already crafting!");
+            return false;
+        }
+
+        if (!canUseAltar(player, centerDispenserLoc)) {
+            player.sendMessage("§c✗ You do not have permission to use every part of this altar.");
             return false;
         }
 
@@ -244,7 +253,7 @@ public class MagicAltarManager {
             @Override
             public void run() {
                 // 每秒钟检查一次结构完整性
-                if (!checkStructureIntegrity(centerDispenserLoc, player)) {
+                if (!checkStructureIntegrity(centerDispenserLoc, player, finalMatchedRecipe)) {
                     player.sendMessage("§c✗ Crafting interrupted! The altar structure was damaged or an item was moved!");
                     stopParticleEffect(centerDispenserLoc);
                     activeAltars.remove(centerDispenserLoc);
@@ -261,10 +270,15 @@ public class MagicAltarManager {
                 } else if (timeLeft == 4) {
                     player.sendMessage("§6⏳ Crafting Progress: §e75% §6complete");
                 } else if (timeLeft <= 0) {
-                    // 合成完成
-                    completeCrafting(centerDispenserLoc, finalMatchedRecipe, player);
+                    boolean completed = completeCrafting(
+                            centerDispenserLoc, finalMatchedRecipe, player);
                     stopParticleEffect(centerDispenserLoc);
-                    strikeColoredLightning(centerDispenserLoc, 18);
+                    if (completed) {
+                        strikeColoredLightning(centerDispenserLoc, 18);
+                    } else if (player.isOnline()) {
+                        player.sendMessage("§c✗ Crafting cancelled because the altar changed before commit.");
+                    }
+                    activeAltars.remove(centerDispenserLoc);
                     this.cancel();
                     altarTasks.remove(centerDispenserLoc);
                     return;
@@ -367,32 +381,40 @@ public class MagicAltarManager {
     }
 
 
-    // 检查结构完整性(在合成过程中持续检查)
-    private boolean checkStructureIntegrity(Location centerDispenserLoc, Player player) {
-        // 检查祭坛底座
-        if (!checkAltarStructure(centerDispenserLoc)) {
+    // The exact recipe that started the transaction must remain intact.
+    private boolean checkStructureIntegrity(
+            Location centerDispenserLoc, Player player, MagicAltarRecipe expectedRecipe) {
+        if (!player.isOnline() || !canUseAltar(player, centerDispenserLoc)) {
+            return false;
+        }
+        if (!checkAltarStructure(centerDispenserLoc)
+                || !checkDispenserLayout(centerDispenserLoc)
+                || !checkItemFrame(centerDispenserLoc)) {
             return false;
         }
 
-        // 检查发射器布局
-        if (!checkDispenserLayout(centerDispenserLoc)) {
-            return false;
-        }
-
-        // 检查物品展示框
-        if (!checkItemFrame(centerDispenserLoc)) {
-            return false;
-        }
-
-        // 检查配方物品是否还在
         ItemStack[][] currentItems = getDispenserItems(centerDispenserLoc);
-        for (MagicAltarRecipe recipe : recipes.values()) {
-            if (recipe.matches(currentItems)) {
-                return true; // 至少有一个配方匹配,说明物品还在
+        return expectedRecipe.matches(currentItems);
+    }
+
+    private boolean canUseAltar(Player player, Location centerDispenserLoc) {
+        if (player.hasPermission("slimefun.inventory.bypass")) {
+            return true;
+        }
+
+        for (int x = -1; x <= 1; x++) {
+            for (int z = -1; z <= 1; z++) {
+                Location dispenser = centerDispenserLoc.clone().add(x, 0, z);
+                if (!Slimefun.getProtectionManager().hasPermission(
+                        player, dispenser, Interaction.INTERACT_BLOCK)) {
+                    return false;
+                }
             }
         }
 
-        return false; // 没有配方匹配,说明物品被移动了
+        Location frameLoc = centerDispenserLoc.clone().add(0, 1, 0);
+        return Slimefun.getProtectionManager().hasPermission(
+                player, frameLoc, Interaction.INTERACT_ENTITY);
     }
 
     // 发送发射器物品信息给玩家
@@ -507,101 +529,91 @@ public class MagicAltarManager {
         }
     }
 
-    // 完成合成
-    private void completeCrafting(Location centerDispenserLoc, MagicAltarRecipe recipe, Player player) {
-        ItemStack[][] dispenserItems = getDispenserItems(centerDispenserLoc);
-
-        // 定义发射器位置顺序(固定顺序)
-        int[][] positions = {
-                {-1, -1}, // 0: 左上
-                {0, -1},  // 1: 中上
-                {1, -1},  // 2: 右上
-                {-1, 0},  // 3: 左中
-                {0, 0},   // 4: 中心
-                {1, 0},   // 5: 右中
-                {-1, 1},  // 6: 左下
-                {0, 1},   // 7: 中下
-                {1, 1}    // 8: 右下
-        };
-
-        // 直接重新设置所有发射器(保持朝向)
-        for (int i = 0; i < 9; i++) {
-            int[] pos = positions[i];
-            Location loc = centerDispenserLoc.clone().add(pos[0], 0, pos[1]);
-
-            // 确保位置正确
-            if (loc.getBlock().getType() == Material.DISPENSER) {
-                BlockState state = loc.getBlock().getState();
-                if (state instanceof Dispenser) {
-                    Dispenser dispenser = (Dispenser) state;
-
-                    // 保存发射器的朝向
-                    org.bukkit.block.data.type.Dispenser dispenserData =
-                            (org.bukkit.block.data.type.Dispenser) dispenser.getBlockData();
-                    org.bukkit.block.BlockFace facing = dispenserData.getFacing();
-
-                    // 方法1: 先尝试清空物品
-                    Inventory inventory = dispenser.getInventory();
-                    for (int slot = 0; slot < inventory.getSize(); slot++) {
-                        inventory.setItem(slot, null);
-                    }
-                    dispenser.update(true, false);
-
-                    // 方法2: 如果清空失败,重新放置发射器
-                    // 临时设置为空气
-                    loc.getBlock().setType(Material.AIR);
-
-                    // 立即重新设置为发射器
-                    loc.getBlock().setType(Material.DISPENSER);
-
-                    // 获取新的发射器状态并设置朝向
-                    BlockState newState = loc.getBlock().getState();
-                    if (newState instanceof Dispenser) {
-                        Dispenser newDispenser = (Dispenser) newState;
-                        org.bukkit.block.data.type.Dispenser newData =
-                                (org.bukkit.block.data.type.Dispenser) newDispenser.getBlockData();
-                        newData.setFacing(facing);
-                        newDispenser.setBlockData(newData);
-                        newDispenser.update(true, false);
-                    }
-                }
-            }
+    // Complete as one exact transaction without replacing dispenser blocks.
+    private boolean completeCrafting(
+            Location centerDispenserLoc, MagicAltarRecipe recipe, Player player) {
+        if (!checkStructureIntegrity(centerDispenserLoc, player, recipe)) {
+            return false;
         }
 
-        // 将结果物品放入物品展示框
-        Location frameLoc = centerDispenserLoc.clone().add(0, 1, 0);
-        for (ItemFrame itemFrame : frameLoc.getWorld().getNearbyEntitiesByType(org.bukkit.entity.ItemFrame.class, frameLoc, 0.5)) {
-            Location itemFrameLoc = itemFrame.getLocation();
-            if (itemFrameLoc.getBlockX() == frameLoc.getBlockX() &&
-                    itemFrameLoc.getBlockY() == frameLoc.getBlockY() &&
-                    itemFrameLoc.getBlockZ() == frameLoc.getBlockZ()) {
+        int[][] positions = {
+                {-1, -1}, {0, -1}, {1, -1},
+                {-1, 0},  {0, 0},  {1, 0},
+                {-1, 1},  {0, 1},  {1, 1}
+        };
 
-                ItemStack result = recipe.getResult().clone();
-
-                if (result.getAmount() > 1) {
-                    // 如果数量大于1,展示框只放1个
-                    ItemStack displayItem = result.clone();
-                    displayItem.setAmount(1);
-                    itemFrame.setItem(displayItem);
-
-                    // 掉落剩余数量的物品(使用分批掉落)
-                    ItemStack dropItem = result.clone();
-                    dropItem.setAmount(result.getAmount() - 1);
-                    dropItemInBatches(player, itemFrame.getLocation(), dropItem);
-                } else {
-                    // 如果数量只有1个,直接放在展示框上
-                    itemFrame.setItem(result);
-                }
-                break;
+        Dispenser[] dispensers = new Dispenser[9];
+        ItemStack[][] snapshots = new ItemStack[9][];
+        for (int i = 0; i < positions.length; i++) {
+            int[] pos = positions[i];
+            BlockState state = centerDispenserLoc.clone()
+                    .add(pos[0], 0, pos[1]).getBlock().getState();
+            if (!(state instanceof Dispenser dispenser)) {
+                return false;
             }
+            dispensers[i] = dispenser;
+            snapshots[i] = Arrays.stream(dispenser.getInventory().getContents())
+                    .map(stack -> stack == null ? null : stack.clone())
+                    .toArray(ItemStack[]::new);
+        }
+
+        // Re-read the exact snapshots immediately before mutation.
+        if (!recipe.matches(snapshots)) {
+            return false;
+        }
+
+        ItemFrame outputFrame = findEmptyOutputFrame(centerDispenserLoc);
+        if (outputFrame == null) {
+            return false;
+        }
+
+        ItemStack result = recipe.getResult().clone();
+        ItemStack displayItem = result.clone();
+        displayItem.setAmount(1);
+
+        try {
+            for (Dispenser dispenser : dispensers) {
+                dispenser.getInventory().clear();
+                dispenser.update(true, false);
+            }
+
+            outputFrame.setItem(displayItem);
+        } catch (RuntimeException | LinkageError failure) {
+            // Restore every input snapshot if the commit itself fails.
+            for (int i = 0; i < dispensers.length; i++) {
+                try {
+                    dispensers[i].getInventory().setContents(snapshots[i]);
+                    dispensers[i].update(true, false);
+                } catch (RuntimeException | LinkageError ignored) {
+                }
+            }
+            try {
+                outputFrame.setItem(new ItemStack(Material.AIR));
+            } catch (RuntimeException | LinkageError ignored) {
+            }
+            plugin.getLogger().warning(
+                    "Magic Altar transaction rolled back at " + centerDispenserLoc
+                            + ": " + failure.getMessage());
+            return false;
+        }
+
+        if (result.getAmount() > 1) {
+            ItemStack remainder = result.clone();
+            remainder.setAmount(result.getAmount() - 1);
+            dropItemInBatches(player, outputFrame.getLocation(), remainder);
         }
 
         Location targetLoc = centerDispenserLoc.clone().add(0.5, 1.5, 0.5);
-        targetLoc.getWorld().spawnParticle(Particle.FIREWORK, targetLoc, 30, 0.5, 0.5, 0.5, 0.1);
-        targetLoc.getWorld().playSound(targetLoc, Sound.ENTITY_PLAYER_LEVELUP, 1.0f, 1.0f);
+        World world = targetLoc.getWorld();
+        if (world != null) {
+            world.spawnParticle(Particle.FIREWORK, targetLoc, 30, 0.5, 0.5, 0.5, 0.1);
+            world.playSound(targetLoc, Sound.ENTITY_PLAYER_LEVELUP, 1.0f, 1.0f);
+        }
 
-        player.sendMessage("§aItem received." + recipe.getResult().getType().name());
-        activeAltars.remove(centerDispenserLoc);
+        if (player.isOnline()) {
+            player.sendMessage("§aItem received. " + recipe.getResult().getType().name());
+        }
+        return true;
     }
 
     // 分批掉落物品的方法
