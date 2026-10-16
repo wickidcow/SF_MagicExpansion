@@ -6,6 +6,7 @@ import io.Yomicer.magicExpansion.MagicExpansion;
 import io.Yomicer.magicExpansion.items.abstracts.AbstractElectricRecipeMachine;
 import io.Yomicer.magicExpansion.items.abstracts.AbstractElectricResourceMachine;
 import io.Yomicer.magicExpansion.items.electric.recipeMachine.RecipeRandomMachine;
+import io.Yomicer.magicExpansion.items.electric.resourceGenerator.OriginMaterialGen;
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItem;
 import io.github.thebusybiscuit.slimefun4.core.attributes.EnergyNetComponent;
 import io.github.thebusybiscuit.slimefun4.implementation.Slimefun;
@@ -237,6 +238,13 @@ public final class MachineTransactionProbe extends JavaPlugin {
             }
         }
 
+        try {
+            auditOriginMaterialPending(++locationIndex, passed, failures);
+        } catch (Throwable error) {
+            failures.add("ORIGIN_MATERIAL_GEN: "
+                    + error.getClass().getSimpleName() + ": " + error.getMessage());
+        }
+
         StringBuilder result = new StringBuilder();
         result.append(failures.isEmpty() ? "MACHINE_TRANSACTION_PASS\n" : "MACHINE_TRANSACTION_FAIL\n");
         result.append("recipe_machines=").append(recipeMachines.size()).append('\n');
@@ -258,6 +266,69 @@ public final class MachineTransactionProbe extends JavaPlugin {
                 + " resourceTransactions=" + resourceTransactions
                 + " failures=" + failures.size());
         Bukkit.shutdown();
+    }
+
+    private void auditOriginMaterialPending(
+            int locationIndex, List<String> passed, List<String> failures) {
+        SlimefunItem item = SlimefunItem.getById("ORIGIN_MATERIAL_GEN");
+        check(item instanceof OriginMaterialGen,
+                "ORIGIN_MATERIAL_GEN is not OriginMaterialGen");
+        OriginMaterialGen machine = (OriginMaterialGen) item;
+
+        Location location = location(locationIndex);
+        Fixture fixture = createFixture(machine, location);
+        try {
+            clearSlots(fixture.menu(), outputSlots(machine));
+            fixture.data().setData("origin_material", Material.DIAMOND.name());
+            fixture.data().removeData("origin_pending_output");
+
+            refill(machine, fixture);
+            tick(machine, fixture, false); // start operation
+            refill(machine, fixture);
+            tick(machine, fixture, false); // progress
+            refill(machine, fixture);
+            tick(machine, fixture, false); // complete and credit 3,564
+
+            int firstStored = countMaterial(
+                    fixture.menu(), outputSlots(machine), Material.DIAMOND);
+            String pendingRaw = fixture.data().getData("origin_pending_output");
+            long pending = pendingRaw == null ? 0L : Long.parseLong(pendingRaw);
+
+            check(firstStored == 2_304,
+                    "ORIGIN_MATERIAL_GEN expected 2304 physically stored items, got "
+                            + firstStored);
+            check(pending == 1_260L,
+                    "ORIGIN_MATERIAL_GEN expected 1260 pending items, got " + pending);
+            check((long) firstStored + pending == 3_564L,
+                    "ORIGIN_MATERIAL_GEN did not conserve the advertised 3564-item batch");
+
+            clearSlots(fixture.menu(), outputSlots(machine));
+            refill(machine, fixture);
+            tick(machine, fixture, false); // flush pending, then only start the next cycle
+
+            int flushed = countMaterial(
+                    fixture.menu(), outputSlots(machine), Material.DIAMOND);
+            check(flushed == 1_260,
+                    "ORIGIN_MATERIAL_GEN expected exact 1260-item pending flush, got "
+                            + flushed);
+            check(fixture.data().getData("origin_pending_output") == null,
+                    "ORIGIN_MATERIAL_GEN pending marker remained after complete flush");
+
+            passed.add("ORIGIN_MATERIAL_GEN: 3564-item output conserved through backpressure");
+        } finally {
+            cleanup(location);
+        }
+    }
+
+    private int countMaterial(BlockMenu menu, int[] slots, Material material) {
+        int total = 0;
+        for (int slot : slots) {
+            ItemStack stack = menu.getItemInSlot(slot);
+            if (stack != null && stack.getType() == material) {
+                total += stack.getAmount();
+            }
+        }
+        return total;
     }
 
     private int auditRecipes(AbstractElectricRecipeMachine machine, List<String> failures) {
