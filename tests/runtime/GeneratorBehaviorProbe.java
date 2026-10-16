@@ -3,16 +3,20 @@ package audit;
 import com.xzavier0722.mc.plugin.slimefun4.storage.controller.BlockDataController;
 import com.xzavier0722.mc.plugin.slimefun4.storage.controller.SlimefunBlockData;
 import io.Yomicer.magicExpansion.MagicExpansion;
+import io.Yomicer.magicExpansion.core.MagicExpansionItems;
 import io.Yomicer.magicExpansion.items.electric.entitykillMachinee.EntityKillMachine;
 import io.Yomicer.magicExpansion.items.generators.FishEnergyGenerator;
 import io.Yomicer.magicExpansion.items.generators.NumberEnergyGenerator;
 import io.Yomicer.magicExpansion.items.generators.TypeEnergyGenerator;
+import io.Yomicer.magicExpansion.items.misc.ForceTwoToRsc;
 import io.Yomicer.magicExpansion.items.misc.fish.FishKeys;
 import io.Yomicer.magicExpansion.utils.AcceleratableMachine;
+import io.Yomicer.magicExpansion.utils.ConvertItem;
 import io.Yomicer.magicExpansion.utils.MachineBuffManager;
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItem;
 import io.github.thebusybiscuit.slimefun4.core.attributes.EnergyNetComponent;
 import io.github.thebusybiscuit.slimefun4.implementation.Slimefun;
+import io.github.thebusybiscuit.slimefun4.utils.SlimefunUtils;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -68,10 +72,11 @@ public final class GeneratorBehaviorProbe extends JavaPlugin {
         testNumber(++index, passes, failures);
         testFish(++index, passes, failures);
         testEntitySuppression(++index, passes, failures);
+        testForceRscConverter(++index, passes, failures);
 
         StringBuilder result = new StringBuilder();
         result.append(failures.isEmpty() ? "GENERATOR_BEHAVIOR_PASS\n" : "GENERATOR_BEHAVIOR_FAIL\n");
-        result.append("cases=6\n");
+        result.append("cases=7\n");
         result.append("passed=").append(passes.size()).append('\n');
         for (String pass : passes) result.append("pass=").append(pass).append('\n');
         for (String failure : failures) result.append("failure=").append(failure).append('\n');
@@ -262,6 +267,74 @@ public final class GeneratorBehaviorProbe extends JavaPlugin {
             }
             if (fixture != null) cleanup(location);
         }
+    }
+
+    private void testForceRscConverter(
+            int index, List<String> passes, List<String> failures) {
+        String id = "TWO_TO_MAGIC_GEO_MACHINE_FORCE";
+        Location location = location(index);
+        Fixture fixture = null;
+        try {
+            SlimefunItem item = SlimefunItem.getById(id);
+            check(item instanceof ForceTwoToRsc, id + " is not ForceTwoToRsc");
+            check(item instanceof EnergyNetComponent, id + " is not an energy component");
+            check(item.getBlockTicker() != null, id + " has no ticker");
+            fixture = createFixture(item, location);
+
+            EnergyNetComponent energy = (EnergyNetComponent) item;
+            BlockMenu menu = fixture.menu();
+
+            ItemStack source = MagicExpansionItems.RSC_MAGIC_REDSTONE.clone();
+            source.setAmount(7);
+            menu.replaceExistingItem(10, source.clone());
+
+            energy.setCharge(location, 0L, fixture.data());
+            item.getBlockTicker().tick(fixture.block(), item, fixture.data());
+
+            ItemStack stillSource = menu.getItemInSlot(10);
+            check(stillSource != null
+                            && stillSource.getAmount() == 7
+                            && SlimefunUtils.isItemSimilar(stillSource, source, true),
+                    id + " consumed source with zero energy");
+            check(noItems(menu, new int[] {14,15,16,23,24,25,32,33,34,41,42,43}),
+                    id + " produced output with zero energy");
+
+            energy.setCharge(location, 100L, fixture.data());
+            item.getBlockTicker().tick(fixture.block(), item, fixture.data());
+
+            check(menu.getItemInSlot(10) == null || menu.getItemInSlot(10).getType().isAir(),
+                    id + " did not consume the exact source stack");
+
+            ItemStack expected = ConvertItem.stoneCreateItem("MAGIC_REDSTONE");
+            check(expected != null && !expected.getType().isAir(),
+                    id + " target conversion item is unavailable");
+            int total = 0;
+            for (int slot : new int[] {14,15,16,23,24,25,32,33,34,41,42,43}) {
+                ItemStack stack = menu.getItemInSlot(slot);
+                if (stack != null && SlimefunUtils.isItemSimilar(stack, expected, true)) {
+                    total += stack.getAmount();
+                }
+            }
+            check(total == 7, id + " expected 7 converted items, got " + total);
+            check(energy.getChargeLong(location, fixture.data()) == 74L,
+                    id + " expected exact 26 J debit from 100 J");
+
+            passes.add(id + " zero-power gate, exact output and 26 J debit");
+        } catch (Throwable error) {
+            failures.add(id + ": " + error.getClass().getSimpleName() + ": " + error.getMessage());
+        } finally {
+            if (fixture != null) cleanup(location);
+        }
+    }
+
+    private boolean noItems(BlockMenu menu, int[] slots) {
+        for (int slot : slots) {
+            ItemStack stack = menu.getItemInSlot(slot);
+            if (stack != null && !stack.getType().isAir()) {
+                return false;
+            }
+        }
+        return true;
     }
 
     private ItemStack fish(String type, double weight, String rarity) {
