@@ -18,8 +18,11 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public final class MachineBuffManager {
 
-    /** 加速基础倍率(方案第二层定值) */
+    /** Acceleration base multiplier. */
     public static final double BASE_MULTIPLIER = 1.5;
+
+    /** Gen2 quality is capped at 2.5, so a legal acceleration buff tops out at 3.75x. */
+    public static final double MAX_MULTIPLIER = BASE_MULTIPLIER * 2.5;
 
     /** 默认持续时间 5 分钟(秒) */
     public static final long DEFAULT_DURATION_SECONDS = 300;
@@ -34,9 +37,21 @@ public final class MachineBuffManager {
 
     /** 给指定坐标的机器登记加速 Buff */
     public static void apply(Location loc, long durationSeconds, double multiplier) {
-        if (loc == null) return;
-        long expireAt = System.currentTimeMillis() + Math.max(1, durationSeconds) * 1000L;
-        BUFFS.put(loc.clone(), new Buff(expireAt, multiplier));
+        if (loc == null || !Double.isFinite(multiplier)) {
+            return;
+        }
+
+        double safeMultiplier = Math.max(1.0D, Math.min(MAX_MULTIPLIER, multiplier));
+        long safeSeconds = Math.max(1L, durationSeconds);
+        long now = System.currentTimeMillis();
+        long durationMillis = safeSeconds > Long.MAX_VALUE / 1000L
+                ? Long.MAX_VALUE
+                : safeSeconds * 1000L;
+        long expireAt = durationMillis > Long.MAX_VALUE - now
+                ? Long.MAX_VALUE
+                : now + durationMillis;
+
+        BUFFS.put(loc.clone(), new Buff(expireAt, safeMultiplier));
     }
 
     /** 查询生效中的倍率; 无 Buff/已过期返回 1.0(不加速) */
@@ -48,6 +63,27 @@ public final class MachineBuffManager {
             return 1.0;
         }
         return buff.multiplier();
+    }
+
+    /**
+     * Scales a non-negative production amount by the live acceleration multiplier
+     * without allowing long overflow.
+     */
+    public static long scaleAmount(Location loc, long baseAmount) {
+        if (baseAmount <= 0L) {
+            return baseAmount;
+        }
+
+        double multiplier = getMultiplier(loc);
+        if (!Double.isFinite(multiplier) || multiplier <= 1.0D) {
+            return baseAmount;
+        }
+
+        double scaled = baseAmount * multiplier;
+        if (!Double.isFinite(scaled) || scaled >= Long.MAX_VALUE) {
+            return Long.MAX_VALUE;
+        }
+        return Math.max(baseAmount, (long) Math.floor(scaled));
     }
 
     /** 是否处于加速 Buff 生效中 */
