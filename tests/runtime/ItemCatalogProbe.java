@@ -4,6 +4,8 @@ import io.Yomicer.magicExpansion.MagicExpansion;
 import io.Yomicer.magicExpansion.core.MagicExpansionItems;
 import io.Yomicer.magicExpansion.items.abstracts.AbstractElectricRecipeMachine;
 import io.Yomicer.magicExpansion.items.abstracts.AbstractElectricResourceMachine;
+import io.Yomicer.magicExpansion.items.electric.recipeMachine.RandomBoxMachine;
+import io.Yomicer.magicExpansion.items.misc.CHEST_BLOCK;
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItem;
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItemStack;
 import io.github.thebusybiscuit.slimefun4.core.attributes.EnergyNetComponent;
@@ -36,6 +38,16 @@ import org.bukkit.plugin.java.JavaPlugin;
  * has been exercised merely because an item registered successfully.</p>
  */
 public final class ItemCatalogProbe extends JavaPlugin {
+
+    private static final Set<String> INTENTIONALLY_UNREGISTERED_TEMPLATES = Set.of(
+            // Legacy compatibility constant; maintained replacement is
+            // TWO_TO_MAGIC_GEO_MACHINE_FORCE.
+            "MAGIC_EXPANSION_TWO_TO_MAGIC_GEO_MACHINE",
+            // Historical contribution-menu placeholder intentionally disabled.
+            "MAGIC_EXPANSION_UI_4",
+            // Exactly one build-status template is registered at runtime.
+            "MAGIC_EXPANSION_UI_IS_LATEST_BUILD",
+            "MAGIC_EXPANSION_UI_NOT_LATEST_BUILD");
 
     @Override
     public void onEnable() {
@@ -224,18 +236,27 @@ public final class ItemCatalogProbe extends JavaPlugin {
 
             if (item instanceof AbstractElectricRecipeMachine machine) {
                 configuredRecipeMachines++;
-                if (machine.getCapacity() <= 0) {
-                    failures.add("recipe machine capacity not configured: " + id + "=" + machine.getCapacity());
+
+                boolean specialUntimedMachine =
+                        item instanceof RandomBoxMachine || item instanceof CHEST_BLOCK;
+
+                if (!specialUntimedMachine) {
+                    if (machine.getCapacity() <= 0) {
+                        failures.add("recipe machine capacity not configured: " + id + "=" + machine.getCapacity());
+                    }
+                    if (machine.getEnergyConsumption() <= 0
+                            || machine.getEnergyConsumption() >= machine.getCapacity()) {
+                        failures.add("recipe machine consumption invalid: " + id + "="
+                                + machine.getEnergyConsumption() + "/" + machine.getCapacity());
+                    }
+                    if (machine.getSpeed() <= 0) {
+                        failures.add("recipe machine speed not configured: " + id + "=" + machine.getSpeed());
+                    }
+                } else {
+                    warnings.add("special untimed machine intentionally has no electric recipe tuning: " + id);
                 }
-                if (machine.getEnergyConsumption() <= 0
-                        || machine.getEnergyConsumption() >= machine.getCapacity()) {
-                    failures.add("recipe machine consumption invalid: " + id + "="
-                            + machine.getEnergyConsumption() + "/" + machine.getCapacity());
-                }
-                if (machine.getSpeed() <= 0) {
-                    failures.add("recipe machine speed not configured: " + id + "=" + machine.getSpeed());
-                }
-                if (machine.getRecipes().isEmpty()) {
+
+                if (machine.getRecipes().isEmpty() && !specialUntimedMachine) {
                     warnings.add("recipe machine currently exposes zero registered recipes: " + id);
                 }
             }
@@ -279,6 +300,15 @@ public final class ItemCatalogProbe extends JavaPlugin {
 
         Set<String> missingDeclared = new TreeSet<>(declared.keySet());
         missingDeclared.removeAll(registeredIds);
+
+        Set<String> expectedMissing = new TreeSet<>(missingDeclared);
+        expectedMissing.retainAll(INTENTIONALLY_UNREGISTERED_TEMPLATES);
+        missingDeclared.removeAll(INTENTIONALLY_UNREGISTERED_TEMPLATES);
+
+        for (String id : expectedMissing) {
+            warnings.add("intentionally unregistered template: " + id
+                    + " field=" + declared.get(id));
+        }
         for (String id : missingDeclared) {
             failures.add("declared MagicExpansionItems template was not registered: "
                     + id + " field=" + declared.get(id));
