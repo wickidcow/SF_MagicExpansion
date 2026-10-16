@@ -18,32 +18,36 @@ import org.bukkit.inventory.ItemStack;
 
 public class BasicBossAttackListener implements Listener {
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onEntityDamage(EntityDamageEvent event) {
 
 
-        if (event.getEntity() instanceof LivingEntity mob && mob.getType() == EntityType.ZOMBIE) {
+        if (!(event.getEntity() instanceof LivingEntity mob)) {
+            return;
+        }
 
-            if (mob.hasMetadata("isInvincibleFireZombie")) {
-                boolean isInvincibleFireZombie = mob.getMetadata("isInvincibleFireZombie").get(0).asBoolean();
-
-                if (isInvincibleFireZombie) {
-                    event.setDamage(0.01);
-                }else{
-                    double damage = event.getDamage();
-                    double maxHealth = mob.getMaxHealth();
-                    double threshold = maxHealth * 0.05;
-                    if (damage > threshold) {
-                        event.setDamage(threshold);
-                    }
-                }
-
+        if (mob.getType() == EntityType.ZOMBIE && mob.hasMetadata("isInvincibleFireZombie")) {
+            boolean invincible = mob.getMetadata("isInvincibleFireZombie").get(0).asBoolean();
+            if (invincible) {
+                event.setCancelled(true);
+                return;
             }
+
+            double threshold = mob.getMaxHealth() * 0.05;
+            if (event.getDamage() > threshold) {
+                event.setDamage(threshold);
+            }
+        }
+
+        if (mob.getType() == EntityType.ALLAY
+                && mob.hasMetadata("isInvincibleWindElf")
+                && mob.getMetadata("isInvincibleWindElf").get(0).asBoolean()) {
+            event.setCancelled(true);
         }
 
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onEntityDamageByEntity(EntityDamageByEntityEvent e) {
 
         Entity damager = e.getDamager();
@@ -66,7 +70,9 @@ public class BasicBossAttackListener implements Listener {
 
                         boolean isInvincibleWindElf = mob.getMetadata("isInvincibleWindElf").get(0).asBoolean();
 
-                        if (isInvincibleWindElf || !isSword(weapon) || playerCount<2 || playerCount >5) {
+                        if (isInvincibleWindElf) {
+                            e.setCancelled(true);
+                        } else if (!isSword(weapon) || playerCount < 2 || playerCount > 5) {
                             e.setDamage(0.0);
                         } else {
                             double damage = e.getDamage();
