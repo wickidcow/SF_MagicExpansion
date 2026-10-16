@@ -8,7 +8,9 @@ import io.Yomicer.magicExpansion.items.misc.CargoCoreMore;
 import io.Yomicer.magicExpansion.items.misc.fish.Fish;
 import io.Yomicer.magicExpansion.items.misc.fish.FishKeys;
 import io.Yomicer.magicExpansion.items.tools.VoidTouch;
+import io.Yomicer.magicExpansion.utils.AcceleratableMachine;
 import io.Yomicer.magicExpansion.utils.CustomHeadUtils.CustomHead;
+import io.Yomicer.magicExpansion.utils.MachineBuffManager;
 import io.Yomicer.magicExpansion.utils.NetworkStorage;
 import io.github.thebusybiscuit.slimefun4.api.items.ItemGroup;
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItem;
@@ -44,7 +46,7 @@ import static io.Yomicer.magicExpansion.utils.ColorGradient.getRandomGradientNam
 import static io.Yomicer.magicExpansion.utils.SameItemJudge.itemFromBase64;
 import static io.Yomicer.magicExpansion.utils.Utils.doGlow;
 
-public class FishOutputMachine extends MenuBlock implements EnergyNetComponent, RecipeDisplayItem {
+public class FishOutputMachine extends MenuBlock implements EnergyNetComponent, RecipeDisplayItem, AcceleratableMachine {
 
     private final int Capacity;
     public static final int ENERGY_CONSUMPTION = 260;
@@ -243,11 +245,13 @@ public class FishOutputMachine extends MenuBlock implements EnergyNetComponent, 
                 if (baseOutput != null) {
 
                     int multiplier = WeightRarity.getMultiplierByName(weightRarityName);
-                    long amount = (long) (weight * multiplier); // 使用 long 防止中间结果溢出
-                    if (amount <= 0) {
-                        amount = 1;
-                    } else if (amount > Integer.MAX_VALUE) {
-                        amount = Integer.MAX_VALUE; // 超过上限则截断
+                    long amount = (long) (weight * multiplier);
+                    if (amount <= 0L) {
+                        amount = 1L;
+                    }
+                    amount = MachineBuffManager.scaleAmount(block.getLocation(), amount);
+                    if (amount > Integer.MAX_VALUE) {
+                        amount = Integer.MAX_VALUE;
                     }
 
                     baseOutput.setAmount((int) amount);
