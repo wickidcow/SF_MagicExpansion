@@ -99,6 +99,7 @@ public class WindElf extends SimpleSlimefunItem<ItemUseHandler> implements NotPl
         }
         mob.getAttribute(Attribute.MAX_HEALTH).setBaseValue(maxHealth);
         mob.setHealth(maxHealth); // 设置初始血量为最大生命值
+        startWindSpiritRegeneration(mob);
 
 
         // 添加雷击效果
@@ -175,7 +176,7 @@ public class WindElf extends SimpleSlimefunItem<ItemUseHandler> implements NotPl
                     mob.teleport(newLocation);
                 }
             }
-        }.runTaskTimer(MagicExpansion.getInstance(), 0L, 80L); // 每4秒执行一次
+        }.runTaskTimer(MagicExpansion.getInstance(), 0L, 40L); // every 2 seconds
 
         return true;
     }
