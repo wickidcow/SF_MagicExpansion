@@ -10,8 +10,10 @@ import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItemStack;
 import io.github.thebusybiscuit.slimefun4.api.recipes.RecipeType;
 import io.github.thebusybiscuit.slimefun4.core.attributes.NotPlaceable;
 import io.github.thebusybiscuit.slimefun4.core.handlers.ItemUseHandler;
+import io.github.thebusybiscuit.slimefun4.implementation.Slimefun;
 import io.github.thebusybiscuit.slimefun4.implementation.items.SimpleSlimefunItem;
 import io.github.thebusybiscuit.slimefun4.libraries.dough.items.CustomItemStack;
+import io.github.thebusybiscuit.slimefun4.libraries.dough.protection.Interaction;
 import me.mrCookieSlime.CSCoreLibPlugin.general.Inventory.ChestMenu;
 import me.mrCookieSlime.CSCoreLibPlugin.general.Inventory.ClickAction;
 import org.bukkit.*;
@@ -24,9 +26,9 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
-import org.bukkit.event.player.PlayerChatEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -37,6 +39,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Type;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class CustomSequenceTool extends SimpleSlimefunItem<ItemUseHandler> implements NotPlaceable, Listener {
 
@@ -63,10 +66,10 @@ public class CustomSequenceTool extends SimpleSlimefunItem<ItemUseHandler> imple
     private static final Gson gson = new GsonBuilder().create();
 
     // 存储正在运行的序列任务
-    private final Map<UUID, SequenceTask> runningTasks = new HashMap<>();
+    private final Map<UUID, SequenceTask> runningTasks = new ConcurrentHashMap<>();
 
-    // 存储等待输入的玩家
-    private final Map<UUID, InputRequest> waitingForInput = new HashMap<>();
+    // Async chat only reads/removes requests and hands work back to the server thread.
+    private final Map<UUID, InputRequest> waitingForInput = new ConcurrentHashMap<>();
 
     @Override
     public @NotNull ItemUseHandler getItemHandler() {
@@ -92,12 +95,18 @@ public class CustomSequenceTool extends SimpleSlimefunItem<ItemUseHandler> imple
     }
 
     private void openSequenceMenu(Player player, ItemStack item) {
+        ItemStack liveTool = resolveHeldTool(player, item);
+        if (liveTool == null) {
+            player.sendMessage("§cHold the same Sequence Tool in your main hand to configure it.");
+            return;
+        }
+        ItemStack toolSnapshot = liveTool.clone();
         ChestMenu menu = new ChestMenu("menu");
 
         // 设置玩家物品栏可点击
         menu.setPlayerInventoryClickable(true);
 
-        PlayerSequenceData playerData = getPlayerData(item);
+        PlayerSequenceData playerData = getPlayerData(liveTool);
 
         // 添加54个屏障物品,显示步骤信息
         for (int i = 0; i < 54; i++) {
@@ -108,7 +117,13 @@ public class CustomSequenceTool extends SimpleSlimefunItem<ItemUseHandler> imple
             menu.addItem(i, barrierItem);
 
             menu.addMenuClickHandler(i, (p, slot1, item1, action) -> {
-                handleMenuClick(p, slot, action, playerData, item);
+                ItemStack currentTool = resolveHeldTool(p, toolSnapshot);
+                if (currentTool == null) {
+                    p.sendMessage("§cConfiguration cancelled because the Sequence Tool moved or changed.");
+                    p.closeInventory();
+                    return false;
+                }
+                handleMenuClick(p, slot, action, playerData, currentTool);
                 return false;
             });
         }
@@ -310,35 +325,51 @@ public class CustomSequenceTool extends SimpleSlimefunItem<ItemUseHandler> imple
 
     // 设置间隔时间 - 完整实现
     private void setIntervalTime(Player player, int slot, PlayerSequenceData playerData, ItemStack toolItem) {
+        InputRequest request = new InputRequest(
+                InputType.INTERVAL, slot, playerData, toolItem.clone(), UUID.randomUUID());
+        waitingForInput.put(player.getUniqueId(), request);
 
         new BukkitRunnable() {
             @Override
             public void run() {
+                if (waitingForInput.get(player.getUniqueId()) != request) {
+                    return;
+                }
+                if (resolveHeldTool(player, request.toolItem) == null) {
+                    waitingForInput.remove(player.getUniqueId(), request);
+                    player.sendMessage("§cConfiguration cancelled because the Sequence Tool moved or changed.");
+                    return;
+                }
                 player.closeInventory();
                 player.sendMessage("§6Enter the interval in seconds (minimum 0.01):");
                 player.sendMessage("§cType 'cancel' to cancel.");
-                // 记录等待输入
-                waitingForInput.put(player.getUniqueId(), new InputRequest(InputType.INTERVAL, slot, playerData, toolItem));
             }
         }.runTaskLater(MagicExpansion.getInstance(), 1L);
-
     }
 
     // 设置消息/指令 - 完整实现
     private void setMessageOrCommand(Player player, int slot, PlayerSequenceData playerData, ItemStack toolItem) {
-        // 延迟一 tick 关闭菜单,确保先处理完点击事件
+        InputRequest request = new InputRequest(
+                InputType.MESSAGE, slot, playerData, toolItem.clone(), UUID.randomUUID());
+        waitingForInput.put(player.getUniqueId(), request);
+
         new BukkitRunnable() {
             @Override
             public void run() {
+                if (waitingForInput.get(player.getUniqueId()) != request) {
+                    return;
+                }
+                if (resolveHeldTool(player, request.toolItem) == null) {
+                    waitingForInput.remove(player.getUniqueId(), request);
+                    player.sendMessage("§cConfiguration cancelled because the Sequence Tool moved or changed.");
+                    return;
+                }
                 player.closeInventory();
                 player.sendMessage("§6Enter a message or command:");
                 player.sendMessage("§7- Enter a normal message to send it when the sequence runs.");
                 player.sendMessage("§7- Enter a command beginning with / to execute it when the sequence runs.");
                 player.sendMessage("§cType 'cancel' to cancel.");
                 player.sendMessage("§eCommands must begin with a slash, for example: /help");
-
-                // 记录等待输入
-                waitingForInput.put(player.getUniqueId(), new InputRequest(InputType.MESSAGE, slot, playerData, toolItem));
             }
         }.runTaskLater(MagicExpansion.getInstance(), 1L);
     }
@@ -361,112 +392,120 @@ public class CustomSequenceTool extends SimpleSlimefunItem<ItemUseHandler> imple
                 return;
             }
 
-            String command = event.getMessage(); // 这会包含 "/" 前缀
+            String command = event.getMessage();
 
-            // 保存指令到序列工具
+            ItemStack liveTool = resolveHeldTool(player, request.toolItem);
+            if (liveTool == null) {
+                waitingForInput.remove(playerId, request);
+                player.sendMessage("§cConfiguration cancelled because the Sequence Tool moved or changed.");
+                return;
+            }
+
             request.playerData.setMessage(request.slot, command);
-            savePlayerData(request.playerData, request.toolItem);
+            savePlayerData(request.playerData, liveTool);
 
             player.sendMessage("§aConfigured step " + (request.slot + 1) + " command to: " + command);
             player.sendMessage("§7Note: This command will execute when the sequence runs.");
             player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 1.0f, 1.5f);
 
-            waitingForInput.remove(playerId);
+            waitingForInput.remove(playerId, request);
 
+            final ItemStack reopenTool = liveTool.clone();
             // 重新打开菜单
             new BukkitRunnable() {
                 @Override
                 public void run() {
                     if (player.isOnline()) {
-                        openSequenceMenu(player, request.toolItem);
+                        openSequenceMenu(player, reopenTool);
                     }
                 }
             }.runTask(MagicExpansion.getInstance());
         }
     }
 
-    // 处理玩家聊天输入
+    // Async chat is only captured here; every Bukkit/item mutation happens synchronously.
     @EventHandler
     public void onPlayerChat(AsyncPlayerChatEvent event) {
         Player player = event.getPlayer();
-        UUID playerId = player.getUniqueId();
-
-        if (!waitingForInput.containsKey(playerId)) {
+        InputRequest request = waitingForInput.get(player.getUniqueId());
+        if (request == null) {
             return;
         }
 
-        // 如果消息以"/"开头,说明是指令,我们不处理(由指令预处理器处理)
         if (event.getMessage().startsWith("/")) {
             return;
         }
 
         event.setCancelled(true);
         String message = event.getMessage();
+        Bukkit.getScheduler().runTask(
+                MagicExpansion.getInstance(),
+                () -> handleChatInput(player, request, message));
+    }
 
-        InputRequest request = waitingForInput.get(playerId);
-
-        // 处理取消
-        if (message.equalsIgnoreCase("cancel")) {
-            waitingForInput.remove(playerId);
-            player.sendMessage("§cConfiguration cancelled.");
-            player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1.0f, 1.0f);
-
-            // 取消后重新打开菜单
-            new BukkitRunnable() {
-                @Override
-                public void run() {
-                    if (player.isOnline()) {
-                        openSequenceMenu(player, request.toolItem);
-                    }
-                }
-            }.runTask(MagicExpansion.getInstance());
+    private void handleChatInput(Player player, InputRequest request, String message) {
+        UUID playerId = player.getUniqueId();
+        if (waitingForInput.get(playerId) != request) {
             return;
         }
 
-        // 根据输入类型处理
-        switch (request.type) {
-            case INTERVAL:
-                try {
-                    double interval = Double.parseDouble(message);
-                    if (interval < 0.01) {
-                        player.sendMessage("§cThe interval must be at least 0.01 seconds!");
-                        player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1.0f, 1.0f);
-                        return;
-                    }
+        if (message.equalsIgnoreCase("cancel")) {
+            waitingForInput.remove(playerId, request);
+            player.sendMessage("§cConfiguration cancelled.");
+            player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1.0f, 1.0f);
+            reopenSequenceMenu(player, request);
+            return;
+        }
 
-                    request.playerData.setInterval(request.slot, interval);
-                    savePlayerData(request.playerData, request.toolItem);
-                    player.sendMessage("§aConfigured step " + (request.slot + 1) + " interval to " + String.format("%.2f", interval) + " seconds.");
-                    player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 1.0f, 1.5f);
-                } catch (NumberFormatException e) {
+        ItemStack liveTool = resolveHeldTool(player, request.toolItem);
+        if (liveTool == null) {
+            waitingForInput.remove(playerId, request);
+            player.sendMessage("§cConfiguration cancelled because the Sequence Tool moved or changed.");
+            return;
+        }
+
+        switch (request.type) {
+            case INTERVAL -> {
+                final double interval;
+                try {
+                    interval = Double.parseDouble(message);
+                } catch (NumberFormatException exception) {
                     player.sendMessage("§cEnter a valid number!");
                     player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1.0f, 1.0f);
                     return;
                 }
-                break;
+                if (!Double.isFinite(interval) || interval < 0.01D) {
+                    player.sendMessage("§cThe interval must be a finite number of at least 0.01 seconds!");
+                    player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1.0f, 1.0f);
+                    return;
+                }
 
-            case MESSAGE:
-                // 处理普通消息(非指令)
+                request.playerData.setInterval(request.slot, interval);
+                savePlayerData(request.playerData, liveTool);
+                player.sendMessage("§aConfigured step " + (request.slot + 1)
+                        + " interval to " + String.format("%.2f", interval) + " seconds.");
+            }
+            case MESSAGE -> {
                 request.playerData.setMessage(request.slot, message);
-                savePlayerData(request.playerData, request.toolItem);
-
-                player.sendMessage("§aConfigured step " + (request.slot + 1) + " message to: " + message);
+                savePlayerData(request.playerData, liveTool);
+                player.sendMessage("§aConfigured step " + (request.slot + 1)
+                        + " message to: " + message);
                 player.sendMessage("§7Note: This message will be sent when the sequence runs.");
-                player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 1.0f, 1.5f);
-                break;
+            }
         }
 
-        waitingForInput.remove(playerId);
+        waitingForInput.remove(playerId, request);
+        player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 1.0f, 1.5f);
+        reopenSequenceMenu(player, new InputRequest(
+                request.type, request.slot, request.playerData, liveTool.clone(), request.token));
+    }
 
-        // 重新打开菜单
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                if (player.isOnline()) {
-                    openSequenceMenu(player, request.toolItem);
-                }
+    private void reopenSequenceMenu(Player player, InputRequest request) {
+        Bukkit.getScheduler().runTask(MagicExpansion.getInstance(), () -> {
+            if (player.isOnline() && resolveHeldTool(player, request.toolItem) != null) {
+                openSequenceMenu(player, request.toolItem);
             }
-        }.runTask(MagicExpansion.getInstance());
+        });
     }
 
     private class SequenceTask extends BukkitRunnable {
@@ -480,7 +519,7 @@ public class CustomSequenceTool extends SimpleSlimefunItem<ItemUseHandler> imple
 
         public SequenceTask(Player player, ItemStack toolItem, PlayerSequenceData playerData) {
             this.player = player;
-            this.toolItem = toolItem;
+            this.toolItem = toolItem.clone();
             this.playerData = playerData;
 
             // 预先计算有设置的步骤
@@ -529,17 +568,10 @@ public class CustomSequenceTool extends SimpleSlimefunItem<ItemUseHandler> imple
         }
 
         private boolean isSameTool(ItemStack item) {
-            if (item == null || item.getType() == Material.AIR) {
-                return false;
-            }
-
-            // 直接比较物品,而不是SlimefunItem类型
-            if (item.isSimilar(toolItem)) {
-                return true;
-            }
-
-            SlimefunItem sfItem = SlimefunItem.getByItem(item);
-            return sfItem != null && sfItem instanceof CustomSequenceTool;
+            return item != null
+                    && item.getType() != Material.AIR
+                    && SlimefunItem.getByItem(item) == CustomSequenceTool.this
+                    && item.isSimilar(toolItem);
         }
 
         private void executeStep(int step) {
@@ -592,11 +624,17 @@ public class CustomSequenceTool extends SimpleSlimefunItem<ItemUseHandler> imple
 
             // 设置延迟(转换为ticks,1秒=20ticks)
             double intervalSeconds = slotData.interval > 0 ? slotData.interval : 0.01;
-            delayTicks = (int) Math.max(intervalSeconds * 20, 1); // 最少1tick延迟
+            double ticks = Math.min((double) Integer.MAX_VALUE, intervalSeconds * 20.0D);
+            delayTicks = (int) Math.max(ticks, 1.0D);
             isRunningStep = false;
         }
 
         private void simulateLeftClick(Location location) {
+            if (!Slimefun.getProtectionManager()
+                    .hasPermission(player, location, Interaction.INTERACT_BLOCK)) {
+                player.sendMessage("§cSequence skipped a protected left-click target.");
+                return;
+            }
             Block block = location.getBlock();
             PlayerInteractEvent event = new PlayerInteractEvent(
                     player,
@@ -609,6 +647,11 @@ public class CustomSequenceTool extends SimpleSlimefunItem<ItemUseHandler> imple
         }
 
         private void simulateRightClick(Location location) {
+            if (!Slimefun.getProtectionManager()
+                    .hasPermission(player, location, Interaction.INTERACT_BLOCK)) {
+                player.sendMessage("§cSequence skipped a protected right-click target.");
+                return;
+            }
             Block block = location.getBlock();
             PlayerInteractEvent event = new PlayerInteractEvent(
                     player,
@@ -618,6 +661,30 @@ public class CustomSequenceTool extends SimpleSlimefunItem<ItemUseHandler> imple
                     BlockFace.SELF
             );
             Bukkit.getPluginManager().callEvent(event);
+        }
+    }
+
+    private ItemStack resolveHeldTool(Player player, ItemStack expected) {
+        if (expected == null) {
+            return null;
+        }
+
+        ItemStack mainHand = player.getInventory().getItemInMainHand();
+        return mainHand != null
+                && mainHand.getType() != Material.AIR
+                && SlimefunItem.getByItem(mainHand) == this
+                && mainHand.isSimilar(expected)
+                ? mainHand
+                : null;
+    }
+
+    @EventHandler
+    public void onPlayerQuit(PlayerQuitEvent event) {
+        UUID playerId = event.getPlayer().getUniqueId();
+        waitingForInput.remove(playerId);
+        SequenceTask task = runningTasks.remove(playerId);
+        if (task != null) {
+            task.cancel();
         }
     }
 
@@ -855,12 +922,19 @@ public class CustomSequenceTool extends SimpleSlimefunItem<ItemUseHandler> imple
         public final int slot;
         public final PlayerSequenceData playerData;
         public final ItemStack toolItem;
+        public final UUID token;
 
-        public InputRequest(InputType type, int slot, PlayerSequenceData playerData, ItemStack toolItem) {
+        public InputRequest(
+                InputType type,
+                int slot,
+                PlayerSequenceData playerData,
+                ItemStack toolItem,
+                UUID token) {
             this.type = type;
             this.slot = slot;
             this.playerData = playerData;
-            this.toolItem = toolItem;
+            this.toolItem = toolItem.clone();
+            this.token = token;
         }
     }
 }
