@@ -169,24 +169,43 @@ public class SfCargoFragmentDistributor extends SlimefunItem implements EnergyNe
             return;
         }
 
-        // 计算实际能分发的数量
         int amountToGive = Math.min(storedAmount, availableSpace);
+        if (amountToGive <= 0) {
+            return;
+        }
 
-        // 尝试填满背包
+        ItemStack sourceSnapshot = fragment.clone();
+        int newAmount = storedAmount - amountToGive;
+
+        // Commit the source first. This closes the duplicate-on-source-write-failure window.
+        if (newAmount <= 0) {
+            menu.consumeItem(inputSlot, 1);
+        } else if (!updateFragmentAmount(fragment, newAmount)) {
+            return;
+        }
+
         int actuallyGiven = fillPlayerInventory(targetPlayer, storedItem, amountToGive);
-
-        if (actuallyGiven > 0) {
-            // 更新 CargoFragment 中的数量
-            int newAmount = storedAmount - actuallyGiven;
+        if (actuallyGiven < amountToGive) {
+            int remainder = amountToGive - Math.max(0, actuallyGiven);
             if (newAmount <= 0) {
-                // 数量为0,删除 CargoFragment
-                menu.consumeItem(inputSlot, 1);
-                targetPlayer.sendMessage("§a✓ Received all items: " + getItemDisplayName(storedItem));
+                if (updateFragmentAmount(sourceSnapshot, remainder)) {
+                    menu.replaceExistingItem(inputSlot, sourceSnapshot);
+                }
             } else {
-                // 更新 CargoFragment 的数量
-                updateFragmentAmount(fragment, newAmount);
-                targetPlayer.sendMessage("§a✓ Received item: " + getItemDisplayName(storedItem) + " §7(Remaining: " + newAmount + ")");
+                updateFragmentAmount(fragment, newAmount + remainder);
             }
+        }
+
+        if (actuallyGiven <= 0) {
+            return;
+        }
+
+        int remaining = storedAmount - actuallyGiven;
+        if (remaining <= 0) {
+            targetPlayer.sendMessage("§a✓ Received all items: " + getItemDisplayName(storedItem));
+        } else {
+            targetPlayer.sendMessage("§a✓ Received item: " + getItemDisplayName(storedItem)
+                    + " §7(Remaining: " + remaining + ")");
         }
     }
 
@@ -318,27 +337,39 @@ public class SfCargoFragmentDistributor extends SlimefunItem implements EnergyNe
     /**
      * 更新 CargoFragment 的数量
      */
-    private void updateFragmentAmount(ItemStack fragment, int newAmount) {
-        ItemMeta meta = fragment.getItemMeta();
-        if (meta == null) return;
-
-        PersistentDataContainer container = meta.getPersistentDataContainer();
-        NamespacedKey keyAmount = new NamespacedKey(MagicExpansion.getInstance(), "cargo_amount");
-        container.set(keyAmount, PersistentDataType.INTEGER, newAmount);
-
-        // 更新 Lore 显示
-        List<String> lore = meta.getLore();
-        if (lore != null) {
-            for (int i = 0; i < lore.size(); i++) {
-                if (lore.get(i).startsWith("§fAmount: §a") || lore.get(i).startsWith("§f\u6570\u91cf: §a")) {
-                    lore.set(i, "§fAmount: §a" + newAmount);
-                    break;
-                }
-            }
-            meta.setLore(lore);
+    private boolean updateFragmentAmount(ItemStack fragment, int newAmount) {
+        if (fragment == null || newAmount <= 0) {
+            return false;
         }
 
-        fragment.setItemMeta(meta);
+        ItemMeta meta = fragment.getItemMeta();
+        if (meta == null) {
+            return false;
+        }
+
+        try {
+            PersistentDataContainer container = meta.getPersistentDataContainer();
+            NamespacedKey keyAmount =
+                    new NamespacedKey(MagicExpansion.getInstance(), "cargo_amount");
+            container.set(keyAmount, PersistentDataType.INTEGER, newAmount);
+
+            List<String> lore = meta.getLore();
+            if (lore != null) {
+                for (int i = 0; i < lore.size(); i++) {
+                    if (lore.get(i).startsWith("§fAmount: §a")
+                            || lore.get(i).startsWith("§f\u6570\u91cf: §a")) {
+                        lore.set(i, "§fAmount: §a" + newAmount);
+                        break;
+                    }
+                }
+                meta.setLore(lore);
+            }
+
+            fragment.setItemMeta(meta);
+            return true;
+        } catch (RuntimeException | LinkageError failure) {
+            return false;
+        }
     }
 
     /**
