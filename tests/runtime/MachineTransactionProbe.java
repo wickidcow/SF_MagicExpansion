@@ -511,9 +511,11 @@ public final class MachineTransactionProbe extends JavaPlugin {
     }
 
     private String identityKey(ItemStack stack) {
-        SlimefunItem sf = SlimefunItem.getByItem(stack);
-        return sf == null ? stack.getType().getKey().toString() + "|" + stack.getItemMeta().getAsString()
-                : "sf:" + sf.getId() + "|" + stack.getItemMeta().getAsString();
+        ItemStack identity = stack.clone();
+        identity.setAmount(1);
+        SlimefunItem sf = SlimefunItem.getByItem(identity);
+        return (sf == null ? "vanilla:" + identity.getType().getKey() : "sf:" + sf.getId())
+                + "|" + identity.hashCode();
     }
 
     private static boolean addonIs(SlimefunItem item, MagicExpansion plugin) {
