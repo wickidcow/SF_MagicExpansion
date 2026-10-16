@@ -222,8 +222,10 @@ public class SfCargoFragmentDistributor extends SlimefunItem implements EnergyNe
         ItemStack singleItem = item.clone();
         singleItem.setAmount(1);
 
-        // 先填充已有物品的槽位(相同物品可以堆叠)
-        for (int i = 0; i < player.getInventory().getSize(); i++) {
+        int storageSize = player.getInventory().getStorageContents().length;
+
+        // Fill only ordinary storage slots. Armor and off-hand slots are not cargo capacity.
+        for (int i = 0; i < storageSize; i++) {
             if (totalGiven >= maxAmount) break;
 
             ItemStack slotItem = player.getInventory().getItem(i);
@@ -239,8 +241,8 @@ public class SfCargoFragmentDistributor extends SlimefunItem implements EnergyNe
             }
         }
 
-        // 再填充空槽位
-        for (int i = 0; i < player.getInventory().getSize(); i++) {
+        // Then fill empty ordinary storage slots.
+        for (int i = 0; i < storageSize; i++) {
             if (totalGiven >= maxAmount) break;
 
             ItemStack slotItem = player.getInventory().getItem(i);
