@@ -10,7 +10,9 @@ import io.Yomicer.magicExpansion.items.misc.CargoFragment;
 import io.Yomicer.magicExpansion.items.misc.fish.Fish;
 import io.Yomicer.magicExpansion.items.misc.fish.FishKeys;
 import io.Yomicer.magicExpansion.items.tools.VoidTouch;
+import io.Yomicer.magicExpansion.utils.AcceleratableMachine;
 import io.Yomicer.magicExpansion.utils.CustomHeadUtils.CustomHead;
+import io.Yomicer.magicExpansion.utils.MachineBuffManager;
 import io.Yomicer.magicExpansion.utils.NetworkStorage;
 import io.Yomicer.magicExpansion.utils.fishing.VivariumOutputMath;
 import io.github.thebusybiscuit.slimefun4.api.items.ItemGroup;
@@ -49,7 +51,7 @@ import static io.Yomicer.magicExpansion.utils.ColorGradient.getRandomGradientNam
 import static io.Yomicer.magicExpansion.utils.SameItemJudge.itemFromBase64;
 import static io.Yomicer.magicExpansion.utils.Utils.doGlow;
 
-public class FishOutputMachineStack extends MenuBlock implements EnergyNetComponent, RecipeDisplayItem {
+public class FishOutputMachineStack extends MenuBlock implements EnergyNetComponent, RecipeDisplayItem, AcceleratableMachine {
 
     private final int Capacity;
     public static final int ENERGY_CONSUMPTION = 26000;
@@ -335,6 +337,9 @@ public class FishOutputMachineStack extends MenuBlock implements EnergyNetCompon
                     if (finalAmountTotal <= 0L) {
                         return;
                     }
+
+                    finalAmountTotal = MachineBuffManager.scaleAmount(
+                            block.getLocation(), finalAmountTotal);
 
                     // Keep the template at one item; the actual production count is carried
                     // separately as a long all the way into compatible external storage.
