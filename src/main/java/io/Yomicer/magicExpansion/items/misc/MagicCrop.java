@@ -130,7 +130,12 @@ public class MagicCrop extends SlimefunItem implements Listener, RecipeDisplayIt
     private void handleDestructionByWater(Block block, BlockPhysicsEvent e) {
         e.setCancelled(true);
         Location loc = block.getLocation();
+
+        // Remove Slimefun identity first so follow-up physics cannot duplicate the drop.
         Slimefun.getDatabaseManager().getBlockDataController().removeBlock(loc.clone());
+
+        Location dropLoc = loc.clone().add(0.5, 0.5, 0.5);
+        block.getWorld().dropItemNaturally(dropLoc, new CustomItemStack(seedDrop, 1));
         block.setType(Material.AIR, false);
     }
 
