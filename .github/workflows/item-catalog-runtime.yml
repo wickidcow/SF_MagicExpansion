@@ -7,6 +7,7 @@ on:
       - 'pom.xml'
       - 'tests/runtime/ItemCatalogProbe.java'
       - 'tests/runtime/MachineTransactionProbe.java'
+      - 'tests/runtime/GeneratorBehaviorProbe.java'
       - '.github/workflows/item-catalog-runtime.yml'
   push:
     branches: ['audit/item-feature-verification-*']
@@ -54,7 +55,7 @@ jobs:
       - name: Build exact MagicExpansion source and audit plugin
         run: |
           set -euo pipefail
-          mkdir -p audit/classes/item-catalog audit/classes/machine-transaction
+          mkdir -p audit/classes/item-catalog audit/classes/machine-transaction audit/classes/generator-behavior
           git rev-parse HEAD > audit/source-commit.txt
           bash scripts/install_slimefun_api.sh > audit/build.log 2>&1
           mvn -B -ntp clean verify >> audit/build.log 2>&1 || { tail -n 120 audit/build.log; exit 1; }
@@ -67,6 +68,9 @@ jobs:
           javac --release 21 -cp "$CANDIDATE:$(cat classpath.txt)" -d audit/classes/machine-transaction tests/runtime/MachineTransactionProbe.java
           printf "name: MagicExpansionMachineTransactionProbe\nmain: audit.MachineTransactionProbe\nversion: '1'\napi-version: '1.21.11'\ndepend: [Slimefun, magicexpansion]\n" > audit/classes/machine-transaction/plugin.yml
           jar --create --file audit/MachineTransactionProbe.jar -C audit/classes/machine-transaction .
+          javac --release 21 -cp "$CANDIDATE:$(cat classpath.txt)" -d audit/classes/generator-behavior tests/runtime/GeneratorBehaviorProbe.java
+          printf "name: MagicExpansionGeneratorBehaviorProbe\nmain: audit.GeneratorBehaviorProbe\nversion: '1'\napi-version: '1.21.11'\ndepend: [Slimefun, magicexpansion]\n" > audit/classes/generator-behavior/plugin.yml
+          jar --create --file audit/GeneratorBehaviorProbe.jar -C audit/classes/generator-behavior .
 
       - name: Build disposable full 45-addon bundle with exact candidate
         env:
@@ -200,6 +204,18 @@ jobs:
           grep -Fxq MACHINE_TRANSACTION_PASS <(head -n 1 machine-transaction-result.txt)
           ! grep -Eq 'MACHINE_TRANSACTION_FATAL|NoSuchMethodError|NoClassDefFoundError|Error occurred while enabling|Could not load plugin' machine-transaction.console.log
 
+      - name: Exercise special power generators
+        run: |
+          set -euo pipefail
+          rm -f audit/full-stack/plugins/MachineTransactionProbe.jar
+          cp audit/GeneratorBehaviorProbe.jar audit/full-stack/plugins/
+          cd audit/full-stack
+          timeout --kill-after=20s 420s java -Xms768M -Xmx3G -jar server.jar --nogui > generator-behavior.console.log 2>&1
+          test -s generator-behavior-result.txt
+          cat generator-behavior-result.txt
+          grep -Fxq GENERATOR_BEHAVIOR_PASS <(head -n 1 generator-behavior-result.txt)
+          ! grep -Eq 'GENERATOR_BEHAVIOR_FATAL|NoSuchMethodError|NoClassDefFoundError|Error occurred while enabling|Could not load plugin' generator-behavior.console.log
+
       - name: Preserve item catalog evidence
         if: always()
         uses: actions/upload-artifact@v7
@@ -214,6 +230,8 @@ jobs:
             audit/full-stack/item-catalog.console.log
             audit/full-stack/machine-transaction-result.txt
             audit/full-stack/machine-transaction.console.log
+            audit/full-stack/generator-behavior-result.txt
+            audit/full-stack/generator-behavior.console.log
             audit/full-stack/smoke-result.txt
             target/surefire-reports/TEST-*.xml
           if-no-files-found: warn
