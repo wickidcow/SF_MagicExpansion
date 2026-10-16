@@ -4,6 +4,7 @@ import com.xzavier0722.mc.plugin.slimefun4.storage.controller.BlockDataControlle
 import com.xzavier0722.mc.plugin.slimefun4.storage.controller.SlimefunBlockData;
 import com.xzavier0722.mc.plugin.slimefun4.storage.util.StorageCacheUtils;
 import io.Yomicer.magicExpansion.MagicExpansion;
+import io.Yomicer.magicExpansion.items.misc.MagicCrop;
 import io.Yomicer.magicExpansion.items.misc.PageChest;
 import io.Yomicer.magicExpansion.items.skyBlock.SingleCubeOre;
 import io.Yomicer.magicExpansion.items.skyBlock.SingleCubeOrigin;
@@ -23,6 +24,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.block.data.Ageable;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
 import org.bukkit.inventory.ItemStack;
@@ -46,7 +48,8 @@ public final class NoveltyContainerProbe extends JavaPlugin {
                         + "page_chest=exact\n"
                         + "page_corruption=fail_closed\n"
                         + "page_break=exact_once\n"
-                        + "single_cube_identity=preserved\n");
+                        + "single_cube_identity=preserved\n"
+                        + "magic_crop=seed_and_3_to_9_fruits\n");
             } catch (Throwable error) {
                 getLogger().log(Level.SEVERE, "NOVELTY_CONTAINER_FATAL", error);
                 publish("NOVELTY_CONTAINER_FAIL\nfatal=" + error + "\n");
@@ -69,9 +72,11 @@ public final class NoveltyContainerProbe extends JavaPlugin {
         SlimefunItem pageItem = SlimefunItem.getById("PAGE_CHEST");
         SlimefunItem originItem = SlimefunItem.getById("SINGLE_CUBE_ORIGIN");
         SlimefunItem oreItem = SlimefunItem.getById("SINGLE_CUBE_ORE");
+        SlimefunItem cropItem = SlimefunItem.getById("WHEAT_SEEDS");
         check(pageItem instanceof PageChest, "PAGE_CHEST registration missing");
         check(originItem instanceof SingleCubeOrigin, "SINGLE_CUBE_ORIGIN registration missing");
         check(oreItem instanceof SingleCubeOre, "SINGLE_CUBE_ORE registration missing");
+        check(cropItem instanceof MagicCrop, "WHEAT_SEEDS Magic Crop registration missing");
 
         Location pageLoc = location(18_200, 80, 18_200);
         Fixture page = createFixture(pageItem, pageLoc);
@@ -96,6 +101,9 @@ public final class NoveltyContainerProbe extends JavaPlugin {
         } finally {
             cleanup(oreLoc);
         }
+
+        Location cropLoc = location(18_260, 80, 18_200);
+        auditCrop((MagicCrop) cropItem, cropLoc);
     }
 
     private void auditPageChest(Location location, BlockMenu menu) throws Exception {
@@ -171,6 +179,73 @@ public final class NoveltyContainerProbe extends JavaPlugin {
             location.getBlock().setType(material, false);
             check(StorageCacheUtils.getSlimefunItem(location) == ore,
                     "Ore One Block lost Slimefun identity after material swap to " + material);
+        }
+    }
+
+    private void auditCrop(MagicCrop crop, Location location) throws Exception {
+        World world = location.getWorld();
+        check(world != null, "Magic Crop world missing");
+        Chunk chunk = world.getChunkAt(location.getBlockX() >> 4, location.getBlockZ() >> 4);
+        chunk.addPluginChunkTicket(this);
+        heldChunks.add(chunk);
+
+        Location soilLoc = location.clone().add(0, -1, 0);
+        soilLoc.getBlock().setType(Material.FARMLAND, false);
+        Block block = location.getBlock();
+        block.setType(Material.WHEAT, false);
+
+        BlockDataController blocks = Slimefun.getDatabaseManager().getBlockDataController();
+        blocks.getChunkData(chunk);
+        SlimefunBlockData data = blocks.createBlock(location, crop.getId());
+        check(data != null && data.isDataLoaded(), "Magic Crop block data did not load");
+        check(StorageCacheUtils.getSlimefunItem(location) == crop,
+                "Magic Crop identity was not attached to wheat block");
+
+        Method dropsMethod = MagicCrop.class.getDeclaredMethod(
+                "handleCropDrops", Block.class, List.class);
+        dropsMethod.setAccessible(true);
+
+        try {
+            Ageable ageable = (Ageable) block.getBlockData();
+
+            // Immature crops must return exactly their seed and no fruit roll.
+            ageable.setAge(0);
+            block.setBlockData(ageable, false);
+            List<ItemStack> immature = new ArrayList<>();
+            dropsMethod.invoke(crop, block, immature);
+            check(immature.size() == 1,
+                    "Immature Magic Crop returned " + immature.size() + " drops instead of one seed");
+            check(SlimefunItem.getByItem(immature.getFirst()) == crop,
+                    "Immature Magic Crop did not return its own seed");
+
+            // Mature crops advertise an inclusive 3-9 fruit roll, plus the baseline seed.
+            ageable = (Ageable) block.getBlockData();
+            ageable.setAge(ageable.getMaximumAge());
+            block.setBlockData(ageable, false);
+
+            int observedMin = Integer.MAX_VALUE;
+            int observedMax = Integer.MIN_VALUE;
+            for (int i = 0; i < 512; i++) {
+                List<ItemStack> mature = new ArrayList<>();
+                dropsMethod.invoke(crop, block, mature);
+                check(!mature.isEmpty(), "Mature Magic Crop returned no seed");
+                check(SlimefunItem.getByItem(mature.getFirst()) == crop,
+                        "Mature Magic Crop did not keep its baseline seed");
+                int fruits = mature.size() - 1;
+                check(fruits >= 3 && fruits <= 9,
+                        "Magic Crop fruit roll escaped configured 3-9 range: " + fruits);
+                observedMin = Math.min(observedMin, fruits);
+                observedMax = Math.max(observedMax, fruits);
+            }
+
+            check(observedMin <= 4,
+                    "Magic Crop sampling never reached the low end of configured range: " + observedMin);
+            check(observedMax >= 8,
+                    "Magic Crop sampling never reached the high end of configured range: " + observedMax);
+        } finally {
+            blocks.removeBlockData(location);
+            block.setType(Material.AIR, false);
+            soilLoc.getBlock().setType(Material.AIR, false);
         }
     }
 
