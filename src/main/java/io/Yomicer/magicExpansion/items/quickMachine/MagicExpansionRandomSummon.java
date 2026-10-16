@@ -11,6 +11,7 @@ import io.github.thebusybiscuit.slimefun4.implementation.Slimefun;
 import io.github.thebusybiscuit.slimefun4.implementation.items.SimpleSlimefunItem;
 import io.github.thebusybiscuit.slimefun4.libraries.dough.protection.Interaction;
 import org.bukkit.Color;
+import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.inventory.ItemStack;
@@ -50,16 +51,17 @@ public class MagicExpansionRandomSummon extends SimpleSlimefunItem<ItemUseHandle
                     return;
                 }
 
-                    // 减少手上的物品数量
+                if (!entitySpawner.spawnRandomEntityNearPlayer(player)) {
+                    return;
+                }
+
+                if (player.getGameMode() != GameMode.CREATIVE) {
                     if (itemInHand.getAmount() > 1) {
                         itemInHand.setAmount(itemInHand.getAmount() - 1);
                     } else {
-                        player.getInventory().setItemInMainHand(null); // 如果数量为 1,则直接移除
+                        player.getInventory().setItemInMainHand(null);
                     }
-                    // 使用 entitySpawner
-                    // 在距离玩家 3 格的位置随机召唤一个生物
-                    // 调用 EntitySpawner 的实例方法
-                    entitySpawner.spawnRandomEntityNearPlayer(player);
+                }
 
 
         };
