@@ -23,6 +23,7 @@ class SameItemJudgeTest {
     private static final String OLD_FIRST_LINE =
             "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8gISIjJCUmJygpKissLS4vMDEyMzQ1Njc4";
     private static final String OLD_SECOND_LINE = "OTo7PD0+Pw==";
+    private static final NamespacedKey BYTE_ARRAY_KEY = new NamespacedKey("magicexpansion", "bytes");
 
     @BeforeEach void start() { MockBukkit.mock(); }
     @AfterEach void stop() { MockBukkit.unmock(); }
@@ -64,7 +65,7 @@ class SameItemJudgeTest {
         assertTrue(encoded.endsWith(System.lineSeparator()));
         assertEquals(before, original);
         ItemStack restored = SameItemJudge.itemFromBase64(encoded);
-        assertEquals(before, restored);
+        assertStoredItemEquals(before, restored);
         assertNotSame(original, restored);
         assertEquals(9007199254740993L, restored.getItemMeta().getPersistentDataContainer().get(
                 new NamespacedKey("magicexpansion", "amount"), PersistentDataType.LONG));
@@ -82,8 +83,11 @@ class SameItemJudgeTest {
             wrapped.append(basic, i, Math.min(i + 76, basic.length())).append("\r\n");
         }
         String saved = wrapped.toString();
-        assertEquals(original, SameItemJudge.itemFromBase64(saved));
-        assertTrue(SameItemJudge.isSameBase64Item(saved, SameItemJudge.itemToBase64(original)));
+        assertStoredItemEquals(original, SameItemJudge.itemFromBase64(saved));
+        // MockBukkit compares array-valued PDC by reference in isSimilar. The exact
+        // array round trip is checked above; compare ordinary metadata separately.
+        String comparable = SameItemJudge.itemToBase64(withoutByteArray(original));
+        assertTrue(SameItemJudge.isSameBase64Item(comparable.replace("\n", "\r\n"), comparable));
     }
 
     @Test void emptyItemAndSavedValueBehaviorRemainsUnchanged() {
@@ -101,6 +105,27 @@ class SameItemJudgeTest {
         return bytes;
     }
 
+    private static void assertStoredItemEquals(ItemStack expected, ItemStack actual) {
+        assertNotNull(actual);
+        var expectedData = expected.getItemMeta().getPersistentDataContainer();
+        var actualData = actual.getItemMeta().getPersistentDataContainer();
+        assertEquals(expectedData.getKeys(), actualData.getKeys());
+        assertTrue(actualData.has(BYTE_ARRAY_KEY, PersistentDataType.BYTE_ARRAY));
+        assertArrayEquals(expectedData.get(BYTE_ARRAY_KEY, PersistentDataType.BYTE_ARRAY),
+                actualData.get(BYTE_ARRAY_KEY, PersistentDataType.BYTE_ARRAY));
+        // Keep equality checks for every other field, type and PDC value while
+        // avoiding MockBukkit's reference-only byte[] equality.
+        assertEquals(withoutByteArray(expected), withoutByteArray(actual));
+    }
+
+    private static ItemStack withoutByteArray(ItemStack original) {
+        ItemStack copy = original.clone();
+        var meta = copy.getItemMeta();
+        meta.getPersistentDataContainer().remove(BYTE_ARRAY_KEY);
+        copy.setItemMeta(meta);
+        return copy;
+    }
+
     private static ItemStack historicalItem() {
         ItemStack item = new ItemStack(Material.DIAMOND_SWORD, 3);
         var meta = item.getItemMeta();
@@ -113,7 +138,7 @@ class SameItemJudgeTest {
         data.set(new NamespacedKey("slimefun", "slimefun_item"), PersistentDataType.STRING, "UNREGISTERED_OLD_ID");
         data.set(new NamespacedKey("magicexpansion", "owner"), PersistentDataType.STRING, "old-owner");
         data.set(new NamespacedKey("magicexpansion", "amount"), PersistentDataType.LONG, 9007199254740993L);
-        data.set(new NamespacedKey("magicexpansion", "bytes"), PersistentDataType.BYTE_ARRAY,
+        data.set(BYTE_ARRAY_KEY, PersistentDataType.BYTE_ARRAY,
                 new byte[] {0, 127, -128, -1});
         item.setItemMeta(meta);
         return item;
