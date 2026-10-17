@@ -165,12 +165,6 @@ public class StarShardsSword extends SimpleSlimefunItem<ItemUseHandler> implemen
     }
 
     /**
-     * Astral Shield is not a PvP/region protection rule. An OP wielding the genuine
-     * Slimefun Cow Hearder may pierce this specific temporary shield on a melee strike.
-     * Cancelled attacks never enter this listener (ignoreCancelled=true), preserving
-     * Towny and other external PvP protections.
-     */
-    /**
      * A Starfall bleed tick modifies health directly rather than dispatching a damage event.
      * Preserve the Cow Hearder wielder's immunity without changing normal bleed behavior.
      */
@@ -184,6 +178,12 @@ public class StarShardsSword extends SimpleSlimefunItem<ItemUseHandler> implemen
         return operator && "COW_HEARDER".equals(slimefunItemId);
     }
 
+    /**
+     * Astral Shield is not a PvP/region protection rule. An OP wielding the genuine
+     * Slimefun Cow Hearder may pierce this specific temporary shield on a melee strike.
+     * Cancelled attacks never enter this listener (ignoreCancelled=true), preserving
+     * Towny and other external PvP protections.
+     */
     private static boolean isOperatorCowHearderMelee(EntityDamageEvent event) {
         if (!(event instanceof EntityDamageByEntityEvent hit)
                 || !(hit.getDamager() instanceof Player attacker)
@@ -197,8 +197,7 @@ public class StarShardsSword extends SimpleSlimefunItem<ItemUseHandler> implemen
 
     static boolean allowsCowHearderMelee(
             boolean operator, String slimefunItemId, EntityDamageEvent.DamageCause cause) {
-        return operator
-                && "COW_HEARDER".equals(slimefunItemId)
+        return operatorHoldsCowHearder(operator, slimefunItemId)
                 && (cause == EntityDamageEvent.DamageCause.ENTITY_ATTACK
                         || cause == EntityDamageEvent.DamageCause.ENTITY_SWEEP_ATTACK);
     }
