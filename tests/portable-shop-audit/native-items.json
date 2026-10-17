@@ -1,0 +1,258 @@
+{
+  "MAGIC_EXPANSION_INTEGRATION_ORIGIN_SLIME_MINERAL_POWDER_LINE": {
+    "==": "org.bukkit.inventory.ItemStack",
+    "DataVersion": 5023,
+    "id": "minecraft:furnace",
+    "count": 1,
+    "components": {
+      "minecraft:lore": "[{color:\"#6BEED1\",italic:0b,text:\"Combines several Slimefun processing stages in one machine.\"},{color:\"#B1C6D0\",italic:0b,text:\"Converts supported raw materials into metal dust.\"},{color:\"#A774A2\",italic:0b,text:\"⇨ ⚡ 52.0 J/s\"},{color:\"#FF32CE\",italic:0b,text:\"⇨ ⚡ 1314 J capacity\"}]",
+      "minecraft:custom_name": "{extra:[{color:\"#6BEED1\",text:\"I\"},{color:\"#73E9D0\",text:\"n\"},{color:\"#7BE5D0\",text:\"t\"},{color:\"#84E0D0\",text:\"e\"},{color:\"#8CDCD0\",text:\"g\"},{color:\"#95D8D0\",text:\"r\"},{color:\"#9DD3D0\",text:\"a\"},{color:\"#A5CFD0\",text:\"t\"},{color:\"#ABCBD0\",text:\"e\"},{color:\"#AEC9D0\",text:\"d\"},{color:\"#B1C6D0\",text:\" \"},{color:\"#B3C4D0\",text:\"D\"},{color:\"#B6C1D0\",text:\"u\"},{color:\"#B9BFD0\",text:\"s\"},{color:\"#BCBCD0\",text:\"t\"},{color:\"#BFBAD0\",text:\" \"},{color:\"#BAACC6\",text:\"P\"},{color:\"#B59EBD\",text:\"r\"},{color:\"#B190B4\",text:\"o\"},{color:\"#AC82AB\",text:\"d\"},{color:\"#A774A2\",text:\"u\"},{color:\"#A36698\",text:\"c\"},{color:\"#9E588F\",text:\"t\"},{color:\"#A24F8F\",text:\"i\"},{color:\"#AF4B98\",text:\"o\"},{color:\"#BD47A1\",text:\"n\"},{color:\"#CA43AA\",text:\" \"},{color:\"#D73EB3\",text:\"L\"},{color:\"#E43ABC\",text:\"i\"},{color:\"#F136C5\",text:\"n\"},{color:\"#FF32CE\",text:\"e\"}],italic:0b,text:\"\"}",
+      "minecraft:custom_data": "{PublicBukkitValues:{\"slimefun:slimefun_item\":\"MAGIC_EXPANSION_INTEGRATION_ORIGIN_SLIME_MINERAL_POWDER_LINE\"}}"
+    },
+    "schema_version": 1
+  },
+  "MAGIC_EXPANSION_DIRT_MEAL_MACHINE": {
+    "==": "org.bukkit.inventory.ItemStack",
+    "DataVersion": 5023,
+    "id": "minecraft:verdant_froglight",
+    "count": 1,
+    "components": {
+      "minecraft:lore": "[{color:\"#6BEED1\",italic:0b,text:\"Uses electricity and bone meal to produce special soil variants.\"},{color:\"#B1C6D0\",italic:0b,text:\"Supports appropriate soil recipes, including netherrack.\"},{color:\"#A774A2\",italic:0b,text:\"⇨ ⚡ 52.0 J/s\"},{color:\"#FF32CE\",italic:0b,text:\"⇨ ⚡ 1314 J capacity\"}]",
+      "minecraft:custom_name": "{extra:[{color:\"#6BEED1\",text:\"M\"},{color:\"#7AE5D0\",text:\"a\"},{color:\"#8ADDD0\",text:\"g\"},{color:\"#9AD5D0\",text:\"i\"},{color:\"#AACDD0\",text:\"c\"},{color:\"#AFC8D0\",text:\" \"},{color:\"#B4C3D0\",text:\"S\"},{color:\"#B9BED0\",text:\"o\"},{color:\"#BFBAD0\",text:\"i\"},{color:\"#B6A0BE\",text:\"l\"},{color:\"#AD86AD\",text:\" \"},{color:\"#A46C9C\",text:\"G\"},{color:\"#9C528B\",text:\"a\"},{color:\"#B44A9B\",text:\"r\"},{color:\"#CD42AC\",text:\"d\"},{color:\"#E63ABD\",text:\"e\"},{color:\"#FF32CE\",text:\"n\"}],italic:0b,text:\"\"}",
+      "minecraft:custom_data": "{PublicBukkitValues:{\"slimefun:slimefun_item\":\"MAGIC_EXPANSION_DIRT_MEAL_MACHINE\"}}"
+    },
+    "schema_version": 1
+  },
+  "MAGIC_EXPANSION_LIGHT_EXTRACT_BASIC": {
+    "==": "org.bukkit.inventory.ItemStack",
+    "DataVersion": 5023,
+    "id": "minecraft:tinted_glass",
+    "count": 1,
+    "components": {
+      "minecraft:lore": "[{color:\"#6BEED1\",italic:0b,text:\"Extracts light resources from luminous blocks.\"},{color:\"#BFBAD0\",italic:0b,text:\"⇨ ⚡ 52.0 J/s\"},{color:\"#FF32CE\",italic:0b,text:\"⇨ ⚡ 1314 J capacity\"}]",
+      "minecraft:custom_name": "{extra:[{color:\"#6BEED1\",text:\"L\"},{color:\"#7DE4D0\",text:\"i\"},{color:\"#8FDBD0\",text:\"g\"},{color:\"#A0D1D0\",text:\"h\"},{color:\"#ADCAD0\",text:\"t\"},{color:\"#B3C4D0\",text:\" \"},{color:\"#B9BFD0\",text:\"E\"},{color:\"#BFBAD0\",text:\"x\"},{color:\"#B59CBC\",text:\"t\"},{color:\"#AB7EA8\",text:\"r\"},{color:\"#A16094\",text:\"a\"},{color:\"#AA4D94\",text:\"c\"},{color:\"#C644A7\",text:\"t\"},{color:\"#E23BBA\",text:\"o\"},{color:\"#FF32CE\",text:\"r\"}],italic:0b,text:\"\"}",
+      "minecraft:custom_data": "{PublicBukkitValues:{\"slimefun:slimefun_item\":\"MAGIC_EXPANSION_LIGHT_EXTRACT_BASIC\"}}"
+    },
+    "schema_version": 1
+  },
+  "MAGIC_EXPANSION_LIGHT_TRANSFORM_BASIC": {
+    "==": "org.bukkit.inventory.ItemStack",
+    "DataVersion": 5023,
+    "id": "minecraft:pink_glazed_terracotta",
+    "count": 1,
+    "components": {
+      "minecraft:lore": "[{color:\"#6BEED1\",italic:0b,text:\"Uses electricity to convert collected light into energy materials.\"},{color:\"#BFBAD0\",italic:0b,text:\"⇨ ⚡ 52.0 J/s\"},{color:\"#FF32CE\",italic:0b,text:\"⇨ ⚡ 1314 J capacity\"}]",
+      "minecraft:custom_name": "{extra:[{color:\"#6BEED1\",text:\"L\"},{color:\"#77E7D0\",text:\"i\"},{color:\"#83E1D0\",text:\"g\"},{color:\"#8FDBD0\",text:\"h\"},{color:\"#9BD4D0\",text:\"t\"},{color:\"#A7CED0\",text:\"-\"},{color:\"#ADCAD0\",text:\"E\"},{color:\"#B1C6D0\",text:\"n\"},{color:\"#B5C3D0\",text:\"e\"},{color:\"#B9BFD0\",text:\"r\"},{color:\"#BDBBD0\",text:\"g\"},{color:\"#BBB0C9\",text:\"y\"},{color:\"#B59CBC\",text:\" \"},{color:\"#AE88AF\",text:\"C\"},{color:\"#A774A2\",text:\"o\"},{color:\"#A16094\",text:\"n\"},{color:\"#A0508E\",text:\"v\"},{color:\"#B34A9A\",text:\"e\"},{color:\"#C644A7\",text:\"r\"},{color:\"#D93EB4\",text:\"t\"},{color:\"#EC38C1\",text:\"e\"},{color:\"#FF32CE\",text:\"r\"}],italic:0b,text:\"\"}",
+      "minecraft:custom_data": "{PublicBukkitValues:{\"slimefun:slimefun_item\":\"MAGIC_EXPANSION_LIGHT_TRANSFORM_BASIC\"}}"
+    },
+    "schema_version": 1
+  },
+  "MAGIC_EXPANSION_RESOURCE_MACHINE_WOOD_BASIC": {
+    "==": "org.bukkit.inventory.ItemStack",
+    "DataVersion": 5023,
+    "id": "minecraft:bamboo_block",
+    "count": 1,
+    "components": {
+      "minecraft:lore": "[{color:\"#6BEED1\",italic:0b,text:\"Ancient magic draws timber from the void.\"},{color:\"#AACDD0\",italic:0b,text:\"Automatically produces logs and leaves.\"},{color:\"#BFBAD0\",italic:0b,text:\"⇨ ⚙ 4 s\"},{color:\"#9C528B\",italic:0b,text:\"⇨ ⚡ 520 J/s\"},{color:\"#FF32CE\",italic:0b,text:\"⇨ ⚡ 1314 J capacity\"}]",
+      "minecraft:custom_name": "{extra:[{color:\"#6BEED1\",text:\"V\"},{color:\"#7EE3D0\",text:\"e\"},{color:\"#91D9D0\",text:\"r\"},{color:\"#A5CFD0\",text:\"d\"},{color:\"#AEC8D0\",text:\"a\"},{color:\"#B5C2D0\",text:\"n\"},{color:\"#BBBCD0\",text:\"t\"},{color:\"#B9AAC5\",text:\" \"},{color:\"#AE8AB0\",text:\"S\"},{color:\"#A46A9A\",text:\"o\"},{color:\"#A34F90\",text:\"u\"},{color:\"#C245A4\",text:\"r\"},{color:\"#E03BB9\",text:\"c\"},{color:\"#FF32CE\",text:\"e\"}],italic:0b,text:\"\"}",
+      "minecraft:custom_data": "{PublicBukkitValues:{\"slimefun:slimefun_item\":\"MAGIC_EXPANSION_RESOURCE_MACHINE_WOOD_BASIC\"}}"
+    },
+    "schema_version": 1
+  },
+  "MAGIC_EXPANSION_WOOD_ELEMENT": {
+    "==": "org.bukkit.inventory.ItemStack",
+    "DataVersion": 5023,
+    "id": "minecraft:green_dye",
+    "count": 1,
+    "components": {
+      "minecraft:lore": "[{color:\"#6BEED1\",italic:0b,text:\"One of the five elements: metal, wood, water, fire, and earth.\"},{color:\"#FF32CE\",italic:0b,text:\"Wood embodies growth, renewal, and the life of ancient forests.\"}]",
+      "minecraft:custom_name": "{extra:[{color:\"#6BEED1\",text:\"W\"},{color:\"#81E2D0\",text:\"o\"},{color:\"#98D6D0\",text:\"o\"},{color:\"#ABCBD0\",text:\"d\"},{color:\"#B3C4D0\",text:\" \"},{color:\"#BBBDD0\",text:\"E\"},{color:\"#B8A7C3\",text:\"s\"},{color:\"#AB81AA\",text:\"s\"},{color:\"#9F5B91\",text:\"e\"},{color:\"#B7499D\",text:\"n\"},{color:\"#DB3DB5\",text:\"c\"},{color:\"#FF32CE\",text:\"e\"}],italic:0b,text:\"\"}",
+      "minecraft:custom_data": "{PublicBukkitValues:{\"slimefun:slimefun_item\":\"MAGIC_EXPANSION_WOOD_ELEMENT\"}}"
+    },
+    "schema_version": 1
+  },
+  "MAGIC_EXPANSION_FIVE_ELEMENT_MINER": {
+    "==": "org.bukkit.inventory.ItemStack",
+    "DataVersion": 5023,
+    "id": "minecraft:player_head",
+    "count": 1,
+    "components": {
+      "minecraft:profile": "{id:[I;695365282,-819643642,-1246535067,1593566421],name:\"CS-CoreLib\",properties:[{name:\"textures\",value:\"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODQ2NDcyYjdiZDhkZTUyYTEwMTU4NGVhMmRkN2RiMTkwZDQxN2NhNTQ4YmI2NTY4Mzc5YWNlYmRkMDJiMTc5OSJ9fX0=\"}]}",
+      "minecraft:lore": "[{color:\"#6BEED1\",italic:0b,text:\"Extracts the five elemental resources from the current chunk.\"},{color:\"#AACDD0\",italic:0b,text:\"Run a GEO Scan before operating.\"},{color:\"#BFBAD0\",italic:0b,text:\"Mining speed: 1x.\"},{color:\"#9C528B\",italic:0b,text:\"⇨ ⚡ 520 J/s\"},{color:\"#FF32CE\",italic:0b,text:\"⇨ ⚡ 1314 J capacity\"}]",
+      "minecraft:custom_name": "{extra:[{color:\"#6BEED1\",text:\"F\"},{color:\"#79E6D0\",text:\"i\"},{color:\"#88DED0\",text:\"v\"},{color:\"#97D6D0\",text:\"e\"},{color:\"#A6CED0\",text:\"-\"},{color:\"#ADC9D0\",text:\"E\"},{color:\"#B2C5D0\",text:\"l\"},{color:\"#B7C0D0\",text:\"e\"},{color:\"#BCBCD0\",text:\"m\"},{color:\"#BAADC7\",text:\"e\"},{color:\"#B295B7\",text:\"n\"},{color:\"#AA7CA7\",text:\"t\"},{color:\"#A26497\",text:\" \"},{color:\"#A1508E\",text:\"M\"},{color:\"#B9489E\",text:\"i\"},{color:\"#D041AE\",text:\"n\"},{color:\"#E739BE\",text:\"e\"},{color:\"#FF32CE\",text:\"r\"}],italic:0b,text:\"\"}",
+      "minecraft:custom_data": "{PublicBukkitValues:{\"slimefun:slimefun_item\":\"MAGIC_EXPANSION_FIVE_ELEMENT_MINER\"}}"
+    },
+    "schema_version": 1
+  },
+  "MAGIC_EXPANSION_PURE_FIVE_ELEMENT": {
+    "==": "org.bukkit.inventory.ItemStack",
+    "DataVersion": 5023,
+    "id": "minecraft:player_head",
+    "count": 1,
+    "components": {
+      "minecraft:profile": "{id:[I;695365282,-819643642,-1246535067,1593566421],name:\"CS-CoreLib\",properties:[{name:\"textures\",value:\"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODQ2NDcyYjdiZDhkZTUyYTEwMTU4NGVhMmRkN2RiMTkwZDQxN2NhNTQ4YmI2NTY4Mzc5YWNlYmRkMDJiMTc5OSJ9fX0=\"}]}",
+      "minecraft:lore": "[{color:\"#6BEED1\",italic:0b,text:\"The five purified elements united in a single material.\"}]",
+      "minecraft:custom_name": "{extra:[{color:\"#6BEED1\",text:\"P\"},{color:\"#75E8D0\",text:\"u\"},{color:\"#80E3D0\",text:\"r\"},{color:\"#8ADDD0\",text:\"e\"},{color:\"#95D8D0\",text:\" \"},{color:\"#9FD2D0\",text:\"F\"},{color:\"#AACDD0\",text:\"i\"},{color:\"#ADC9D0\",text:\"v\"},{color:\"#B1C6D0\",text:\"e\"},{color:\"#B4C3D0\",text:\"-\"},{color:\"#B8C0D0\",text:\"E\"},{color:\"#BBBDD0\",text:\"l\"},{color:\"#BFBAD0\",text:\"e\"},{color:\"#B9A8C4\",text:\"m\"},{color:\"#B397B9\",text:\"e\"},{color:\"#AD86AD\",text:\"n\"},{color:\"#A774A2\",text:\"t\"},{color:\"#A16396\",text:\" \"},{color:\"#9C528B\",text:\"E\"},{color:\"#AC4C96\",text:\"s\"},{color:\"#BD47A1\",text:\"s\"},{color:\"#CD42AC\",text:\"e\"},{color:\"#DE3CB7\",text:\"n\"},{color:\"#EE37C2\",text:\"c\"},{color:\"#FF32CE\",text:\"e\"}],italic:0b,text:\"\"}",
+      "minecraft:custom_data": "{PublicBukkitValues:{\"slimefun:slimefun_item\":\"MAGIC_EXPANSION_PURE_FIVE_ELEMENT\"}}"
+    },
+    "schema_version": 1
+  },
+  "MAGIC_EXPANSION_FISHING_MACHINE": {
+    "==": "org.bukkit.inventory.ItemStack",
+    "DataVersion": 5023,
+    "id": "minecraft:orange_glazed_terracotta",
+    "count": 1,
+    "components": {
+      "minecraft:lore": "[{color:\"#6BEED1\",italic:0b,text:\"Insert a fishing rod and compatible bait to begin fishing.\"},{color:\"#B1C6D0\",italic:0b,text:\"Consumes electricity and bait without wearing out the rod.\"},{color:\"#A774A2\",italic:0b,text:\"⇨ ⚡ 52.0 J/s\"},{color:\"#FF32CE\",italic:0b,text:\"⇨ ⚡ 1314 J capacity\"}]",
+      "minecraft:custom_name": "{extra:[{color:\"#6BEED1\",text:\"A\"},{color:\"#77E7D0\",text:\"u\"},{color:\"#83E1D0\",text:\"t\"},{color:\"#8FDBD0\",text:\"o\"},{color:\"#9BD4D0\",text:\"m\"},{color:\"#A7CED0\",text:\"a\"},{color:\"#ADCAD0\",text:\"t\"},{color:\"#B1C6D0\",text:\"e\"},{color:\"#B5C3D0\",text:\"d\"},{color:\"#B9BFD0\",text:\" \"},{color:\"#BDBBD0\",text:\"F\"},{color:\"#BBB0C9\",text:\"i\"},{color:\"#B59CBC\",text:\"s\"},{color:\"#AE88AF\",text:\"h\"},{color:\"#A774A2\",text:\"i\"},{color:\"#A16094\",text:\"n\"},{color:\"#A0508E\",text:\"g\"},{color:\"#B34A9A\",text:\" \"},{color:\"#C644A7\",text:\"P\"},{color:\"#D93EB4\",text:\"o\"},{color:\"#EC38C1\",text:\"n\"},{color:\"#FF32CE\",text:\"d\"}],italic:0b,text:\"\"}",
+      "minecraft:custom_data": "{PublicBukkitValues:{\"slimefun:slimefun_item\":\"MAGIC_EXPANSION_FISHING_MACHINE\"}}"
+    },
+    "schema_version": 1
+  },
+  "MAGIC_EXPANSION_SF_TIMINGS_HOLOGRAM": {
+    "==": "org.bukkit.inventory.ItemStack",
+    "DataVersion": 5023,
+    "id": "minecraft:quartz_slab",
+    "count": 1,
+    "components": {
+      "minecraft:lore": "[{color:\"#6BEED1\",italic:0b,text:\"Displays total Slimefun tick time and the current chunk's time.\"},{color:\"#FF32CE\",italic:0b,text:\"Use it to locate demanding machine setups.\"}]",
+      "minecraft:custom_name": "{extra:[{color:\"#6BEED1\",text:\"S\"},{color:\"#77E7D0\",text:\"l\"},{color:\"#84E0D0\",text:\"i\"},{color:\"#90DAD0\",text:\"m\"},{color:\"#9DD3D0\",text:\"e\"},{color:\"#AACDD0\",text:\"f\"},{color:\"#AEC9D0\",text:\"u\"},{color:\"#B2C5D0\",text:\"n\"},{color:\"#B6C1D0\",text:\" \"},{color:\"#BABDD0\",text:\"T\"},{color:\"#BFBAD0\",text:\"i\"},{color:\"#B7A5C2\",text:\"c\"},{color:\"#B190B4\",text:\"k\"},{color:\"#AA7BA6\",text:\" \"},{color:\"#A36698\",text:\"M\"},{color:\"#9C528B\",text:\"o\"},{color:\"#AF4B98\",text:\"n\"},{color:\"#C345A5\",text:\"i\"},{color:\"#D73EB3\",text:\"t\"},{color:\"#EB38C0\",text:\"o\"},{color:\"#FF32CE\",text:\"r\"}],italic:0b,text:\"\"}",
+      "minecraft:enchantments": "{\"minecraft:luck_of_the_sea\":1}",
+      "minecraft:tooltip_display": "{hidden_components:[\"minecraft:enchantments\"]}",
+      "minecraft:custom_data": "{PublicBukkitValues:{\"slimefun:slimefun_item\":\"MAGIC_EXPANSION_SF_TIMINGS_HOLOGRAM\"}}"
+    },
+    "schema_version": 1
+  },
+  "MAGIC_EXPANSION_GOLD_ELEMENT": {
+    "==": "org.bukkit.inventory.ItemStack",
+    "DataVersion": 5023,
+    "id": "minecraft:yellow_dye",
+    "count": 1,
+    "components": {
+      "minecraft:lore": "[{color:\"#6BEED1\",italic:0b,text:\"One of the five elements: metal, wood, water, fire, and earth.\"},{color:\"#FF32CE\",italic:0b,text:\"Metal embodies strength, order, and the bones of the mountains.\"}]",
+      "minecraft:custom_name": "{extra:[{color:\"#6BEED1\",text:\"M\"},{color:\"#80E3D0\",text:\"e\"},{color:\"#95D8D0\",text:\"t\"},{color:\"#AACDD0\",text:\"a\"},{color:\"#B1C6D0\",text:\"l\"},{color:\"#B8C0D0\",text:\" \"},{color:\"#BFBAD0\",text:\"E\"},{color:\"#B397B9\",text:\"s\"},{color:\"#A774A2\",text:\"s\"},{color:\"#9C528B\",text:\"e\"},{color:\"#BD47A1\",text:\"n\"},{color:\"#DE3CB7\",text:\"c\"},{color:\"#FF32CE\",text:\"e\"}],italic:0b,text:\"\"}",
+      "minecraft:custom_data": "{PublicBukkitValues:{\"slimefun:slimefun_item\":\"MAGIC_EXPANSION_GOLD_ELEMENT\"}}"
+    },
+    "schema_version": 1
+  },
+  "MAGIC_EXPANSION_WATER_ELEMENT": {
+    "==": "org.bukkit.inventory.ItemStack",
+    "DataVersion": 5023,
+    "id": "minecraft:light_blue_dye",
+    "count": 1,
+    "components": {
+      "minecraft:lore": "[{color:\"#6BEED1\",italic:0b,text:\"One of the five elements: metal, wood, water, fire, and earth.\"},{color:\"#FF32CE\",italic:0b,text:\"Water embodies change, acceptance, and the flow of life.\"}]",
+      "minecraft:custom_name": "{extra:[{color:\"#6BEED1\",text:\"W\"},{color:\"#80E3D0\",text:\"a\"},{color:\"#95D8D0\",text:\"t\"},{color:\"#AACDD0\",text:\"e\"},{color:\"#B1C6D0\",text:\"r\"},{color:\"#B8C0D0\",text:\" \"},{color:\"#BFBAD0\",text:\"E\"},{color:\"#B397B9\",text:\"s\"},{color:\"#A774A2\",text:\"s\"},{color:\"#9C528B\",text:\"e\"},{color:\"#BD47A1\",text:\"n\"},{color:\"#DE3CB7\",text:\"c\"},{color:\"#FF32CE\",text:\"e\"}],italic:0b,text:\"\"}",
+      "minecraft:custom_data": "{PublicBukkitValues:{\"slimefun:slimefun_item\":\"MAGIC_EXPANSION_WATER_ELEMENT\"}}"
+    },
+    "schema_version": 1
+  },
+  "MAGIC_EXPANSION_FIRE_ELEMENT": {
+    "==": "org.bukkit.inventory.ItemStack",
+    "DataVersion": 5023,
+    "id": "minecraft:red_dye",
+    "count": 1,
+    "components": {
+      "minecraft:lore": "[{color:\"#6BEED1\",italic:0b,text:\"One of the five elements: metal, wood, water, fire, and earth.\"},{color:\"#FF32CE\",italic:0b,text:\"Fire embodies passion and change, warmth and destruction.\"}]",
+      "minecraft:custom_name": "{extra:[{color:\"#6BEED1\",text:\"F\"},{color:\"#81E2D0\",text:\"i\"},{color:\"#98D6D0\",text:\"r\"},{color:\"#ABCBD0\",text:\"e\"},{color:\"#B3C4D0\",text:\" \"},{color:\"#BBBDD0\",text:\"E\"},{color:\"#B8A7C3\",text:\"s\"},{color:\"#AB81AA\",text:\"s\"},{color:\"#9F5B91\",text:\"e\"},{color:\"#B7499D\",text:\"n\"},{color:\"#DB3DB5\",text:\"c\"},{color:\"#FF32CE\",text:\"e\"}],italic:0b,text:\"\"}",
+      "minecraft:custom_data": "{PublicBukkitValues:{\"slimefun:slimefun_item\":\"MAGIC_EXPANSION_FIRE_ELEMENT\"}}"
+    },
+    "schema_version": 1
+  },
+  "MAGIC_EXPANSION_EARTH_ELEMENT": {
+    "==": "org.bukkit.inventory.ItemStack",
+    "DataVersion": 5023,
+    "id": "minecraft:brown_dye",
+    "count": 1,
+    "components": {
+      "minecraft:lore": "[{color:\"#6BEED1\",italic:0b,text:\"One of the five elements: metal, wood, water, fire, and earth.\"},{color:\"#FF32CE\",italic:0b,text:\"Earth embodies endurance and the ground that sustains all life.\"}]",
+      "minecraft:custom_name": "{extra:[{color:\"#6BEED1\",text:\"E\"},{color:\"#80E3D0\",text:\"a\"},{color:\"#95D8D0\",text:\"r\"},{color:\"#AACDD0\",text:\"t\"},{color:\"#B1C6D0\",text:\"h\"},{color:\"#B8C0D0\",text:\" \"},{color:\"#BFBAD0\",text:\"E\"},{color:\"#B397B9\",text:\"s\"},{color:\"#A774A2\",text:\"s\"},{color:\"#9C528B\",text:\"e\"},{color:\"#BD47A1\",text:\"n\"},{color:\"#DE3CB7\",text:\"c\"},{color:\"#FF32CE\",text:\"e\"}],italic:0b,text:\"\"}",
+      "minecraft:custom_data": "{PublicBukkitValues:{\"slimefun:slimefun_item\":\"MAGIC_EXPANSION_EARTH_ELEMENT\"}}"
+    },
+    "schema_version": 1
+  },
+  "MAGIC_EXPANSION_MAGIC_SUGAR_1": {
+    "==": "org.bukkit.inventory.ItemStack",
+    "DataVersion": 5023,
+    "id": "minecraft:sugar",
+    "count": 1,
+    "components": {
+      "minecraft:lore": "[{italic:0b,text:\"\"},{extra:[{color:\"#FDB7D4\",text:\"S\"},{color:\"#FCB1D0\",text:\"t\"},{color:\"#FCABCD\",text:\"a\"},{color:\"#FCA5CA\",text:\"c\"},{color:\"#FBA0C6\",text:\"k\"},{color:\"#FB9AC3\",text:\"e\"},{color:\"#FB94C0\",text:\"d\"},{color:\"#FA8FBC\",text:\" \"},{color:\"#FA89B9\",text:\"9\"},{color:\"#FA83B6\",text:\" \"},{color:\"#FA7EB3\",text:\"M\"},{color:\"#FA7BB3\",text:\"a\"},{color:\"#FB79B3\",text:\"g\"},{color:\"#FB77B3\",text:\"i\"},{color:\"#FC75B3\",text:\"c\"},{color:\"#FC73B3\",text:\" \"},{color:\"#FD71B3\",text:\"S\"},{color:\"#FD6FB3\",text:\"u\"},{color:\"#FE6DB3\",text:\"g\"},{color:\"#FE6BB3\",text:\"a\"},{color:\"#FF69B4\",text:\"r\"}],italic:0b,text:\"\"},{extra:[{color:\"#FDB7D4\",text:\"W\"},{color:\"#FCB2D1\",text:\"h\"},{color:\"#FCAECF\",text:\"a\"},{color:\"#FCAACC\",text:\"t\"},{color:\"#FCA6CA\",text:\" \"},{color:\"#FBA1C7\",text:\"c\"},{color:\"#FB9DC5\",text:\"o\"},{color:\"#FB99C2\",text:\"u\"},{color:\"#FB95C0\",text:\"l\"},{color:\"#FB91BE\",text:\"d\"},{color:\"#FA8CBB\",text:\" \"},{color:\"#FA88B9\",text:\"t\"},{color:\"#FA84B6\",text:\"h\"},{color:\"#FA80B4\",text:\"i\"},{color:\"#FA7DB3\",text:\"s\"},{color:\"#FA7BB3\",text:\" \"},{color:\"#FA7AB3\",text:\"b\"},{color:\"#FB78B3\",text:\"e\"},{color:\"#FB77B3\",text:\" \"},{color:\"#FC75B3\",text:\"u\"},{color:\"#FC73B3\",text:\"s\"},{color:\"#FC72B3\",text:\"e\"},{color:\"#FD70B3\",text:\"d\"},{color:\"#FD6FB3\",text:\" \"},{color:\"#FD6DB3\",text:\"f\"},{color:\"#FE6CB3\",text:\"o\"},{color:\"#FE6AB3\",text:\"r\"},{color:\"#FF69B4\",text:\"?\"}],italic:0b,text:\"\"},{extra:[{color:\"#FDB7D4\",text:\"P\"},{color:\"#FCB3D2\",text:\"e\"},{color:\"#FCB0D0\",text:\"r\"},{color:\"#FCADCE\",text:\"h\"},{color:\"#FCA9CC\",text:\"a\"},{color:\"#FCA6CA\",text:\"p\"},{color:\"#FBA3C8\",text:\"s\"},{color:\"#FBA0C6\",text:\" \"},{color:\"#FB9CC4\",text:\"t\"},{color:\"#FB99C3\",text:\"h\"},{color:\"#FB96C1\",text:\"i\"},{color:\"#FB93BF\",text:\"s\"},{color:\"#FA8FBD\",text:\" \"},{color:\"#FA8CBB\",text:\"w\"},{color:\"#FA89B9\",text:\"i\"},{color:\"#FA86B7\",text:\"l\"},{color:\"#FA82B5\",text:\"l\"},{color:\"#FA7FB3\",text:\" \"},{color:\"#FA7DB3\",text:\"b\"},{color:\"#FA7CB3\",text:\"e\"},{color:\"#FA7BB3\",text:\" \"},{color:\"#FB79B3\",text:\"u\"},{color:\"#FB78B3\",text:\"s\"},{color:\"#FB77B3\",text:\"e\"},{color:\"#FB76B3\",text:\"f\"},{color:\"#FC75B3\",text:\"u\"},{color:\"#FC73B3\",text:\"l\"},{color:\"#FC72B3\",text:\" \"},{color:\"#FD71B3\",text:\"s\"},{color:\"#FD70B3\",text:\"o\"},{color:\"#FD6FB3\",text:\"m\"},{color:\"#FD6DB3\",text:\"e\"},{color:\"#FE6CB3\",text:\"d\"},{color:\"#FE6BB3\",text:\"a\"},{color:\"#FE6AB3\",text:\"y\"},{color:\"#FF69B4\",text:\".\"}],italic:0b,text:\"\"}]",
+      "minecraft:custom_name": "{extra:[{color:\"#FDB7D4\",text:\"M\"},{color:\"#FCAECE\",text:\"a\"},{color:\"#FCA5C9\",text:\"g\"},{color:\"#FB9CC4\",text:\"i\"},{color:\"#FB93BF\",text:\"c\"},{color:\"#FA8BBA\",text:\" \"},{color:\"#FA82B5\",text:\"S\"},{color:\"#FA7CB3\",text:\"u\"},{color:\"#FB79B3\",text:\"g\"},{color:\"#FB75B3\",text:\"a\"},{color:\"#FC72B3\",text:\"r\"},{color:\"#FD6FB3\",text:\"*\"},{color:\"#FE6CB3\",text:\"9\"},{color:\"#FF69B4\",text:\"¹\"}],italic:0b,text:\"\"}",
+      "minecraft:enchantments": "{\"minecraft:luck_of_the_sea\":1}",
+      "minecraft:tooltip_display": "{hidden_components:[\"minecraft:enchantments\"]}",
+      "minecraft:custom_data": "{PublicBukkitValues:{\"slimefun:slimefun_item\":\"MAGIC_EXPANSION_MAGIC_SUGAR_1\"}}"
+    },
+    "schema_version": 1
+  },
+  "MAGIC_EXPANSION_MAGIC_SUGAR_2": {
+    "==": "org.bukkit.inventory.ItemStack",
+    "DataVersion": 5023,
+    "id": "minecraft:sugar",
+    "count": 1,
+    "components": {
+      "minecraft:lore": "[{italic:0b,text:\"\"},{extra:[{color:\"#FDB7D4\",text:\"S\"},{color:\"#FCB1D0\",text:\"t\"},{color:\"#FCACCD\",text:\"a\"},{color:\"#FCA6CA\",text:\"c\"},{color:\"#FBA1C7\",text:\"k\"},{color:\"#FB9BC4\",text:\"e\"},{color:\"#FB96C1\",text:\"d\"},{color:\"#FB91BE\",text:\" \"},{color:\"#FA8BBA\",text:\"8\"},{color:\"#FA86B7\",text:\"1\"},{color:\"#FA80B4\",text:\" \"},{color:\"#FA7DB3\",text:\"M\"},{color:\"#FA7BB3\",text:\"a\"},{color:\"#FB79B3\",text:\"g\"},{color:\"#FB77B3\",text:\"i\"},{color:\"#FC75B3\",text:\"c\"},{color:\"#FC73B3\",text:\" \"},{color:\"#FD71B3\",text:\"S\"},{color:\"#FD6FB3\",text:\"u\"},{color:\"#FE6DB3\",text:\"g\"},{color:\"#FE6BB3\",text:\"a\"},{color:\"#FF69B4\",text:\"r\"}],italic:0b,text:\"\"},{extra:[{color:\"#FDB7D4\",text:\"W\"},{color:\"#FCB2D1\",text:\"h\"},{color:\"#FCAECF\",text:\"a\"},{color:\"#FCAACC\",text:\"t\"},{color:\"#FCA6CA\",text:\" \"},{color:\"#FBA1C7\",text:\"c\"},{color:\"#FB9DC5\",text:\"o\"},{color:\"#FB99C2\",text:\"u\"},{color:\"#FB95C0\",text:\"l\"},{color:\"#FB91BE\",text:\"d\"},{color:\"#FA8CBB\",text:\" \"},{color:\"#FA88B9\",text:\"t\"},{color:\"#FA84B6\",text:\"h\"},{color:\"#FA80B4\",text:\"i\"},{color:\"#FA7DB3\",text:\"s\"},{color:\"#FA7BB3\",text:\" \"},{color:\"#FA7AB3\",text:\"b\"},{color:\"#FB78B3\",text:\"e\"},{color:\"#FB77B3\",text:\" \"},{color:\"#FC75B3\",text:\"u\"},{color:\"#FC73B3\",text:\"s\"},{color:\"#FC72B3\",text:\"e\"},{color:\"#FD70B3\",text:\"d\"},{color:\"#FD6FB3\",text:\" \"},{color:\"#FD6DB3\",text:\"f\"},{color:\"#FE6CB3\",text:\"o\"},{color:\"#FE6AB3\",text:\"r\"},{color:\"#FF69B4\",text:\"?\"}],italic:0b,text:\"\"},{extra:[{color:\"#FDB7D4\",text:\"P\"},{color:\"#FCB3D2\",text:\"e\"},{color:\"#FCB0D0\",text:\"r\"},{color:\"#FCADCE\",text:\"h\"},{color:\"#FCA9CC\",text:\"a\"},{color:\"#FCA6CA\",text:\"p\"},{color:\"#FBA3C8\",text:\"s\"},{color:\"#FBA0C6\",text:\" \"},{color:\"#FB9CC4\",text:\"t\"},{color:\"#FB99C3\",text:\"h\"},{color:\"#FB96C1\",text:\"i\"},{color:\"#FB93BF\",text:\"s\"},{color:\"#FA8FBD\",text:\" \"},{color:\"#FA8CBB\",text:\"w\"},{color:\"#FA89B9\",text:\"i\"},{color:\"#FA86B7\",text:\"l\"},{color:\"#FA82B5\",text:\"l\"},{color:\"#FA7FB3\",text:\" \"},{color:\"#FA7DB3\",text:\"b\"},{color:\"#FA7CB3\",text:\"e\"},{color:\"#FA7BB3\",text:\" \"},{color:\"#FB79B3\",text:\"u\"},{color:\"#FB78B3\",text:\"s\"},{color:\"#FB77B3\",text:\"e\"},{color:\"#FB76B3\",text:\"f\"},{color:\"#FC75B3\",text:\"u\"},{color:\"#FC73B3\",text:\"l\"},{color:\"#FC72B3\",text:\" \"},{color:\"#FD71B3\",text:\"s\"},{color:\"#FD70B3\",text:\"o\"},{color:\"#FD6FB3\",text:\"m\"},{color:\"#FD6DB3\",text:\"e\"},{color:\"#FE6CB3\",text:\"d\"},{color:\"#FE6BB3\",text:\"a\"},{color:\"#FE6AB3\",text:\"y\"},{color:\"#FF69B4\",text:\".\"}],italic:0b,text:\"\"}]",
+      "minecraft:custom_name": "{extra:[{color:\"#FDB7D4\",text:\"M\"},{color:\"#FCAECE\",text:\"a\"},{color:\"#FCA5C9\",text:\"g\"},{color:\"#FB9CC4\",text:\"i\"},{color:\"#FB93BF\",text:\"c\"},{color:\"#FA8BBA\",text:\" \"},{color:\"#FA82B5\",text:\"S\"},{color:\"#FA7CB3\",text:\"u\"},{color:\"#FB79B3\",text:\"g\"},{color:\"#FB75B3\",text:\"a\"},{color:\"#FC72B3\",text:\"r\"},{color:\"#FD6FB3\",text:\"*\"},{color:\"#FE6CB3\",text:\"9\"},{color:\"#FF69B4\",text:\"²\"}],italic:0b,text:\"\"}",
+      "minecraft:enchantments": "{\"minecraft:luck_of_the_sea\":1}",
+      "minecraft:tooltip_display": "{hidden_components:[\"minecraft:enchantments\"]}",
+      "minecraft:custom_data": "{PublicBukkitValues:{\"slimefun:slimefun_item\":\"MAGIC_EXPANSION_MAGIC_SUGAR_2\"}}"
+    },
+    "schema_version": 1
+  },
+  "MAGIC_EXPANSION_FINAL_STRING_1": {
+    "==": "org.bukkit.inventory.ItemStack",
+    "DataVersion": 5023,
+    "id": "minecraft:white_wool",
+    "count": 1,
+    "components": {
+      "minecraft:lore": "[{italic:0b,text:\"\"},{extra:[{color:\"#FDB7D4\",text:\"S\"},{color:\"#FCB3D1\",text:\"t\"},{color:\"#FCAFCF\",text:\"a\"},{color:\"#FCACCD\",text:\"c\"},{color:\"#FCA8CB\",text:\"k\"},{color:\"#FCA5C9\",text:\"e\"},{color:\"#FBA1C7\",text:\"d\"},{color:\"#FB9EC5\",text:\" \"},{color:\"#FB9AC3\",text:\"9\"},{color:\"#FB96C1\",text:\" \"},{color:\"#FB93BF\",text:\"R\"},{color:\"#FA8FBD\",text:\"e\"},{color:\"#FA8CBB\",text:\"c\"},{color:\"#FA88B9\",text:\"u\"},{color:\"#FA85B7\",text:\"r\"},{color:\"#FA81B5\",text:\"s\"},{color:\"#FA7EB3\",text:\"i\"},{color:\"#FA7CB3\",text:\"v\"},{color:\"#FA7BB3\",text:\"e\"},{color:\"#FA7AB3\",text:\" \"},{color:\"#FB78B3\",text:\"M\"},{color:\"#FB77B3\",text:\"e\"},{color:\"#FB76B3\",text:\"m\"},{color:\"#FC74B3\",text:\"o\"},{color:\"#FC73B3\",text:\"r\"},{color:\"#FC72B3\",text:\"y\"},{color:\"#FD70B3\",text:\" \"},{color:\"#FD6FB3\",text:\"F\"},{color:\"#FD6EB3\",text:\"i\"},{color:\"#FE6CB3\",text:\"b\"},{color:\"#FE6BB3\",text:\"e\"},{color:\"#FE6AB3\",text:\"r\"},{color:\"#FF69B4\",text:\"s\"}],italic:0b,text:\"\"},{extra:[{color:\"#FDB7D4\",text:\"W\"},{color:\"#FCB2D1\",text:\"h\"},{color:\"#FCAECF\",text:\"a\"},{color:\"#FCAACC\",text:\"t\"},{color:\"#FCA6CA\",text:\" \"},{color:\"#FBA1C7\",text:\"c\"},{color:\"#FB9DC5\",text:\"o\"},{color:\"#FB99C2\",text:\"u\"},{color:\"#FB95C0\",text:\"l\"},{color:\"#FB91BE\",text:\"d\"},{color:\"#FA8CBB\",text:\" \"},{color:\"#FA88B9\",text:\"t\"},{color:\"#FA84B6\",text:\"h\"},{color:\"#FA80B4\",text:\"i\"},{color:\"#FA7DB3\",text:\"s\"},{color:\"#FA7BB3\",text:\" \"},{color:\"#FA7AB3\",text:\"b\"},{color:\"#FB78B3\",text:\"e\"},{color:\"#FB77B3\",text:\" \"},{color:\"#FC75B3\",text:\"u\"},{color:\"#FC73B3\",text:\"s\"},{color:\"#FC72B3\",text:\"e\"},{color:\"#FD70B3\",text:\"d\"},{color:\"#FD6FB3\",text:\" \"},{color:\"#FD6DB3\",text:\"f\"},{color:\"#FE6CB3\",text:\"o\"},{color:\"#FE6AB3\",text:\"r\"},{color:\"#FF69B4\",text:\"?\"}],italic:0b,text:\"\"},{extra:[{color:\"#FDB7D4\",text:\"P\"},{color:\"#FCB3D2\",text:\"e\"},{color:\"#FCB0D0\",text:\"r\"},{color:\"#FCADCE\",text:\"h\"},{color:\"#FCA9CC\",text:\"a\"},{color:\"#FCA6CA\",text:\"p\"},{color:\"#FBA3C8\",text:\"s\"},{color:\"#FBA0C6\",text:\" \"},{color:\"#FB9CC4\",text:\"t\"},{color:\"#FB99C3\",text:\"h\"},{color:\"#FB96C1\",text:\"i\"},{color:\"#FB93BF\",text:\"s\"},{color:\"#FA8FBD\",text:\" \"},{color:\"#FA8CBB\",text:\"w\"},{color:\"#FA89B9\",text:\"i\"},{color:\"#FA86B7\",text:\"l\"},{color:\"#FA82B5\",text:\"l\"},{color:\"#FA7FB3\",text:\" \"},{color:\"#FA7DB3\",text:\"b\"},{color:\"#FA7CB3\",text:\"e\"},{color:\"#FA7BB3\",text:\" \"},{color:\"#FB79B3\",text:\"u\"},{color:\"#FB78B3\",text:\"s\"},{color:\"#FB77B3\",text:\"e\"},{color:\"#FB76B3\",text:\"f\"},{color:\"#FC75B3\",text:\"u\"},{color:\"#FC73B3\",text:\"l\"},{color:\"#FC72B3\",text:\" \"},{color:\"#FD71B3\",text:\"s\"},{color:\"#FD70B3\",text:\"o\"},{color:\"#FD6FB3\",text:\"m\"},{color:\"#FD6DB3\",text:\"e\"},{color:\"#FE6CB3\",text:\"d\"},{color:\"#FE6BB3\",text:\"a\"},{color:\"#FE6AB3\",text:\"y\"},{color:\"#FF69B4\",text:\".\"}],italic:0b,text:\"\"}]",
+      "minecraft:custom_name": "{extra:[{color:\"#FDB7D4\",text:\"R\"},{color:\"#FCB2D1\",text:\"e\"},{color:\"#FCAECE\",text:\"c\"},{color:\"#FCA9CC\",text:\"u\"},{color:\"#FCA5C9\",text:\"r\"},{color:\"#FBA1C7\",text:\"s\"},{color:\"#FB9CC4\",text:\"i\"},{color:\"#FB98C2\",text:\"v\"},{color:\"#FB93BF\",text:\"e\"},{color:\"#FA8FBD\",text:\" \"},{color:\"#FA8BBA\",text:\"M\"},{color:\"#FA86B8\",text:\"e\"},{color:\"#FA82B5\",text:\"m\"},{color:\"#FA7EB3\",text:\"o\"},{color:\"#FA7CB3\",text:\"r\"},{color:\"#FA7AB3\",text:\"y\"},{color:\"#FB79B3\",text:\" \"},{color:\"#FB77B3\",text:\"F\"},{color:\"#FB75B3\",text:\"i\"},{color:\"#FC74B3\",text:\"b\"},{color:\"#FC72B3\",text:\"e\"},{color:\"#FD71B3\",text:\"r\"},{color:\"#FD6FB3\",text:\" \"},{color:\"#FD6DB3\",text:\"×\"},{color:\"#FE6CB3\",text:\" \"},{color:\"#FE6AB3\",text:\"9\"},{color:\"#FF69B4\",text:\"¹\"}],italic:0b,text:\"\"}",
+      "minecraft:enchantments": "{\"minecraft:luck_of_the_sea\":1}",
+      "minecraft:tooltip_display": "{hidden_components:[\"minecraft:enchantments\"]}",
+      "minecraft:custom_data": "{PublicBukkitValues:{\"slimefun:slimefun_item\":\"MAGIC_EXPANSION_FINAL_STRING_1\"}}"
+    },
+    "schema_version": 1
+  },
+  "MAGIC_EXPANSION_FIVE_ELEMENT_TOUCH": {
+    "==": "org.bukkit.inventory.ItemStack",
+    "DataVersion": 5023,
+    "id": "minecraft:twisting_vines",
+    "count": 1,
+    "components": {
+      "minecraft:lore": "[{color:\"#6BEED1\",italic:0b,text:\"Sneak-right-click a block to bind it.\"},{color:\"#B1C6D0\",italic:0b,text:\"Right-click to open the bound Slimefun machine.\"},{color:\"#A774A2\",italic:0b,text:\"Works across dimensions without a distance limit.\"},{color:\"#FF32CE\",italic:0b,text:\"Does not load the destination chunk.\"}]",
+      "minecraft:custom_name": "{extra:[{color:\"#6BEED1\",text:\"F\"},{color:\"#79E6D0\",text:\"i\"},{color:\"#88DED0\",text:\"v\"},{color:\"#97D6D0\",text:\"e\"},{color:\"#A6CED0\",text:\"-\"},{color:\"#ADC9D0\",text:\"E\"},{color:\"#B2C5D0\",text:\"l\"},{color:\"#B7C0D0\",text:\"e\"},{color:\"#BCBCD0\",text:\"m\"},{color:\"#BAADC7\",text:\"e\"},{color:\"#B295B7\",text:\"n\"},{color:\"#AA7CA7\",text:\"t\"},{color:\"#A26497\",text:\" \"},{color:\"#A1508E\",text:\"T\"},{color:\"#B9489E\",text:\"o\"},{color:\"#D041AE\",text:\"u\"},{color:\"#E739BE\",text:\"c\"},{color:\"#FF32CE\",text:\"h\"}],italic:0b,text:\"\"}",
+      "minecraft:enchantments": "{\"minecraft:luck_of_the_sea\":1}",
+      "minecraft:tooltip_display": "{hidden_components:[\"minecraft:enchantments\"]}",
+      "minecraft:custom_data": "{PublicBukkitValues:{\"slimefun:slimefun_item\":\"MAGIC_EXPANSION_FIVE_ELEMENT_TOUCH\"}}"
+    },
+    "schema_version": 1
+  },
+  "MAGIC_EXPANSION_ENCHANTMENT_ERASER": {
+    "==": "org.bukkit.inventory.ItemStack",
+    "DataVersion": 5023,
+    "id": "minecraft:paper",
+    "count": 1,
+    "components": {
+      "minecraft:lore": "[{color:\"#6BEED1\",italic:0b,text:\"Hold this in your main hand and the target item in your off hand.\"},{color:\"#BFBAD0\",italic:0b,text:\"Right-click to remove its Magic Empowerment attributes.\"},{color:\"#FF32CE\",italic:0b,text:\"This cannot be undone.\"}]",
+      "minecraft:custom_name": "{extra:[{color:\"#6BEED1\",text:\"E\"},{color:\"#79E6D0\",text:\"m\"},{color:\"#88DED0\",text:\"p\"},{color:\"#97D6D0\",text:\"o\"},{color:\"#A6CED0\",text:\"w\"},{color:\"#ADC9D0\",text:\"e\"},{color:\"#B2C5D0\",text:\"r\"},{color:\"#B7C0D0\",text:\"m\"},{color:\"#BCBCD0\",text:\"e\"},{color:\"#BAADC7\",text:\"n\"},{color:\"#B295B7\",text:\"t\"},{color:\"#AA7CA7\",text:\" \"},{color:\"#A26497\",text:\"E\"},{color:\"#A1508E\",text:\"r\"},{color:\"#B9489E\",text:\"a\"},{color:\"#D041AE\",text:\"s\"},{color:\"#E739BE\",text:\"e\"},{color:\"#FF32CE\",text:\"r\"}],italic:0b,text:\"\"}",
+      "minecraft:enchantments": "{\"minecraft:luck_of_the_sea\":1}",
+      "minecraft:tooltip_display": "{hidden_components:[\"minecraft:enchantments\"]}",
+      "minecraft:custom_data": "{PublicBukkitValues:{\"slimefun:slimefun_item\":\"MAGIC_EXPANSION_ENCHANTMENT_ERASER\"}}"
+    },
+    "schema_version": 1
+  },
+  "MAGIC_EXPANSION_PURE_ELEMENT_INGOT": {
+    "==": "org.bukkit.inventory.ItemStack",
+    "DataVersion": 5023,
+    "id": "minecraft:netherite_ingot",
+    "count": 1,
+    "components": {
+      "minecraft:lore": "[{color:\"#6BEED1\",italic:0b,text:\"Element ingot refined to extraordinary purity.\"}]",
+      "minecraft:custom_name": "{extra:[{color:\"#6BEED1\",text:\"P\"},{color:\"#79E6D0\",text:\"u\"},{color:\"#88DED0\",text:\"r\"},{color:\"#97D6D0\",text:\"e\"},{color:\"#A6CED0\",text:\" \"},{color:\"#ADC9D0\",text:\"E\"},{color:\"#B2C5D0\",text:\"l\"},{color:\"#B7C0D0\",text:\"e\"},{color:\"#BCBCD0\",text:\"m\"},{color:\"#BAADC7\",text:\"e\"},{color:\"#B295B7\",text:\"n\"},{color:\"#AA7CA7\",text:\"t\"},{color:\"#A26497\",text:\" \"},{color:\"#A1508E\",text:\"I\"},{color:\"#B9489E\",text:\"n\"},{color:\"#D041AE\",text:\"g\"},{color:\"#E739BE\",text:\"o\"},{color:\"#FF32CE\",text:\"t\"}],italic:0b,text:\"\"}",
+      "minecraft:enchantments": "{\"minecraft:luck_of_the_sea\":1}",
+      "minecraft:tooltip_display": "{hidden_components:[\"minecraft:enchantments\"]}",
+      "minecraft:custom_data": "{PublicBukkitValues:{\"slimefun:slimefun_item\":\"MAGIC_EXPANSION_PURE_ELEMENT_INGOT\"}}"
+    },
+    "schema_version": 1
+  }
+}

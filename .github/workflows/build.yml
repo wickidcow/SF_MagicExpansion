@@ -11,8 +11,8 @@ permissions:
   contents: write
 
 env:
-  VERSION: "1.1.15"
-  OUTPUT_NAME: "SF_MagicExpansion1.1.15.jar"
+  VERSION: "1.1.16"
+  OUTPUT_NAME: "SF_MagicExpansion1.1.16.jar"
 
 concurrency:
   group: magicexpansion-${{ github.workflow }}-${{ github.ref }}
@@ -96,19 +96,21 @@ jobs:
           archive: false
           if-no-files-found: error
       - name: Publish canonical raw JAR release asset
-        if: github.event_name == 'workflow_dispatch' || startsWith(github.ref, 'refs/tags/') || github.ref_name == github.event.repository.default_branch
+        # Ordinary master pushes build artifacts but must never publish or replace releases.
+        if: github.event_name == 'workflow_dispatch' || startsWith(github.ref, 'refs/tags/')
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
           set -euo pipefail
-          if [[ "$GITHUB_REF" == refs/tags/v* ]]; then TAG="$GITHUB_REF_NAME"; else TAG="v${VERSION}"; fi
+          TAG="v${VERSION}"
+          if [[ "$GITHUB_REF" == refs/tags/* && "$GITHUB_REF_NAME" != "$TAG" ]]; then
+            echo "Refusing a tag that differs from the verified release version: $GITHUB_REF_NAME"
+            exit 1
+          fi
           JAR="dist/${OUTPUT_NAME}"
           if gh release view "$TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
-            while IFS= read -r OLD; do
-              if [[ "$OLD" == *.jar && "$OLD" != "$OUTPUT_NAME" ]]; then gh release delete-asset "$TAG" "$OLD" --repo "$GITHUB_REPOSITORY" -y; fi
-            done < <(gh release view "$TAG" --repo "$GITHUB_REPOSITORY" --json assets --jq '.assets[].name')
-            gh release upload "$TAG" "$JAR" --repo "$GITHUB_REPOSITORY" --clobber
-          else
-            gh release create "$TAG" "$JAR" --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --notes-file "docs/releases/${VERSION}.md" --title "SF_MagicExpansion ${VERSION}"
+            echo "Refusing to replace the existing immutable release $TAG"
+            exit 1
           fi
+          gh release create "$TAG" "$JAR" --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --notes-file "docs/releases/${VERSION}.md" --title "SF_MagicExpansion ${VERSION}"

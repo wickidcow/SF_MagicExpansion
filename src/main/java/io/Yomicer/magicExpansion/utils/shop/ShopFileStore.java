@@ -73,6 +73,7 @@ final class ShopFileStore {
                 String filename = path.getFileName().toString();
                 shop.name = filename.substring(0, filename.length() - 4);
                 shop.trades.addAll(parsed.trades);
+                shop.catalogHistory.addAll(parsed.catalogHistory);
                 loaded.put(shop, new Entry(path, shop.name, original, parsed.extensions));
                 shops.add(shop);
             } catch (IOException | InvalidConfigurationException | RuntimeException | LinkageError error) {
@@ -121,6 +122,9 @@ final class ShopFileStore {
             // Validate the serialized representation before touching the original file.
             Parsed roundTrip = parse(encoded.bytes);
             assertSameTrades(shop.trades, roundTrip.trades);
+            if (!shop.catalogHistory.equals(roundTrip.catalogHistory)) {
+                throw new IOException("Catalog import history changed during serialization");
+            }
             staged = Files.createTempFile(directory, ".shop-", ".pending");
             try (FileChannel output = FileChannel.open(staged, StandardOpenOption.WRITE,
                     StandardOpenOption.TRUNCATE_EXISTING)) {
@@ -220,6 +224,8 @@ final class ShopFileStore {
                 preserved.put(key, pair.getValue());
             }
             ShopManager.Trade trade = new ShopManager.Trade();
+            trade.catalogId = catalogId(map.get("catalogId"));
+            trade.catalogPlugins.addAll(catalogPlugins(map.get("catalogPlugins")));
             trade.result = item(map.get("result"));
             Object cost = map.get("cost");
             if (cost != null) {
@@ -244,7 +250,45 @@ final class ShopFileStore {
             trades.add(trade);
             extensions.put(trade, preserved);
         }
-        return new Parsed(configuration, trades, extensions);
+        Set<String> catalogHistory = new java.util.LinkedHashSet<>();
+        Object history = configuration.get("marketCatalogHistory");
+        if (history != null) {
+            if (!(history instanceof List<?> ids)) throw new IOException("Catalog history is not a list");
+            for (Object id : ids) {
+                String key = catalogId(id);
+                if (key == null || !catalogHistory.add(key)) throw new IOException("Invalid or duplicate catalog history");
+            }
+        }
+        Set<String> liveIds = new java.util.HashSet<>();
+        for (ShopManager.Trade trade : trades) {
+            if (trade.catalogId != null) {
+                if (!liveIds.add(trade.catalogId)) throw new IOException("Duplicate catalog offer identity");
+                // Never reconstruct missing history silently: this could restore a deleted allowance.
+                if (!catalogHistory.contains(trade.catalogId)) throw new IOException("Catalog offer is missing import history");
+            }
+        }
+        return new Parsed(configuration, trades, extensions, catalogHistory);
+    }
+
+    private static String catalogId(Object value) throws IOException {
+        if (value == null) return null;
+        if (!(value instanceof String id) || !id.matches("[a-z0-9][a-z0-9._-]{0,127}")) {
+            throw new IOException("Invalid catalog offer identity");
+        }
+        return id;
+    }
+
+    private static List<String> catalogPlugins(Object value) throws IOException {
+        if (value == null) return List.of();
+        if (!(value instanceof List<?> values)) throw new IOException("Catalog plugins are not a list");
+        List<String> plugins = new ArrayList<>();
+        for (Object entry : values) {
+            if (!(entry instanceof String name) || !name.matches("[A-Za-z0-9_.-]{1,128}") || plugins.contains(name)) {
+                throw new IOException("Invalid or duplicate catalog plugin condition");
+            }
+            plugins.add(name);
+        }
+        return plugins;
     }
 
     private static ItemStack item(Object value) throws IOException {
@@ -275,6 +319,11 @@ final class ShopFileStore {
             if (trade == null) throw new IOException("Null trade cannot replace an existing record");
             Map<String, Object> row = new LinkedHashMap<>();
             if (entry != null) row.putAll(entry.extensions.getOrDefault(trade, Map.of()));
+            if (trade.catalogId != null) row.put("catalogId", catalogId(trade.catalogId));
+            else row.remove("catalogId");
+            if (trade.catalogPlugins == null) throw new IOException("Missing catalog plugin conditions");
+            if (!trade.catalogPlugins.isEmpty()) row.put("catalogPlugins", catalogPlugins(trade.catalogPlugins));
+            else row.remove("catalogPlugins");
             row.put("result", item(trade.result));
             List<ItemStack> costs = new ArrayList<>();
             if (trade.costItems != null) for (ItemStack cost : trade.costItems) costs.add(item(cost));
@@ -292,6 +341,10 @@ final class ShopFileStore {
             rows.add(row);
             extensions.put(trade, row);
         }
+        if (shop.catalogHistory == null) throw new IOException("Missing catalog import history");
+        if (!shop.catalogHistory.isEmpty() || configuration.contains("marketCatalogHistory")) {
+            configuration.set("marketCatalogHistory", new ArrayList<>(shop.catalogHistory));
+        }
         configuration.set("trades", rows);
         return new Encoded(configuration.saveToString().getBytes(StandardCharsets.UTF_8), extensions);
     }
@@ -301,7 +354,8 @@ final class ShopFileStore {
         for (int index = 0; index < expected.size(); index++) {
             ShopManager.Trade left = expected.get(index), right = actual.get(index);
             List<ItemStack> costs = left.costItems == null ? List.of() : left.costItems;
-            if (!Objects.equals(left.result, right.result) || !costs.equals(right.costItems)
+            if (!Objects.equals(left.catalogId, right.catalogId) || !left.catalogPlugins.equals(right.catalogPlugins)
+                    || !Objects.equals(left.result, right.result) || !costs.equals(right.costItems)
                     || left.globalLimit != right.globalLimit || left.personalLimit != right.personalLimit
                     || left.globalUsed != right.globalUsed || !left.personalUsed.equals(right.personalUsed)) {
                 throw new IOException("Trade data changed during serialization; original retained");
@@ -331,6 +385,6 @@ final class ShopFileStore {
     }
 
     private record Parsed(YamlConfiguration configuration, List<ShopManager.Trade> trades,
-            Map<ShopManager.Trade, Map<String, Object>> extensions) {}
+            Map<ShopManager.Trade, Map<String, Object>> extensions, Set<String> catalogHistory) {}
     private record Encoded(byte[] bytes, Map<ShopManager.Trade, Map<String, Object>> extensions) {}
 }

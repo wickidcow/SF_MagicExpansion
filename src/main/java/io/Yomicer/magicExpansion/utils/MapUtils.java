@@ -11,6 +11,8 @@ import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockState;
+import org.bukkit.block.TileState;
 import org.bukkit.entity.Player;
 import org.bukkit.util.BlockIterator;
 
@@ -169,7 +171,15 @@ public class MapUtils {
             }
 
             Block block = location.getBlock();
-            targets.add(new BlockPasteSupport.Target(block, block.getState(), desired));
+            BlockState original = block.getState();
+            // Replacing a block entity may eject contents before a later failure.
+            // A snapshot cannot safely undo those external drops as well as the block.
+            if (original instanceof TileState) {
+                player.sendMessage(ChatColor.RED
+                        + "The destination contains a block entity. Move or remove it normally first.");
+                return null;
+            }
+            targets.add(new BlockPasteSupport.Target(block, original, desired));
         }
 
         return targets;
