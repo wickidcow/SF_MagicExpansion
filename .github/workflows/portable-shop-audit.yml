@@ -47,9 +47,7 @@ jobs:
           [[ "$URL" == https://* && "$HASH" =~ ^[0-9a-f]{64}$ ]]
           curl -fL --retry 3 "$URL" -o audit/server/server.jar
           echo "$HASH  audit/server/server.jar" | sha256sum -c -
-      - name: Reconstruct the exact authored shop data from verified native item references
-        env:
-          GH_TOKEN: ${{ github.token }}
+      - name: Reconstruct the exact authored shop data from retained native item references
         run: |
           python3 -m pip install 'PyYAML==6.0.2'
           python3 tests/portable-shop-audit/prepare_fixtures.py

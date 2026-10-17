@@ -1,14 +1,12 @@
 """Recreate authored fixture data exactly, excluding YAML presentation/comments.
 
-Full serialized custom items come from the previously verified public native audit,
-not fabricated names or material-only stand-ins. No production ledger or config is used.
+Full serialized custom items are retained beside this script and verified against
+the original native-audit fingerprints. No production ledger or config is used.
 """
 import copy
 import hashlib
 import json
 from pathlib import Path
-import subprocess
-import zipfile
 import yaml
 
 def digest(value):
@@ -78,23 +76,14 @@ EXPECTED = {
 'Garran - Supplies.yml':'b92c39c49bc66ed4b3e12fbe19f98babc5e758dee2c9c35869c3ad7019e671c0',
 'Xur.yml':'146d9f3904fe26e0453531b3354e6d5f1b1c088591ccddacf4299649f1736aab'}
 
-archive = Path('audit/native-reference.zip')
-if not archive.exists():
-    with archive.open('wb') as out:
-        subprocess.run(['gh','api','repos/wickidcow/SF_MagicExpansion/actions/artifacts/11945848520/zip'],stdout=out,check=True)
-assert hashlib.sha256(archive.read_bytes()).hexdigest()=='0469485aaad5c9d64b914924588d823dd707e8f555c3086b1a4da97d96fdf353'
-found={}
-def walk(value):
-    if isinstance(value,dict):
-        if value.get('==')=='org.bukkit.inventory.ItemStack':
-            item=copy.deepcopy(value);item['count']=1;found[digest(item)]=item
-        for child in value.values():walk(child)
-    elif isinstance(value,list):
-        for child in value:walk(child)
-with zipfile.ZipFile(archive) as z:
-    for name in z.namelist():
-        if name.endswith('.yml'):walk(yaml.safe_load(z.read(name)))
-assert all(d in found for d in REFERENCES.values()), 'Missing exact native item reference'
+native_items = json.loads(Path(__file__).with_name('native-items.json').read_text(encoding='utf-8'))
+assert set(native_items) == set(REFERENCES), 'Native fixture item identities differ'
+found = {}
+for key, expected in REFERENCES.items():
+    value = native_items[key]
+    assert digest(value) == expected, 'Native item reference differs: ' + key
+    found[expected] = value
+
 def item(spec):
     key,count=spec
     if key in REFERENCES: value=copy.deepcopy(found[REFERENCES[key]])
