@@ -23,7 +23,7 @@ public class BaitBag extends SimpleSlimefunItem<ItemUseHandler> {
         return e -> {
             e.setUseItem(org.bukkit.event.Event.Result.DENY);
             e.setUseBlock(org.bukkit.event.Event.Result.DENY);
-            BaitBagMenu.open(e.getPlayer(), e.getItem());
+            BaitBagMenu.open(e.getPlayer(), e.getItem(), e.getHand());
         };
     }
 }

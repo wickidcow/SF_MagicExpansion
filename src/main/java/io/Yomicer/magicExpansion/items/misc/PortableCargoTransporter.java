@@ -184,8 +184,9 @@ public class PortableCargoTransporter extends SlimefunItem implements Listener {
 
         if (storedItem == null || storedAmount <= 0) {
             // 空的以太秘匣,移除它
-            removeCargoFragment(player, cargoFragment);
-            player.sendMessage("§cAn empty Aether Cargo Chest was found and removed!");
+            if (removeCargoFragment(player, cargoFragment)) {
+                player.sendMessage("§cAn empty Aether Cargo Chest was found and removed!");
+            }
             return;
         }
 
@@ -196,24 +197,49 @@ public class PortableCargoTransporter extends SlimefunItem implements Listener {
             return;
         }
 
-        // 计算实际能分发的数量
         int amountToGive = Math.min(storedAmount, availableSpace);
+        if (amountToGive <= 0) {
+            return;
+        }
 
-        // 填满玩家背包
-        int actuallyGiven = fillPlayerInventory(player, storedItem, amountToGive);
+        ItemStack sourceSnapshot = cargoFragment.clone();
+        int newAmount = storedAmount - amountToGive;
 
-        if (actuallyGiven > 0) {
-            int newAmount = storedAmount - actuallyGiven;
-
-            if (newAmount <= 0) {
-                // 数量为0,删除该以太秘匣
-                removeCargoFragment(player, cargoFragment);
-                player.sendMessage("§a✓ Transferring: " + getItemDisplayName(storedItem));
-            } else {
-                // 更新以太秘匣数量
-                updateFragmentAmount(cargoFragment, newAmount);
-                player.sendMessage("§a✓ Transferring: " + getItemDisplayName(storedItem) + " §7(Remaining: " + newAmount + ")");
+        // Commit the source before delivering items to close duplicate-on-update failure.
+        if (newAmount <= 0) {
+            if (!removeCargoFragment(player, cargoFragment)) {
+                return;
             }
+        } else if (!updateFragmentAmount(cargoFragment, newAmount)) {
+            return;
+        }
+
+        int actuallyGiven = fillPlayerInventory(player, storedItem, amountToGive);
+        if (actuallyGiven < amountToGive) {
+            int remainder = amountToGive - Math.max(0, actuallyGiven);
+            if (newAmount <= 0) {
+                if (updateFragmentAmount(sourceSnapshot, remainder)) {
+                    Map<Integer, ItemStack> restoreLeftover =
+                            player.getInventory().addItem(sourceSnapshot);
+                    for (ItemStack leftover : restoreLeftover.values()) {
+                        player.getWorld().dropItemNaturally(player.getLocation(), leftover);
+                    }
+                }
+            } else {
+                updateFragmentAmount(cargoFragment, newAmount + remainder);
+            }
+        }
+
+        if (actuallyGiven <= 0) {
+            return;
+        }
+
+        int remaining = storedAmount - actuallyGiven;
+        if (remaining <= 0) {
+            player.sendMessage("§a✓ Transferring: " + getItemDisplayName(storedItem));
+        } else {
+            player.sendMessage("§a✓ Transferring: " + getItemDisplayName(storedItem)
+                    + " §7(Remaining: " + remaining + ")");
         }
     }
 
@@ -247,15 +273,17 @@ public class PortableCargoTransporter extends SlimefunItem implements Listener {
     /**
      * 移除以太秘匣
      */
-    private void removeCargoFragment(Player player, ItemStack cargoFragment) {
-        ItemStack[] inventory = player.getInventory().getContents();
+    private boolean removeCargoFragment(Player player, ItemStack cargoFragment) {
+        ItemStack[] inventory = player.getInventory().getStorageContents();
 
         for (int i = 0; i < inventory.length; i++) {
-            if (inventory[i] != null && inventory[i].equals(cargoFragment)) {
+            if (inventory[i] == cargoFragment
+                    || (inventory[i] != null && inventory[i].equals(cargoFragment))) {
                 player.getInventory().setItem(i, null);
-                break;
+                return true;
             }
         }
+        return false;
     }
 
     /**
@@ -312,29 +340,39 @@ public class PortableCargoTransporter extends SlimefunItem implements Listener {
     /**
      * 更新以太秘匣的数量
      */
-    private void updateFragmentAmount(ItemStack fragment, int newAmount) {
-        if (fragment == null || !fragment.hasItemMeta()) return;
-
-        ItemMeta meta = fragment.getItemMeta();
-        if (meta == null) return;
-
-        PersistentDataContainer container = meta.getPersistentDataContainer();
-        NamespacedKey keyAmount = new NamespacedKey(MagicExpansion.getInstance(), "cargo_amount");
-        container.set(keyAmount, PersistentDataType.INTEGER, newAmount);
-
-        // 更新Lore显示数量
-        if (meta.hasLore()) {
-            java.util.List<String> lore = meta.getLore();
-            for (int i = 0; i < lore.size(); i++) {
-                if (lore.get(i).startsWith("§fAmount: §a") || lore.get(i).startsWith("§f\u6570\u91cf: §a")) {
-                    lore.set(i, "§fAmount: §a" + newAmount);
-                    break;
-                }
-            }
-            meta.setLore(lore);
+    private boolean updateFragmentAmount(ItemStack fragment, int newAmount) {
+        if (fragment == null || !fragment.hasItemMeta() || newAmount <= 0) {
+            return false;
         }
 
-        fragment.setItemMeta(meta);
+        ItemMeta meta = fragment.getItemMeta();
+        if (meta == null) {
+            return false;
+        }
+
+        try {
+            PersistentDataContainer container = meta.getPersistentDataContainer();
+            NamespacedKey keyAmount =
+                    new NamespacedKey(MagicExpansion.getInstance(), "cargo_amount");
+            container.set(keyAmount, PersistentDataType.INTEGER, newAmount);
+
+            if (meta.hasLore()) {
+                java.util.List<String> lore = meta.getLore();
+                for (int i = 0; i < lore.size(); i++) {
+                    if (lore.get(i).startsWith("§fAmount: §a")
+                            || lore.get(i).startsWith("§f\u6570\u91cf: §a")) {
+                        lore.set(i, "§fAmount: §a" + newAmount);
+                        break;
+                    }
+                }
+                meta.setLore(lore);
+            }
+
+            fragment.setItemMeta(meta);
+            return true;
+        } catch (RuntimeException | LinkageError failure) {
+            return false;
+        }
     }
 
     /**
@@ -365,8 +403,10 @@ public class PortableCargoTransporter extends SlimefunItem implements Listener {
         ItemStack singleItem = item.clone();
         singleItem.setAmount(1);
 
-        // 先填充已有物品的槽位
-        for (int i = 0; i < player.getInventory().getSize(); i++) {
+        int storageSize = player.getInventory().getStorageContents().length;
+
+        // Fill only ordinary storage slots. Armor and off-hand slots are not cargo capacity.
+        for (int i = 0; i < storageSize; i++) {
             if (totalGiven >= maxAmount) break;
 
             ItemStack slotItem = player.getInventory().getItem(i);
@@ -382,8 +422,8 @@ public class PortableCargoTransporter extends SlimefunItem implements Listener {
             }
         }
 
-        // 再填充空槽位
-        for (int i = 0; i < player.getInventory().getSize(); i++) {
+        // Then fill empty ordinary storage slots.
+        for (int i = 0; i < storageSize; i++) {
             if (totalGiven >= maxAmount) break;
 
             ItemStack slotItem = player.getInventory().getItem(i);

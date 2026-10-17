@@ -1,6 +1,8 @@
 package io.Yomicer.magicExpansion.items.tools;
 
+import com.xzavier0722.mc.plugin.slimefun4.storage.util.StorageCacheUtils;
 import io.github.thebusybiscuit.slimefun4.api.items.ItemGroup;
+import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItem;
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItemStack;
 import io.github.thebusybiscuit.slimefun4.api.recipes.RecipeType;
 import io.github.thebusybiscuit.slimefun4.core.attributes.NotPlaceable;
@@ -72,17 +74,29 @@ public class Scythe extends SimpleSlimefunItem<ItemUseHandler> implements NotPla
                     boolean creative = e.getPlayer().getGameMode() == GameMode.CREATIVE;
 
                     for (Block b : crops) {
-                        if (Slimefun.getProtectionManager().hasPermission(e.getPlayer(), b, Interaction.BREAK_BLOCK)) {
-                            AlternateBreakEvent breakEvent = new AlternateBreakEvent(b, e.getPlayer());
-                            Bukkit.getPluginManager().callEvent(breakEvent);
+                        if (!Slimefun.getProtectionManager()
+                                .hasPermission(e.getPlayer(), b, Interaction.BREAK_BLOCK)) {
+                            continue;
+                        }
 
-                            if (!breakEvent.isCancelled()) {
-                                if (creative) {
-                                    b.setType(Material.AIR);
-                                } else {
-                                    b.breakNaturally(tool);
-                                }
-                            }
+                        // Capture Slimefun identity before the synthetic event. Slimefun's
+                        // BlockListener may remove the block data while processing the event.
+                        SlimefunItem adjacentSf = StorageCacheUtils.getSlimefunItem(b.getLocation());
+
+                        AlternateBreakEvent breakEvent = new AlternateBreakEvent(b, e.getPlayer());
+                        Bukkit.getPluginManager().callEvent(breakEvent);
+                        if (breakEvent.isCancelled()) {
+                            continue;
+                        }
+
+                        if (creative) {
+                            b.setType(Material.AIR, false);
+                        } else if (adjacentSf != null && !adjacentSf.useVanillaBlockBreaking()) {
+                            // Slimefun already emitted the custom drops and removed block data.
+                            // Breaking naturally here would add a second set of vanilla drops.
+                            b.setType(Material.AIR, false);
+                        } else {
+                            b.breakNaturally(tool);
                         }
                     }
                 }

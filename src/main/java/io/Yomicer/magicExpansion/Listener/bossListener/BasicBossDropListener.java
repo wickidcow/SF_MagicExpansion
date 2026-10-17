@@ -4,9 +4,7 @@ import io.Yomicer.magicExpansion.core.MagicExpansionItems;
 import io.Yomicer.magicExpansion.utils.log.Debug;
 import io.github.thebusybiscuit.slimefun4.implementation.SlimefunItems;
 import org.bukkit.Location;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Item;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -32,6 +30,11 @@ public class BasicBossDropListener implements Listener {
         // 清除默认掉落物
 //        event.getDrops().clear();
 
+        // Clear only this boss's vanilla drops. Never delete unrelated world item entities.
+        if ("FireZombie".equals(mobType) || "WindElf".equals(mobType)) {
+            event.getDrops().clear();
+        }
+
         // 根据怪物类型执行不同的掉落逻辑
         switch (mobType) {
             case "FireZombie":
@@ -52,17 +55,14 @@ public class BasicBossDropListener implements Listener {
      * @param entity 死亡的实体
      */
     private void dropWindElfLoot(LivingEntity entity) {
-        // 清除默认掉落物(可选)
-        entity.getWorld().getEntitiesByClass(Item.class).forEach(Entity::remove);
-
         // 获取死亡位置
         Location dropLocation = entity.getLocation();
 
         if(new Random().nextInt(100000)>91888){
             return;
         }
-        ItemStack DropItem = MagicExpansionItems.WIND_SPIRIT;
-        ItemStack DropItem2 = SlimefunItems.ADVANCED_CIRCUIT_BOARD;
+        ItemStack DropItem = MagicExpansionItems.WIND_SPIRIT.clone();
+        ItemStack DropItem2 = SlimefunItems.ADVANCED_CIRCUIT_BOARD.clone();
 
         // 掉落物品到世界中
         dropLocation.getWorld().dropItemNaturally(dropLocation, DropItem);
@@ -80,17 +80,14 @@ public class BasicBossDropListener implements Listener {
      * @param entity 死亡的实体
      */
     private void dropFireZombieLoot(LivingEntity entity) {
-        // 清除默认掉落物(可选)
-        entity.getWorld().getEntitiesByClass(Item.class).forEach(Entity::remove);
-
         // 获取死亡位置
         Location dropLocation = entity.getLocation();
 
         if(new Random().nextInt(100000)>91888){
             return;
         }
-        ItemStack DropItem = MagicExpansionItems.BASIC_ENCHANT_STONE;
-        ItemStack DropItem2 = SlimefunItems.BASIC_CIRCUIT_BOARD;
+        ItemStack DropItem = MagicExpansionItems.BASIC_ENCHANT_STONE.clone();
+        ItemStack DropItem2 = SlimefunItems.BASIC_CIRCUIT_BOARD.clone();
 
         // 掉落物品到世界中
         dropLocation.getWorld().dropItemNaturally(dropLocation, DropItem);

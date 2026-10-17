@@ -82,14 +82,18 @@ public class TypeEnergyGenerator extends MenuBlock implements EnergyNetProvider 
     @Override
     public int getGeneratedOutput(Location l, SlimefunBlockData data) {
 
-        int gen;
-        if (power2 > 0) {
-            double r = Math.random();
-            double genDouble = power + (power2 - power) * Math.pow(r, 3);
-            gen = (int) genDouble;
-//               gen = new Random().nextInt(power, power2);
-        } else {
-            gen = power;
+        Block requiredBlock = l.getBlock().getRelative(face);
+        boolean sourcePresent = requiredBlock.getType() == material;
+
+        int gen = 0;
+        if (sourcePresent) {
+            if (power2 > 0) {
+                double r = Math.random();
+                double genDouble = power + (power2 - power) * Math.pow(r, 3);
+                gen = (int) genDouble;
+            } else {
+                gen = power;
+            }
         }
 
         BlockMenu inv = StorageCacheUtils.getMenu(l);
@@ -97,7 +101,8 @@ public class TypeEnergyGenerator extends MenuBlock implements EnergyNetProvider 
             if (gen == 0) {
                 inv.replaceExistingItem(13, new CustomItemStack(
                         Material.LANTERN,
-                        getGradientName("TypeEnergyGenerator"),
+                        getGradientName("Required source missing"),
+                        getGradientName("Required: " + material.name() + " " + face.name().toLowerCase()),
                         getGradientName("Stored: " + ChargeLore.format(getCharge(l)) + " J")
                 ));
             }

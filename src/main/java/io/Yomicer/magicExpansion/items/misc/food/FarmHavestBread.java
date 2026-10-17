@@ -33,7 +33,8 @@ public class FarmHavestBread extends SimpleSlimefunItem<ItemConsumptionHandler> 
             p.addPotionEffect(new PotionEffect(PotionEffectType.SATURATION, 300, 2)); // 等级 2 对应 III (0=I, 1=II, 2=III)
             p.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, 160, 0)); // 等级 0 对应 I
             if (RANDOM.nextDouble() < 0.20) {
-                ItemStack seeds = MagicExpansionItems.WHEAT_SEEDS;
+                ItemStack seeds = MagicExpansionItems.WHEAT_SEEDS.clone();
+                seeds.setAmount(1);
                 p.getWorld().dropItemNaturally(p.getLocation(), seeds);
                 p.sendMessage("§e✨ The harvest blessed you with extra seeds!");
             }

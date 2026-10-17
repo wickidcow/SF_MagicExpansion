@@ -23,6 +23,7 @@ import io.Yomicer.magicExpansion.items.misc.DrawMachine;
 import io.Yomicer.magicExpansion.items.misc.magicAlter.PluginInitializer;
 import io.Yomicer.magicExpansion.specialActions.Command.*;
 import io.Yomicer.magicExpansion.utils.Language;
+import io.Yomicer.magicExpansion.utils.energy.PowerCardConfigurationManager;
 import io.Yomicer.magicExpansion.utils.aiManager.AIManager;
 import io.Yomicer.magicExpansion.utils.shop.BlackMarketManager;
 import io.Yomicer.magicExpansion.utils.shop.ShopCommand;
@@ -36,6 +37,9 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.lang.reflect.Field;
+import java.nio.file.Files;
+import java.nio.file.LinkOption;
+import java.nio.file.Path;
 
 import static io.Yomicer.magicExpansion.items.misc.PortableCargoTransporter.onPluginDisable;
 
@@ -58,6 +62,7 @@ public class MagicExpansion extends JavaPlugin implements SlimefunAddon {
         // Plugin startup logic
         instance = this;
         saveDefaultConfig();
+        ensureDefaultMarketCatalog();
         getLogger().info("§bLoading MagicExpansion...");
 
         getLogger().info("Bundled English compatibility helpers are active; GuizhanLibPlugin is not required.");
@@ -135,6 +140,25 @@ public class MagicExpansion extends JavaPlugin implements SlimefunAddon {
     }
 
     /**
+     * Copies the bundled market catalog only when a server does not already have one.
+     * This exposes the default catalog for editing but deliberately does not populate
+     * shops or touch portable-shop purchase counters during startup.
+     */
+    private void ensureDefaultMarketCatalog() {
+        Path catalog = getDataFolder().toPath().resolve("market_catalog.yml");
+        try {
+            if (Files.notExists(catalog, LinkOption.NOFOLLOW_LINKS)) {
+                saveResource("market_catalog.yml", false);
+                getLogger().info("Created default market_catalog.yml from the bundled catalog.");
+            } else if (!Files.isRegularFile(catalog, LinkOption.NOFOLLOW_LINKS)) {
+                getLogger().warning("market_catalog.yml exists but is not a regular file; leaving it unchanged.");
+            }
+        } catch (RuntimeException failure) {
+            getLogger().warning("Could not create the default market catalog: " + failure.getMessage());
+        }
+    }
+
+    /**
      * Ensures the root category exists independently of item registration order.
      * This keeps standalone guide replacements such as JEG from missing Magic Expansion.
      */
@@ -199,6 +223,7 @@ public class MagicExpansion extends JavaPlugin implements SlimefunAddon {
         onPluginDisable();
         ShopManager.saveAll();
         BlackMarketManager.shutdown();
+        PowerCardConfigurationManager.shutdown();
 
         if (aiManager != null) {
             aiManager.shutdown();

@@ -18,6 +18,7 @@ import io.github.thebusybiscuit.slimefun4.implementation.handlers.SimpleBlockBre
 import io.github.thebusybiscuit.slimefun4.libraries.dough.items.CustomItemStack;
 import io.github.thebusybiscuit.slimefun4.libraries.dough.protection.Interaction;
 import io.github.thebusybiscuit.slimefun4.utils.SlimefunUtils;
+import me.mrCookieSlime.Slimefun.Objects.handlers.BlockTicker;
 import me.mrCookieSlime.Slimefun.api.BlockStorage;
 import me.mrCookieSlime.Slimefun.api.inventory.BlockMenu;
 import me.mrCookieSlime.Slimefun.api.inventory.BlockMenuPreset;
@@ -26,6 +27,7 @@ import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
@@ -65,6 +67,22 @@ public class CargoFragmentDistributor extends SlimefunItem implements EnergyNetC
 
         // 启动全局 tick 任务
         startGlobalTickTask();
+    }
+
+    @Override
+    public void preRegister() {
+        addItemHandler(new BlockTicker() {
+            @Override
+            public void tick(Block block, SlimefunItem item, SlimefunBlockData data) {
+                // Rehydrate registry state for blocks loaded after restart/chunk reload.
+                machineStates.computeIfAbsent(block.getLocation(), ignored -> new MachineState());
+            }
+
+            @Override
+            public boolean isSynchronized() {
+                return true;
+            }
+        });
     }
 
     /**
@@ -133,7 +151,11 @@ public class CargoFragmentDistributor extends SlimefunItem implements EnergyNetC
      * 检查方块是否有效
      */
     private boolean isBlockValid(Location location) {
-        if (!location.getChunk().isLoaded()) return false;
+        World world = location.getWorld();
+        if (world == null || !world.isChunkLoaded(
+                location.getBlockX() >> 4, location.getBlockZ() >> 4)) {
+            return false;
+        }
 
         Block block = location.getBlock();
         if (block.getType() == Material.AIR) return false;
@@ -196,24 +218,43 @@ public class CargoFragmentDistributor extends SlimefunItem implements EnergyNetC
             return;
         }
 
-        // 计算实际能分发的数量
         int amountToGive = Math.min(storedAmount, availableSpace);
+        if (amountToGive <= 0) {
+            return;
+        }
 
-        // 尝试填满背包
+        ItemStack sourceSnapshot = fragment.clone();
+        int newAmount = storedAmount - amountToGive;
+
+        // Commit the source first. This closes the duplicate-on-source-write-failure window.
+        if (newAmount <= 0) {
+            menu.consumeItem(inputSlot, 1);
+        } else if (!updateFragmentAmount(fragment, newAmount)) {
+            return;
+        }
+
         int actuallyGiven = fillPlayerInventory(targetPlayer, storedItem, amountToGive);
-
-        if (actuallyGiven > 0) {
-            // 更新 CargoFragment 中的数量
-            int newAmount = storedAmount - actuallyGiven;
+        if (actuallyGiven < amountToGive) {
+            int remainder = amountToGive - Math.max(0, actuallyGiven);
             if (newAmount <= 0) {
-                // 数量为0,删除 CargoFragment
-                menu.consumeItem(inputSlot, 1);
-                targetPlayer.sendMessage("§a✓ Received all items: " + getItemDisplayName(storedItem));
+                if (updateFragmentAmount(sourceSnapshot, remainder)) {
+                    menu.replaceExistingItem(inputSlot, sourceSnapshot);
+                }
             } else {
-                // 更新 CargoFragment 的数量
-                updateFragmentAmount(fragment, newAmount);
-                targetPlayer.sendMessage("§a✓ Received item: " + getItemDisplayName(storedItem) + " §7(Remaining: " + newAmount + ")");
+                updateFragmentAmount(fragment, newAmount + remainder);
             }
+        }
+
+        if (actuallyGiven <= 0) {
+            return;
+        }
+
+        int remaining = storedAmount - actuallyGiven;
+        if (remaining <= 0) {
+            targetPlayer.sendMessage("§a✓ Received all items: " + getItemDisplayName(storedItem));
+        } else {
+            targetPlayer.sendMessage("§a✓ Received item: " + getItemDisplayName(storedItem)
+                    + " §7(Remaining: " + remaining + ")");
         }
     }
 
@@ -250,8 +291,10 @@ public class CargoFragmentDistributor extends SlimefunItem implements EnergyNetC
         ItemStack singleItem = item.clone();
         singleItem.setAmount(1);
 
-        // 先填充已有物品的槽位(相同物品可以堆叠)
-        for (int i = 0; i < player.getInventory().getSize(); i++) {
+        int storageSize = player.getInventory().getStorageContents().length;
+
+        // Fill only ordinary storage slots. Armor and off-hand slots are not cargo capacity.
+        for (int i = 0; i < storageSize; i++) {
             if (totalGiven >= maxAmount) break;
 
             ItemStack slotItem = player.getInventory().getItem(i);
@@ -267,8 +310,8 @@ public class CargoFragmentDistributor extends SlimefunItem implements EnergyNetC
             }
         }
 
-        // 再填充空槽位
-        for (int i = 0; i < player.getInventory().getSize(); i++) {
+        // Then fill empty ordinary storage slots.
+        for (int i = 0; i < storageSize; i++) {
             if (totalGiven >= maxAmount) break;
 
             ItemStack slotItem = player.getInventory().getItem(i);
@@ -344,27 +387,39 @@ public class CargoFragmentDistributor extends SlimefunItem implements EnergyNetC
     /**
      * 更新 CargoFragment 的数量
      */
-    private void updateFragmentAmount(ItemStack fragment, int newAmount) {
-        ItemMeta meta = fragment.getItemMeta();
-        if (meta == null) return;
-
-        PersistentDataContainer container = meta.getPersistentDataContainer();
-        NamespacedKey keyAmount = new NamespacedKey(MagicExpansion.getInstance(), "cargo_amount");
-        container.set(keyAmount, PersistentDataType.INTEGER, newAmount);
-
-        // 更新 Lore 显示
-        List<String> lore = meta.getLore();
-        if (lore != null) {
-            for (int i = 0; i < lore.size(); i++) {
-                if (lore.get(i).startsWith("§fAmount: §a") || lore.get(i).startsWith("§f\u6570\u91cf: §a")) {
-                    lore.set(i, "§fAmount: §a" + newAmount);
-                    break;
-                }
-            }
-            meta.setLore(lore);
+    private boolean updateFragmentAmount(ItemStack fragment, int newAmount) {
+        if (fragment == null || newAmount <= 0) {
+            return false;
         }
 
-        fragment.setItemMeta(meta);
+        ItemMeta meta = fragment.getItemMeta();
+        if (meta == null) {
+            return false;
+        }
+
+        try {
+            PersistentDataContainer container = meta.getPersistentDataContainer();
+            NamespacedKey keyAmount =
+                    new NamespacedKey(MagicExpansion.getInstance(), "cargo_amount");
+            container.set(keyAmount, PersistentDataType.INTEGER, newAmount);
+
+            List<String> lore = meta.getLore();
+            if (lore != null) {
+                for (int i = 0; i < lore.size(); i++) {
+                    if (lore.get(i).startsWith("§fAmount: §a")
+                            || lore.get(i).startsWith("§f\u6570\u91cf: §a")) {
+                        lore.set(i, "§fAmount: §a" + newAmount);
+                        break;
+                    }
+                }
+                meta.setLore(lore);
+            }
+
+            fragment.setItemMeta(meta);
+            return true;
+        } catch (RuntimeException | LinkageError failure) {
+            return false;
+        }
     }
 
     /**
@@ -609,15 +664,15 @@ public class CargoFragmentDistributor extends SlimefunItem implements EnergyNetC
         ItemStack playerHeadItem = createPlayerHeadDisplay(null);
 
         preset.addItem(playerHeadSlot, playerHeadItem, (p, slot, item, action) -> {
-            // 使用玩家打开菜单时所在的方块位置
-            Block b = p.getTargetBlockExact(5);
-            if (b == null) return false;
+            Inventory top = p.getOpenInventory().getTopInventory();
+            if (!(top.getHolder() instanceof BlockMenu menu)) {
+                return false;
+            }
 
-            Location location = b.getLocation();
-
-            // 获取 BlockMenu 实例
-            BlockMenu menu = BlockStorage.getInventory(b);
-            if (menu == null) return false;
+            Location location = menu.getLocation();
+            if (!(BlockStorage.check(location) instanceof CargoFragmentDistributor)) {
+                return false;
+            }
 
             if (action.isRightClicked()) {
                 // 右键清除玩家设置

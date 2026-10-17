@@ -1,9 +1,10 @@
 package io.Yomicer.magicExpansion.specialActions.Command;
 
+import com.xzavier0722.mc.plugin.slimefun4.storage.util.StorageCacheUtils;
 import io.Yomicer.magicExpansion.Listener.worldListener.Events;
 import io.Yomicer.magicExpansion.MagicExpansion;
 import io.Yomicer.magicExpansion.utils.MapUtils;
-import org.bukkit.Bukkit;
+import io.Yomicer.magicExpansion.utils.ItemPermissionUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -97,6 +98,10 @@ public class WorldCommand implements CommandExecutor, TabCompleter {
             player.sendMessage(ChatColor.RED + "Please select two points first!");
             return;
         }
+        if (p1.getWorld() == null || p1.getWorld() != p2.getWorld()) {
+            player.sendMessage(ChatColor.RED + "Both selection points must be in the same world.");
+            return;
+        }
 
         int minX = Math.min(p1.getBlockX(), p2.getBlockX());
         int minY = Math.min(p1.getBlockY(), p2.getBlockY());
@@ -105,11 +110,32 @@ public class WorldCommand implements CommandExecutor, TabCompleter {
         int maxY = Math.max(p1.getBlockY(), p2.getBlockY());
         int maxZ = Math.max(p1.getBlockZ(), p2.getBlockZ());
 
+        // Preflight the complete selection before changing even one block.
         for (int x = minX; x <= maxX; x++) {
             for (int y = minY; y <= maxY; y++) {
                 for (int z = minZ; z <= maxZ; z++) {
-                    Block block = p1.getWorld().getBlockAt(x, y, z);
-                    block.setType(org.bukkit.Material.AIR); // 将方块设置为空气
+                    if (!p1.getWorld().isChunkLoaded(x >> 4, z >> 4)) {
+                        player.sendMessage(ChatColor.RED + "Load the entire selected area before clearing it.");
+                        return;
+                    }
+                    Location location = new Location(p1.getWorld(), x, y, z);
+                    if (!ItemPermissionUtils.hasPermissionPoint(player, location)) {
+                        player.sendMessage(ChatColor.RED + "Part of the selected area is protected.");
+                        return;
+                    }
+                    if (StorageCacheUtils.getSlimefunItem(location) != null) {
+                        player.sendMessage(ChatColor.RED
+                                + "The selection contains a Slimefun block. Remove it normally first.");
+                        return;
+                    }
+                }
+            }
+        }
+
+        for (int x = minX; x <= maxX; x++) {
+            for (int y = minY; y <= maxY; y++) {
+                for (int z = minZ; z <= maxZ; z++) {
+                    p1.getWorld().getBlockAt(x, y, z).setType(Material.AIR, false);
                 }
             }
         }
@@ -128,39 +154,22 @@ public class WorldCommand implements CommandExecutor, TabCompleter {
             player.sendMessage("§cPlease select two points first!");
             return;
         }
+        if (p1.getWorld() == null || p1.getWorld() != p2.getWorld()) {
+            player.sendMessage(ChatColor.RED + "Both selection points must be in the same world.");
+            return;
+        }
 
-        // 获取玩家注视的方块
         Block targetBlock = getTargetBlock(player);
         if (targetBlock == null) {
             player.sendMessage("§cYou need to look at a block!");
             return;
         }
 
-        Location pasteLocation = targetBlock.getLocation().add(0, 1, 0); // 粘贴到目标方块上方 1 格
-
+        Location pasteLocation = targetBlock.getLocation().add(0, 1, 0);
         List<MapUtils.BlockData> blocks = MapUtils.getBlocksInRegion(p1, p2);
-        for (MapUtils.BlockData blockData : blocks) {
-            Location location = new Location(
-                    player.getWorld(),
-                    pasteLocation.getBlockX() + blockData.x,
-                    pasteLocation.getBlockY() + blockData.y,
-                    pasteLocation.getBlockZ() + blockData.z
-            );
-
-            if (blockData.blockState != null && !blockData.blockState.isEmpty()) {
-                // 如果有 blockState,则使用它来设置方块数据
-                try {
-                    location.getBlock().setBlockData(Bukkit.createBlockData(blockData.blockState));
-                } catch (IllegalArgumentException e) {
-                    player.sendMessage("§cError setting block data: " + e.getMessage());
-                }
-            } else {
-                // 如果没有 blockState,则仅设置方块类型
-                location.getBlock().setType(Material.valueOf(blockData.type));
-            }
+        if (MapUtils.pasteBlocks(player, pasteLocation, blocks)) {
+            player.sendMessage("§aPasted the selected area above the target block.");
         }
-
-        player.sendMessage("§aPasted the selected area above the target block.");
     }
 
     /**

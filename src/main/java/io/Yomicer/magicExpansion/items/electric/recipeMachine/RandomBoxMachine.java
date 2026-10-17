@@ -45,6 +45,13 @@ public class RandomBoxMachine extends AbstractElectricRecipeMachine {
     }
 
     @Override
+    public int getCapacity() {
+        // This untimed scanner has never required power. Do not expose its
+        // superclass's unconfigured -1 sentinel as an invalid energy capacity.
+        return Math.max(0, super.getCapacity());
+    }
+
+    @Override
     public void postRegister() {
         registerDefaultRecipes();
     }
@@ -55,22 +62,24 @@ public class RandomBoxMachine extends AbstractElectricRecipeMachine {
 
     @Override
     public void tick(BlockMenu menu, Block b) {
-
         int slot = containsTargetItem(menu, MagicExpansionItems.HONKAI_STAR_RAIL_BOX);
-        int slot2 = containsTargetItem(menu, MagicExpansionItems.HONKAI_STAR_RAIL_BOX);
-        if(slot!=-1){
-            ItemStack gift = getRandomItemFromGroup.getRandomItemStack(itemMapMihoyoHonkai);
-            if (gift != null && menu.fits(gift, getOutputSlots())) {
-                craft(gift, menu, slot);
-            }
-        }else if (slot2 != -1){
-            ItemStack gift = getRandomItemFromGroup.getRandomItemStack(itemMapMihoyoHonkai);
-            if (gift != null && menu.fits(gift, getOutputSlots())) {
-                craft(gift, menu, slot2);
-            }
+        if (slot == -1) {
+            return;
         }
 
+        ItemStack gift = getRandomItemFromGroup.getRandomItemStack(itemMapMihoyoHonkai);
+        if (gift == null || gift.getType().isAir() || !menu.fits(gift, getOutputSlots())) {
+            return;
+        }
 
+        craft(gift, menu, slot);
+    }
+
+    @Override
+    protected boolean isSynchronized() {
+        // This machine performs an immediate consume + output transaction and must
+        // never mutate Bukkit inventories from the async Slimefun ticker.
+        return true;
     }
 
     private void craft(ItemStack output, BlockMenu inv,int slot) {

@@ -9,6 +9,7 @@ import io.github.thebusybiscuit.slimefun4.api.items.ItemGroup;
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItemStack;
 import io.github.thebusybiscuit.slimefun4.core.multiblocks.MultiBlockMachine;
 import io.github.thebusybiscuit.slimefun4.implementation.Slimefun;
+import io.github.thebusybiscuit.slimefun4.libraries.dough.protection.Interaction;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
@@ -52,6 +53,12 @@ public class WindElfMB extends MultiBlockMachine {
 
 //        p.getWorld().spawnEntity(b.getLocation().add(0.5, -1, 0.5), EntityType.WITHER_SKELETON);
 
+        if (!canConsumeStructure(p, locationUp, location, locationDown)) {
+            p.sendMessage(ColorGradient.getGradientName(
+                    "[Boss] You do not have permission to consume this summoning structure."));
+            return;
+        }
+
         pumpkinHead.setType(Material.AIR);
         Slimefun.getDatabaseManager().getBlockDataController().removeBlock(b.getLocation().clone().add(0, 1, 0));
         b.setType(Material.AIR);
@@ -79,6 +86,7 @@ public class WindElfMB extends MultiBlockMachine {
         double maxHealth = 200.0; // 自定义最大生命值
         mob.getAttribute(Attribute.MAX_HEALTH).setBaseValue(maxHealth);
         mob.setHealth(maxHealth); // 设置初始血量为最大生命值
+        startWindSpiritRegeneration(mob);
 
 
         // 添加雷击效果
@@ -150,18 +158,12 @@ public class WindElfMB extends MultiBlockMachine {
                 double y = playerLocation.getY() + random.nextDouble() * 4;       // Y坐标+0到+4
                 double z = playerLocation.getZ() + (random.nextDouble() * 18 - 9); // 半径5范围内的随机Z坐标
 
-                Location newLocation = new Location(mob.getWorld(), x, y, z);
-
-                // 确保新位置是安全的(避免卡在方块中)
-                while (!newLocation.getBlock().getType().isAir() || !newLocation.clone().add(0, 1, 0).getBlock().getType().isAir()) {
-                    y += 1; // 向上移动直到找到空旷位置
-                    newLocation.setY(y);
+                Location newLocation = findSafeTeleportLocation(mob, x, y, z);
+                if (newLocation != null) {
+                    mob.teleport(newLocation);
                 }
-
-                // 传送怪物到新位置
-                mob.teleport(newLocation);
             }
-        }.runTaskTimer(MagicExpansion.getInstance(), 0L, 80L); // 每4秒执行一次
+        }.runTaskTimer(MagicExpansion.getInstance(), 0L, 40L); // every 2 seconds
 
 
 
@@ -169,6 +171,44 @@ public class WindElfMB extends MultiBlockMachine {
     }
 
 
+
+    private boolean canConsumeStructure(
+            Player player, Location top, Location center, Location bottom) {
+        if (player.hasPermission("slimefun.inventory.bypass")) {
+            return true;
+        }
+        for (Location location : new Location[] {top, center, bottom}) {
+            if (!Slimefun.getProtectionManager()
+                    .hasPermission(player, location, Interaction.BREAK_BLOCK)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private Location findSafeTeleportLocation(
+            LivingEntity mob, double x, double startY, double z) {
+        int minY = mob.getWorld().getMinHeight();
+        int maxY = mob.getWorld().getMaxHeight() - 2;
+        double y = Math.max(minY, Math.min(startY, maxY));
+
+        Location candidate = new Location(mob.getWorld(), x, y, z);
+        if (!mob.getWorld().isChunkLoaded(
+                candidate.getBlockX() >> 4, candidate.getBlockZ() >> 4)) {
+            return null;
+        }
+
+        int attempts = 0;
+        while (attempts++ < 32 && y <= maxY) {
+            candidate.setY(y);
+            if (candidate.getBlock().getType().isAir()
+                    && candidate.clone().add(0, 1, 0).getBlock().getType().isAir()) {
+                return candidate;
+            }
+            y += 1.0D;
+        }
+        return null;
+    }
 
     // 生成雷击效果
     public void worldStrikeLightningEffect(Location location) {

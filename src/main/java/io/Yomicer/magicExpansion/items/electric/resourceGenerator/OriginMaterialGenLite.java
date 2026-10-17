@@ -31,7 +31,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static io.Yomicer.magicExpansion.core.MagicExpansionItems.ORIGIN_MATERIAL_GEN;
+import static io.Yomicer.magicExpansion.core.MagicExpansionItems.ORIGIN_MATERIAL_GEN_LITE;
 import static io.Yomicer.magicExpansion.utils.ColorGradient.getGradientName;
 import static io.Yomicer.magicExpansion.utils.ColorGradient.getGradientNameVer2;
 
@@ -39,6 +39,8 @@ import static io.Yomicer.magicExpansion.utils.ColorGradient.getGradientNameVer2;
  * 削弱版:基于 OriginMaterialGen 修改,每次只产出 1 个物品.
  */
 public class OriginMaterialGenLite extends AbstractElectricResourceMachine implements DistinctiveItem {
+
+    private static final String PENDING_OUTPUT_KEY = "origin_lite_pending";
 
     private static final int[] BACKGROUND_SLOTS = new int[] { 0, 4, 8, 9, 13, 17 };
     private static final int[] OUTPUT_BORDER_SLOTS = new int[] { 10, 11, 12, 14, 15, 16};
@@ -66,7 +68,7 @@ public class OriginMaterialGenLite extends AbstractElectricResourceMachine imple
             data.removeData("origin_material");
             return;
         }
-        ItemStack drop = ORIGIN_MATERIAL_GEN.clone();
+        ItemStack drop = ORIGIN_MATERIAL_GEN_LITE.clone();
         if (drop == null || !drop.hasItemMeta()) return;
         ItemMeta meta = drop.getItemMeta();
         if (meta != null) {
@@ -85,6 +87,22 @@ public class OriginMaterialGenLite extends AbstractElectricResourceMachine imple
             drop.setItemMeta(meta);
         }
         loc.getWorld().dropItemNaturally(loc, drop);
+
+        long pending = getPending(data);
+        if (pending > 0L) {
+            try {
+                Material pendingMaterial = Material.valueOf(materialName);
+                int maxStack = Math.max(1, pendingMaterial.getMaxStackSize());
+                while (pending > 0L) {
+                    int batch = (int) Math.min((long) maxStack, pending);
+                    loc.getWorld().dropItemNaturally(loc, new ItemStack(pendingMaterial, batch));
+                    pending -= batch;
+                }
+            } catch (IllegalArgumentException ignored) {
+            }
+        }
+
+        data.removeData(PENDING_OUTPUT_KEY);
         data.removeData("origin_material");
     }
 
@@ -111,41 +129,116 @@ public class OriginMaterialGenLite extends AbstractElectricResourceMachine imple
 
     @Override
     public MachineRecipe findNextRecipe(BlockMenu menu) {
-        int maxedSlots = 0;
-        for (int slots : getOutputSlots()) {
-            ItemStack item = menu.getItemInSlot(slots);
-            if (item != null && item.getMaxStackSize() == item.getAmount()) {
-                maxedSlots += 1;
-            }
+        SlimefunBlockData data = StorageCacheUtils.getBlock(menu.getBlock().getLocation());
+        if (data == null || !flushPending(menu, data)) {
+            return null;
         }
 
-        if (maxedSlots == getOutputSlots().length) { return null; }
+        String materialName = data.getData("origin_material");
+        if (materialName == null) {
+            return null;
+        }
+        try {
+            Material material = Material.valueOf(materialName);
+            if (!material.isItem() || material.isAir()) {
+                return null;
+            }
+        } catch (IllegalArgumentException invalid) {
+            return null;
+        }
 
-        MachineRecipe recipe = recipes.get(0);
-        return recipe;
+        return recipes.isEmpty() ? null : recipes.get(0);
     }
 
     @Override
     protected void addOutputs(BlockMenu menu, Block b, ItemStack[] outputs) {
-        Location loc = b.getLocation();
-        SlimefunBlockData data = StorageCacheUtils.getBlock(loc);
+        SlimefunBlockData data = StorageCacheUtils.getBlock(b.getLocation());
+        if (data == null) {
+            return;
+        }
+
         String materialName = data.getData("origin_material");
-        ItemStack output = null;
-        if (materialName != null) {
-            try {
-                Material material = Material.valueOf(materialName);
-                output = new ItemStack(material);
-                output.setAmount(1);
-            } catch (IllegalArgumentException e) {
-                e.printStackTrace();
+        if (materialName == null) {
+            menu.replaceExistingItem(4, PROGRESS_STACK.clone());
+            return;
+        }
+
+        final Material material;
+        try {
+            material = Material.valueOf(materialName);
+        } catch (IllegalArgumentException invalid) {
+            menu.replaceExistingItem(4, PROGRESS_STACK.clone());
+            return;
+        }
+
+        if (!material.isItem() || material.isAir()) {
+            return;
+        }
+
+        long pending = getPending(data);
+        data.setData(PENDING_OUTPUT_KEY,
+                Long.toString(pending == Long.MAX_VALUE ? Long.MAX_VALUE : pending + 1L));
+        flushPending(menu, data);
+        updateInfoStack(menu, new ItemStack(material));
+    }
+
+    private boolean flushPending(BlockMenu menu, SlimefunBlockData data) {
+        long pending = getPending(data);
+        if (pending <= 0L) {
+            data.removeData(PENDING_OUTPUT_KEY);
+            return true;
+        }
+
+        String materialName = data.getData("origin_material");
+        if (materialName == null) {
+            return false;
+        }
+
+        final Material material;
+        try {
+            material = Material.valueOf(materialName);
+        } catch (IllegalArgumentException invalid) {
+            return false;
+        }
+        if (!material.isItem() || material.isAir()) {
+            return false;
+        }
+
+        int maxStack = Math.max(1, material.getMaxStackSize());
+        while (pending > 0L) {
+            int batch = (int) Math.min((long) maxStack, pending);
+            ItemStack output = new ItemStack(material, batch);
+            ItemStack leftover = menu.pushItem(output, getOutputSlots());
+            int notStored = leftover == null || leftover.getType().isAir()
+                    ? 0
+                    : Math.max(0, leftover.getAmount());
+            int accepted = batch - notStored;
+            if (accepted <= 0) {
+                break;
+            }
+            pending -= accepted;
+            if (notStored > 0) {
+                break;
             }
         }
-        if (output != null) {
-            menu.pushItem(output, getOutputSlots());
-            updateInfoStack(menu, output);
-        } else {
-            ItemStack item = PROGRESS_STACK.clone();
-            menu.replaceExistingItem(4, item);
+
+        if (pending <= 0L) {
+            data.removeData(PENDING_OUTPUT_KEY);
+            return true;
+        }
+        data.setData(PENDING_OUTPUT_KEY, Long.toString(pending));
+        return false;
+    }
+
+    private static long getPending(SlimefunBlockData data) {
+        String raw = data.getData(PENDING_OUTPUT_KEY);
+        if (raw == null || raw.isEmpty()) {
+            return 0L;
+        }
+        try {
+            return Math.max(0L, Long.parseLong(raw));
+        } catch (NumberFormatException invalid) {
+            return 0L;
         }
     }
 
@@ -191,7 +284,7 @@ public class OriginMaterialGenLite extends AbstractElectricResourceMachine imple
 
     @Override
     public boolean isSynchronized() {
-        return false;
+        return true;
     }
 
     private void updateInfoStack(BlockMenu menu, ItemStack output) {

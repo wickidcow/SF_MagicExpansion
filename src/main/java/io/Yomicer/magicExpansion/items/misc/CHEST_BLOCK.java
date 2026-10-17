@@ -36,6 +36,13 @@ public class CHEST_BLOCK extends AbstractElectricRecipeMachine {
     }
 
     @Override
+    public int getCapacity() {
+        // Plain storage has no energy buffer. Keep the existing unpowered
+        // behavior without exposing the superclass's unconfigured -1 sentinel.
+        return Math.max(0, super.getCapacity());
+    }
+
+    @Override
     public void postRegister() {
         registerDefaultRecipes();
     }

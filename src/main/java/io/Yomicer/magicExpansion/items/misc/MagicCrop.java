@@ -65,10 +65,12 @@ public class MagicCrop extends SlimefunItem implements Listener, RecipeDisplayIt
         super(itemGroup, item, recipeType, recipe);
         this.seedDrop = item;
         this.weightedDrops = new ArrayList<>(drops);
-        this.min = min-1;
-        this.minDisplay = min;
-        this.maxDisplay = max;
-        this.bound = max - min;
+        int safeMin = Math.max(0, min);
+        int safeMax = Math.max(safeMin, max);
+        this.min = safeMin;
+        this.minDisplay = safeMin;
+        this.maxDisplay = safeMax;
+        this.bound = safeMax - safeMin + 1;
         int sum = 0;
         for (WeightedDrop drop : weightedDrops) {
             if (drop.weight > 0) {
@@ -128,7 +130,12 @@ public class MagicCrop extends SlimefunItem implements Listener, RecipeDisplayIt
     private void handleDestructionByWater(Block block, BlockPhysicsEvent e) {
         e.setCancelled(true);
         Location loc = block.getLocation();
+
+        // Remove Slimefun identity first so follow-up physics cannot duplicate the drop.
         Slimefun.getDatabaseManager().getBlockDataController().removeBlock(loc.clone());
+
+        Location dropLoc = loc.clone().add(0.5, 0.5, 0.5);
+        block.getWorld().dropItemNaturally(dropLoc, new CustomItemStack(seedDrop, 1));
         block.setType(Material.AIR, false);
     }
 
@@ -189,9 +196,11 @@ public class MagicCrop extends SlimefunItem implements Listener, RecipeDisplayIt
         int age = ageable.getAge();
         int maxAge = ageable.getMaximumAge();
         drops.clear();
-        if (age >= maxAge) {
-            drops.add(new CustomItemStack(seedDrop, 1));
 
+        // Every manually harvested Magic Crop returns its seed, including immature crops.
+        drops.add(new CustomItemStack(seedDrop, 1));
+
+        if (age >= maxAge) {
             int fruitCount = min + ThreadLocalRandom.current().nextInt(bound);
             for (int i = 0; i < fruitCount; i++) {
                 if (!weightedDrops.isEmpty()) {

@@ -1,6 +1,7 @@
 package io.Yomicer.magicExpansion.utils;
 
 import com.jeff_media.morepersistentdatatypes.DataType;
+import io.Yomicer.magicExpansion.MagicExpansion;
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItem;
 import io.github.thebusybiscuit.slimefun4.utils.SlimefunUtils;
 import me.mrCookieSlime.Slimefun.api.inventory.BlockMenu;
@@ -333,14 +334,17 @@ public final class NetworkStorage {
         }
 
         public int increaseAmount(int amount) {
-            long total = this.amount + (long) amount;
-            if (total > this.limit) {
-                this.amount = this.limit;
-                if (!this.voidExcess) {
-                    return (int) (total - this.limit);
-                }
-            } else {
-                this.amount = this.amount + amount;
+            if (amount <= 0) {
+                return 0;
+            }
+
+            long free = this.limit > this.amount ? this.limit - this.amount : 0L;
+            long accepted = Math.min((long) amount, free);
+            this.amount += accepted;
+            long excess = (long) amount - accepted;
+
+            if (excess > 0L && !this.voidExcess) {
+                return (int) Math.min(Integer.MAX_VALUE, excess);
             }
             return 0;
         }
@@ -348,16 +352,15 @@ public final class NetworkStorage {
         // long 版本：支持超过 int 上限的批量存入（供以太生态阵列等大数量场景使用）
         // 返回本次因超过容量上限而未能写入的数量（voidExcess=true 时返回 0，表示全部吃掉）
         public long increaseAmount(long amount) {
-            long total = this.amount + amount;
-            if (total > this.limit) {
-                this.amount = this.limit;
-                if (!this.voidExcess) {
-                    return total - this.limit;
-                }
-            } else {
-                this.amount = this.amount + amount;
+            if (amount <= 0L) {
+                return 0L;
             }
-            return 0;
+
+            long free = this.limit > this.amount ? this.limit - this.amount : 0L;
+            long accepted = Math.min(amount, free);
+            this.amount += accepted;
+            long excess = amount - accepted;
+            return excess > 0L && !this.voidExcess ? excess : 0L;
         }
 
         public void reduceAmount(int amount) {
@@ -545,6 +548,81 @@ public final class NetworkStorage {
     }
 
     /**
+     * Store a complete long-sized production batch into a Networks quantum-storage
+     * block, or leave the block unchanged when the whole batch cannot fit.
+     */
+    public static boolean storeToQuantumStorageBlockExact(
+            @NotNull Location location, @NotNull ItemStack prototype, long outputAmount) {
+        if (outputAmount <= 0L) {
+            return false;
+        }
+
+        try {
+            Class<?> cls = Class.forName(QUANTUM_STORAGE_BLOCK_CLASS);
+            Map<?, ?> caches = (Map<?, ?>) cls.getMethod("getCaches").invoke(null);
+            Object cache = caches.get(location);
+            if (cache == null) {
+                return false;
+            }
+
+            synchronized (cache) {
+                if (caches.get(location) != cache) {
+                    return false;
+                }
+
+                ItemStack stored = (ItemStack) cache.getClass().getMethod("getItemStack").invoke(cache);
+                if (stored == null
+                        || stored.getType().isAir()
+                        || !SlimefunUtils.isItemSimilar(prototype, stored, true)) {
+                    return false;
+                }
+
+                long current = ((Number) cache.getClass().getMethod("getAmountLong").invoke(cache)).longValue();
+                long limit = ((Number) cache.getClass().getMethod("getLimitLong").invoke(cache)).longValue();
+                boolean voidExcess =
+                        (boolean) cache.getClass().getMethod("isVoidExcess").invoke(cache);
+
+                if (current < 0L || limit < current) {
+                    return false;
+                }
+                if (!voidExcess && outputAmount > limit - current) {
+                    return false;
+                }
+
+                long remaining = outputAmount;
+                while (remaining > 0L) {
+                    int batch = (int) Math.min(remaining, Integer.MAX_VALUE);
+                    ItemStack[] input = new ItemStack[] {prototype.clone()};
+                    input[0].setAmount(batch);
+
+                    cls.getMethod("tryInputItem", Location.class, ItemStack[].class, cache.getClass())
+                            .invoke(null, location, input, cache);
+
+                    ItemStack leftover = input[0];
+                    int notStored = leftover == null ? 0 : Math.max(0, leftover.getAmount());
+                    long accepted = (long) batch - notStored;
+                    if (accepted != batch) {
+                        MagicExpansion.getInstance().getLogger().severe(
+                                "Quantum Storage changed during an exact stacked-vivarium deposit at "
+                                        + location + "; accepted " + accepted + " of " + batch
+                                        + " after an exact-capacity preflight.");
+                        return false;
+                    }
+                    remaining -= accepted;
+                }
+
+                cls.getMethod("syncBlock", Location.class, cache.getClass())
+                        .invoke(null, location, cache);
+                return true;
+            }
+        } catch (Throwable failure) {
+            MagicExpansion.getInstance().getLogger().fine(
+                    "Exact quantum-storage block deposit unavailable: " + failure.getMessage());
+            return false;
+        }
+    }
+
+    /**
      * 向量子存储物品中存入产物（最大值保护 / 数据溢出保护）。
      * <p>
      * 只写入"剩余空间"以内且不超过 int 上限的数量，不会超出容量，也不会发生数值溢出；
@@ -645,6 +723,51 @@ public final class NetworkStorage {
         storageItem.setItemMeta(meta);
 
         return outputAmount - toAdd;
+    }
+
+    /**
+     * Store a complete long-sized production batch into a quantum-storage item,
+     * or leave the item unchanged when the full batch cannot fit.
+     */
+    public static boolean storeExact(
+            @NotNull ItemStack storageItem, @NotNull ItemStack prototype, long outputAmount) {
+        if (outputAmount <= 0L || !storageItem.hasItemMeta()) {
+            return false;
+        }
+
+        ItemMeta meta = storageItem.getItemMeta();
+        NamespacedKey key = findStorageKey(meta);
+        if (key == null) {
+            return false;
+        }
+
+        QuantumCache cache = getCustom(meta, key, QUANTUM_STORAGE_TYPE);
+        if (cache == null
+                || cache.getItemStack() == null
+                || !SlimefunUtils.isItemSimilar(prototype, cache.getItemStack(), true)) {
+            return false;
+        }
+
+        synchronized (cache) {
+            long stored = cache.getAmountLong();
+            long limit = cache.getLimitLong();
+            if (stored < 0L || limit < stored) {
+                return false;
+            }
+            if (!cache.isVoidExcess() && outputAmount > limit - stored) {
+                return false;
+            }
+
+            long leftover = cache.increaseAmount(outputAmount);
+            if (leftover != 0L) {
+                return false;
+            }
+
+            setCustom(meta, key, QUANTUM_STORAGE_TYPE, cache);
+            refreshLore(meta, cache);
+            storageItem.setItemMeta(meta);
+            return true;
+        }
     }
 
     /**

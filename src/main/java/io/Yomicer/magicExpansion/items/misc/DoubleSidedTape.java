@@ -5,7 +5,9 @@ import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItemStack;
 import io.github.thebusybiscuit.slimefun4.api.recipes.RecipeType;
 import io.github.thebusybiscuit.slimefun4.core.attributes.NotPlaceable;
 import io.github.thebusybiscuit.slimefun4.core.handlers.ItemUseHandler;
+import io.github.thebusybiscuit.slimefun4.implementation.Slimefun;
 import io.github.thebusybiscuit.slimefun4.implementation.items.SimpleSlimefunItem;
+import io.github.thebusybiscuit.slimefun4.libraries.dough.protection.Interaction;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -37,8 +39,18 @@ public class DoubleSidedTape extends SimpleSlimefunItem<ItemUseHandler> implemen
                 ItemStack offItem = e.getPlayer().getInventory().getItemInOffHand();
 
                 if (offItem != null && offItem.getType() != Material.AIR) {
+                    if (e.getInteractEvent().isCancelled() || e.getClickedBlock().isEmpty()) {
+                        return;
+                    }
+
                     BlockFace blockFace = e.getInteractEvent().getBlockFace();
                     Block block = e.getClickedBlock().get();
+
+                    if (!Slimefun.getProtectionManager()
+                            .hasPermission(e.getPlayer(), block.getLocation(), Interaction.INTERACT_BLOCK)) {
+                        e.getPlayer().sendMessage("§cYou do not have permission to place an item frame here.");
+                        return;
+                    }
 
                     if (!block.getType().isSolid() || !block.getType().isOccluding()) {
                         e.getPlayer().sendMessage("§cThis block cannot hold an item frame!");
@@ -51,17 +63,31 @@ public class DoubleSidedTape extends SimpleSlimefunItem<ItemUseHandler> implemen
                     }
 
                     World world = block.getWorld();
-                    ItemFrame itemFrame = world.spawn(spawnLocation, ItemFrame.class);
+                    ItemFrame itemFrame = null;
+                    try {
+                        itemFrame = world.spawn(spawnLocation, ItemFrame.class);
+                        if (!itemFrame.setFacingDirection(blockFace, false)) {
+                            itemFrame.remove();
+                            e.getPlayer().sendMessage("§cAn item frame cannot face that direction here.");
+                            return;
+                        }
 
-                    itemFrame.setFacingDirection(blockFace, false);
+                        ItemStack displayed = offItem.clone();
+                        displayed.setAmount(1);
+                        itemFrame.setItem(displayed);
+                        itemFrame.setVisible(false);
+                        itemFrame.setSilent(true);
+                        itemFrame.setFixed(false);
+                        itemFrame.setInvulnerable(false);
+                    } catch (RuntimeException | LinkageError failure) {
+                        if (itemFrame != null && itemFrame.isValid()) {
+                            itemFrame.remove();
+                        }
+                        e.getPlayer().sendMessage("§cCould not place the invisible item frame.");
+                        return;
+                    }
 
-                    itemFrame.setItem(offItem.clone());
-                    itemFrame.setVisible(false);
-                    itemFrame.setSilent(true);
-                    itemFrame.setFixed(false);
-                    itemFrame.setInvulnerable(false);
-//                    itemFrame.setItemDropChance(0.5f);
-
+                    // Commit item consumption only after the entity was created successfully.
                     world.playSound(spawnLocation, Sound.BLOCK_WOOL_PLACE, 1.0f, 1.0f);
                     consumeItems(e.getPlayer(), mainItem, offItem);
 

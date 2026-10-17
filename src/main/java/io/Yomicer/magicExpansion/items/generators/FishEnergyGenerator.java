@@ -1,11 +1,14 @@
 package io.Yomicer.magicExpansion.items.generators;
 
+import com.xzavier0722.mc.plugin.slimefun4.storage.controller.ASlimefunDataContainer;
 import com.xzavier0722.mc.plugin.slimefun4.storage.controller.SlimefunBlockData;
 import com.xzavier0722.mc.plugin.slimefun4.storage.util.StorageCacheUtils;
 import io.Yomicer.magicExpansion.items.abstracts.MenuBlock;
 import io.Yomicer.magicExpansion.items.misc.fish.Fish;
 import io.Yomicer.magicExpansion.items.misc.fish.FishKeys;
+import io.Yomicer.magicExpansion.utils.AcceleratableMachine;
 import io.Yomicer.magicExpansion.utils.CustomHeadUtils.CustomHead;
+import io.Yomicer.magicExpansion.utils.MachineBuffManager;
 import io.Yomicer.magicExpansion.utils.machineLore.ChargeLore;
 import io.github.thebusybiscuit.slimefun4.api.items.ItemGroup;
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItemStack;
@@ -36,7 +39,7 @@ import static io.Yomicer.magicExpansion.items.misc.fish.Fish.XueFish;
 import static io.Yomicer.magicExpansion.utils.ColorGradient.getGradientName;
 
 
-public class FishEnergyGenerator extends MenuBlock implements EnergyNetProvider, RecipeDisplayItem {
+public class FishEnergyGenerator extends MenuBlock implements EnergyNetProvider, RecipeDisplayItem, AcceleratableMachine {
 
 
     private final int Capacity;
@@ -118,10 +121,24 @@ public class FishEnergyGenerator extends MenuBlock implements EnergyNetProvider,
 
     @Override
     public int getGeneratedOutput(Location l, SlimefunBlockData data) {
+        return (int) Math.min(Integer.MAX_VALUE, calculateGeneratedOutput(l));
+    }
 
+    @Override
+    public long getGeneratedOutputLong(Location l, SlimefunBlockData data) {
+        // The legacy overload otherwise routes through the int-returning bridge.
+        return calculateGeneratedOutput(l);
+    }
+
+    @Override
+    public long getGeneratedOutputLong(Location l, ASlimefunDataContainer data) {
+        return calculateGeneratedOutput(l);
+    }
+
+    private long calculateGeneratedOutput(Location l) {
         BlockMenu inv = StorageCacheUtils.getMenu(l);
 
-        int gen = 0;
+        long gen = 0L;
         ItemStack fish = null;
         ItemMeta meta = null;
         if (inv != null) {
@@ -130,46 +147,39 @@ public class FishEnergyGenerator extends MenuBlock implements EnergyNetProvider,
                 fish = fish.clone();
             }
         }
-        if(fish != null) {
+        if (fish != null) {
             meta = fish.getItemMeta();
         }
-        if(meta != null) {
-
+        if (meta != null) {
             PersistentDataContainer pdc = meta.getPersistentDataContainer();
 
-            String fishType = null;
-            double weight = 0.0;
-            String weightRarityName = null;
+            String fishType = pdc.get(FishKeys.FISH_TYPE, PersistentDataType.STRING);
+            Double weight = pdc.get(FishKeys.FISH_WEIGHT, PersistentDataType.DOUBLE);
+            String weightRarityName =
+                    pdc.get(FishKeys.FISH_WEIGHT_RARITY, PersistentDataType.STRING);
 
-            if (pdc.has(FishKeys.FISH_TYPE, PersistentDataType.STRING)) {
-                fishType = pdc.get(FishKeys.FISH_TYPE, PersistentDataType.STRING);
-            }
-
-            if (pdc.has(FishKeys.FISH_WEIGHT, PersistentDataType.DOUBLE)) {
-                weight = pdc.get(FishKeys.FISH_WEIGHT, PersistentDataType.DOUBLE);
-            }
-
-            if (pdc.has(FishKeys.FISH_WEIGHT_RARITY, PersistentDataType.STRING)) {
-                weightRarityName = pdc.get(FishKeys.FISH_WEIGHT_RARITY, PersistentDataType.STRING);
-            }
-
-            // ✅ 核心逻辑:从映射表中查找该鱼的能量基础值
-            if (fishType != null && weight != 0.0 && weightRarityName != null) {
+            if (fishType != null && weight != null && weight > 0.0D && weightRarityName != null) {
                 Integer basePower = FISH_POWER_MAP.get(fishType);
                 if (basePower != null) {
-                    double multiplier = Fish.WeightRarity.getMultiplierByName(weightRarityName);
-                    gen = (int) (basePower * weight * multiplier);
+                    long multiplier = Fish.WeightRarity.getMultiplierByName(weightRarityName);
+                    double raw = basePower.doubleValue() * weight * multiplier;
+                    if (Double.isFinite(raw) && raw > 0.0D) {
+                        gen = raw >= Long.MAX_VALUE ? Long.MAX_VALUE : (long) raw;
+                    }
                 }
             }
         }
+
+        gen = MachineBuffManager.scaleAmount(l, gen);
+
         if (inv != null && inv.hasViewer()) {
-            if (gen == 0) {
+            if (gen == 0L) {
                 inv.replaceExistingItem(40, new CustomItemStack(
                         Material.LANTERN,
                         getGradientName("Fish Bucket Map"),
                         getGradientName("Stored: " + ChargeLore.format(getCharge(l)) + " J")
                 ));
-            } else if (gen > 0) {
+            } else {
                 inv.replaceExistingItem(40, new CustomItemStack(
                         Material.SOUL_LANTERN,
                         getGradientName("Generating"),
@@ -179,6 +189,7 @@ public class FishEnergyGenerator extends MenuBlock implements EnergyNetProvider,
                 ));
             }
         }
+
         return gen;
     }
 
@@ -204,11 +215,11 @@ public class FishEnergyGenerator extends MenuBlock implements EnergyNetProvider,
         display.add(new CustomItemStack(Material.KNOWLEDGE_BOOK, getGradientName("Instructions ⇩"),getGradientName("Please read carefully.")));
         display.add(new CustomItemStack(Material.BOOK, getGradientName("Generation formula:"),getGradientName("Each machine can hold only one electric eel.")
                 ,getGradientName("Power = eel weight × power per weight unit × eel rarity")
-                ,getGradientName("Common / Rare / Super Rare: 1 / 4 / 11")));
+                ,getGradientName("Common / Rare / Ultra Rare / Max Weight: 1 / 7 / 15 / 9999")));
         display.add(new CustomItemStack(Material.KNOWLEDGE_BOOK, getGradientName("Instructions ⇩"),getGradientName("Please read carefully.")));
         display.add(new CustomItemStack(Material.BOOK, getGradientName("Generator update notes:"),getGradientName("Any special Magic Fish may be able to generate power.")
                 ,getGradientName("Power = fish weight × "+ " power per unit weight " +"× weight rarity")
-                ,getGradientName("Common / Rare / Super Rare: 1 / 4 / 11")));
+                ,getGradientName("Common / Rare / Ultra Rare / Max Weight: 1 / 7 / 15 / 9999")));
         display.add(new CustomItemStack(CustomHead.getHead("26314d31b095e4d421760497be6a156f459d8c9957b7e6b1c12deb4e47860d71"),getGradientName("Used by the MagicExpansion fishing system.")));
         display.add(new CustomItemStack(CustomHead.getHead("26314d31b095e4d421760497be6a156f459d8c9957b7e6b1c12deb4e47860d71"),getGradientName("Used by the MagicExpansion fishing system.")));
 //        display.add(new CustomItemStack(Material.TROPICAL_FISH_BUCKET,MYSTIC_EEL.getDisplayName(),getGradientName("Energy per kg per second: "+ChargeLore.formatEnergy(power)+" J")));

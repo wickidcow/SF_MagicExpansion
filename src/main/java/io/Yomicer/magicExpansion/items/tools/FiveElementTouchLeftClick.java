@@ -6,7 +6,9 @@ import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItemStack;
 import io.github.thebusybiscuit.slimefun4.api.recipes.RecipeType;
 import io.github.thebusybiscuit.slimefun4.core.attributes.NotPlaceable;
 import io.github.thebusybiscuit.slimefun4.core.handlers.ItemUseHandler;
+import io.github.thebusybiscuit.slimefun4.implementation.Slimefun;
 import io.github.thebusybiscuit.slimefun4.implementation.items.SimpleSlimefunItem;
+import io.github.thebusybiscuit.slimefun4.libraries.dough.protection.Interaction;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -96,6 +98,22 @@ public class FiveElementTouchLeftClick extends SimpleSlimefunItem<ItemUseHandler
                 }
 
                 if (targetLoc != null) {
+                    World targetWorld = targetLoc.getWorld();
+                    if (targetWorld == null || !targetWorld.isChunkLoaded(
+                            targetLoc.getBlockX() >> 4, targetLoc.getBlockZ() >> 4)) {
+                        player.sendMessage("§cThe bound target chunk is not currently loaded.");
+                        player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1.0f, 1.0f);
+                        return;
+                    }
+                    if (!Slimefun.getProtectionManager()
+                                    .hasPermission(player, targetLoc, Interaction.INTERACT_BLOCK)
+                            || !Slimefun.getProtectionManager()
+                                    .hasPermission(player, targetLoc, Interaction.BREAK_BLOCK)) {
+                        player.sendMessage("§cYou do not have permission to left-click the bound target.");
+                        player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1.0f, 1.0f);
+                        return;
+                    }
+
                     Block targetBlock = targetLoc.getBlock();
 
                     // 模拟右键点击该方块

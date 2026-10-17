@@ -19,6 +19,7 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.Sound;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
@@ -27,10 +28,13 @@ import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.WeakHashMap;
 
 import static io.Yomicer.magicExpansion.core.MagicExpansionItems.FISHING_ROD_BETWEEN_WATER_CLOUD_REED;
 import static io.Yomicer.magicExpansion.utils.ColorGradient.getGradientName;
@@ -94,8 +98,13 @@ public final class BaitBagMenu {
     /** 每页行数 = 4 行 */
     private static final int PAGE_ROWS = GRID_ROWS.length;
 
-    /** 当前页 鱼饵 → 槽位 映射(翻页/刷新时重建) */
-    private static final Map<BaitEntry, Integer> PAGE_SLOTS = new java.util.LinkedHashMap<>();
+    /**
+     * Current-page bait-slot mappings are owned by the individual open menu.
+     * A single global mapping lets one player's page render redirect another
+     * player's icon refresh, so keep weak per-menu state instead.
+     */
+    private static final Map<ChestMenu, Map<BaitEntry, Integer>> PAGE_SLOTS =
+            Collections.synchronizedMap(new WeakHashMap<>());
 
     /** 渲染单元格类型 */
     private enum CellType { SERIES, ROD, BAIT }
@@ -284,9 +293,9 @@ public final class BaitBagMenu {
         if (bag == null || !bag.hasItemMeta()) return 0;
         PersistentDataContainer c = bag.getItemMeta().getPersistentDataContainer();
         Long v = c.get(amountKey(entry.id()), PersistentDataType.LONG);
-        if (v != null) return v;
+        if (v != null) return Math.max(0L, v);
         Integer old = c.get(amountKey(entry.id()), PersistentDataType.INTEGER);
-        return old == null ? 0 : old;
+        return old == null ? 0L : Math.max(0L, old.longValue());
     }
 
     private static void setAmount(ItemStack bag, BaitEntry entry, long amount) {
@@ -366,6 +375,24 @@ public final class BaitBagMenu {
             if (isBaitBag(it) && getBagId(it) == null) return i;
         }
         return -1;
+    }
+
+    private record ResolvedBag(int slot, ItemStack item) {
+    }
+
+    private static ResolvedBag resolveBag(Player player, String id) {
+        if (id == null || id.isBlank()) {
+            return null;
+        }
+        int slot = findBagSlotById(player, id);
+        if (slot < 0) {
+            return null;
+        }
+        ItemStack item = player.getInventory().getItem(slot);
+        if (item == null || item.getAmount() != 1 || !isBaitBag(item) || !id.equals(getBagId(item))) {
+            return null;
+        }
+        return new ResolvedBag(slot, item);
     }
 
     private static String getBagId(ItemStack bag) {
@@ -482,30 +509,74 @@ public final class BaitBagMenu {
     // ==================== 菜单 ====================
 
     public static void open(Player player, ItemStack bag) {
-        openPage(player, bag, 0);
+        open(player, bag, EquipmentSlot.HAND);
+    }
+
+    public static void open(Player player, ItemStack bag, EquipmentSlot hand) {
+        int preferredSlot = hand == EquipmentSlot.OFF_HAND
+                ? 40
+                : player.getInventory().getHeldItemSlot();
+        openPage(player, bag, 0, preferredSlot);
     }
 
     private static void openPage(Player player, ItemStack bag, int page) {
+        openPage(player, bag, page, -1);
+    }
+
+    private static void openPage(Player player, ItemStack bag, int page, int preferredSlot) {
+        if (bag == null || !isBaitBag(bag)) {
+            player.sendMessage(getGradientNameVer2("The Lure Bag is not in your inventory."));
+            return;
+        }
+        if (bag.getAmount() != 1) {
+            player.sendMessage(getGradientNameVer2(
+                    "Separate Lure Bags into single items before opening them."));
+            return;
+        }
+
         String bagId = getBagId(bag);
         int slot = bagId != null ? findBagSlotById(player, bagId) : -1;
+
+        // On first open, prefer the actual hand that triggered the event. This avoids
+        // assigning a new bag UUID to some other identical fresh bag in the inventory.
+        if (slot < 0 && preferredSlot >= 0 && preferredSlot < player.getInventory().getSize()) {
+            ItemStack preferred = player.getInventory().getItem(preferredSlot);
+            if (preferred != null
+                    && preferred.getAmount() == 1
+                    && isBaitBag(preferred)
+                    && getBagId(preferred) == null
+                    && SlimefunUtils.isItemSimilar(preferred, bag, true)) {
+                slot = preferredSlot;
+            }
+        }
+
         if (slot < 0) {
-            // 新袋子: 定位第一个还没有唯一ID的云梦袋(即被点击的袋子)
             slot = findFreshBagSlot(player);
         }
         if (slot < 0) {
-            slot = findBagSlot(player, bag); // 兜底
+            slot = findBagSlot(player, bag);
         }
         if (slot < 0) {
             player.sendMessage(getGradientNameVer2("The Lure Bag is not in your inventory."));
             return;
         }
+
         ItemStack current = player.getInventory().getItem(slot);
-        if (current == null) return;
+        if (current == null || current.getAmount() != 1 || !isBaitBag(current)) {
+            player.sendMessage(getGradientNameVer2(
+                    "Separate Lure Bags into single items before opening them."));
+            return;
+        }
         if (bagId == null) {
-            // 首次打开: 写入唯一ID, 之后按ID精确定位, 避免与其它云梦袋混淆
             setBagId(current, UUID.randomUUID().toString());
             player.getInventory().setItem(slot, current);
+            bagId = getBagId(current);
         }
+        if (bagId == null) {
+            player.sendMessage(getGradientNameVer2("Could not assign a Lure Bag identity."));
+            return;
+        }
+        final String activeBagId = bagId;
         final int bagSlot = slot;
 
         ChestMenu menu = new ChestMenu(getGradientNameVer2("✦ Lure Bag ✦"));
@@ -525,7 +596,7 @@ public final class BaitBagMenu {
         for (int s : new int[]{10,11,12,13,14,15,16,19,20,21,22,23,24,25,28,29,30,31,32,33,34,37,38,39,40,41,42,43}) {
             menu.addItem(s, plainPane(Material.LIGHT_BLUE_STAINED_GLASS_PANE), ChestMenuUtils.getEmptyClickHandler());
         }
-        renderGrid(menu, current, bagSlot, page);
+        renderGrid(menu, current, bagSlot, activeBagId, page);
 
         // 4槽: 使用说明
         menu.addItem(4, new CustomItemStack(Material.BOOK,
@@ -545,7 +616,7 @@ public final class BaitBagMenu {
             menu.addItem(46, plainPane(Material.LIME_STAINED_GLASS_PANE));
             menu.addMenuClickHandler(46, (p, s, it, a) -> {
                 p.playSound(p.getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1.0f);
-                openPage(p, bag, page - 1);
+                openPage(p, current, page - 1);
                 return false;
             });
         } else {
@@ -555,7 +626,7 @@ public final class BaitBagMenu {
             menu.addItem(52, plainPane(Material.LIME_STAINED_GLASS_PANE));
             menu.addMenuClickHandler(52, (p, s, it, a) -> {
                 p.playSound(p.getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1.0f);
-                openPage(p, bag, page + 1);
+                openPage(p, current, page + 1);
                 return false;
             });
         } else {
@@ -568,14 +639,24 @@ public final class BaitBagMenu {
             menu.addItem(INPUT_SLOT, inputItem, ChestMenuUtils.getEmptyClickHandler());
         }
         menu.addMenuClickHandler(INPUT_SLOT, (p, s, it, a) -> {
-            handleInput(p, menu, current, bagSlot, a);
+            ResolvedBag resolved = resolveBag(p, activeBagId);
+            if (resolved == null) {
+                p.sendMessage(getGradientNameVer2("The Lure Bag moved or is no longer available."));
+                return false;
+            }
+            handleInput(p, menu, resolved.item(), resolved.slot(), a);
             return false;
         });
         // Shift+左键点击背包物品: 快速放入输入槽(输入槽为空时)
         menu.addPlayerInventoryClickHandler((p, s, it, a) -> {
             if (!a.isShiftClicked() || it == null || it.getType().isAir()) return true;
-            if (getInputItem(current) != null) return true;
-            fastInputFromInventory(p, menu, current, bagSlot, it, s);
+            ResolvedBag resolved = resolveBag(p, activeBagId);
+            if (resolved == null) {
+                p.sendMessage(getGradientNameVer2("The Lure Bag moved or is no longer available."));
+                return true;
+            }
+            if (getInputItem(resolved.item()) != null) return true;
+            fastInputFromInventory(p, menu, resolved.item(), resolved.slot(), it, s);
             return false;
         });
 
@@ -588,13 +669,14 @@ public final class BaitBagMenu {
      * 渲染中间 4×7 存储区的某一页(按行渲染, 页首保系列头)。
      * 每页最多 PAGE_ROWS 行; 翻页通过 46/52 槽切换。刷新时重建当前页 鱼饵→槽位 映射。
      */
-    private static void renderGrid(ChestMenu menu, ItemStack bag, int bagSlot, int page) {
+    private static void renderGrid(
+            ChestMenu menu, ItemStack bag, int bagSlot, String bagId, int page) {
         if (page < 0 || page >= PAGES.size()) {
             return;
         }
 
-        // 重置当前页 鱼饵→槽位 映射(供刷新定位)
-        PAGE_SLOTS.clear();
+        Map<BaitEntry, Integer> pageSlots = new LinkedHashMap<>();
+        PAGE_SLOTS.put(menu, pageSlots);
 
         List<Row> pageRows = PAGES.get(page);
         int rowIdx = 0;
@@ -621,10 +703,15 @@ public final class BaitBagMenu {
                 } else if (cell.type() == CellType.BAIT) {
                     BaitEntry e = cell.bait();
                     int slot = GRID_ROWS[row] + col;
-                    PAGE_SLOTS.put(e, slot);
+                    pageSlots.put(e, slot);
                     menu.addItem(slot, baitIcon(bag, e), ChestMenuUtils.getEmptyClickHandler());
                     menu.addMenuClickHandler(slot, (p, s, it, a) -> {
-                        handleBaitClick(p, menu, bag, bagSlot, e, a);
+                        ResolvedBag resolved = resolveBag(p, bagId);
+                        if (resolved == null) {
+                            p.sendMessage(getGradientNameVer2("The Lure Bag moved or is no longer available."));
+                            return false;
+                        }
+                        handleBaitClick(p, menu, resolved.item(), resolved.slot(), e, a);
                         return false;
                     });
                 }
@@ -733,12 +820,21 @@ public final class BaitBagMenu {
             player.sendMessage(getGradientNameVer2("That lure does not belong in this slot."));
             return;
         }
-        long cur = getAmount(bag, entry);
-        long add = cursor.getAmount();
-        long nv = cur + add;
-        if (nv < cur) nv = Long.MAX_VALUE; // 溢出保护
-        setAmount(bag, entry, nv);
-        player.setItemOnCursor(null);
+        BaitBagAmountMath.Transfer transfer =
+                BaitBagAmountMath.deposit(getAmount(bag, entry), cursor.getAmount());
+        if (transfer.accepted() <= 0) {
+            player.sendMessage(getGradientNameVer2("This lure slot has reached its maximum stored amount."));
+            return;
+        }
+
+        setAmount(bag, entry, transfer.stored());
+        if (transfer.remainder() <= 0) {
+            player.setItemOnCursor(null);
+        } else {
+            ItemStack remainder = cursor.clone();
+            remainder.setAmount(transfer.remainder());
+            player.setItemOnCursor(remainder);
+        }
         player.getInventory().setItem(bagSlot, bag);
         player.playSound(player.getLocation(), Sound.ENTITY_ITEM_PICKUP, 0.5f, 1.0f);
         refreshBaitSlot(menu, bag, entry);
@@ -805,41 +901,47 @@ public final class BaitBagMenu {
             return;
         }
 
-        placeIntoInput(player, menu, bag, bagSlot, cursor, true);
+        player.setItemOnCursor(placeIntoInput(player, menu, bag, bagSlot, cursor));
     }
 
-    /** 放入输入槽: 鱼饵直接吃掉存入, 其他物品持久化在槽中 */
-    private static void placeIntoInput(Player player, ChestMenu menu, ItemStack bag, int bagSlot, ItemStack item, boolean fromCursor) {
+    /** Put an item into the persistent input. Returns any unaccepted remainder. */
+    private static ItemStack placeIntoInput(
+            Player player, ChestMenu menu, ItemStack bag, int bagSlot, ItemStack item) {
         BaitEntry direct = matchBait(item);
         if (direct != null) {
-            // 鱼饵: 不持久化, 直接吃掉并存入对应槽位
-            long cur = getAmount(bag, direct);
-            long add = item.getAmount();
-            long nv = cur + add;
-            if (nv < cur) nv = Long.MAX_VALUE;
-            setAmount(bag, direct, nv);
-            player.getInventory().setItem(bagSlot, bag);
-            if (fromCursor) {
-                player.setItemOnCursor(null);
+            BaitBagAmountMath.Transfer transfer =
+                    BaitBagAmountMath.deposit(getAmount(bag, direct), item.getAmount());
+            if (transfer.accepted() <= 0) {
+                player.sendMessage(getGradientNameVer2(
+                        "This lure slot has reached its maximum stored amount."));
+                return item.clone();
             }
+
+            setAmount(bag, direct, transfer.stored());
+            player.getInventory().setItem(bagSlot, bag);
             refreshBaitSlot(menu, bag, direct);
-            return;
+
+            if (transfer.remainder() <= 0) {
+                return null;
+            }
+            ItemStack remainder = item.clone();
+            remainder.setAmount(transfer.remainder());
+            return remainder;
         }
 
-        // 其他物品: 持久化到输入槽, 关闭界面也不会吞掉
+        // Other supported source items persist in the bag input slot.
         setInputItem(bag, item.clone());
-        if (fromCursor) {
-            player.setItemOnCursor(null);
-        }
         player.getInventory().setItem(bagSlot, bag);
         processInputSource(player, menu, bag, bagSlot, item);
         refreshInputSlot(menu, bag);
+        return null;
     }
 
-    /** Shift+左键背包物品快速放入输入槽 */
-    private static void fastInputFromInventory(Player player, ChestMenu menu, ItemStack bag, int bagSlot, ItemStack item, int invSlot) {
-        player.getInventory().setItem(invSlot, null);
-        placeIntoInput(player, menu, bag, bagSlot, item, false);
+    /** Shift+left-click an inventory item into the input without losing overflow. */
+    private static void fastInputFromInventory(
+            Player player, ChestMenu menu, ItemStack bag, int bagSlot, ItemStack item, int invSlot) {
+        ItemStack remainder = placeIntoInput(player, menu, bag, bagSlot, item);
+        player.getInventory().setItem(invSlot, remainder);
     }
 
     /** 处理输入槽内持久化的来源物品(以太秘匣/量子存储/虚空之触) */
@@ -911,13 +1013,17 @@ public final class BaitBagMenu {
     }
 
     /** 鱼饵存储槽位映射(当前页动态构建, 分页后只定位本页已显示的鱼饵) */
-    private static int baitSlotFor(BaitEntry entry) {
-        Integer slot = PAGE_SLOTS.get(entry);
+    private static int baitSlotFor(ChestMenu menu, BaitEntry entry) {
+        Map<BaitEntry, Integer> slots = PAGE_SLOTS.get(menu);
+        if (slots == null) {
+            return -1;
+        }
+        Integer slot = slots.get(entry);
         return slot != null ? slot : -1;
     }
 
     private static void refreshBaitSlot(ChestMenu menu, ItemStack bag, BaitEntry entry) {
-        int slot = baitSlotFor(entry);
+        int slot = baitSlotFor(menu, entry);
         if (slot >= 0) {
             menu.replaceExistingItem(slot, baitIcon(bag, entry));
         }

@@ -3,15 +3,21 @@ package io.Yomicer.magicExpansion.Listener;
 import com.xzavier0722.mc.plugin.slimefun4.storage.util.StorageCacheUtils;
 import io.Yomicer.magicExpansion.items.misc.fish.FishAttributeGenerator;
 import io.Yomicer.magicExpansion.items.misc.fish.Gen2Fish;
+import io.Yomicer.magicExpansion.utils.AcceleratableMachine;
 import io.Yomicer.magicExpansion.utils.MachineBuffManager;
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItem;
+import io.github.thebusybiscuit.slimefun4.implementation.Slimefun;
+import io.github.thebusybiscuit.slimefun4.libraries.dough.items.ItemUtils;
+import io.github.thebusybiscuit.slimefun4.libraries.dough.protection.Interaction;
 import io.Yomicer.magicExpansion.utils.compat.ItemStackHelper;
+import org.bukkit.GameMode;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
@@ -46,21 +52,51 @@ public class AccelerationUseListener implements Listener {
 
         Block clicked = e.getClickedBlock();
         if (clicked == null) return;
-        // 只对 Slimefun 方块(可放置的机器等)注入, 避免对着泥土/空气浪费鱼
         SlimefunItem target = StorageCacheUtils.getSlimefunItem(clicked.getLocation());
-        if (target == null) return;
+        if (target == null) {
+            return;
+        }
+
+        if (!(target instanceof AcceleratableMachine)) {
+            e.setCancelled(true);
+            player.sendMessage("§e[Fish Energy] §rThis machine does not support acceleration yet. The fish was not consumed.");
+            return;
+        }
+
+        if (!player.hasPermission("slimefun.inventory.bypass")
+                && !Slimefun.getProtectionManager().hasPermission(
+                        player, clicked.getLocation(), Interaction.INTERACT_BLOCK)) {
+            e.setCancelled(true);
+            player.sendMessage("§c[Fish Energy] §rYou do not have permission to accelerate this machine.");
+            return;
+        }
 
         double quality = FishAttributeGenerator.getQuality(held);
+        if (!Double.isFinite(quality) || quality < 0.7D || quality > 2.5D) {
+            e.setCancelled(true);
+            player.sendMessage("§c[Fish Energy] §rThis acceleration fish has invalid quality data.");
+            return;
+        }
+
         double multiplier = MachineBuffManager.BASE_MULTIPLIER * quality;
+        MachineBuffManager.apply(
+                clicked.getLocation(),
+                MachineBuffManager.DEFAULT_DURATION_SECONDS,
+                multiplier);
 
-        // 消耗整条加速种(二代鱼为不可堆叠的个体物品)
-        player.getInventory().setItemInMainHand(null);
+        if (player.getGameMode() != GameMode.CREATIVE) {
+            ItemUtils.consumeItem(held, false);
+        }
 
-        // 登记 5 分钟 Buff(效率接入待后续机器读取)
-        MachineBuffManager.apply(clicked.getLocation(), MachineBuffManager.DEFAULT_DURATION_SECONDS, multiplier);
+        e.setCancelled(true);
+        player.sendMessage("§b[Fish Energy] §rInjected §f"
+                + ItemStackHelper.getDisplayName(target.getItem())
+                + " §rwith an acceleration buff (×"
+                + String.format("%.2f", multiplier) + ", 5 minutes)");
+    }
 
-        e.setCancelled(true); // 阻止打开机器菜单/放置, 视为一次"注入"交互
-        player.sendMessage("§b[Fish Energy] §rInjected §f" + ItemStackHelper.getDisplayName(target.getItem())
-                + " §rwith an acceleration buff (×" + String.format("%.2f", multiplier) + ", 5 minutes)");
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onMachineBreak(BlockBreakEvent event) {
+        MachineBuffManager.remove(event.getBlock().getLocation());
     }
 }

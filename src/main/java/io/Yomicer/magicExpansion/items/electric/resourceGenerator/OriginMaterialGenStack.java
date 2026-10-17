@@ -53,6 +53,8 @@ public class OriginMaterialGenStack extends AbstractElectricResourceMachine {
     private static final int[] INFO_BORDER_SLOTS = new int[] { 4, 22, 13, 31, 40, 49 };
 
     private static final String MACHINE_MULTIPLIER_KEY = "machine_random_multiplier";
+    private static final String PENDING_OUTPUT_KEY = "origin_stack_pending";
+    private static final String ACTIVE_OUTPUT_KEY = "origin_stack_active";
 
     private static final ItemStack PROGRESS_ITEM = new ItemStack(Material.SOUL_LANTERN);
     private static final NamespacedKey ORIGIN_MATERIAL_KEY = new NamespacedKey(MagicExpansion.getInstance(), "origin_material");
@@ -83,96 +85,234 @@ public class OriginMaterialGenStack extends AbstractElectricResourceMachine {
     }
     @Override
     public boolean isSynchronized() {
-        return false;
+        return true;
     }
 
     @Override
     public MachineRecipe findNextRecipe(BlockMenu menu) {
-        if (!hasOutputSpace(menu)) return null;
-
-        for (int slot : INPUT_SLOTS) {
-            ItemStack item = menu.getItemInSlot(slot);
-            if (item == null) continue;
-            if (isValidGenerator(item)) {
-                return new MachineRecipe(1, new ItemStack[]{null}, new ItemStack[]{null});
-            }
+        Block block = menu.getBlock();
+        SlimefunBlockData data = StorageCacheUtils.getBlock(block.getLocation());
+        if (data == null) {
+            return null;
         }
-        return null;
+
+        if (!flushPending(menu, block, data)) {
+            return null;
+        }
+
+        Map<Material, Long> production = calculateProduction(menu, multiplier(data));
+        if (production.isEmpty()) {
+            data.removeData(ACTIVE_OUTPUT_KEY);
+            return null;
+        }
+
+        data.setData(ACTIVE_OUTPUT_KEY, serializeAmounts(production));
+        return new MachineRecipe(1, new ItemStack[]{null}, new ItemStack[]{null});
     }
 
     @Override
     protected void addOutputs(BlockMenu menu, Block b, ItemStack[] outputs) {
-        Location loc = b.getLocation();
-        SlimefunBlockData data = StorageCacheUtils.getBlock(loc);
-        double randomFactor = 1.0;
-        if (data != null) {
-            String multiplierStr = data.getData(MACHINE_MULTIPLIER_KEY);
-            if (multiplierStr != null) {
-                try {
-                    randomFactor = Double.parseDouble(multiplierStr);
-                } catch (NumberFormatException e) {
-                    randomFactor = 1.0;
-                }
-            } else {
-                randomFactor = 1.0 + Math.random();
-                data.setData(MACHINE_MULTIPLIER_KEY, String.valueOf(randomFactor));
-            }
+        SlimefunBlockData data = StorageCacheUtils.getBlock(b.getLocation());
+        if (data == null) {
+            return;
         }
 
-        Map<Material, Integer> productionMap = new HashMap<>();
+        Map<Material, Long> earned = parseAmounts(data.getData(ACTIVE_OUTPUT_KEY));
+        data.removeData(ACTIVE_OUTPUT_KEY);
+        if (earned.isEmpty()) {
+            return;
+        }
+
+        Map<Material, Long> pending = parseAmounts(data.getData(PENDING_OUTPUT_KEY));
+        for (Map.Entry<Material, Long> entry : earned.entrySet()) {
+            pending.merge(entry.getKey(), entry.getValue(), OriginMaterialGenStack::saturatingAdd);
+        }
+        data.setData(PENDING_OUTPUT_KEY, serializeAmounts(pending));
+
+        flushPending(menu, b, data);
+
+        Map<Material, Integer> display = new LinkedHashMap<>();
         int totalGenerators = 0;
-        int distinctTypes = 0;
+        for (Map.Entry<Material, Long> entry : earned.entrySet()) {
+            int shown = (int) Math.min(Integer.MAX_VALUE, entry.getValue());
+            display.put(entry.getKey(), shown);
+            totalGenerators += shown;
+        }
+        updateStatusUI(menu, totalGenerators, display.size(), display, multiplier(data));
+    }
+
+    private Map<Material, Long> calculateProduction(BlockMenu menu, double randomFactor) {
+        Map<Material, Long> production = new LinkedHashMap<>();
 
         for (int slot : INPUT_SLOTS) {
             ItemStack item = menu.getItemInSlot(slot);
-            if (item == null) continue;
-            if (!isValidGenerator(item)) continue;
+            if (!isValidGenerator(item)) {
+                continue;
+            }
+
             ItemMeta meta = item.getItemMeta();
-            if (meta == null) continue;
-            String materialName = meta.getPersistentDataContainer().get(ORIGIN_MATERIAL_KEY, PersistentDataType.STRING);
-            if (materialName != null) {
-                try {
-                    Material mat = Material.valueOf(materialName);
-                    int count = item.getAmount();
-                    productionMap.put(mat, productionMap.getOrDefault(mat, 0) + count);
-                    totalGenerators += count;
-                    distinctTypes++;
-                } catch (IllegalArgumentException e) {
+            String materialName = meta.getPersistentDataContainer().get(
+                    ORIGIN_MATERIAL_KEY, PersistentDataType.STRING);
+            if (materialName == null) {
+                continue;
+            }
+
+            try {
+                Material material = Material.valueOf(materialName);
+                if (!material.isItem() || material.isAir()) {
+                    continue;
                 }
+
+                long generated = (long) Math.floor(item.getAmount() * randomFactor);
+                if (generated > 0L) {
+                    production.merge(material, generated, OriginMaterialGenStack::saturatingAdd);
+                }
+            } catch (IllegalArgumentException ignored) {
             }
         }
 
-        if (totalGenerators > 0) {
-            for (Map.Entry<Material, Integer> entry : productionMap.entrySet()) {
-                Material mat = entry.getKey();
-                int baseAmount = entry.getValue();
-                int finalAmount = (int) (baseAmount * randomFactor);
-                ItemStack singleOutput = new ItemStack(mat, 1);
-                for (int i = 0; i < finalAmount; i++) {
-                    if (menu.pushItem(singleOutput.clone(), OUTPUT_SLOTS) != null) {
-                        break;
+        return production;
+    }
+
+    private boolean flushPending(BlockMenu menu, Block block, SlimefunBlockData data) {
+        Map<Material, Long> pending = parseAmounts(data.getData(PENDING_OUTPUT_KEY));
+        if (pending.isEmpty()) {
+            data.removeData(PENDING_OUTPUT_KEY);
+            return true;
+        }
+
+        Iterator<Map.Entry<Material, Long>> iterator = pending.entrySet().iterator();
+        while (iterator.hasNext()) {
+            Map.Entry<Material, Long> entry = iterator.next();
+            long remaining = entry.getValue();
+            Material material = entry.getKey();
+            int maxStack = Math.max(1, material.getMaxStackSize());
+
+            while (remaining > 0L) {
+                int batch = (int) Math.min((long) maxStack, remaining);
+                ItemStack output = new ItemStack(material, batch);
+                ItemStack leftover = menu.pushItem(output, OUTPUT_SLOTS);
+                int notStored = leftover == null || leftover.getType().isAir()
+                        ? 0
+                        : Math.max(0, leftover.getAmount());
+                int accepted = batch - notStored;
+                if (accepted <= 0) {
+                    break;
+                }
+                remaining -= accepted;
+                if (notStored > 0) {
+                    break;
+                }
+            }
+
+            if (remaining <= 0L) {
+                iterator.remove();
+            } else {
+                entry.setValue(remaining);
+                break;
+            }
+        }
+
+        if (pending.isEmpty()) {
+            data.removeData(PENDING_OUTPUT_KEY);
+            return true;
+        }
+
+        data.setData(PENDING_OUTPUT_KEY, serializeAmounts(pending));
+        return false;
+    }
+
+    private double multiplier(SlimefunBlockData data) {
+        String raw = data.getData(MACHINE_MULTIPLIER_KEY);
+        if (raw != null) {
+            try {
+                double parsed = Double.parseDouble(raw);
+                if (Double.isFinite(parsed) && parsed >= 1.0D && parsed < 2.0D) {
+                    return parsed;
+                }
+            } catch (NumberFormatException ignored) {
+            }
+        }
+
+        double generated = 1.0D + Math.random();
+        data.setData(MACHINE_MULTIPLIER_KEY, Double.toString(generated));
+        return generated;
+    }
+
+    private static Map<Material, Long> parseAmounts(String raw) {
+        Map<Material, Long> result = new LinkedHashMap<>();
+        if (raw == null || raw.isEmpty()) {
+            return result;
+        }
+
+        for (String token : raw.split(";")) {
+            int separator = token.indexOf('=');
+            if (separator <= 0 || separator == token.length() - 1) {
+                continue;
+            }
+            try {
+                Material material = Material.valueOf(token.substring(0, separator));
+                long amount = Long.parseLong(token.substring(separator + 1));
+                if (material.isItem() && !material.isAir() && amount > 0L) {
+                    result.merge(material, amount, OriginMaterialGenStack::saturatingAdd);
+                }
+            } catch (IllegalArgumentException ignored) {
+            }
+        }
+        return result;
+    }
+
+    private static String serializeAmounts(Map<Material, Long> amounts) {
+        StringBuilder encoded = new StringBuilder();
+        amounts.entrySet().stream()
+                .filter(entry -> entry.getValue() != null && entry.getValue() > 0L)
+                .sorted(Map.Entry.comparingByKey(Comparator.comparing(Material::name)))
+                .forEach(entry -> {
+                    if (encoded.length() > 0) {
+                        encoded.append(';');
                     }
-                }
-            }
-        }
+                    encoded.append(entry.getKey().name())
+                            .append('=')
+                            .append(entry.getValue());
+                });
+        return encoded.toString();
+    }
 
-        updateStatusUI(menu, totalGenerators, distinctTypes, productionMap, randomFactor);
+    private static long saturatingAdd(long left, long right) {
+        if (left <= 0L) return Math.max(0L, right);
+        if (right <= 0L) return left;
+        return Long.MAX_VALUE - left < right ? Long.MAX_VALUE : left + right;
     }
 
     private boolean isValidGenerator(ItemStack item) {
         if (item == null || !item.hasItemMeta()) return false;
         ItemMeta meta = item.getItemMeta();
-        return meta.getPersistentDataContainer().has(ORIGIN_MATERIAL_KEY, PersistentDataType.STRING);
+        return meta.getPersistentDataContainer().has(
+                ORIGIN_MATERIAL_KEY, PersistentDataType.STRING);
     }
 
-    private boolean hasOutputSpace(BlockMenu menu) {
-        for (int slot : OUTPUT_SLOTS) {
-            ItemStack item = menu.getItemInSlot(slot);
-            if (item == null || item.getAmount() < item.getMaxStackSize()) {
-                return true;
+    @Override
+    protected void onBreak(org.bukkit.event.block.BlockBreakEvent e, BlockMenu menu, Location location) {
+        SlimefunBlockData data = StorageCacheUtils.getBlock(location);
+        if (data != null) {
+            dropPending(location, parseAmounts(data.getData(PENDING_OUTPUT_KEY)));
+            data.removeData(PENDING_OUTPUT_KEY);
+            data.removeData(ACTIVE_OUTPUT_KEY);
+        }
+        super.onBreak(e, menu, location);
+    }
+
+    private void dropPending(Location location, Map<Material, Long> pending) {
+        for (Map.Entry<Material, Long> entry : pending.entrySet()) {
+            long remaining = entry.getValue();
+            int maxStack = Math.max(1, entry.getKey().getMaxStackSize());
+            while (remaining > 0L) {
+                int batch = (int) Math.min((long) maxStack, remaining);
+                location.getWorld().dropItemNaturally(
+                        location, new ItemStack(entry.getKey(), batch));
+                remaining -= batch;
             }
         }
-        return false;
     }
 
     private void updateStatusUI(BlockMenu menu, int total, int types, Map<Material, Integer> productionMap, double randomFactor) {

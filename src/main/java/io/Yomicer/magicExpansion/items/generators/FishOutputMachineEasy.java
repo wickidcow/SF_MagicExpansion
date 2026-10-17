@@ -191,7 +191,8 @@ public class FishOutputMachineEasy extends MenuBlock implements EnergyNetCompone
 
             @Override
             public boolean isSynchronized() {
-                return false;
+                // This ticker mutates Bukkit inventories, Slimefun block data and bound storage.
+                return true;
             }
         });
     }
@@ -313,7 +314,14 @@ public class FishOutputMachineEasy extends MenuBlock implements EnergyNetCompone
                             int z = container.get(KEY_Z, PersistentDataType.INTEGER);
 
                             Location targetLocation = new Location(world, x, y, z);
-                            SlimefunItem sfItem = StorageCacheUtils.getSlimefunItem(targetLocation);
+                            if (!world.isChunkLoaded(x >> 4, z >> 4)) {
+                                // Remote output must never synchronously pull an unloaded chunk back in.
+                                targetLocation = null;
+                            }
+
+                            SlimefunItem sfItem = targetLocation == null
+                                    ? null
+                                    : StorageCacheUtils.getSlimefunItem(targetLocation);
 
                             if (sfItem != null) {
                                 if (sfItem instanceof CargoCoreMore) {
@@ -351,25 +359,27 @@ public class FishOutputMachineEasy extends MenuBlock implements EnergyNetCompone
             }
             if (outItems.getAmount() > 0) {
                 pushAllItems(inv, outItems, getOutputSlots());
-                removeCharge(block.getLocation(), getEnergyConsumption());
+                if (!chargeTaken) {
+                    removeCharge(block.getLocation(), getEnergyConsumption());
+                }
             }
         }
 
     }
 
-    private boolean pushItemToCargoCore (Location loc, ItemStack item) {
+    private boolean pushItemToCargoCore(Location loc, ItemStack item) {
         BlockMenu inv = StorageCacheUtils.getMenu(loc);
-        if (inv != null) {
-            SlimefunBlockData data = StorageCacheUtils.getBlock(loc);
-            if (data == null) return false;
-            if (hasStoredItem(data, item)) {
-                storeItemToExistingSlot(data, item);
-                return true;
-            } else {
-                return false;
-            }
+        if (inv == null) {
+            return false;
         }
-        return false;
+
+        SlimefunBlockData data = StorageCacheUtils.getBlock(loc);
+        if (data == null || !hasStoredItem(data, item)) {
+            return false;
+        }
+
+        return FishOutputMachine.storeItemToExistingSlotCachedLongExact(
+                data, item, item.getAmount());
     }
     /**
      * 检查CargoCore中是否已经有该物品
@@ -412,68 +422,6 @@ public class FishOutputMachineEasy extends MenuBlock implements EnergyNetCompone
         }
 
         return false;
-    }
-    /**
-     * 只向已有物品的槽位存储(不创建新槽位)
-     */
-    private void storeItemToExistingSlot(SlimefunBlockData data, ItemStack item) {
-        if (item == null || item.getType() == Material.AIR) return;
-
-        ItemStack prototype = item.clone();
-        prototype.setAmount(1);
-        int amountToStore = item.getAmount();
-
-        // 查找匹配的已有槽位
-        for (int i = 0; i < MAX_STORED_ITEMS; i++) {
-            String jsonData = data.getData("item_type_" + i);
-            if (jsonData == null || jsonData.isEmpty()) continue;
-
-            try {
-                ItemStack storedItem = itemFromBase64(jsonData);
-                if (storedItem != null && storedItem.getType() != Material.AIR) {
-                    storedItem.setAmount(1); // 确保只比较类型
-
-                    if (SlimefunUtils.isItemSimilar(prototype, storedItem, true)) {
-                        // 找到匹配的槽位,增加数量
-                        long currentCount = 0;
-                        String countStr = data.getData("item_count_" + i);
-                        if (countStr != null && !countStr.isEmpty()) {
-                            try {
-                                currentCount = Long.parseLong(countStr);
-                            } catch (Exception e) {
-                                continue;
-                            }
-                        }
-
-                        // 计算新数量
-                        long newCount = currentCount + amountToStore;
-                        data.setData("item_count_" + i, String.valueOf(newCount));
-
-                        // 检查是否有数量限制
-                        String maxStr = data.getData("item_max_" + i);
-                        if (maxStr != null && !maxStr.isEmpty()) {
-                            try {
-                                long maxCount = Long.parseLong(maxStr);
-                                if (maxCount != -1 && newCount > maxCount) {
-                                    // 如果超过上限,调整到上限
-                                    newCount = maxCount;
-                                    data.setData("item_count_" + i, String.valueOf(newCount));
-                                }
-                            } catch (Exception e) {
-                                // 最大数量解析失败,忽略
-                            }
-                        }
-
-                        // 存储成功,返回
-                        return;
-                    }
-                }
-            } catch (Exception e) {
-                continue;
-            }
-        }
-
-        // 如果没有找到匹配的槽位,什么也不做(不存储新物品)
     }
 
     private static final int MAX_STORED_ITEMS = 1145; // 最多支持 18 种不同物品

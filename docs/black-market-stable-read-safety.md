@@ -1,5 +1,9 @@
 # Black Market stable-read safety candidate
 
+This repair is included in the coordinated 1.1.16 candidate. The branch-specific
+release restrictions below record the earlier review state. The current publisher
+requires an explicit version-matched trigger and refuses existing release assets.
+
 This is an unreleased follow-up to published 1.1.14. The review branch retains the inherited 1.1.14 build identity for coordinated validation only: do not install its artifact as the published JAR, merge to the publishing default branch, dispatch the release build or replace an official addon ZIP. A distinct version and controlled publication are required after validation.
 
 ## Problem and scope

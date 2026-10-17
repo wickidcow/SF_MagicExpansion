@@ -70,7 +70,7 @@ jobs:
           with zipfile.ZipFile(candidate) as jar:
               descriptor = jar.read('plugin.yml').decode()
               version = re.search(r'''(?m)^version:\s*['"]?([^'"\s]+)''', descriptor).group(1)
-              assert version == '1.1.15' and candidate.name == f'SF_MagicExpansion{version}.jar'
+              assert version == '1.1.16' and candidate.name == f'SF_MagicExpansion{version}.jar'
               assert not any(n.startswith(('audit/', 'org/junit/', 'org/mockbukkit/')) for n in jar.namelist())
           replaced = 0
           for addon in manifest['addons']:
@@ -82,22 +82,22 @@ jobs:
                   replaced += 1
           assert replaced == 1
           data[candidate.name] = jar_bytes
-          manifest['bundle_revision'] = 138
+          manifest['bundle_revision'] = 141
           manifest['targeted_refresh'] = {'repository': 'wickidcow/SF_MagicExpansion',
               'previous_bundle_revision': 137,
               'previous_bundle_sha256': digest(Path('audit/published-r137.zip').read_bytes()),
               'release_tag': 'v4.1.74'}
           data['SF_ADDON_MANIFEST.json'] = (json.dumps(manifest, indent=2) + '\n').encode()
           data['SHA256SUMS.txt'] = ''.join(f'{digest(data[n])}  {n}\n' for n in sorted(data) if n.endswith('.jar')).encode()
-          data['COMPATIBILITY.txt'] = ('Slimefun Legacy 4.1.74 addon bundle revision 138\n'
+          data['COMPATIBILITY.txt'] = ('Test-only MagicExpansion candidate for revision 141 on published r137\n'
               'Minecraft 1.21.11 through 26.3; Java 21 bytecode.\n'
-              'Only MagicExpansion changed from r137: 1.1.13 -> 1.1.15.\n'
+              'Only MagicExpansion changed from r137: 1.1.13 -> 1.1.16.\n'
               'All 44 other addon JARs are byte-identical to r137.\n'
-              'MagicExpansion: automatic Slimefun Tick Monitor sampling; Black Market behavior remains unchanged.\n'
+              'MagicExpansion: integrated shop receipts, catalog, machine and item corrections.\n'
               'Preserve all configs, cycle markers, player offers and purchase receipts.\n'
               'Stop and back up before replacing the older JAR; start normally, never /reload.\n'
               'Install only the addons used by your server. No test plugins are included.\n'
-              'See the official GitHub release and PR #20 for verification scope and release availability.\n').encode()
+              'This isolated candidate is not the coordinated release bundle. See PR #24 for verification scope.\n').encode()
           with zipfile.ZipFile('audit/candidate-addons.zip', 'w', zipfile.ZIP_DEFLATED) as out:
               for n in sorted(data):
                   info = zipfile.ZipInfo(n, (2026, 10, 15, 0, 0, 0))
@@ -110,7 +110,7 @@ jobs:
           Path('audit/bundle-proof.json').write_text(json.dumps({'unchanged_addons': 44, 'source': manifest['addons'],
               'candidate_bundle_sha256': digest(Path('audit/candidate-addons.zip').read_bytes()),
               'candidate_jar_sha256': digest(jar_bytes), 'candidate_version': version,
-              'bundle_revision': 138, 'publication': 'NOT_PUBLISHED'}, indent=2))
+              'bundle_revision': 141, 'publication': 'NOT_PUBLISHED'}, indent=2))
           script = Path('legacy-validation/scripts/full_stack_runtime_smoke.sh')
           text = script.read_text()
           needle = 'motd=Slimefun Legacy full-stack runtime smoke\n'

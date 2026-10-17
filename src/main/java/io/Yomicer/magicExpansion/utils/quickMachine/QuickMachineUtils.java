@@ -27,36 +27,46 @@ public class QuickMachineUtils {
     public static boolean consumeMaterials(Player player, Map<String, Integer> recipe, int amount) {
         PlayerInventory inventory = player.getInventory();
 
+        // Validate the full transaction before removing the first item. This prevents
+        // a stale/invalid recipe from consuming an early ingredient and failing later.
+        if (!QuickCraftSafety.hasEnoughMaterials(getPlayerInventoryItems(player), recipe, amount)) {
+            return false;
+        }
+
         for (Map.Entry<String, Integer> requiredEntry : recipe.entrySet()) {
             String requiredKey = requiredEntry.getKey();
             int requiredAmountPerCraft = requiredEntry.getValue();
-            int totalRequiredAmount = requiredAmountPerCraft * amount;
+            int totalRequiredAmount = QuickCraftSafety.totalRequiredAmount(requiredAmountPerCraft, amount);
+            if (totalRequiredAmount <= 0) {
+                return false;
+            }
 
             if (requiredKey.startsWith("mc:")) {
-                // 原版物品
                 Material material = Material.matchMaterial(requiredKey.substring(3));
-                if (material != null) {
-                    ItemStack targetItem = new ItemStack(material);
-                    if (!removeVanillaItemsFromInventory(inventory, targetItem, totalRequiredAmount)) {
-                        player.sendMessage("§cCould not read the required materials. Check your inventory and try again!");
-                        return false;
-                    }
+                if (material == null) {
+                    return false;
+                }
+                ItemStack targetItem = new ItemStack(material);
+                if (!removeVanillaItemsFromInventory(inventory, targetItem, totalRequiredAmount)) {
+                    player.sendMessage("§cCould not read the required materials. Check your inventory and try again!");
+                    return false;
                 }
             } else if (requiredKey.startsWith("sf:")) {
-                // Slimefun 物品
                 String slimefunId = requiredKey.substring(3);
                 SlimefunItem slimefunItem = SlimefunItem.getById(slimefunId);
-                if (slimefunItem != null) {
-                    ItemStack targetItem = slimefunItem.getItem().clone();
-                    if (!removeSlimefunItemsFromInventory(inventory, targetItem, totalRequiredAmount)) {
-                        player.sendMessage("§cCould not read the required Slimefun materials. Check your inventory and try again!");
-                        return false;
-                    }
+                if (slimefunItem == null) {
+                    return false;
                 }
+                ItemStack targetItem = slimefunItem.getItem().clone();
+                if (!removeSlimefunItemsFromInventory(inventory, targetItem, totalRequiredAmount)) {
+                    player.sendMessage("§cCould not read the required Slimefun materials. Check your inventory and try again!");
+                    return false;
+                }
+            } else {
+                return false;
             }
         }
 
-        // 所有材料都已成功移除
         return true;
     }
 
@@ -237,17 +247,7 @@ public class QuickMachineUtils {
      * 计算玩家最多可以合成的数量
      */
     public static int calculateMaxCraftableAmount(Map<String, Integer> playerItems, Map<String, Integer> recipe) {
-        int maxCraftableAmount = Integer.MAX_VALUE;
-
-        for (Map.Entry<String, Integer> requiredEntry : recipe.entrySet()) {
-            String requiredKey = requiredEntry.getKey();
-            int requiredAmount = requiredEntry.getValue();
-
-            int availableAmount = playerItems.getOrDefault(requiredKey, 0);
-            maxCraftableAmount = Math.min(maxCraftableAmount, availableAmount / requiredAmount);
-        }
-
-        return maxCraftableAmount;
+        return QuickCraftSafety.calculateMaxCraftableAmount(playerItems, recipe);
     }
 
 
@@ -294,17 +294,7 @@ public class QuickMachineUtils {
      * @return 如果玩家有足够的物品,则返回 true,否则返回 false
      */
     public static boolean hasEnoughMaterials(Map<String, Integer> playerItems, Map<String, Integer> recipe, int amount) {
-        // 检查玩家是否有足够的物品
-        for (Map.Entry<String, Integer> requiredEntry : recipe.entrySet()) {
-            String requiredKey = requiredEntry.getKey();
-            int requiredAmount = requiredEntry.getValue() * amount; // 根据合成数量调整所需材料
-
-            int availableAmount = playerItems.getOrDefault(requiredKey, 0);
-            if (availableAmount < requiredAmount) {
-                return false;
-            }
-        }
-        return true;
+        return QuickCraftSafety.hasEnoughMaterials(playerItems, recipe, amount);
     }
 
     // 默认 amount=1 的重载方法

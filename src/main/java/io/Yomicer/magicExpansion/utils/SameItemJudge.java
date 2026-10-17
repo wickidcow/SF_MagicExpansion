@@ -8,15 +8,41 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.util.io.BukkitObjectInputStream;
 import org.bukkit.util.io.BukkitObjectOutputStream;
-import org.yaml.snakeyaml.external.biz.base64Coder.Base64Coder;
 
 import javax.annotation.Nullable;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 public class SameItemJudge {
+
+    private static final String LINE_SEPARATOR = System.lineSeparator();
+    private static final Base64.Encoder BASE64_LINES =
+            Base64.getMimeEncoder(76, LINE_SEPARATOR.getBytes(StandardCharsets.US_ASCII));
+
+    // Preserve the old writer's 76-column lines, including its final separator.
+    static String encodeBase64Lines(byte[] bytes) {
+        String encoded = BASE64_LINES.encodeToString(bytes);
+        return bytes.length == 0 ? encoded : encoded + LINE_SEPARATOR;
+    }
+
+    // Old saved records permit only these four whitespace characters. A MIME
+    // decoder would also discard corrupt punctuation instead of refusing it.
+    static byte[] decodeBase64Lines(String data) {
+        StringBuilder encoded = new StringBuilder(data.length());
+        for (int i = 0; i < data.length(); i++) {
+            char character = data.charAt(i);
+            if (character != ' ' && character != '\t' && character != '\r' && character != '\n') {
+                encoded.append(character);
+            }
+        }
+        if (encoded.length() % 4 != 0) {
+            throw new IllegalArgumentException("Length of Base64 encoded input string is not a multiple of 4.");
+        }
+        return Base64.getDecoder().decode(encoded.toString());
+    }
 
     /**
      * ✅ 将 ItemStack 完整序列化为 Base64 字符串
@@ -36,7 +62,7 @@ public class SameItemJudge {
             dataOutput.flush();
 
             byte[] serializedBytes = outputStream.toByteArray();
-            return Base64Coder.encodeLines(serializedBytes);
+            return encodeBase64Lines(serializedBytes);
 
         } catch (IOException e) {
             Debug.logWarn("Item serialization failed: " + item.getType());
@@ -55,7 +81,7 @@ public class SameItemJudge {
             return null;
         }
 
-        try (ByteArrayInputStream inputStream = new ByteArrayInputStream(Base64Coder.decodeLines(data));
+        try (ByteArrayInputStream inputStream = new ByteArrayInputStream(decodeBase64Lines(data));
              BukkitObjectInputStream dataInput = new BukkitObjectInputStream(inputStream)) {
 
             ItemStack item = (ItemStack) dataInput.readObject();

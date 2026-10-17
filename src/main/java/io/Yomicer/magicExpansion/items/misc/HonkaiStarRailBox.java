@@ -7,7 +7,9 @@ import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItemStack;
 import io.github.thebusybiscuit.slimefun4.api.recipes.RecipeType;
 import io.github.thebusybiscuit.slimefun4.core.attributes.NotPlaceable;
 import io.github.thebusybiscuit.slimefun4.core.handlers.ItemUseHandler;
+import io.github.thebusybiscuit.slimefun4.implementation.Slimefun;
 import io.github.thebusybiscuit.slimefun4.implementation.items.SimpleSlimefunItem;
+import io.github.thebusybiscuit.slimefun4.libraries.dough.protection.Interaction;
 import io.github.thebusybiscuit.slimefun4.libraries.dough.items.ItemUtils;
 import io.github.thebusybiscuit.slimefun4.utils.FireworkUtils;
 import io.github.thebusybiscuit.slimefun4.utils.SlimefunUtils;
@@ -15,6 +17,7 @@ import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
@@ -43,13 +46,24 @@ public class HonkaiStarRailBox extends SimpleSlimefunItem<ItemUseHandler> implem
         return randomItem.getItem().clone();
     }
 
-    // 在指定位置生成一个随机物品
-    public void spawnRandomItem(Location location, Player player) {
-        ItemStack gift = getRandomItemStack(itemMapMihoyoHonkai);
+    private boolean spawnGift(Location location, Player player, ItemStack gift) {
+        if (gift == null || gift.getType().isAir()) {
+            return false;
+        }
 
-        if (gift != null) {
-            SlimefunUtils.spawnItem(location, gift, ItemSpawnReason.CHRISTMAS_PRESENT_OPENED, true, player);
-            player.sendMessage("§aYou opened the Honkai: Star Rail box and received " + gift.getItemMeta().getDisplayName() + "!");
+        try {
+            if (SlimefunUtils.spawnItem(
+                    location, gift, ItemSpawnReason.CHRISTMAS_PRESENT_OPENED, true, player) == null) {
+                return false;
+            }
+
+            String name = gift.hasItemMeta() && gift.getItemMeta().hasDisplayName()
+                    ? gift.getItemMeta().getDisplayName()
+                    : gift.getType().name();
+            player.sendMessage("§aYou opened the Honkai: Star Rail box and received " + name + "!");
+            return true;
+        } catch (RuntimeException | LinkageError failure) {
+            return false;
         }
     }
 
@@ -57,18 +71,37 @@ public class HonkaiStarRailBox extends SimpleSlimefunItem<ItemUseHandler> implem
 
     @Override
     public @NotNull ItemUseHandler getItemHandler() {
-        return (e) -> {
+        return e -> {
             e.cancel();
-            e.getClickedBlock().ifPresent((block) -> {
-                if (e.getPlayer().getGameMode() != GameMode.CREATIVE) {
-                    ItemUtils.consumeItem(e.getItem(), false);
-                }
 
-                FireworkUtils.launchRandom(e.getPlayer(), 3);
-                Block b = block.getRelative(e.getClickedFace());
-                spawnRandomItem(b.getLocation(), e.getPlayer());
+            if (e.getHand() != EquipmentSlot.HAND || e.getClickedBlock().isEmpty()) {
+                return;
+            }
 
-            });
+            Player player = e.getPlayer();
+            Block clicked = e.getClickedBlock().get();
+            if (!Slimefun.getProtectionManager().hasPermission(
+                    player, clicked.getLocation(), Interaction.INTERACT_BLOCK)) {
+                player.sendMessage("§cYou do not have permission to open this box here.");
+                return;
+            }
+
+            ItemStack gift = getRandomItemStack(itemMapMihoyoHonkai);
+            if (gift == null) {
+                player.sendMessage("§cThis gift box has no available rewards right now.");
+                return;
+            }
+
+            Block destination = clicked.getRelative(e.getClickedFace());
+            if (!spawnGift(destination.getLocation().add(0.5, 0.25, 0.5), player, gift)) {
+                player.sendMessage("§cThe reward could not be spawned, so the box was not consumed.");
+                return;
+            }
+
+            if (player.getGameMode() != GameMode.CREATIVE) {
+                ItemUtils.consumeItem(e.getItem(), false);
+            }
+            FireworkUtils.launchRandom(player, 3);
         };
     }
 

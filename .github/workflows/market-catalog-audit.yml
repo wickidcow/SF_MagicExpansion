@@ -1,0 +1,117 @@
+name: Market catalog native audit
+
+on:
+  push:
+    branches: ["feature/slimefun-market-catalog-20261015"]
+    paths:
+      - 'src/**'
+      - 'tests/market-catalog-audit/**'
+      - '.github/workflows/market-catalog-audit.yml'
+  pull_request:
+    paths:
+      - 'src/main/java/io/Yomicer/magicExpansion/utils/shop/**'
+      - 'src/main/resources/market_catalog.yml'
+      - 'src/test/java/io/Yomicer/magicExpansion/utils/shop/**'
+      - 'tests/market-catalog-audit/**'
+      - '.github/workflows/market-catalog-audit.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: market-catalog-audit-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  catalog:
+    strategy:
+      fail-fast: false
+      matrix:
+        optional: [false, true]
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '25'
+          cache: maven
+      - name: Build and unit-test exact candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p audit/server/plugins audit/classes
+          git rev-parse HEAD > audit/source.txt
+          git archive --format=zip --output=audit/source-review.zip HEAD
+          bash scripts/install_slimefun_api.sh > audit/build.log 2>&1
+          mvn -B -ntp clean verify >> audit/build.log 2>&1 || { tail -n 100 audit/build.log; exit 1; }
+          mvn -B -ntp dependency:build-classpath -Dmdep.outputFile=classpath.txt >> audit/build.log 2>&1
+          cp target/SF_MagicExpansion1.1.16.jar audit/server/plugins/MagicExpansion.jar
+          sha256sum audit/server/plugins/MagicExpansion.jar > audit/candidate-jar.sha256
+      - name: Obtain pinned runtime inputs
+        env:
+          OPTIONAL: ${{ matrix.optional }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fL --retry 3 https://github.com/wickidcow/Slimefun-Legacy/releases/download/v4.1.74/Slimefun-Legacy4.1.74.jar -o audit/server/plugins/Slimefun.jar
+          echo '72a524d7c0d6f75a9decbf06679515887273ae53673d3f5ee38f355bef952c96  audit/server/plugins/Slimefun.jar' | sha256sum -c -
+          if [[ "$OPTIONAL" == true ]]; then
+            curl -fL --retry 3 https://github.com/wickidcow/SF_InfinityExpansion2/releases/download/v2.0.13/SF_InfinityExpansion2.0.13.jar -o audit/server/plugins/InfinityExpansion2.jar
+            echo 'a2f8a1ac7ada18c7a6cf774b09158e1567c6cace478bed10a160a897ce97198e  audit/server/plugins/InfinityExpansion2.jar' | sha256sum -c -
+          fi
+          curl -fL --retry 3 -A 'MagicExpansion-Catalog-Audit/1.0' https://fill.papermc.io/v3/projects/paper/versions/26.3/builds/190 -o audit/paper.json
+          URL=$(jq -er '.downloads["server:default"].url' audit/paper.json)
+          HASH=$(jq -er '.downloads["server:default"].checksums.sha256' audit/paper.json)
+          [[ "$URL" == https://* && "$HASH" =~ ^[0-9a-f]{64}$ ]]
+          curl -fL --retry 3 "$URL" -o audit/server/server.jar
+          echo "$HASH  audit/server/server.jar" | sha256sum -c -
+      - name: Compile isolated native probe
+        shell: bash
+        run: |
+          set -euo pipefail
+          javac --release 21 -cp "audit/server/plugins/MagicExpansion.jar:$(cat classpath.txt)" -d audit/classes tests/market-catalog-audit/MarketCatalogProbe.java
+          printf "name: MarketCatalogProbe\nmain: audit.MarketCatalogProbe\nversion: '1'\napi-version: '1.21.11'\ndepend: [Slimefun, magicexpansion]\nsoftdepend: [InfinityExpansion2]\n" > audit/classes/plugin.yml
+          jar --create --file audit/server/plugins/MarketCatalogProbe.jar -C audit/classes .
+      - name: Require native purchases, caps, idempotence and separate-process persistence
+        env:
+          OPTIONAL: ${{ matrix.optional }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd audit/server
+          printf 'eula=true\n' > eula.txt
+          printf 'online-mode=false\nserver-ip=127.0.0.1\nserver-port=0\nview-distance=2\nsimulation-distance=2\npause-when-empty-seconds=-1\n' > server.properties
+          sha256sum server.jar plugins/*.jar > inputs.sha256
+          for PHASE in first restart; do
+            sha256sum -c inputs.sha256
+            timeout --kill-after=20s 300s java -Xms512M -Xmx2G -Dmarket.catalog.audit=true -Dmarket.catalog.optional="$OPTIONAL" -Dmarket.catalog.phase="$PHASE" -jar server.jar --nogui > "$PHASE.log" 2>&1
+            test ! -e catalog-fatal.txt || { cat catalog-fatal.txt; tail -n 100 "$PHASE.log"; exit 1; }
+            grep -Fxq 'passed: true' "catalog-$PHASE-result.yml"
+            cat "catalog-$PHASE-result.yml"
+          done
+          test "$(grep '^pid:' catalog-first-result.yml)" != "$(grep '^pid:' catalog-restart-result.yml)"
+      - name: Retain evidence even on failure; never publish a release
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: market-catalog-native-optional-${{ matrix.optional }}
+          path: |
+            audit/*.log
+            audit/*.json
+            audit/*.txt
+            audit/*.sha256
+            audit/source-review.zip
+            audit/server/*.log
+            audit/server/*.yml
+            audit/server/*.txt
+            audit/server/*.sha256
+            audit/server/plugins/magicexpansion/portable_shops/*.yml
+            target/surefire-reports/TEST-*.xml
+          if-no-files-found: error
+          retention-days: 7

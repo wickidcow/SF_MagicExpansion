@@ -8,7 +8,9 @@ import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItemStack;
 import io.github.thebusybiscuit.slimefun4.api.recipes.RecipeType;
 import io.github.thebusybiscuit.slimefun4.core.attributes.NotPlaceable;
 import io.github.thebusybiscuit.slimefun4.core.handlers.ItemUseHandler;
+import io.github.thebusybiscuit.slimefun4.implementation.Slimefun;
 import io.github.thebusybiscuit.slimefun4.implementation.items.SimpleSlimefunItem;
+import io.github.thebusybiscuit.slimefun4.libraries.dough.protection.Interaction;
 import io.github.thebusybiscuit.slimefun4.libraries.dough.items.CustomItemStack;
 import me.mrCookieSlime.CSCoreLibPlugin.general.Inventory.ChestMenu;
 import org.bukkit.Location;
@@ -138,14 +140,21 @@ public class DeathLifeBook extends SimpleSlimefunItem<ItemUseHandler> implements
 
             // 清除所有生物
             int killedCount = 0;
+            int protectedCount = 0;
             for (LivingEntity entity : finalEntities) {
-                if (!entity.isDead()) {
+                if (canRemoveEntity(p, entity)) {
                     entity.remove();
                     killedCount++;
+                } else if (entity != null && entity.isValid() && !entity.isDead()) {
+                    protectedCount++;
                 }
             }
 
             p.sendMessage("§aRemoved §e" + killedCount + " §acreatures.");
+            if (protectedCount > 0) {
+                p.sendMessage("§7Skipped §e" + protectedCount
+                        + " §7creature(s) that moved away or are protected.");
+            }
             p.playSound(p.getLocation(), Sound.ENTITY_LIGHTNING_BOLT_THUNDER, 1.0f, 1.0f);
             p.closeInventory();
             return false;
@@ -244,10 +253,16 @@ public class DeathLifeBook extends SimpleSlimefunItem<ItemUseHandler> implements
                     new BukkitRunnable() {
                         @Override
                         public void run() {
-                            finalEntity.remove();
-                            p.sendMessage("§aRemoved from the Book of Life and Death: §e" + finalEntityName + "§a!");
+                            if (!canRemoveEntity(p, finalEntity)) {
+                                p.sendMessage("§cThat creature moved away or is protected.");
+                                p.playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 1.0f, 0.5f);
+                                return;
+                            }
 
-                            // 刷新当前页菜单
+                            finalEntity.remove();
+                            p.sendMessage("§aRemoved from the Book of Life and Death: §e"
+                                    + finalEntityName + "§a!");
+
                             int currentPage = getCurrentPageFromTitle(menuTitle);
                             openEntityMenu(p, currentPage);
                         }
@@ -260,6 +275,19 @@ public class DeathLifeBook extends SimpleSlimefunItem<ItemUseHandler> implements
             }
             return false;
         });
+    }
+
+    private boolean canRemoveEntity(Player player, LivingEntity entity) {
+        if (entity == null || !entity.isValid() || entity.isDead()) {
+            return false;
+        }
+        if (entity.getWorld() != player.getWorld()
+                || entity.getLocation().distanceSquared(player.getLocation()) > 400.0D) {
+            return false;
+        }
+        return player.hasPermission("slimefun.inventory.bypass")
+                || Slimefun.getProtectionManager().hasPermission(
+                        player, entity.getLocation(), Interaction.ATTACK_ENTITY);
     }
 
     private Material getEntityIcon(LivingEntity entity) {

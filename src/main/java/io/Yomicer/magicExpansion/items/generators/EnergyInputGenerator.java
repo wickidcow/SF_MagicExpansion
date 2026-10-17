@@ -9,6 +9,7 @@ import io.Yomicer.magicExpansion.items.enchantMachine.EnchantingTable;
 import io.Yomicer.magicExpansion.items.misc.SfTimingsMachine;
 import io.Yomicer.magicExpansion.utils.ColorGradient;
 import io.Yomicer.magicExpansion.utils.machineLore.ChargeLore;
+import io.Yomicer.magicExpansion.utils.energy.PowerRelayMath;
 import io.github.thebusybiscuit.slimefun4.api.items.ItemGroup;
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItem;
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItemStack;
@@ -99,7 +100,9 @@ public class EnergyInputGenerator extends MenuBlock implements EnergyNetProvider
 
             @Override
             public boolean isSynchronized() {
-                return false;
+                // This ticker mutates a BlockMenu and holograms, so keep it on the
+                // owning Paper/Purpur thread (or Folia region thread).
+                return true;
             }
         });
     }
@@ -172,9 +175,11 @@ public class EnergyInputGenerator extends MenuBlock implements EnergyNetProvider
         int machineCharge = getCharge(block.getLocation());
 
         int takeChargeInt;
-        long takeCharge;
         long newNowPower;
-        if (nowPower >= maxPower) {
+        if (maxPower <= 0L || nowPower < 0L) {
+            takeChargeInt = 0;
+            newNowPower = nowPower;
+        } else if (nowPower >= maxPower) {
             if(null == menu.getItemInSlot(25)) {
                 menu.replaceExistingItem(19, null);
                 menu.replaceExistingItem(25, PowerCard);
@@ -185,15 +190,10 @@ public class EnergyInputGenerator extends MenuBlock implements EnergyNetProvider
                 takeChargeInt = 0;
                 newNowPower = nowPower;
             }
-        }
-
-        else if (nowPower + machineCharge > maxPower) {
-            newNowPower = maxPower;
-            takeCharge = maxPower - nowPower;
-            takeChargeInt = (int) takeCharge;
         } else {
-            newNowPower = nowPower + machineCharge;
-            takeChargeInt = machineCharge;
+            PowerRelayMath.Transfer transfer = PowerRelayMath.fill(nowPower, maxPower, machineCharge);
+            newNowPower = transfer.storedEnergy();
+            takeChargeInt = transfer.transferred();
         }
         if (takeChargeInt > 0) {
             removeCharge(block.getLocation(), takeChargeInt);

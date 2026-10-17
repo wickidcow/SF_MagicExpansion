@@ -40,7 +40,12 @@ public class ChargeLore {
 
     @Nonnull
     public static String formatEnergy(int energy) {
-        return FORMAT.format((double)energy * TPS);
+        return formatEnergy((long) energy);
+    }
+
+    @Nonnull
+    public static String formatEnergy(long energy) {
+        return FORMAT.format((double) energy * TPS);
     }
 
     @Nonnull

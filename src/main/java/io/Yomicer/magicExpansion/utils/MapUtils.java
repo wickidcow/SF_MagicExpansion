@@ -1,5 +1,6 @@
 package io.Yomicer.magicExpansion.utils;
 
+import com.xzavier0722.mc.plugin.slimefun4.storage.util.StorageCacheUtils;
 import io.Yomicer.magicExpansion.MagicExpansion;
 
 import com.google.common.reflect.TypeToken;
@@ -10,6 +11,8 @@ import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockState;
+import org.bukkit.block.TileState;
 import org.bukkit.entity.Player;
 import org.bukkit.util.BlockIterator;
 
@@ -19,7 +22,9 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class MapUtils {
     private static final Gson gson = new Gson();
@@ -30,6 +35,10 @@ public class MapUtils {
 
         if (p1 == null || p2 == null) {
             player.sendMessage("Please select two points first!");
+            return;
+        }
+        if (p1.getWorld() != p2.getWorld()) {
+            player.sendMessage(ChatColor.RED + "Both selection points must be in the same world.");
             return;
         }
 
@@ -65,22 +74,115 @@ public class MapUtils {
         try (FileReader reader = new FileReader(file)) {
             Type listType = new TypeToken<List<BlockData>>() {}.getType();
             List<BlockData> blocks = gson.fromJson(reader, listType);
-
-            for (BlockData blockData : blocks) {
-                Location location = new Location(
-                        player.getWorld(),
-                        pasteLocation.getBlockX() + blockData.x,
-                        pasteLocation.getBlockY() + blockData.y,
-                        pasteLocation.getBlockZ() + blockData.z
-                );
-                location.getBlock().setBlockData(Bukkit.createBlockData(blockData.blockState));
+            if (blocks == null || blocks.isEmpty()) {
+                player.sendMessage(ChatColor.RED + "The map file is empty or invalid.");
+                return;
             }
 
-            player.sendMessage(ChatColor.GREEN + "Map pasted successfully above the target block!");
-        } catch (IOException e) {
-            player.sendMessage(ChatColor.RED + "Failed to paste map: " + e.getMessage());
-            e.printStackTrace();
+            if (pasteBlocks(player, pasteLocation, blocks)) {
+                player.sendMessage(ChatColor.GREEN + "Map pasted successfully above the target block!");
+            }
+        } catch (IOException | RuntimeException failure) {
+            player.sendMessage(ChatColor.RED + "Failed to paste map: " + failure.getMessage());
         }
+    }
+
+    public static boolean pasteBlocks(
+            Player player, Location pasteLocation, List<BlockData> blocks) {
+        if (blocks == null || blocks.isEmpty()) {
+            player.sendMessage(ChatColor.RED + "There are no blocks to paste.");
+            return false;
+        }
+
+        List<BlockPasteSupport.Target> targets = preparePasteTargets(player, pasteLocation, blocks);
+        if (targets == null) {
+            return false;
+        }
+
+        BlockPasteSupport.Outcome outcome = BlockPasteSupport.apply(targets);
+        if (outcome.success()) {
+            return true;
+        }
+        if (outcome.rollbackFailures() == 0) {
+            player.sendMessage(ChatColor.RED
+                    + "Map paste failed and all attempted block changes were rolled back.");
+        } else {
+            player.sendMessage(ChatColor.RED + "Map paste failed; "
+                    + outcome.rollbackFailures()
+                    + " block(s) could not be restored. Ask an administrator to inspect the area.");
+        }
+        return false;
+    }
+
+    private static List<BlockPasteSupport.Target> preparePasteTargets(
+            Player player, Location pasteLocation, List<BlockData> blocks) {
+        if (pasteLocation.getWorld() == null) {
+            player.sendMessage(ChatColor.RED + "The target world is unavailable.");
+            return null;
+        }
+
+        List<BlockPasteSupport.Target> targets = new ArrayList<>(blocks.size());
+        Set<String> seen = new HashSet<>();
+
+        for (BlockData blockData : blocks) {
+            if (blockData == null || blockData.blockState == null || blockData.blockState.isEmpty()) {
+                player.sendMessage(ChatColor.RED + "The map file contains an invalid block entry.");
+                return null;
+            }
+
+            int x = pasteLocation.getBlockX() + blockData.x;
+            int y = pasteLocation.getBlockY() + blockData.y;
+            int z = pasteLocation.getBlockZ() + blockData.z;
+
+            if (y < pasteLocation.getWorld().getMinHeight()
+                    || y >= pasteLocation.getWorld().getMaxHeight()) {
+                player.sendMessage(ChatColor.RED + "Part of the map would be outside the world height limit.");
+                return null;
+            }
+
+            String key = x + ":" + y + ":" + z;
+            if (!seen.add(key)) {
+                player.sendMessage(ChatColor.RED + "The map file contains duplicate block coordinates.");
+                return null;
+            }
+
+            if (!pasteLocation.getWorld().isChunkLoaded(x >> 4, z >> 4)) {
+                player.sendMessage(ChatColor.RED + "Load the entire destination area before pasting.");
+                return null;
+            }
+
+            Location location = new Location(pasteLocation.getWorld(), x, y, z);
+            if (!ItemPermissionUtils.hasPermissionPoint(player, location)) {
+                player.sendMessage(ChatColor.RED + "Part of the destination is protected.");
+                return null;
+            }
+            if (StorageCacheUtils.getSlimefunItem(location) != null) {
+                player.sendMessage(ChatColor.RED
+                        + "The destination contains a Slimefun block. Move or remove it normally first.");
+                return null;
+            }
+
+            org.bukkit.block.data.BlockData desired;
+            try {
+                desired = Bukkit.createBlockData(blockData.blockState);
+            } catch (RuntimeException invalidState) {
+                player.sendMessage(ChatColor.RED + "The map contains invalid block-state data.");
+                return null;
+            }
+
+            Block block = location.getBlock();
+            BlockState original = block.getState();
+            // Replacing a block entity may eject contents before a later failure.
+            // A snapshot cannot safely undo those external drops as well as the block.
+            if (original instanceof TileState) {
+                player.sendMessage(ChatColor.RED
+                        + "The destination contains a block entity. Move or remove it normally first.");
+                return null;
+            }
+            targets.add(new BlockPasteSupport.Target(block, original, desired));
+        }
+
+        return targets;
     }
 
     private static Block getTargetBlock(Player player) {
@@ -96,6 +198,9 @@ public class MapUtils {
 
     public static List<BlockData> getBlocksInRegion(Location p1, Location p2) {
         List<BlockData> blocks = new ArrayList<>();
+        if (p1.getWorld() == null || p1.getWorld() != p2.getWorld()) {
+            return blocks;
+        }
         int minX = Math.min(p1.getBlockX(), p2.getBlockX());
         int minY = Math.min(p1.getBlockY(), p2.getBlockY());
         int minZ = Math.min(p1.getBlockZ(), p2.getBlockZ());

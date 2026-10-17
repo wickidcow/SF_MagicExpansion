@@ -9,6 +9,7 @@ import io.github.thebusybiscuit.slimefun4.core.attributes.NotPlaceable;
 import io.github.thebusybiscuit.slimefun4.core.handlers.ItemUseHandler;
 import io.github.thebusybiscuit.slimefun4.implementation.items.SimpleSlimefunItem;
 import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
@@ -57,6 +58,12 @@ public class FishWeightEnhancer extends SimpleSlimefunItem<ItemUseHandler> imple
                 player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 0.5f, 0.5f);
                 return;
             }
+            if (fishItem.getAmount() != 1) {
+                player.sendMessage(ChatColor.RED
+                        + "Hold exactly one Magic Fish in your off hand so only one fish is upgraded.");
+                player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 0.5f, 0.5f);
+                return;
+            }
 
             ItemMeta fishMeta = fishItem.getItemMeta();
             if (fishMeta == null) {
@@ -84,6 +91,19 @@ public class FishWeightEnhancer extends SimpleSlimefunItem<ItemUseHandler> imple
             double maxWeight = fish.getMaxWeight();
             double minWeight = fish.getMinWeight();
 
+            if (!Double.isFinite(currentWeight)
+                    || !Double.isFinite(minWeight)
+                    || !Double.isFinite(maxWeight)
+                    || minWeight < 0.0D
+                    || maxWeight <= minWeight
+                    || currentWeight < minWeight
+                    || currentWeight > maxWeight) {
+                player.sendMessage(ChatColor.RED
+                        + "This fish has invalid weight data and was not modified.");
+                player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1f, 1f);
+                return;
+            }
+
             // 检查是否已经达到最大重量
             if (currentWeight >= maxWeight) {
                 player.sendMessage(ChatColor.YELLOW + "This fish is already at its maximum weight of " + String.format("%.3f", maxWeight) + " kg.");
@@ -99,6 +119,11 @@ public class FishWeightEnhancer extends SimpleSlimefunItem<ItemUseHandler> imple
             // 防止超过最大重量
             double newWeight = Math.min(currentWeight + increaseAmount, maxWeight);
             double actualIncrease = newWeight - currentWeight;
+            if (!Double.isFinite(newWeight) || actualIncrease <= 0.0D) {
+                player.sendMessage(ChatColor.RED
+                        + "The fish weight could not be increased safely.");
+                return;
+            }
 
             // 更新 PDC 重量
             pdc.set(FishKeys.FISH_WEIGHT, PersistentDataType.DOUBLE, newWeight);
@@ -132,12 +157,14 @@ public class FishWeightEnhancer extends SimpleSlimefunItem<ItemUseHandler> imple
             fishMeta.setLore(lore);
             fishItem.setItemMeta(fishMeta);
 
-            // 消耗主手道具
-            if (enhancerItem.getAmount() > 1) {
-                enhancerItem.setAmount(enhancerItem.getAmount() - 1);
-                player.getInventory().setItemInMainHand(enhancerItem);
-            } else {
-                player.getInventory().setItemInMainHand(null);
+            // Consume one feed only after a successful single-fish update.
+            if (player.getGameMode() != GameMode.CREATIVE) {
+                if (enhancerItem.getAmount() > 1) {
+                    enhancerItem.setAmount(enhancerItem.getAmount() - 1);
+                    player.getInventory().setItemInMainHand(enhancerItem);
+                } else {
+                    player.getInventory().setItemInMainHand(null);
+                }
             }
 
             // 更新副手鱼物品

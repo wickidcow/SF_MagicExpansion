@@ -10,8 +10,11 @@ import io.Yomicer.magicExpansion.items.misc.CargoFragment;
 import io.Yomicer.magicExpansion.items.misc.fish.Fish;
 import io.Yomicer.magicExpansion.items.misc.fish.FishKeys;
 import io.Yomicer.magicExpansion.items.tools.VoidTouch;
+import io.Yomicer.magicExpansion.utils.AcceleratableMachine;
 import io.Yomicer.magicExpansion.utils.CustomHeadUtils.CustomHead;
+import io.Yomicer.magicExpansion.utils.MachineBuffManager;
 import io.Yomicer.magicExpansion.utils.NetworkStorage;
+import io.Yomicer.magicExpansion.utils.fishing.VivariumOutputMath;
 import io.github.thebusybiscuit.slimefun4.api.items.ItemGroup;
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItem;
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItemStack;
@@ -48,7 +51,7 @@ import static io.Yomicer.magicExpansion.utils.ColorGradient.getRandomGradientNam
 import static io.Yomicer.magicExpansion.utils.SameItemJudge.itemFromBase64;
 import static io.Yomicer.magicExpansion.utils.Utils.doGlow;
 
-public class FishOutputMachineStack extends MenuBlock implements EnergyNetComponent, RecipeDisplayItem {
+public class FishOutputMachineStack extends MenuBlock implements EnergyNetComponent, RecipeDisplayItem, AcceleratableMachine {
 
     private final int Capacity;
     public static final int ENERGY_CONSUMPTION = 26000;
@@ -307,8 +310,8 @@ public class FishOutputMachineStack extends MenuBlock implements EnergyNetCompon
             String weightRarityName = pdc.get(FishKeys.FISH_WEIGHT_RARITY, PersistentDataType.STRING);
 
             // 基础校验
-            if (fishType == null || weight == null || weight == 0.0 || weightRarityName == null) {
-                return ;
+            if (fishType == null || weight == null || weight <= 0.0D || weightRarityName == null) {
+                return;
             }
 
             ItemStack baseOutputOrigin = FISH_OUTPUT_MAP.get(fishType);
@@ -322,21 +325,24 @@ public class FishOutputMachineStack extends MenuBlock implements EnergyNetCompon
                     if (multiplier == 15) multiplierEasy = 8;
                     if (multiplier == 9999) multiplierEasy = 888;
 
-                    long amount = (long) (weight * multiplier);
-                    long amountEasy = (long) (weight * multiplierEasy);
-                    if (amount <= 0) amount = 1;
-                    if (amountEasy <= 0) amountEasy = 1;
-                    long finalAmount = safeMul(amount, totalNormalAmount);
-                    long finalAmountEasy = safeMul(amountEasy, totalEasyAmount);
-                    long finalAmountTotal = safeAdd(finalAmount, finalAmountEasy);
-                    if (finalAmountTotal > Integer.MAX_VALUE) {
-                        finalAmountTotal = Integer.MAX_VALUE;
-                    } else if (finalAmountTotal <= 0) {
-                        finalAmountTotal = 1;
+                    long finalAmountTotal = VivariumOutputMath.calculate(
+                            weight,
+                            multiplier,
+                            multiplierEasy,
+                            totalNormalAmount,
+                            totalEasyAmount);
+
+                    // No child vivarium means no production. Do not turn a zero aggregate
+                    // into one free output merely because a fish is present.
+                    if (finalAmountTotal <= 0L) {
+                        return;
                     }
 
-                    // 保留模板（数量 1）供物品类型比对与界面名称展示；实际数量由 outAmount 以 long 单独承载，
-                    // 从而突破 ItemStack 单次 int 上限（1.20.5+ 大数量构造校验），做到"放多少机器按多少效率全存"
+                    finalAmountTotal = MachineBuffManager.scaleAmount(
+                            block.getLocation(), finalAmountTotal);
+
+                    // Keep the template at one item; the actual production count is carried
+                    // separately as a long all the way into compatible external storage.
                     baseOutput.setAmount(1);
                     outItems = baseOutput;
                     outAmount = finalAmountTotal;
@@ -352,7 +358,7 @@ public class FishOutputMachineStack extends MenuBlock implements EnergyNetCompon
                             getGradientName("Current Output: ")+ ItemStackHelper.getDisplayName(outItems),
                             ItemStackHelper.getDisplayName(MagicExpansionItems.FISH_VIVARIUM_EASY)+getRandomGradientName(": " + totalEasyAmount),
                             ItemStackHelper.getDisplayName(MagicExpansionItems.FISH_VIVARIUM)+getRandomGradientName(": " + totalNormalAmount),
-                            getGradientName("Current Rate")+ "§r" +getRandomGradientName(": " + calculateRealAmount(outItems) + " items/tick")),
+                            getGradientName("Current Rate")+ "§r" +getRandomGradientName(": " + outAmount + " items/tick")),
                     (player1, slot, item, action) -> false);
         } else {
             if (inv != null && inv.hasViewer()) {
@@ -386,13 +392,12 @@ public class FishOutputMachineStack extends MenuBlock implements EnergyNetCompon
                             SlimefunItem sfItem = StorageCacheUtils.getSlimefunItem(targetLocation);
 
                             if (sfItem instanceof CargoCoreMore) {
-                                if (pushItemToCargoCoreLong(targetLocation, outItems, outAmount)){
+                                if (pushItemToCargoCoreLong(targetLocation, outItems, outAmount)) {
                                     removeCharge(block.getLocation(), getEnergyConsumption());
                                 }
                             } else if (NetworkStorage.isQuantumStorageBlock(sfItem)) {
-                                // 新增：虚空之触绑定网络量子存储方块（long 批量存入，可突破 int 上限）
-                                long leftover = NetworkStorage.storeToQuantumStorageBlock(targetLocation, outItems, outAmount);
-                                if (leftover < outAmount) {
+                                if (NetworkStorage.storeToQuantumStorageBlockExact(
+                                        targetLocation, outItems, outAmount)) {
                                     removeCharge(block.getLocation(), getEnergyConsumption());
                                 }
                             } else {
@@ -405,8 +410,7 @@ public class FishOutputMachineStack extends MenuBlock implements EnergyNetCompon
             }
             // ② 量子存储物品：直接存入（long 批量存入，最大值/溢出保护封装在 NetworkStorage 中）
             else if (VoidTouchSlotItem.getAmount() == 1 && NetworkStorage.isQuantumStorageItem(VoidTouchSlotItem)) {
-                long leftover = NetworkStorage.store(VoidTouchSlotItem, outItems, outAmount);
-                if (leftover < outAmount) {
+                if (NetworkStorage.storeExact(VoidTouchSlotItem, outItems, outAmount)) {
                     inv.replaceExistingItem(VoidTouchSlot, VoidTouchSlotItem);
                     removeCharge(block.getLocation(), getEnergyConsumption());
                 }
@@ -459,20 +463,19 @@ public class FishOutputMachineStack extends MenuBlock implements EnergyNetCompon
      * long 版本：把"物品模板 + long 数量"批量写入 CargoCore 已有槽位，
      * 不依赖 ItemStack#getAmount()（int 上限），可突破 21 亿（以太生态阵列场景）。
      */
-    private boolean pushItemToCargoCoreLong (Location loc, ItemStack item, long amountToStore) {
+    private boolean pushItemToCargoCoreLong(Location loc, ItemStack item, long amountToStore) {
         BlockMenu inv = StorageCacheUtils.getMenu(loc);
-        if (inv != null) {
-            SlimefunBlockData data = StorageCacheUtils.getBlock(loc);
-            if (data == null) return false;
-            if (hasStoredItem(data, item)) {
-                // 写入共享缓存的 long 版本（复用 CargoCoreCache，溢出用 long 加法保护）
-                FishOutputMachine.storeItemToExistingSlotCachedLong(data, item, amountToStore);
-                return true;
-            } else {
-                return false;
-            }
+        if (inv == null) {
+            return false;
         }
-        return false;
+
+        SlimefunBlockData data = StorageCacheUtils.getBlock(loc);
+        if (data == null || !hasStoredItem(data, item)) {
+            return false;
+        }
+
+        return FishOutputMachine.storeItemToExistingSlotCachedLongExact(
+                data, item, amountToStore);
     }
     /**
      * 检查CargoCore中是否已经有该物品
