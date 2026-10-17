@@ -45,7 +45,7 @@ jobs:
       - uses: actions/checkout@v6
         with:
           repository: wickidcow/Slimefun-Legacy
-          ref: 50ba75921a18ca0a83434ac242cd7bb18dc3c370
+          ref: 1acc3389feba3e2e51be0f757c6dcb991a7165f9
           path: legacy-validation
           persist-credentials: false
 

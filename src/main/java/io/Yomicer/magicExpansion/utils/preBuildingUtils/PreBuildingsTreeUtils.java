@@ -2,12 +2,12 @@ package io.Yomicer.magicExpansion.utils.preBuildingUtils;
 
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
+import io.Yomicer.magicExpansion.utils.BlockPasteSupport;
 import io.Yomicer.magicExpansion.utils.ItemPermissionUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.block.BlockState;
 import org.bukkit.entity.Player;
 import org.bukkit.util.BlockIterator;
 
@@ -63,20 +63,19 @@ public class PreBuildingsTreeUtils {
                 }
             }
 
-            List<PasteTarget> targets = prepareTargets(blocks, pasteLocation, player);
+            List<BlockPasteSupport.Target> targets = prepareTargets(blocks, pasteLocation, player);
             if (targets == null) {
                 return false;
             }
 
-            List<PasteTarget> changed = new ArrayList<>();
-            try {
-                for (PasteTarget target : targets) {
-                    target.block().setBlockData(target.desired(), false);
-                    changed.add(target);
+            BlockPasteSupport.Outcome outcome = BlockPasteSupport.apply(targets);
+            if (!outcome.success()) {
+                if (outcome.rollbackFailures() == 0) {
+                    player.sendMessage("§cThe structure could not be placed safely; all attempted changes were rolled back.");
+                } else {
+                    player.sendMessage("§cStructure placement failed; " + outcome.rollbackFailures()
+                            + " block(s) could not be restored. Ask an administrator to inspect the area.");
                 }
-            } catch (RuntimeException | LinkageError failure) {
-                rollback(changed);
-                player.sendMessage("§cThe structure could not be placed safely; all changes were rolled back.");
                 return false;
             }
 
@@ -88,7 +87,7 @@ public class PreBuildingsTreeUtils {
         }
     }
 
-    private static List<PasteTarget> prepareTargets(
+    private static List<BlockPasteSupport.Target> prepareTargets(
             List<BlockData> blocks, Location pasteLocation, Player player) {
         org.bukkit.World world = pasteLocation.getWorld();
         if (world == null) {
@@ -96,7 +95,7 @@ public class PreBuildingsTreeUtils {
             return null;
         }
 
-        List<PasteTarget> targets = new ArrayList<>(blocks.size());
+        List<BlockPasteSupport.Target> targets = new ArrayList<>(blocks.size());
         Set<String> coordinates = new HashSet<>();
 
         for (BlockData blockData : blocks) {
@@ -153,26 +152,11 @@ public class PreBuildingsTreeUtils {
                 desired = Material.GLASS.createBlockData();
             }
 
-            targets.add(new PasteTarget(block, block.getBlockData().clone(), desired));
+            targets.add(new BlockPasteSupport.Target(block, block.getState(), desired));
         }
 
         return targets;
     }
-
-    private static void rollback(List<PasteTarget> changed) {
-        for (int i = changed.size() - 1; i >= 0; i--) {
-            PasteTarget target = changed.get(i);
-            try {
-                target.block().setBlockData(target.original(), false);
-            } catch (RuntimeException | LinkageError ignored) {
-            }
-        }
-    }
-
-    private record PasteTarget(
-            Block block,
-            org.bukkit.block.data.BlockData original,
-            org.bukkit.block.data.BlockData desired) {}
 
     public static boolean pasteMap(Player player, String fileName) {
         return pasteMap(player, fileName, null, null);

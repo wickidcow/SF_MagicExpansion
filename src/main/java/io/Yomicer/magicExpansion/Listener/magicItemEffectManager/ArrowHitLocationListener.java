@@ -42,7 +42,7 @@ public class ArrowHitLocationListener implements Listener {
         }
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onArrowHit(ProjectileHitEvent event) {
         if (!(event.getEntity() instanceof Arrow arrow)
                 || !(arrow.getShooter() instanceof Player player)
@@ -100,8 +100,16 @@ public class ArrowHitLocationListener implements Listener {
             return;
         }
 
-        player.teleport(hitLocation);
-        player.sendMessage("§bTeleported to the Ender Pearl Arrow landing point.");
+        // A vertically bounded claim may differ from the arrow's hit location.
+        if (!Slimefun.getProtectionManager().hasPermission(
+                player, hitLocation, Interaction.INTERACT_BLOCK)) {
+            player.sendMessage("§cThe Ender Pearl Arrow landing point is protected.");
+            return;
+        }
+
+        if (player.teleport(hitLocation)) {
+            player.sendMessage("§bTeleported to the Ender Pearl Arrow landing point.");
+        }
     }
 
     private boolean hasArrowTeleport(ItemStack item) {

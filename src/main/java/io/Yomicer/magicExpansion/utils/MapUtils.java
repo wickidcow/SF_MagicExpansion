@@ -92,40 +92,34 @@ public class MapUtils {
             return false;
         }
 
-        List<PasteTarget> targets = preparePasteTargets(player, pasteLocation, blocks);
+        List<BlockPasteSupport.Target> targets = preparePasteTargets(player, pasteLocation, blocks);
         if (targets == null) {
             return false;
         }
 
-        List<PasteTarget> changed = new ArrayList<>();
-        try {
-            for (PasteTarget target : targets) {
-                target.block().setBlockData(target.desired(), false);
-                changed.add(target);
-            }
+        BlockPasteSupport.Outcome outcome = BlockPasteSupport.apply(targets);
+        if (outcome.success()) {
             return true;
-        } catch (RuntimeException | LinkageError failure) {
-            for (int i = changed.size() - 1; i >= 0; i--) {
-                PasteTarget target = changed.get(i);
-                try {
-                    target.block().setBlockData(target.original(), false);
-                } catch (RuntimeException | LinkageError ignored) {
-                }
-            }
-            player.sendMessage(ChatColor.RED
-                    + "Map paste failed and all completed block changes were rolled back.");
-            return false;
         }
+        if (outcome.rollbackFailures() == 0) {
+            player.sendMessage(ChatColor.RED
+                    + "Map paste failed and all attempted block changes were rolled back.");
+        } else {
+            player.sendMessage(ChatColor.RED + "Map paste failed; "
+                    + outcome.rollbackFailures()
+                    + " block(s) could not be restored. Ask an administrator to inspect the area.");
+        }
+        return false;
     }
 
-    private static List<PasteTarget> preparePasteTargets(
+    private static List<BlockPasteSupport.Target> preparePasteTargets(
             Player player, Location pasteLocation, List<BlockData> blocks) {
         if (pasteLocation.getWorld() == null) {
             player.sendMessage(ChatColor.RED + "The target world is unavailable.");
             return null;
         }
 
-        List<PasteTarget> targets = new ArrayList<>(blocks.size());
+        List<BlockPasteSupport.Target> targets = new ArrayList<>(blocks.size());
         Set<String> seen = new HashSet<>();
 
         for (BlockData blockData : blocks) {
@@ -175,16 +169,11 @@ public class MapUtils {
             }
 
             Block block = location.getBlock();
-            targets.add(new PasteTarget(block, block.getBlockData().clone(), desired));
+            targets.add(new BlockPasteSupport.Target(block, block.getState(), desired));
         }
 
         return targets;
     }
-
-    private record PasteTarget(
-            Block block,
-            org.bukkit.block.data.BlockData original,
-            org.bukkit.block.data.BlockData desired) {}
 
     private static Block getTargetBlock(Player player) {
         BlockIterator iterator = new BlockIterator(player, 10);

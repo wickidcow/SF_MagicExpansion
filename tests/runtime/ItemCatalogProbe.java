@@ -253,6 +253,10 @@ public final class ItemCatalogProbe extends JavaPlugin {
                         failures.add("recipe machine speed not configured: " + id + "=" + machine.getSpeed());
                     }
                 } else {
+                    if (machine.getCapacityLong() != 0L || machine.isChargeable()) {
+                        failures.add("unpowered special machine exposes an energy buffer: " + id
+                                + "=" + machine.getCapacityLong());
+                    }
                     warnings.add("special untimed machine intentionally has no electric recipe tuning: " + id);
                 }
 

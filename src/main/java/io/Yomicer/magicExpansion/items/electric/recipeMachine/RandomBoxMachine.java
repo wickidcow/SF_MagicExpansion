@@ -45,6 +45,13 @@ public class RandomBoxMachine extends AbstractElectricRecipeMachine {
     }
 
     @Override
+    public int getCapacity() {
+        // This untimed scanner has never required power. Do not expose its
+        // superclass's unconfigured -1 sentinel as an invalid energy capacity.
+        return Math.max(0, super.getCapacity());
+    }
+
+    @Override
     public void postRegister() {
         registerDefaultRecipes();
     }
