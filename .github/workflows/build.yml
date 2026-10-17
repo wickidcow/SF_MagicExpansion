@@ -96,7 +96,8 @@ jobs:
           archive: false
           if-no-files-found: error
       - name: Publish canonical raw JAR release asset
-        if: github.event_name == 'workflow_dispatch' || startsWith(github.ref, 'refs/tags/') || github.ref_name == github.event.repository.default_branch
+        # Ordinary master pushes build artifacts but must never publish or replace releases.
+        if: github.event_name == 'workflow_dispatch' || startsWith(github.ref, 'refs/tags/')
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
