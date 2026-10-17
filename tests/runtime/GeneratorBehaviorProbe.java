@@ -1,5 +1,7 @@
 package audit;
 
+import static io.Yomicer.magicExpansion.utils.itemUtils.newItem.idDecorator;
+
 import com.xzavier0722.mc.plugin.slimefun4.storage.controller.BlockDataController;
 import com.xzavier0722.mc.plugin.slimefun4.storage.controller.SlimefunBlockData;
 import io.Yomicer.magicExpansion.MagicExpansion;
@@ -71,9 +73,11 @@ public final class GeneratorBehaviorProbe extends JavaPlugin {
                 ++index, passes, failures);
         testNumber(++index, passes, failures);
         testFish(++index, passes, failures);
-        testEntitySuppression(++index, passes, failures);
         testForceRscConverter(++index, passes, failures);
+        testEntitySuppression(++index, passes, failures, () -> finish(passes, failures));
+    }
 
+    private void finish(List<String> passes, List<String> failures) {
         StringBuilder result = new StringBuilder();
         result.append(failures.isEmpty() ? "GENERATOR_BEHAVIOR_PASS\n" : "GENERATOR_BEHAVIOR_FAIL\n");
         result.append("cases=7\n");
@@ -92,7 +96,7 @@ public final class GeneratorBehaviorProbe extends JavaPlugin {
         Location location = location(index);
         Fixture fixture = null;
         try {
-            SlimefunItem item = SlimefunItem.getById(id);
+            SlimefunItem item = SlimefunItem.getById(idDecorator(id));
             check(item instanceof TypeEnergyGenerator, id + " is not TypeEnergyGenerator");
             TypeEnergyGenerator generator = (TypeEnergyGenerator) item;
             fixture = createFixture(item, location);
@@ -135,7 +139,7 @@ public final class GeneratorBehaviorProbe extends JavaPlugin {
         Location location = location(index);
         Fixture fixture = null;
         try {
-            SlimefunItem item = SlimefunItem.getById(id);
+            SlimefunItem item = SlimefunItem.getById(idDecorator(id));
             check(item instanceof NumberEnergyGenerator, id + " is not NumberEnergyGenerator");
             NumberEnergyGenerator generator = (NumberEnergyGenerator) item;
             fixture = createFixture(item, location);
@@ -178,7 +182,7 @@ public final class GeneratorBehaviorProbe extends JavaPlugin {
         Location location = location(index);
         Fixture fixture = null;
         try {
-            SlimefunItem item = SlimefunItem.getById(id);
+            SlimefunItem item = SlimefunItem.getById(idDecorator(id));
             check(item instanceof FishEnergyGenerator, id + " is not FishEnergyGenerator");
             check(item instanceof AcceleratableMachine, id + " does not advertise acceleration support");
             FishEnergyGenerator generator = (FishEnergyGenerator) item;
@@ -228,44 +232,53 @@ public final class GeneratorBehaviorProbe extends JavaPlugin {
     }
 
     private void testEntitySuppression(
-            int index, List<String> passes, List<String> failures) {
+            int index, List<String> passes, List<String> failures, Runnable finish) {
         String id = "PHANTON_SUPPRESSION";
         Location location = location(index);
         Fixture fixture = null;
         Entity phantom = null;
         try {
-            SlimefunItem item = SlimefunItem.getById(id);
+            SlimefunItem item = SlimefunItem.getById(idDecorator(id));
             check(item instanceof EntityKillMachine, id + " is not EntityKillMachine");
             check(item instanceof EnergyNetComponent, id + " is not an energy component");
             check(item.getBlockTicker() != null, id + " has no ticker");
             fixture = createFixture(item, location);
-
             EnergyNetComponent energy = (EnergyNetComponent) item;
             energy.setCharge(location, 0L, fixture.data());
-
             phantom = location.getWorld().spawnEntity(
                     location.clone().add(2.0, 2.0, 0.0), EntityType.PHANTOM);
-            item.getBlockTicker().tick(fixture.block(), item, fixture.data());
-            check(phantom.isValid() && !phantom.isDead(),
-                    id + " removed a phantom with zero stored energy");
-
-            energy.setCharge(location, 1_000L, fixture.data());
-            item.getBlockTicker().tick(fixture.block(), item, fixture.data());
-
-            check(!phantom.isValid() || phantom.isDead(),
-                    id + " did not remove a phantom with sufficient energy");
-            long remaining = energy.getChargeLong(location, fixture.data());
-            check(remaining == 740L,
-                    id + " expected exact 260 J debit from 1000 J, got " + remaining);
-
-            passes.add(id + " zero-power gate and exact suppression debit");
+            final Fixture activeFixture = fixture;
+            final Entity activePhantom = phantom;
+            // A newly generated chunk needs an entity-tracking tick before isValid
+            // and getNearbyEntities can describe the spawned native entity.
+            Bukkit.getScheduler().runTaskLater(this, () -> {
+                try {
+                    check(activePhantom.isValid() && !activePhantom.isDead(),
+                            id + " phantom fixture was not valid before the zero-energy tick");
+                    item.getBlockTicker().tick(activeFixture.block(), item, activeFixture.data());
+                    check(activePhantom.isValid() && !activePhantom.isDead(),
+                            id + " removed a phantom with zero stored energy");
+                    energy.setCharge(location, 1_000L, activeFixture.data());
+                    item.getBlockTicker().tick(activeFixture.block(), item, activeFixture.data());
+                    check(!activePhantom.isValid() || activePhantom.isDead(),
+                            id + " did not remove a phantom with sufficient energy");
+                    long remaining = energy.getChargeLong(location, activeFixture.data());
+                    check(remaining == 740L,
+                            id + " expected exact 260 J debit from 1000 J, got " + remaining);
+                    passes.add(id + " zero-power gate and exact suppression debit");
+                } catch (Throwable error) {
+                    failures.add(id + ": " + error.getClass().getSimpleName() + ": " + error.getMessage());
+                } finally {
+                    activePhantom.remove();
+                    cleanup(location);
+                    finish.run();
+                }
+            }, 2L);
         } catch (Throwable error) {
             failures.add(id + ": " + error.getClass().getSimpleName() + ": " + error.getMessage());
-        } finally {
-            if (phantom != null && phantom.isValid()) {
-                phantom.remove();
-            }
+            if (phantom != null) phantom.remove();
             if (fixture != null) cleanup(location);
+            finish.run();
         }
     }
 
@@ -275,7 +288,7 @@ public final class GeneratorBehaviorProbe extends JavaPlugin {
         Location location = location(index);
         Fixture fixture = null;
         try {
-            SlimefunItem item = SlimefunItem.getById(id);
+            SlimefunItem item = SlimefunItem.getById(idDecorator(id));
             check(item instanceof ForceTwoToRsc, id + " is not ForceTwoToRsc");
             check(item instanceof EnergyNetComponent, id + " is not an energy component");
             check(item.getBlockTicker() != null, id + " has no ticker");

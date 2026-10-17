@@ -129,7 +129,7 @@ public final class PortableShopProbe extends JavaPlugin {
                 for(ItemStack cost:trade.costItems) check(c.storage.addItem(nativeStack(cost)).isEmpty(),"Payment fixture overflow");
                 ItemStack expected=nativeStack(trade.result);
                 click(c,name,index,trade.result);
-                check(usage(name,index,c.id)==1,"Purchase was not saved");
+                check(usage(name,index,c.id)==1,"Purchase was not saved; last player message: " + c.lastMessage);
                 assertContents(c.storage,List.of(expected));
                 check(!ShopManager.canPurchase(c.id,trade),"Repeat purchase remains authorized");
                 purchases++;
@@ -218,7 +218,7 @@ public final class PortableShopProbe extends JavaPlugin {
         check(remaining.stream().allMatch(i->i.getAmount()==0),"Unexpected reward/payment remainder");
     }
     private final class Client {
-        final UUID id;final Inventory storage=Bukkit.createInventory(null,36);final PlayerInventory inventory;final Player player;Inventory menu;
+        final UUID id;final Inventory storage=Bukkit.createInventory(null,36);final PlayerInventory inventory;final Player player;Inventory menu;String lastMessage;
         Client(String name){
             id=UUID.nameUUIDFromBytes(("portable-shop-audit:"+name).getBytes(StandardCharsets.UTF_8));
             inventory=(PlayerInventory)Proxy.newProxyInstance(PlayerInventory.class.getClassLoader(),new Class<?>[]{PlayerInventory.class},(p,m,a)->switch(m.getName()){
@@ -231,7 +231,8 @@ public final class PortableShopProbe extends JavaPlugin {
                 case "getUniqueId"->id;case "getInventory"->inventory;
                 case "getLocation"->Bukkit.getWorlds().get(0).getSpawnLocation();case "getWorld"->Bukkit.getWorlds().get(0);
                 case "openInventory"->{menu=(Inventory)a[0];yield null;}
-                case "playSound","sendMessage"->null;case "getName","toString"->name;case "isOnline"->true;case "hasPermission","isOp"->false;
+                case "sendMessage"->{lastMessage=String.valueOf(a[0]);yield null;}
+                case "playSound"->null;case "getName","toString"->name;case "isOnline"->true;case "hasPermission","isOp"->false;
                 default->throw new UnsupportedOperationException("Unexpected player call "+m.getName());
             });
         }

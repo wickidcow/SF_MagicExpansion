@@ -1,6 +1,9 @@
 package io.Yomicer.magicExpansion.items.electric.resourceGenerator;
 
 import io.Yomicer.magicExpansion.items.abstracts.AbstractElectricResourceMachine;
+import io.Yomicer.magicExpansion.utils.PendingMachineOutput;
+import com.xzavier0722.mc.plugin.slimefun4.storage.controller.SlimefunBlockData;
+import com.xzavier0722.mc.plugin.slimefun4.storage.util.StorageCacheUtils;
 import io.github.thebusybiscuit.slimefun4.api.items.ItemGroup;
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItemStack;
 import io.github.thebusybiscuit.slimefun4.api.recipes.RecipeType;
@@ -10,7 +13,9 @@ import me.mrCookieSlime.Slimefun.Objects.SlimefunItem.abstractItems.MachineRecip
 import me.mrCookieSlime.Slimefun.api.inventory.BlockMenu;
 import me.mrCookieSlime.Slimefun.api.inventory.BlockMenuPreset;
 import org.bukkit.Material;
+import org.bukkit.Location;
 import org.bukkit.block.Block;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
@@ -22,6 +27,8 @@ import java.util.Random;
 import static io.Yomicer.magicExpansion.utils.ColorGradient.getGradientName;
 
 public class ResourceRandomOneMachine extends AbstractElectricResourceMachine {
+
+    private static final String PENDING_OUTPUT_KEY = "random_one_pending_output";
 
     private static final int[] BACKGROUND_SLOTS = new int[] { 0, 4, 8, 9, 13, 17 };
     private static final int[] OUTPUT_BORDER_SLOTS = new int[] { 10, 11, 12, 14, 15, 16};
@@ -51,31 +58,69 @@ public class ResourceRandomOneMachine extends AbstractElectricResourceMachine {
 
     @Override
     public void tick(BlockMenu menu, Block b) {
-//            updateInfoStack(menu);
+        SlimefunBlockData data = StorageCacheUtils.getBlock(b.getLocation());
+        if (data == null) return;
+        PendingMachineOutput.Store pending = pendingStore(data);
+        if (pending.read() != null) {
+            // A recorded batch already owns the completed operation, including when
+            // the original save threw after updating the block-data cache.
+            if (PendingMachineOutput.hasValidRecord(pending)) {
+                getMachineProcessor().endOperation(b);
+            }
+            PendingMachineOutput.flush(pending, item -> menu.pushItem(item, getOutputSlots()));
+            return;
+        }
         super.tick(menu, b);
     }
 
+    @Override
+    protected boolean canCompleteOutputs(BlockMenu menu, ItemStack[] outputs) {
+        // Only one result is selected. Its complete stack is saved before delivery;
+        // batches larger than the physical menu are drained without another cycle.
+        return true;
+    }
+
+    @Override
     protected void addOutputs(BlockMenu menu, Block b, ItemStack[] outputs) {
         List<ItemStack> validOutputs = new ArrayList<>();
 
         // 收集所有非 null 的输出
         for (ItemStack output : outputs) {
-            if (output != null) {
+            if (output != null && !output.getType().isAir() && output.getAmount() > 0) {
                 validOutputs.add(output);
             }
         }
 
         // 如果有有效的输出
         if (!validOutputs.isEmpty()) {
-            // 如果只有一个,直接输出
-            if (validOutputs.size() == 1) {
-                menu.pushItem(validOutputs.get(0).clone(), getOutputSlots());
-            } else {
-                // 否则随机选一个
-                ItemStack randomOutput = validOutputs.get(new Random().nextInt(validOutputs.size()));
-                menu.pushItem(randomOutput.clone(), getOutputSlots());
-            }
+            SlimefunBlockData data = StorageCacheUtils.getBlock(b.getLocation());
+            if (data == null) throw new IllegalStateException("Machine block data is unavailable");
+            ItemStack selected = validOutputs.size() == 1 ? validOutputs.get(0)
+                    : validOutputs.get(new Random().nextInt(validOutputs.size()));
+            PendingMachineOutput.Store pending = pendingStore(data);
+            PendingMachineOutput.stage(pending, selected);
+            getMachineProcessor().endOperation(b);
+            PendingMachineOutput.flush(pending, item -> menu.pushItem(item, getOutputSlots()));
         }
+    }
+
+    private static PendingMachineOutput.Store pendingStore(SlimefunBlockData data) {
+        return new PendingMachineOutput.Store() {
+            @Override public String read() { return data.getData(PENDING_OUTPUT_KEY); }
+            @Override public void write(String value) { data.setData(PENDING_OUTPUT_KEY, value); }
+            @Override public void clear() { data.removeData(PENDING_OUTPUT_KEY); }
+        };
+    }
+
+    @Override
+    protected void onBreak(BlockBreakEvent event, BlockMenu menu, Location location) {
+        SlimefunBlockData data = StorageCacheUtils.getBlock(location);
+        if (data != null && data.getData(PENDING_OUTPUT_KEY) != null) {
+            event.setCancelled(true);
+            event.getPlayer().sendMessage("Collect the pending output, or repair its saved record, before breaking this machine.");
+            return;
+        }
+        super.onBreak(event, menu, location);
     }
 
     @Override

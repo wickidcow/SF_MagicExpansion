@@ -1,5 +1,7 @@
 package audit;
 
+import static io.Yomicer.magicExpansion.utils.itemUtils.newItem.idDecorator;
+
 import com.xzavier0722.mc.plugin.slimefun4.storage.controller.BlockDataController;
 import com.xzavier0722.mc.plugin.slimefun4.storage.controller.SlimefunBlockData;
 import io.Yomicer.magicExpansion.MagicExpansion;
@@ -60,11 +62,11 @@ public final class StackedVivariumProbe extends JavaPlugin {
     }
 
     private void runProbe() {
-        SlimefunItem stackItem = SlimefunItem.getById("FISH_VIVARIUM_STACK");
-        SlimefunItem targetItem = SlimefunItem.getById("CARGO_TERMINAL_RENEW");
-        SlimefunItem fragmentItem = SlimefunItem.getById("CARGO_FRAGMENT");
-        SlimefunItem voidTouchItem = SlimefunItem.getById("VOID_TOUCH");
-        SlimefunItem normalVivarium = SlimefunItem.getById("FISH_VIVARIUM");
+        SlimefunItem stackItem = SlimefunItem.getById(idDecorator("FISH_VIVARIUM_STACK"));
+        SlimefunItem targetItem = SlimefunItem.getById(idDecorator("CARGO_TERMINAL_RENEW"));
+        SlimefunItem fragmentItem = SlimefunItem.getById(idDecorator("CARGO_FRAGMENT"));
+        SlimefunItem voidTouchItem = SlimefunItem.getById(idDecorator("VOID_TOUCH"));
+        SlimefunItem normalVivarium = SlimefunItem.getById(idDecorator("FISH_VIVARIUM"));
 
         check(stackItem instanceof FishOutputMachineStack, "Missing stacked vivarium registration");
         check(targetItem instanceof CargoCoreMore, "Missing rebuilt Magic Storage registration");
@@ -79,7 +81,7 @@ public final class StackedVivariumProbe extends JavaPlugin {
         Fixture target = createFixture(targetItem, targetLocation);
 
         try {
-            ItemStack outputTemplate = SlimefunItems.COPPER_DUST.clone();
+            ItemStack outputTemplate = ItemStack.deserialize(SlimefunItems.COPPER_DUST.serialize());
             outputTemplate.setAmount(1);
             target.data().setData("item_type_0", SameItemJudge.itemToBase64(outputTemplate));
             target.data().setData("item_count_0", "90");
@@ -91,7 +93,7 @@ public final class StackedVivariumProbe extends JavaPlugin {
             fragmentMeta.getPersistentDataContainer().set(
                     new NamespacedKey(MagicExpansion.getInstance(), "cargo_item_json"),
                     PersistentDataType.STRING,
-                    SameItemJudge.itemToBase64(normalVivarium.getItem().clone()));
+                    SameItemJudge.itemToBase64(ItemStack.deserialize(normalVivarium.getItem().serialize())));
             fragmentMeta.getPersistentDataContainer().set(
                     new NamespacedKey(MagicExpansion.getInstance(), "cargo_amount"),
                     PersistentDataType.INTEGER,
@@ -132,6 +134,16 @@ public final class StackedVivariumProbe extends JavaPlugin {
             long initialCharge = 100_000L;
             energy.setCharge(stackLocation, initialCharge, stack.data());
 
+            check(io.github.thebusybiscuit.slimefun4.api.items.SlimefunItem.getByItem(
+                    SameItemJudge.itemFromBase64(fragmentMeta.getPersistentDataContainer().get(
+                            new NamespacedKey(MagicExpansion.getInstance(), "cargo_item_json"),
+                            PersistentDataType.STRING))) instanceof io.Yomicer.magicExpansion.items.generators.FishOutputMachine,
+                    "Fragment fixture did not decode into a registered normal vivarium");
+            check(com.xzavier0722.mc.plugin.slimefun4.storage.util.StorageCacheUtils.getSlimefunItem(targetLocation) == targetItem,
+                    "Bound storage fixture is not visible to the native block cache");
+            check(io.Yomicer.magicExpansion.items.generators.FishOutputMachine.FISH_OUTPUT_MAP.containsKey("CopperDustFish"),
+                    "Fixture fish is missing from the actual output map");
+
             // Capacity 100 with 90 already stored cannot accept the huge batch.
             stackItem.getBlockTicker().tick(stack.block(), stackItem, stack.data());
             check("90".equals(target.data().getData("item_count_0")),
@@ -145,7 +157,8 @@ public final class StackedVivariumProbe extends JavaPlugin {
 
             long stored = Long.parseLong(target.data().getData("item_count_0"));
             check(stored == 90L + EXPECTED_BATCH,
-                    "Unlimited Cargo Core stored " + stored + " instead of " + (90L + EXPECTED_BATCH));
+                    "Unlimited Cargo Core stored " + stored + " instead of " + (90L + EXPECTED_BATCH)
+                            + "; charge=" + energy.getChargeLong(stackLocation, stack.data()));
             check(stored > Integer.MAX_VALUE,
                     "Stacked vivarium output was truncated to the legacy int range");
             check(energy.getChargeLong(stackLocation, stack.data())

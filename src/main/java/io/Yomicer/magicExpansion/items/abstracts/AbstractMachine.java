@@ -58,6 +58,18 @@ public abstract class AbstractMachine extends AbstractTickingContainer implement
         }
     }
 
+    /**
+     * Checks the physical output reservation before a completed operation is charged.
+     * Configured-output machines use null placeholders and manage their own pending batch.
+     * Overrides must retain any result they cannot insert immediately.
+     */
+    protected boolean canCompleteOutputs(BlockMenu menu, ItemStack[] outputs) {
+        ItemStack[] physicalResults = java.util.Arrays.stream(outputs)
+                .filter(item -> item != null && !item.getType().isAir())
+                .toArray(ItemStack[]::new);
+        return InvUtils.fitAll(menu.toInventory(), physicalResults, getOutputSlots());
+    }
+
     @Override
     protected void onBreak(BlockBreakEvent e, BlockMenu menu, Location l) {
         super.onBreak(e, menu, l);
@@ -73,8 +85,7 @@ public abstract class AbstractMachine extends AbstractTickingContainer implement
         CraftingOperation currentOp = processor.getOperation(b);
 
         if (currentOp != null) {
-            if (currentOp.isFinished()
-                    && !InvUtils.fitAll(menu.toInventory(), currentOp.getResults(), getOutputSlots())) {
+            if (currentOp.isFinished() && !canCompleteOutputs(menu, currentOp.getResults())) {
                 // Cargo or a player may have filled the output while this operation
                 // was processing. Keep the completed operation pending rather than
                 // deleting its result or burning power while blocked.

@@ -240,7 +240,13 @@ public class PageChest extends AbstractContainer {
                 continue;
             }
 
-            ItemStack decoded = itemFromBase64(data);
+            final ItemStack decoded;
+            try {
+                decoded = itemFromBase64(data);
+            } catch (RuntimeException | LinkageError error) {
+                // Preserve the unreadable slot and refuse the entire page.
+                return null;
+            }
             if (decoded == null || decoded.getType().isAir()) {
                 return null;
             }

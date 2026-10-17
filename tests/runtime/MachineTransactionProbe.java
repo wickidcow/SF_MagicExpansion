@@ -1,14 +1,29 @@
 package audit;
 
+import static io.Yomicer.magicExpansion.utils.itemUtils.newItem.idDecorator;
+
 import com.xzavier0722.mc.plugin.slimefun4.storage.controller.BlockDataController;
 import com.xzavier0722.mc.plugin.slimefun4.storage.controller.SlimefunBlockData;
 import io.Yomicer.magicExpansion.MagicExpansion;
+import io.Yomicer.magicExpansion.items.electric.recipeMachine.IDCardMachineCN;
+import io.Yomicer.magicExpansion.items.electric.recipeMachine.RecipeMachineCrude;
+import io.Yomicer.magicExpansion.items.electric.recipeMachine.RecipeRandomMachineDefault;
+import io.Yomicer.magicExpansion.items.electric.recipeMachine.OriginMaterialGenMaker;
+import io.Yomicer.magicExpansion.items.electric.recipeMachine.OriginMaterialGenMakerLite;
+import io.Yomicer.magicExpansion.items.electric.recipeMachine.OriginMaterialGenMakerUltra;
+import io.Yomicer.magicExpansion.items.electric.templateMachine.TemplateMachine;
+import io.Yomicer.magicExpansion.items.electric.templateMachine.ItemOriginBackTrackMachine;
+import io.Yomicer.magicExpansion.items.electric.resourceGenerator.ResourceRandomOneMachine;
+import io.github.thebusybiscuit.slimefun4.implementation.operations.CraftingOperation;
+import org.bukkit.NamespacedKey;
+import org.bukkit.persistence.PersistentDataType;
 import io.Yomicer.magicExpansion.items.abstracts.AbstractElectricRecipeMachine;
 import io.Yomicer.magicExpansion.items.abstracts.AbstractElectricResourceMachine;
 import io.Yomicer.magicExpansion.items.electric.recipeMachine.RandomBoxMachine;
 import io.Yomicer.magicExpansion.items.electric.recipeMachine.RecipeRandomMachine;
 import io.Yomicer.magicExpansion.items.misc.CHEST_BLOCK;
 import io.Yomicer.magicExpansion.items.electric.resourceGenerator.OriginMaterialGen;
+import io.Yomicer.magicExpansion.items.electric.resourceGenerator.OriginMaterialGenStack;
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItem;
 import io.github.thebusybiscuit.slimefun4.core.attributes.EnergyNetComponent;
 import io.github.thebusybiscuit.slimefun4.implementation.Slimefun;
@@ -112,6 +127,11 @@ public final class MachineTransactionProbe extends JavaPlugin {
                 }
 
                 recipeDefinitions += auditRecipes(machine, failures);
+                if (machine instanceof ItemOriginBackTrackMachine backtrack) {
+                    auditBacktrack(backtrack, ++locationIndex, passed);
+                    recipeMachineTransactions++;
+                    continue;
+                }
                 MachineRecipe recipe = chooseRunnableRecipe(machine.getRecipes(), inputSlots(machine).length);
                 if (recipe == null) {
                     failures.add(machine.getId() + ": no runnable registered recipe");
@@ -123,10 +143,13 @@ public final class MachineTransactionProbe extends JavaPlugin {
                     Fixture fixture = createFixture(machine, underfill);
                     try {
                         putInputs(fixture.menu(), inputSlots(machine), recipe, true);
+                        configureOriginMaker(machine, fixture);
+                        refill(machine, fixture);
                         List<ItemStack> before = snapshot(fixture.menu(), inputSlots(machine));
                         tick(machine, fixture, false);
                         List<ItemStack> after = snapshot(fixture.menu(), inputSlots(machine));
-                        if (!sameContents(before, after)) {
+                        if (!sameContents(before, after)
+                                || machine.getMachineProcessor().getOperation(fixture.block()) != null) {
                             failures.add(machine.getId() + ": underfilled recipe consumed inputs or started");
                         } else {
                             underfillChecks++;
@@ -142,12 +165,35 @@ public final class MachineTransactionProbe extends JavaPlugin {
                     clearSlots(fixture.menu(), inputSlots(machine));
                     clearSlots(fixture.menu(), outputSlots(machine));
                     putInputs(fixture.menu(), inputSlots(machine), recipe, false);
+                    configureOriginMaker(machine, fixture);
+                    if (machine instanceof RecipeMachineCrude) {
+                        var randomField = RecipeMachineCrude.class.getDeclaredField("random");
+                        randomField.setAccessible(true);
+                        // Exercise a known successful random draw in this isolated instance.
+                        // The configured success probabilities and gameplay rates are untouched.
+                        ((java.util.Random) randomField.get(machine)).setSeed(0L);
+                    }
+                    refill(machine, fixture);
 
                     tick(machine, fixture, false); // match, consume exact inputs and start operation
-                    if (!allEmpty(fixture.menu(), inputSlots(machine))) {
-                        failures.add(machine.getId() + ": exact recipe inputs were not fully consumed at start");
-                        continue;
+                    CraftingOperation operation = machine.getMachineProcessor().getOperation(fixture.block());
+                    check(operation != null, machine.getId() + ": exact configured inputs did not start an operation");
+                    if (machine instanceof TemplateMachine) {
+                        check(containsOnlyExpectedOutputs(fixture.menu(), inputSlots(machine),
+                                        new ItemStack[] {recipe.getInput()[0]}),
+                                machine.getId() + ": reusable template or consumed ingredients changed");
+                    } else {
+                        check(allEmpty(fixture.menu(), inputSlots(machine)),
+                                machine.getId() + ": exact recipe inputs were not fully consumed at start");
                     }
+                    if (isOriginMaker(machine)) {
+                        check(fixture.menu().getItemInSlot(4) == null
+                                        || fixture.menu().getItemInSlot(4).getType().isAir(),
+                                machine.getId() + ": configured origin material was not consumed exactly once");
+                        validateOriginMaker(machine, operation.getResults(), recipe.getOutput());
+                    }
+                    ItemStack[] actualRecipeOutput = isOriginMaker(machine)
+                            ? operation.getResults() : recipe.getOutput();
 
                     long before = charge(machine, fixture);
                     refill(machine, fixture);
@@ -173,12 +219,14 @@ public final class MachineTransactionProbe extends JavaPlugin {
                         continue;
                     }
 
-                    if (machine instanceof RecipeRandomMachine) {
+                    if (machine instanceof RecipeRandomMachine || machine instanceof RecipeRandomMachineDefault) {
                         if (!containsOneExpectedOutput(fixture.menu(), outputSlots(machine), recipe.getOutput())) {
                             failures.add(machine.getId() + ": random output did not match any registered result");
                             continue;
                         }
-                    } else if (!containsAllExpectedOutputs(fixture.menu(), outputSlots(machine), recipe.getOutput())) {
+                    } else if (machine instanceof IDCardMachineCN) {
+                        validateSymbolOutput(fixture.menu(), outputSlots(machine));
+                    } else if (!containsOnlyExpectedOutputs(fixture.menu(), outputSlots(machine), actualRecipeOutput)) {
                         failures.add(machine.getId() + ": output inventory does not contain registered recipe results");
                         continue;
                     }
@@ -189,6 +237,7 @@ public final class MachineTransactionProbe extends JavaPlugin {
                     cleanup(location);
                 }
             } catch (Throwable error) {
+                getLogger().log(Level.SEVERE, machine.getId() + ": native transaction failed", error);
                 failures.add(machine.getId() + ": " + error.getClass().getSimpleName() + ": " + error.getMessage());
             }
         }
@@ -204,6 +253,11 @@ public final class MachineTransactionProbe extends JavaPlugin {
                 // Origin-material machines intentionally need per-item/block configuration and
                 // receive a dedicated probe later. They are still fully audited for registration,
                 // energy metadata and recipe definitions by this phase.
+                if (machine instanceof OriginMaterialGenStack stacked) {
+                    auditOriginMaterialStack(stacked, ++locationIndex, passed);
+                    resourceTransactions++;
+                    continue;
+                }
                 if (machine.getClass().getSimpleName().startsWith("OriginMaterialGen")) {
                     warnings.add(machine.getId() + ": configured-output behavior deferred to origin-material probe");
                     continue;
@@ -237,7 +291,18 @@ public final class MachineTransactionProbe extends JavaPlugin {
                     }
 
                     ItemStack[] declared = machine.getItemStackOutputs();
-                    if (!containsAllExpectedOutputs(fixture.menu(), outputSlots(machine), declared)) {
+                    if (machine instanceof ResourceRandomOneMachine && declared.length == 1
+                            && declared[0] != null && declared[0].getAmount()
+                            > outputSlots(machine).length * declared[0].getMaxStackSize()) {
+                        auditOversizedResourceBatch(machine, fixture, declared[0]);
+                        resourceTransactions++;
+                        passed.add(machine.getId() + ": 64-item batch conserves 36 stored and 28 pending without double charge");
+                        continue;
+                    }
+                    boolean exactOutput = machine instanceof ResourceRandomOneMachine
+                            ? containsOneExpectedOutput(fixture.menu(), outputSlots(machine), declared)
+                            : containsOnlyExpectedOutputs(fixture.menu(), outputSlots(machine), declared);
+                    if (!exactOutput) {
                         failures.add(machine.getId() + ": resource output does not contain configured results");
                         continue;
                     }
@@ -248,6 +313,7 @@ public final class MachineTransactionProbe extends JavaPlugin {
                     cleanup(location);
                 }
             } catch (Throwable error) {
+                getLogger().log(Level.SEVERE, machine.getId() + ": native transaction failed", error);
                 failures.add(machine.getId() + ": " + error.getClass().getSimpleName() + ": " + error.getMessage());
             }
         }
@@ -297,7 +363,7 @@ public final class MachineTransactionProbe extends JavaPlugin {
             clearSlots(fixture.menu(), inputs);
             clearSlots(fixture.menu(), outputs);
 
-            SlimefunItem boxItem = SlimefunItem.getById("HONKAI_STAR_RAIL_BOX");
+            SlimefunItem boxItem = SlimefunItem.getById(idDecorator("HONKAI_STAR_RAIL_BOX"));
             check(boxItem != null, "HONKAI_STAR_RAIL_BOX registration missing");
             ItemStack box = boxItem.getItem().clone();
             box.setAmount(1);
@@ -309,19 +375,28 @@ public final class MachineTransactionProbe extends JavaPlugin {
             check(remaining == null || remaining.getType().isAir(),
                     "Honkai scanner did not consume exactly one box");
 
-            List<ItemStack> expectedRewards = new ArrayList<>();
+            // The finalized group is the live reward pool. It includes the box
+            // itself as well as the six character results shown in display recipes.
+            Map<String, SlimefunItem> rewardPool =
+                    io.Yomicer.magicExpansion.Listener.SlimefunRegistryGiftBox.itemMapMihoyoHonkai;
+            Set<String> expectedPoolIds = new LinkedHashSet<>();
+            expectedPoolIds.add(boxItem.getId());
             for (MachineRecipe recipe : machine.getRecipes()) {
                 if (recipe == null || recipe.getOutput() == null) continue;
                 for (ItemStack output : recipe.getOutput()) {
-                    if (output != null && !output.getType().isAir()) {
-                        expectedRewards.add(output);
-                    }
+                    if (output == null || output.getType().isAir()) continue;
+                    String id = Slimefun.getItemDataService().getItemData(output).orElseThrow();
+                    check(rewardPool.containsKey(id), "Displayed scanner reward is absent from its live pool: " + id);
+                    expectedPoolIds.add(id);
                 }
             }
-            check(!expectedRewards.isEmpty(), "Honkai scanner exposes no registered reward templates");
-            check(containsOneExpectedOutput(
-                            fixture.menu(), outputs, expectedRewards.toArray(ItemStack[]::new)),
-                    "Honkai scanner output did not match any registered reward");
+            check(rewardPool.keySet().equals(expectedPoolIds),
+                    "Scanner reward pool differs from its displayed results plus the registered box");
+            ItemStack[] expectedRewards = rewardPool.values().stream()
+                    .map(SlimefunItem::getItem).toArray(ItemStack[]::new);
+            check(expectedRewards.length > 0, "Honkai scanner exposes no registered reward templates");
+            check(containsOneExpectedOutput(fixture.menu(), outputs, expectedRewards),
+                    "Honkai scanner output did not match any finalized registered reward");
 
             // Backpressure must never consume another box.
             clearSlots(fixture.menu(), inputs);
@@ -384,7 +459,7 @@ public final class MachineTransactionProbe extends JavaPlugin {
 
     private void auditOriginMaterialPending(
             int locationIndex, List<String> passed, List<String> failures) {
-        SlimefunItem item = SlimefunItem.getById("ORIGIN_MATERIAL_GEN");
+        SlimefunItem item = SlimefunItem.getById(idDecorator("ORIGIN_MATERIAL_GEN"));
         check(item instanceof OriginMaterialGen,
                 "ORIGIN_MATERIAL_GEN is not OriginMaterialGen");
         OriginMaterialGen machine = (OriginMaterialGen) item;
@@ -398,10 +473,7 @@ public final class MachineTransactionProbe extends JavaPlugin {
 
             refill(machine, fixture);
             tick(machine, fixture, false); // start operation
-            refill(machine, fixture);
-            tick(machine, fixture, false); // progress
-            refill(machine, fixture);
-            tick(machine, fixture, false); // complete and credit 3,564
+            finishOperation(machine, fixture); // complete exactly one operation and credit 3,564
 
             int firstStored = countMaterial(
                     fixture.menu(), outputSlots(machine), Material.DIAMOND);
@@ -434,6 +506,94 @@ public final class MachineTransactionProbe extends JavaPlugin {
         }
     }
 
+    private void auditOversizedResourceBatch(
+            AbstractElectricResourceMachine machine, Fixture fixture, ItemStack declared) {
+        int capacity = outputSlots(machine).length
+                * Math.min(declared.getMaxStackSize(), fixture.menu().toInventory().getMaxStackSize());
+        check(capacity == 36 && declared.getAmount() == 64,
+                "Guide batch fixture no longer describes the configured 36-slot/64-item transaction");
+        ItemStack first = ItemStack.deserialize(declared.serialize());
+        first.setAmount(capacity);
+        check(containsOnlyExpectedOutputs(fixture.menu(), outputSlots(machine), new ItemStack[] {first}),
+                "Oversized resource batch did not store exactly 36 matching guides first");
+        refill(machine, fixture);
+        long before = charge(machine, fixture);
+        tick(machine, fixture, false);
+        check(charge(machine, fixture) == before
+                        && containsOnlyExpectedOutputs(fixture.menu(), outputSlots(machine), new ItemStack[] {first})
+                        && machine.getMachineProcessor().getOperation(fixture.block()) == null,
+                "Blocked oversized resource batch charged energy, changed output, or started another cycle");
+        clearSlots(fixture.menu(), outputSlots(machine));
+        tick(machine, fixture, false);
+        ItemStack remaining = ItemStack.deserialize(declared.serialize());
+        remaining.setAmount(declared.getAmount() - capacity);
+        check(containsOnlyExpectedOutputs(fixture.menu(), outputSlots(machine), new ItemStack[] {remaining}),
+                "Oversized resource batch lost or duplicated its exact 28 pending guides");
+        check(charge(machine, fixture) == before
+                        && machine.getMachineProcessor().getOperation(fixture.block()) == null,
+                "Pending guide flush charged energy or started another cycle");
+    }
+
+    private void finishOperation(AbstractElectricResourceMachine machine, Fixture fixture) {
+        CraftingOperation operation = machine.getMachineProcessor().getOperation(fixture.block());
+        check(operation != null, machine.getId() + ": configured generator did not start");
+        for (int tick = 0; tick < operation.getTotalTicks() + 2
+                && machine.getMachineProcessor().getOperation(fixture.block()) != null; tick++) {
+            refill(machine, fixture);
+            tick(machine, fixture, false);
+        }
+        check(machine.getMachineProcessor().getOperation(fixture.block()) == null,
+                machine.getId() + ": configured generator did not finish its operation");
+    }
+
+    private void auditOriginMaterialStack(OriginMaterialGenStack machine, int index, List<String> passed) {
+        Location location = location(index);
+        Fixture fixture = createFixture(machine, location);
+        try {
+            SlimefunItem childType = SlimefunItem.getById(idDecorator("ORIGIN_MATERIAL_GEN_LITE"));
+            check(childType != null, "Stacked origin generator child is not registered");
+            ItemStack child = ItemStack.deserialize(childType.getItem().serialize());
+            child.setAmount(64);
+            var meta = child.getItemMeta();
+            meta.getPersistentDataContainer().set(new NamespacedKey(MagicExpansion.getInstance(),
+                    "origin_material"), PersistentDataType.STRING, Material.DIAMOND.name());
+            child.setItemMeta(meta);
+            clearSlots(fixture.menu(), inputSlots(machine));
+            fixture.menu().replaceExistingItem(inputSlots(machine)[0], child);
+            fixture.data().setData("machine_random_multiplier", "1.5");
+            for (int slot : outputSlots(machine)) {
+                fixture.menu().replaceExistingItem(slot, new ItemStack(Material.STONE, 64));
+            }
+            fixture.menu().replaceExistingItem(outputSlots(machine)[0], new ItemStack(Material.DIAMOND, 32));
+            refill(machine, fixture);
+            tick(machine, fixture, false);
+            finishOperation(machine, fixture);
+            check(countMaterial(fixture.menu(), outputSlots(machine), Material.DIAMOND) == 64,
+                    "Stacked origin generator did not fill the exact 32 available diamond spaces");
+            check("DIAMOND=64".equals(fixture.data().getData("origin_stack_pending")),
+                    "Stacked origin generator did not conserve its 96-item batch with 64 pending");
+            check(containsOnlyExpectedOutputs(fixture.menu(), inputSlots(machine), new ItemStack[] {child}),
+                    "Stacked origin generator consumed or changed its reusable configured child");
+            check(fixture.data().getData("origin_stack_active") == null,
+                    "Stacked origin generator retained a completed active batch");
+            refill(machine, fixture);
+            long before = charge(machine, fixture);
+            tick(machine, fixture, false);
+            check(charge(machine, fixture) == before
+                            && machine.getMachineProcessor().getOperation(fixture.block()) == null,
+                    "Stacked origin generator charged or started while its pending output was blocked");
+            clearSlots(fixture.menu(), outputSlots(machine));
+            tick(machine, fixture, false);
+            check(containsOnlyExpectedOutputs(fixture.menu(), outputSlots(machine),
+                            new ItemStack[] {new ItemStack(Material.DIAMOND, 64)})
+                            && fixture.data().getData("origin_stack_pending") == null,
+                    "Stacked origin generator did not flush exactly 64 retained diamonds");
+            passed.add(machine.getId() + ": 96-item batch, reusable child, blocked charge and exact pending flush");
+        } finally {
+            cleanup(location);
+        }
+    }
+
     private int countMaterial(BlockMenu menu, int[] slots, Material material) {
         int total = 0;
         for (int slot : slots) {
@@ -446,14 +606,16 @@ public final class MachineTransactionProbe extends JavaPlugin {
     }
 
     private int auditRecipes(AbstractElectricRecipeMachine machine, List<String> failures) {
-        return auditRecipeList(machine.getId(), machine.getRecipes(), failures);
+        return auditRecipeList(machine.getId(), machine.getRecipes(), failures, true);
     }
 
     private int auditRecipes(AbstractElectricResourceMachine machine, List<String> failures) {
-        return auditRecipeList(machine.getId(), machine.getRecipes(), failures);
+        check(machine instanceof OriginMaterialGenStack || inputSlots(machine).length == 0,
+                machine.getId() + ": generator unexpectedly requires physical inputs");
+        return auditRecipeList(machine.getId(), machine.getRecipes(), failures, false);
     }
 
-    private int auditRecipeList(String id, List<MachineRecipe> recipes, List<String> failures) {
+    private int auditRecipeList(String id, List<MachineRecipe> recipes, List<String> failures, boolean requiresInputs) {
         int count = 0;
         for (int index = 0; index < recipes.size(); index++) {
             MachineRecipe recipe = recipes.get(index);
@@ -469,6 +631,9 @@ public final class MachineTransactionProbe extends JavaPlugin {
             }
             if (recipe.getInput() != null) {
                 for (ItemStack input : recipe.getInput()) {
+                    // Resource display recipes intentionally use a null placeholder.
+                    // Configured Origin generators receive separate live fixtures.
+                    if (!requiresInputs && (input == null || input.getType().isAir())) continue;
                     if (input == null || input.getType().isAir() || input.getAmount() <= 0) {
                         failures.add(id + ": invalid recipe input at index " + index);
                     }
@@ -656,51 +821,110 @@ public final class MachineTransactionProbe extends JavaPlugin {
         return false;
     }
 
-    private boolean containsAllExpectedOutputs(BlockMenu menu, int[] slots, ItemStack[] expected) {
-        Map<String, Integer> required = new LinkedHashMap<>();
-        Map<String, ItemStack> templates = new LinkedHashMap<>();
-        for (ItemStack output : expected) {
-            if (output == null || output.getType().isAir()) continue;
-            String key = identityKey(output);
-            required.merge(key, output.getAmount(), Integer::sum);
-            templates.putIfAbsent(key, output);
-        }
-        for (Map.Entry<String, Integer> entry : required.entrySet()) {
-            int found = 0;
-            ItemStack template = templates.get(entry.getKey());
-            for (int slot : slots) {
-                ItemStack actual = menu.getItemInSlot(slot);
-                if (actual != null && !actual.getType().isAir()
-                        && SlimefunUtils.isItemSimilar(actual, template, true, false)) {
-                    found += actual.getAmount();
-                }
-            }
-            if (found < entry.getValue()) return false;
-        }
-        return !required.isEmpty();
-    }
-
     private boolean containsOneExpectedOutput(BlockMenu menu, int[] slots, ItemStack[] expected) {
-        for (int slot : slots) {
-            ItemStack actual = menu.getItemInSlot(slot);
-            if (actual == null || actual.getType().isAir()) continue;
-            for (ItemStack template : expected) {
-                if (template != null && !template.getType().isAir()
-                        && SlimefunUtils.isItemSimilar(actual, template, true, false)
-                        && actual.getAmount() >= template.getAmount()) {
-                    return true;
-                }
-            }
+        for (ItemStack template : expected) {
+            if (template != null && !template.getType().isAir()
+                    && containsOnlyExpectedOutputs(menu, slots, new ItemStack[] {template})) return true;
         }
         return false;
     }
 
-    private String identityKey(ItemStack stack) {
-        ItemStack identity = stack.clone();
+    private boolean containsOnlyExpectedOutputs(BlockMenu menu, int[] slots, ItemStack[] expected) {
+        Map<ItemStack, Long> required = new LinkedHashMap<>();
+        Map<ItemStack, Long> actual = new LinkedHashMap<>();
+        for (ItemStack stack : expected) addCount(required, stack);
+        for (int slot : slots) addCount(actual, menu.getItemInSlot(slot));
+        return !required.isEmpty() && required.equals(actual);
+    }
+
+    private void addCount(Map<ItemStack, Long> counts, ItemStack stack) {
+        if (stack == null || stack.getType().isAir()) return;
+        // Compare the full native metadata, including configured PDC, independently
+        // of DistinctiveItem.canStack: some correct results deliberately never stack.
+        ItemStack identity = ItemStack.deserialize(stack.serialize());
         identity.setAmount(1);
-        SlimefunItem sf = SlimefunItem.getByItem(identity);
-        return (sf == null ? "vanilla:" + identity.getType().getKey() : "sf:" + sf.getId())
-                + "|" + identity.hashCode();
+        counts.merge(identity, (long) stack.getAmount(), Long::sum);
+    }
+
+    private boolean isOriginMaker(AbstractElectricRecipeMachine machine) {
+        return machine instanceof OriginMaterialGenMaker
+                || machine instanceof OriginMaterialGenMakerLite
+                || machine instanceof OriginMaterialGenMakerUltra;
+    }
+
+    private void configureOriginMaker(AbstractElectricRecipeMachine machine, Fixture fixture) {
+        if (isOriginMaker(machine)) fixture.menu().replaceExistingItem(4, new ItemStack(Material.DIAMOND));
+    }
+
+    private void validateOriginMaker(AbstractElectricRecipeMachine machine, ItemStack[] output, ItemStack[] declared) {
+        check(output.length == 1 && output[0] != null && output[0].getAmount() == 1,
+                machine.getId() + ": maker did not produce one configured generator");
+        check(Slimefun.getItemDataService().getItemData(output[0]).equals(
+                        Slimefun.getItemDataService().getItemData(declared[0])),
+                machine.getId() + ": maker changed the registered generator identity");
+        String encoded = output[0].getItemMeta().getPersistentDataContainer().get(
+                new NamespacedKey(MagicExpansion.getInstance(), "origin_material"), PersistentDataType.STRING);
+        if (machine instanceof OriginMaterialGenMakerUltra) {
+            ItemStack decoded = OriginMaterialGenMakerUltra.deserializeItemStack(encoded);
+            check(decoded != null && decoded.getType() == Material.DIAMOND && decoded.getAmount() == 1,
+                    machine.getId() + ": maker lost its full origin item");
+        } else {
+            check(Material.DIAMOND.name().equals(encoded), machine.getId() + ": maker lost origin material");
+        }
+    }
+
+    private void validateSymbolOutput(BlockMenu menu, int[] slots) {
+        int count = 0;
+        for (int slot : slots) {
+            ItemStack actual = menu.getItemInSlot(slot);
+            if (actual == null || actual.getType().isAir()) continue;
+            check(actual.getType() == Material.SUGAR
+                            && Slimefun.getItemDataService().getItemData(actual).orElse("").equals("MOMOTECH_LETTER"),
+                    "Character constructor did not produce a real generated symbol");
+            check(actual.hasItemMeta() && actual.getItemMeta().hasLore(), "Generated symbol lost its character lore");
+            count += actual.getAmount();
+        }
+        check(count == 1, "Character constructor did not produce exactly one symbol");
+    }
+
+    private void auditBacktrack(ItemOriginBackTrackMachine machine, int index, List<String> passed) {
+        Location location = location(index);
+        Fixture fixture = createFixture(machine, location);
+        try {
+            SlimefunItem source = SlimefunItem.getById(idDecorator("LIGHT_EXTRACT_BASIC"));
+            check(source != null, "Backtrack source fixture is unavailable");
+            ItemStack template = ItemStack.deserialize(source.getItem().serialize());
+            clearSlots(fixture.menu(), inputSlots(machine));
+            clearSlots(fixture.menu(), outputSlots(machine));
+            fixture.menu().replaceExistingItem(inputSlots(machine)[0], template);
+            refill(machine, fixture);
+            tick(machine, fixture, false);
+            CraftingOperation operation = machine.getMachineProcessor().getOperation(fixture.block());
+            check(operation != null, "Backtrack failed to start from a real Slimefun template");
+            check(containsOnlyExpectedOutputs(fixture.menu(), inputSlots(machine), new ItemStack[] {template}),
+                    "Backtrack consumed its reusable template");
+            ItemStack[] captured = operation.getResults();
+            check(captured.length == 1, "Backtrack did not snapshot one ingredient");
+            boolean registeredIngredient = false;
+            for (ItemStack ingredient : source.getRecipe()) {
+                if (ingredient != null && SlimefunUtils.isItemSimilar(captured[0], ingredient, true, false)
+                        && captured[0].getAmount() == ingredient.getAmount()) registeredIngredient = true;
+            }
+            check(registeredIngredient, "Backtrack selected an item outside the source recipe");
+            fixture.menu().replaceExistingItem(inputSlots(machine)[0], new ItemStack(Material.STONE));
+            for (int tick = 0; tick < operation.getTotalTicks() + 2
+                    && machine.getMachineProcessor().getOperation(fixture.block()) != null; tick++) {
+                refill(machine, fixture);
+                tick(machine, fixture, false);
+            }
+            check(containsOnlyExpectedOutputs(fixture.menu(), outputSlots(machine), captured),
+                    "Backtrack output changed when the template was swapped mid-operation");
+            check(fixture.menu().getItemInSlot(inputSlots(machine)[0]).getType() == Material.STONE,
+                    "Backtrack consumed the replacement template");
+            passed.add(machine.getId() + ": reusable template and snapshotted original ingredient");
+        } finally {
+            cleanup(location);
+        }
     }
 
     private static boolean addonIs(SlimefunItem item, MagicExpansion plugin) {

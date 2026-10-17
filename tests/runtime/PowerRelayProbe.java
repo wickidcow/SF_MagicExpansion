@@ -1,5 +1,7 @@
 package audit;
 
+import static io.Yomicer.magicExpansion.utils.itemUtils.newItem.idDecorator;
+
 import com.xzavier0722.mc.plugin.slimefun4.storage.controller.BlockDataController;
 import com.xzavier0722.mc.plugin.slimefun4.storage.controller.SlimefunBlockData;
 import io.Yomicer.magicExpansion.MagicExpansion;
@@ -77,7 +79,7 @@ public final class PowerRelayProbe extends JavaPlugin {
     }
 
     private void testInputRelay() {
-        SlimefunItem item = SlimefunItem.getById("MAGIC_POWER_INPUT_MACHINE");
+        SlimefunItem item = SlimefunItem.getById(idDecorator("MAGIC_POWER_INPUT_MACHINE"));
         check(item instanceof EnergyInputGenerator, "MAGIC_POWER_INPUT_MACHINE is not EnergyInputGenerator");
         EnergyInputGenerator relay = (EnergyInputGenerator) item;
         Location location = new Location(Bukkit.getWorlds().getFirst(), 16_000, 80, 16_000);
@@ -110,7 +112,7 @@ public final class PowerRelayProbe extends JavaPlugin {
     }
 
     private void testOutputRelay() {
-        SlimefunItem item = SlimefunItem.getById("MAGIC_POWER_OUTPUT_MACHINE");
+        SlimefunItem item = SlimefunItem.getById(idDecorator("MAGIC_POWER_OUTPUT_MACHINE"));
         check(item instanceof EnergyOutputGenerator, "MAGIC_POWER_OUTPUT_MACHINE is not EnergyOutputGenerator");
         EnergyOutputGenerator relay = (EnergyOutputGenerator) item;
         Location location = new Location(Bukkit.getWorlds().getFirst(), 16_010, 80, 16_000);
@@ -153,7 +155,7 @@ public final class PowerRelayProbe extends JavaPlugin {
     }
 
     private ItemStack card(String id, long maximum, long stored) {
-        SlimefunItem sf = SlimefunItem.getById(id);
+        SlimefunItem sf = SlimefunItem.getById(idDecorator(id));
         check(sf != null, "Missing registered card " + id);
         ItemStack item = sf.getItem().clone();
         item.setAmount(1);

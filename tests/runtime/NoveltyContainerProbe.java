@@ -1,5 +1,7 @@
 package audit;
 
+import static io.Yomicer.magicExpansion.utils.itemUtils.newItem.idDecorator;
+
 import com.xzavier0722.mc.plugin.slimefun4.storage.controller.BlockDataController;
 import com.xzavier0722.mc.plugin.slimefun4.storage.controller.SlimefunBlockData;
 import com.xzavier0722.mc.plugin.slimefun4.storage.util.StorageCacheUtils;
@@ -69,10 +71,10 @@ public final class NoveltyContainerProbe extends JavaPlugin {
         check(MagicExpansion.getInstance() != null && MagicExpansion.getInstance().isEnabled(),
                 "MagicExpansion is not enabled");
 
-        SlimefunItem pageItem = SlimefunItem.getById("PAGE_CHEST");
-        SlimefunItem originItem = SlimefunItem.getById("SINGLE_CUBE_ORIGIN");
-        SlimefunItem oreItem = SlimefunItem.getById("SINGLE_CUBE_ORE");
-        SlimefunItem cropItem = SlimefunItem.getById("WHEAT_SEEDS");
+        SlimefunItem pageItem = SlimefunItem.getById(idDecorator("PAGE_CHEST"));
+        SlimefunItem originItem = SlimefunItem.getById(idDecorator("SINGLE_CUBE_ORIGIN"));
+        SlimefunItem oreItem = SlimefunItem.getById(idDecorator("SINGLE_CUBE_ORE"));
+        SlimefunItem cropItem = SlimefunItem.getById(idDecorator("WHEAT_SEEDS"));
         check(pageItem instanceof PageChest, "PAGE_CHEST registration missing");
         check(originItem instanceof SingleCubeOrigin, "SINGLE_CUBE_ORIGIN registration missing");
         check(oreItem instanceof SingleCubeOre, "SINGLE_CUBE_ORE registration missing");

@@ -51,7 +51,7 @@ jobs:
           bash scripts/install_slimefun_api.sh > audit/build.log 2>&1
           mvn -B -ntp clean verify >> audit/build.log 2>&1 || { tail -n 100 audit/build.log; exit 1; }
           mvn -B -ntp dependency:build-classpath -Dmdep.outputFile=classpath.txt >> audit/build.log 2>&1
-          cp target/SF_MagicExpansion1.1.14.jar audit/server/plugins/MagicExpansion.jar
+          cp target/SF_MagicExpansion1.1.16.jar audit/server/plugins/MagicExpansion.jar
           sha256sum audit/server/plugins/MagicExpansion.jar > audit/candidate-jar.sha256
       - name: Obtain pinned runtime inputs
         env:

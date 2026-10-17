@@ -125,6 +125,12 @@ public class FishEnergyGenerator extends MenuBlock implements EnergyNetProvider,
     }
 
     @Override
+    public long getGeneratedOutputLong(Location l, SlimefunBlockData data) {
+        // The legacy overload otherwise routes through the int-returning bridge.
+        return calculateGeneratedOutput(l);
+    }
+
+    @Override
     public long getGeneratedOutputLong(Location l, ASlimefunDataContainer data) {
         return calculateGeneratedOutput(l);
     }
