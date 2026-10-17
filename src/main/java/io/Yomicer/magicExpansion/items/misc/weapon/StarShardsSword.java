@@ -164,6 +164,31 @@ public class StarShardsSword extends SimpleSlimefunItem<ItemUseHandler> implemen
         };
     }
 
+    /**
+     * Astral Shield is not a PvP/region protection rule. An OP wielding the genuine
+     * Slimefun Cow Hearder may pierce this specific temporary shield on a melee strike.
+     * Cancelled attacks never enter this listener (ignoreCancelled=true), preserving
+     * Towny and other external PvP protections.
+     */
+    private static boolean isOperatorCowHearderMelee(EntityDamageEvent event) {
+        if (!(event instanceof EntityDamageByEntityEvent hit)
+                || !(hit.getDamager() instanceof Player attacker)
+                || !attacker.isOp()) {
+            return false;
+        }
+
+        SlimefunItem held = SlimefunItem.getByItem(attacker.getInventory().getItemInMainHand());
+        return allowsCowHearderMelee(attacker.isOp(), held == null ? null : held.getId(), event.getCause());
+    }
+
+    static boolean allowsCowHearderMelee(
+            boolean operator, String slimefunItemId, EntityDamageEvent.DamageCause cause) {
+        return operator
+                && "COW_HEARDER".equals(slimefunItemId)
+                && (cause == EntityDamageEvent.DamageCause.ENTITY_ATTACK
+                        || cause == EntityDamageEvent.DamageCause.ENTITY_SWEEP_ATTACK);
+    }
+
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onEntityDamage(EntityDamageEvent event) {
         if (!(event.getEntity() instanceof Player)) return;
@@ -171,7 +196,7 @@ public class StarShardsSword extends SimpleSlimefunItem<ItemUseHandler> implemen
 
         Long until = invulnerableUntil.get(p.getUniqueId());
         boolean shieldActive = until != null && System.currentTimeMillis() < until;
-        if (shieldActive) {
+        if (shieldActive && !isOperatorCowHearderMelee(event)) {
             event.setCancelled(true);
             if (event.getCause() != EntityDamageEvent.DamageCause.VOID) {
 
