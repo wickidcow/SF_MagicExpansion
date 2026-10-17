@@ -62,7 +62,7 @@ public final class ItemCatalogProbe extends JavaPlugin {
                 } catch (Exception ignored) {
                     // The console still preserves the original failure.
                 }
-                Bukkit.shutdown();
+                requestShutdown();
             }
         }, 60L);
     }
@@ -367,7 +367,13 @@ public final class ItemCatalogProbe extends JavaPlugin {
                 + " warnings=" + warnings.size()
                 + " failures=" + failures.size());
 
-        Bukkit.shutdown();
+        requestShutdown();
+    }
+
+    private void requestShutdown() {
+        // Finish the current callback and queued chunk listeners before stopping.
+        // Paper treats shutdown with a heartbeat older than 1 second as a hard timeout.
+        Bukkit.getScheduler().runTaskLater(this, Bukkit::shutdown, 2L);
     }
 
     private static void require(boolean condition, String message) {

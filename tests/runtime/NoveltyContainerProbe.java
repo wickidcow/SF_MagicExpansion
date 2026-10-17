@@ -56,7 +56,7 @@ public final class NoveltyContainerProbe extends JavaPlugin {
                 getLogger().log(Level.SEVERE, "NOVELTY_CONTAINER_FATAL", error);
                 publish("NOVELTY_CONTAINER_FAIL\nfatal=" + error + "\n");
             }
-            Bukkit.shutdown();
+            requestShutdown();
         }, 60L);
     }
 
@@ -324,6 +324,12 @@ public final class NoveltyContainerProbe extends JavaPlugin {
         } catch (Exception error) {
             getLogger().log(Level.SEVERE, "Could not write novelty-container evidence", error);
         }
+    }
+
+    private void requestShutdown() {
+        // Finish the current callback and queued chunk listeners before stopping.
+        // Paper treats shutdown with a heartbeat older than 1 second as a hard timeout.
+        Bukkit.getScheduler().runTaskLater(this, Bukkit::shutdown, 2L);
     }
 
     private static void check(boolean condition, String message) {

@@ -39,7 +39,7 @@ public final class PowerRelayProbe extends JavaPlugin {
             } catch (Throwable error) {
                 getLogger().log(Level.SEVERE, "POWER_RELAY_FATAL", error);
                 publish("POWER_RELAY_FAIL\nfatal=" + error + "\n");
-                Bukkit.shutdown();
+                requestShutdown();
             }
         }, 60L);
     }
@@ -75,7 +75,7 @@ public final class PowerRelayProbe extends JavaPlugin {
         for (String pass : passes) result.append("pass=").append(pass).append('\n');
         for (String failure : failures) result.append("failure=").append(failure).append('\n');
         publish(result.toString());
-        Bukkit.shutdown();
+        requestShutdown();
     }
 
     private void testInputRelay() {
@@ -214,6 +214,12 @@ public final class PowerRelayProbe extends JavaPlugin {
         } catch (Exception error) {
             getLogger().log(Level.SEVERE, "Could not save power relay evidence", error);
         }
+    }
+
+    private void requestShutdown() {
+        // Finish the current callback and queued chunk listeners before stopping.
+        // Paper treats shutdown with a heartbeat older than 1 second as a hard timeout.
+        Bukkit.getScheduler().runTaskLater(this, Bukkit::shutdown, 2L);
     }
 
     private static void check(boolean condition, String explanation) {

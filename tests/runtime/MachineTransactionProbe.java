@@ -69,7 +69,7 @@ public final class MachineTransactionProbe extends JavaPlugin {
             } catch (Throwable error) {
                 getLogger().log(Level.SEVERE, "MACHINE_TRANSACTION_FATAL", error);
                 publish("MACHINE_TRANSACTION_FAIL\nfatal=" + error + "\n");
-                Bukkit.shutdown();
+                requestShutdown();
             }
         }, 60L);
     }
@@ -346,7 +346,7 @@ public final class MachineTransactionProbe extends JavaPlugin {
                 + " resourceMachines=" + resourceMachines.size()
                 + " resourceTransactions=" + resourceTransactions
                 + " failures=" + failures.size());
-        Bukkit.shutdown();
+        requestShutdown();
     }
 
     private void auditRandomBoxMachine(
@@ -933,6 +933,12 @@ public final class MachineTransactionProbe extends JavaPlugin {
         } catch (RuntimeException | LinkageError ignored) {
             return false;
         }
+    }
+
+    private void requestShutdown() {
+        // Finish the current callback and queued chunk listeners before stopping.
+        // Paper treats shutdown with a heartbeat older than 1 second as a hard timeout.
+        Bukkit.getScheduler().runTaskLater(this, Bukkit::shutdown, 2L);
     }
 
     private void publish(String text) {

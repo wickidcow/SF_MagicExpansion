@@ -50,7 +50,7 @@ public final class GeneratorBehaviorProbe extends JavaPlugin {
             } catch (Throwable error) {
                 getLogger().log(Level.SEVERE, "GENERATOR_BEHAVIOR_FATAL", error);
                 publish("GENERATOR_BEHAVIOR_FAIL\nfatal=" + error + "\n");
-                Bukkit.shutdown();
+                requestShutdown();
             }
         }, 60L);
     }
@@ -88,7 +88,7 @@ public final class GeneratorBehaviorProbe extends JavaPlugin {
 
         getLogger().info((failures.isEmpty() ? "GENERATOR_BEHAVIOR_PASS" : "GENERATOR_BEHAVIOR_FAIL")
                 + " passed=" + passes.size() + " failures=" + failures.size());
-        Bukkit.shutdown();
+        requestShutdown();
     }
 
     private void testType(String id, BlockFace face, Material source, int min, int max,
@@ -418,6 +418,12 @@ public final class GeneratorBehaviorProbe extends JavaPlugin {
         } catch (Exception error) {
             getLogger().log(Level.SEVERE, "Could not save generator behavior evidence", error);
         }
+    }
+
+    private void requestShutdown() {
+        // Finish the current callback and queued chunk listeners before stopping.
+        // Paper treats shutdown with a heartbeat older than 1 second as a hard timeout.
+        Bukkit.getScheduler().runTaskLater(this, Bukkit::shutdown, 2L);
     }
 
     private static void check(boolean condition, String explanation) {

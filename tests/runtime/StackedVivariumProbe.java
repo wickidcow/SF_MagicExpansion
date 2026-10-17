@@ -50,7 +50,7 @@ public final class StackedVivariumProbe extends JavaPlugin {
                 getLogger().log(Level.SEVERE, "STACKED_VIVARIUM_FATAL", error);
                 publish("STACKED_VIVARIUM_FAIL\nfatal=" + error + "\n");
             }
-            Bukkit.shutdown();
+            requestShutdown();
         }, 60L);
     }
 
@@ -208,6 +208,12 @@ public final class StackedVivariumProbe extends JavaPlugin {
         } catch (Exception error) {
             getLogger().log(Level.SEVERE, "Could not save stacked vivarium evidence", error);
         }
+    }
+
+    private void requestShutdown() {
+        // Finish the current callback and queued chunk listeners before stopping.
+        // Paper treats shutdown with a heartbeat older than 1 second as a hard timeout.
+        Bukkit.getScheduler().runTaskLater(this, Bukkit::shutdown, 2L);
     }
 
     private static void check(boolean condition, String explanation) {
