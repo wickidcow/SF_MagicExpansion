@@ -170,6 +170,20 @@ public class StarShardsSword extends SimpleSlimefunItem<ItemUseHandler> implemen
      * Cancelled attacks never enter this listener (ignoreCancelled=true), preserving
      * Towny and other external PvP protections.
      */
+    /**
+     * A Starfall bleed tick modifies health directly rather than dispatching a damage event.
+     * Preserve the Cow Hearder wielder's immunity without changing normal bleed behavior.
+     */
+    private static boolean isOperatorWieldingCowHearder(Player player) {
+        if (!player.isOp()) return false;
+        SlimefunItem held = SlimefunItem.getByItem(player.getInventory().getItemInMainHand());
+        return operatorHoldsCowHearder(player.isOp(), held == null ? null : held.getId());
+    }
+
+    static boolean operatorHoldsCowHearder(boolean operator, String slimefunItemId) {
+        return operator && "COW_HEARDER".equals(slimefunItemId);
+    }
+
     private static boolean isOperatorCowHearderMelee(EntityDamageEvent event) {
         if (!(event instanceof EntityDamageByEntityEvent hit)
                 || !(hit.getDamager() instanceof Player attacker)
@@ -269,7 +283,8 @@ public class StarShardsSword extends SimpleSlimefunItem<ItemUseHandler> implemen
             public void run() {
 
                 if (!damager.isOnline() || !target.isValid() || target.isDead()
-                        || !damager.getWorld().equals(target.getWorld()) || !canAttack(damager, target)) {
+                        || !damager.getWorld().equals(target.getWorld()) || !canAttack(damager, target)
+                        || (target instanceof Player shielded && isOperatorWieldingCowHearder(shielded))) {
                     finishAndCleanup();
                     return;
                 }
