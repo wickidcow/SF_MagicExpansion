@@ -17,6 +17,14 @@ class StarShardsSwordShieldTest {
     }
 
     @Test
+    void directHealthBleedMustNotBypassAnAuthorizedCowHearder() {
+        assertTrue(StarShardsSword.operatorHoldsCowHearder(true, "COW_HEARDER"));
+        assertFalse(StarShardsSword.operatorHoldsCowHearder(false, "COW_HEARDER"));
+        assertFalse(StarShardsSword.operatorHoldsCowHearder(true, "WEAPON_STAR_SHARDS_SWORD"));
+        assertFalse(StarShardsSword.operatorHoldsCowHearder(true, null));
+    }
+
+    @Test
     void shieldContinuesBlockingNormalWeaponsAndNonOperators() {
         assertFalse(StarShardsSword.allowsCowHearderMelee(
                 false, "COW_HEARDER", EntityDamageEvent.DamageCause.ENTITY_ATTACK));
