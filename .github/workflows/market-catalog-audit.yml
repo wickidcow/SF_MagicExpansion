@@ -51,7 +51,7 @@ jobs:
           bash scripts/install_slimefun_api.sh > audit/build.log 2>&1
           mvn -B -ntp clean verify >> audit/build.log 2>&1 || { tail -n 100 audit/build.log; exit 1; }
           mvn -B -ntp dependency:build-classpath -Dmdep.outputFile=classpath.txt >> audit/build.log 2>&1
-          cp target/SF_MagicExpansion1.1.16.jar audit/server/plugins/MagicExpansion.jar
+          cp target/SF_MagicExpansion1.1.17.jar audit/server/plugins/MagicExpansion.jar
           sha256sum audit/server/plugins/MagicExpansion.jar > audit/candidate-jar.sha256
       - name: Obtain pinned runtime inputs
         env:
@@ -59,8 +59,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          curl -fL --retry 3 https://github.com/wickidcow/Slimefun-Legacy/releases/download/v4.1.74/Slimefun-Legacy4.1.74.jar -o audit/server/plugins/Slimefun.jar
-          echo '72a524d7c0d6f75a9decbf06679515887273ae53673d3f5ee38f355bef952c96  audit/server/plugins/Slimefun.jar' | sha256sum -c -
+          curl -fL --retry 3 https://github.com/wickidcow/Slimefun-Legacy/releases/download/v4.1.76/Slimefun-Legacy4.1.76.jar -o audit/server/plugins/Slimefun.jar
+          echo 'be58eef8965eeb31fb930e6cfa204f74f221f95bf649976eb17802886c859916  audit/server/plugins/Slimefun.jar' | sha256sum -c -
           if [[ "$OPTIONAL" == true ]]; then
             curl -fL --retry 3 https://github.com/wickidcow/SF_InfinityExpansion2/releases/download/v2.0.13/SF_InfinityExpansion2.0.13.jar -o audit/server/plugins/InfinityExpansion2.jar
             echo 'a2f8a1ac7ada18c7a6cf774b09158e1567c6cace478bed10a160a897ce97198e  audit/server/plugins/InfinityExpansion2.jar' | sha256sum -c -

@@ -39,8 +39,8 @@ jobs:
       - name: Obtain the checksum-pinned published core and verified Paper
         run: |
           set -euo pipefail
-          curl -fL --retry 3 https://github.com/wickidcow/Slimefun-Legacy/releases/download/v4.1.74/Slimefun-Legacy4.1.74.jar -o audit/server/plugins/Slimefun.jar
-          echo '72a524d7c0d6f75a9decbf06679515887273ae53673d3f5ee38f355bef952c96  audit/server/plugins/Slimefun.jar' | sha256sum -c -
+          curl -fL --retry 3 https://github.com/wickidcow/Slimefun-Legacy/releases/download/v4.1.76/Slimefun-Legacy4.1.76.jar -o audit/server/plugins/Slimefun.jar
+          echo 'be58eef8965eeb31fb930e6cfa204f74f221f95bf649976eb17802886c859916  audit/server/plugins/Slimefun.jar' | sha256sum -c -
           curl -fL --retry 3 -A 'MagicExpansion-Portable-Shop-Audit/1.0' https://fill.papermc.io/v3/projects/paper/versions/26.3/builds/190 -o audit/paper.json
           URL=$(jq -er '.downloads["server:default"].url' audit/paper.json)
           HASH=$(jq -er '.downloads["server:default"].checksums.sha256' audit/paper.json)

@@ -1,3 +1,12 @@
+## 1.1.17 — Resource generator and One Block stability (2026-10-22)
+
+- Idle safely when resource-generator recipe lists are empty or unavailable instead of indexing a missing first recipe.
+- Preserve inventory, energy and pending-output state while recipes are unavailable, then resume normal production after restoration.
+- Fix the Paper 1.21.11 One Block transition from existing tile blocks into sculk shriekers without changing the selectable material pool.
+- Preserve Slimefun block identity and same-type chest inventory/PDC state across the One Block regression paths.
+- Add native missing-recipe and tile-transition coverage across Paper 1.21.11, Paper 26.2, Paper 26.3 and Purpur 26.3.
+- Preserve item/research IDs, persistent keys, recipes, costs, quantities, machine rates and shop identities.
+
 ## 1.1.12 — Black Market cycle diagnostics (candidate, not published)
 
 - Add OP-only `/magicexpansion blackmarket status` to inspect the Black Market cycle marker without writing files or modifying live purchases.

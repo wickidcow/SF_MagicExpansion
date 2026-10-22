@@ -15,6 +15,7 @@ import me.mrCookieSlime.Slimefun.api.inventory.BlockMenu;
 import io.Yomicer.magicExpansion.utils.compat.ItemStackHelper;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.block.TileState;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.type.Slab;
 import org.bukkit.block.data.type.Stairs;
@@ -92,7 +93,7 @@ public class SingleCubeOrigin extends SlimefunItem implements HologramOwner{
                 e.setCancelled(true);
 
                 Material newMaterial = getRandomValidBlock();
-                block.setType(newMaterial);
+                replaceGeneratedBlock(block, newMaterial);
 
 //                ItemStack blockItemStack = new ItemStack(block.getType());
 //                String displayName = ItemStackHelper.getDisplayName(blockItemStack);
@@ -105,6 +106,17 @@ public class SingleCubeOrigin extends SlimefunItem implements HologramOwner{
             }
 
         };
+    }
+
+    private void replaceGeneratedBlock(Block block, Material material) {
+        if (material == Material.SCULK_SHRIEKER
+                && block.getType() != material
+                && block.getState() instanceof TileState) {
+            // Paper 1.21.11 can run the new tile entity's removal callback with
+            // the old block's state. Retire the old tile before creating a shrieker.
+            block.setType(Material.AIR, false);
+        }
+        block.setType(material);
     }
 
     // 获取一个合法的、可以自然生成的完整方块
