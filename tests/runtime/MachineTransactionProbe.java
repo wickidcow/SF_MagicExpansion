@@ -13,6 +13,7 @@ import io.Yomicer.magicExpansion.items.electric.recipeMachine.OriginMaterialGenM
 import io.Yomicer.magicExpansion.items.electric.recipeMachine.OriginMaterialGenMakerUltra;
 import io.Yomicer.magicExpansion.items.electric.templateMachine.TemplateMachine;
 import io.Yomicer.magicExpansion.items.electric.templateMachine.ItemOriginBackTrackMachine;
+import io.Yomicer.magicExpansion.items.electric.resourceGenerator.ResourceMachine;
 import io.Yomicer.magicExpansion.items.electric.resourceGenerator.ResourceRandomOneMachine;
 import io.github.thebusybiscuit.slimefun4.implementation.operations.CraftingOperation;
 import org.bukkit.NamespacedKey;
@@ -28,6 +29,7 @@ import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItem;
 import io.github.thebusybiscuit.slimefun4.core.attributes.EnergyNetComponent;
 import io.github.thebusybiscuit.slimefun4.implementation.Slimefun;
 import io.github.thebusybiscuit.slimefun4.utils.SlimefunUtils;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -110,6 +112,7 @@ public final class MachineTransactionProbe extends JavaPlugin {
         int underfillChecks = 0;
         int resourceDefinitions = 0;
         int resourceTransactions = 0;
+        int resourceRecipeGuardChecks = 0;
         int specialUntimedTransactions = 0;
         int locationIndex = 0;
 
@@ -276,6 +279,9 @@ public final class MachineTransactionProbe extends JavaPlugin {
                 try {
                     clearSlots(fixture.menu(), outputSlots(machine));
                     refill(machine, fixture);
+                    if (machine instanceof ResourceMachine || machine instanceof ResourceRandomOneMachine) {
+                        resourceRecipeGuardChecks += auditUnavailableResourceRecipes(machine, fixture, passed);
+                    }
                     tick(machine, fixture, false); // start operation
                     int maxTicks = Math.max(8, Math.min(50_000, recipe.getTicks() + 8));
                     boolean produced = hasAnyOutput(fixture.menu(), outputSlots(machine));
@@ -334,6 +340,7 @@ public final class MachineTransactionProbe extends JavaPlugin {
         result.append("resource_machines=").append(resourceMachines.size()).append('\n');
         result.append("resource_definitions=").append(resourceDefinitions).append('\n');
         result.append("resource_transactions=").append(resourceTransactions).append('\n');
+        result.append("resource_recipe_guard_checks=").append(resourceRecipeGuardChecks).append('\n');
         result.append("special_untimed_transactions=").append(specialUntimedTransactions).append('\n');
         for (String item : passed) result.append("pass=").append(item).append('\n');
         for (String warning : warnings) result.append("warning=").append(warning).append('\n');
@@ -347,6 +354,46 @@ public final class MachineTransactionProbe extends JavaPlugin {
                 + " resourceTransactions=" + resourceTransactions
                 + " failures=" + failures.size());
         requestShutdown();
+    }
+
+    private int auditUnavailableResourceRecipes(
+            AbstractElectricResourceMachine machine, Fixture fixture, List<String> passed)
+            throws ReflectiveOperationException {
+        List<MachineRecipe> originalRecipes = machine.getRecipes();
+        check(originalRecipes != null && !originalRecipes.isEmpty(),
+                machine.getId() + ": recipe-guard control has no registered recipe");
+        check(machine.getMachineProcessor().getOperation(fixture.block()) == null,
+                machine.getId() + ": recipe-guard fixture already has an operation");
+
+        int[] allSlots = java.util.stream.IntStream.range(0, fixture.menu().toInventory().getSize()).toArray();
+        List<ItemStack> inventoryBefore = snapshot(fixture.menu(), allSlots);
+        long chargeBefore = charge(machine, fixture);
+        Field recipeField = AbstractElectricResourceMachine.class.getDeclaredField("recipes");
+        recipeField.setAccessible(true);
+        try {
+            for (boolean missing : new boolean[] { false, true }) {
+                recipeField.set(machine, missing ? null : new ArrayList<MachineRecipe>());
+                String state = missing ? "null" : "empty";
+                for (int tick = 0; tick < 4; tick++) {
+                    tick(machine, fixture, false);
+                    check(machine.getMachineProcessor().getOperation(fixture.block()) == null,
+                            machine.getId() + ": " + state + " recipes started an operation");
+                    check(charge(machine, fixture) == chargeBefore,
+                            machine.getId() + ": " + state + " recipes consumed energy");
+                    check(sameContents(inventoryBefore, snapshot(fixture.menu(), allSlots)),
+                            machine.getId() + ": " + state + " recipes changed the inventory");
+                }
+                passed.add(machine.getId() + ": " + state
+                        + " recipe list idles for four ticks without changing inventory or energy");
+            }
+        } finally {
+            // Restore the exact registered list even if a ticker or assertion failed.
+            // The existing normal-output transaction then checks recovery with real recipes.
+            recipeField.set(machine, originalRecipes);
+        }
+        check(machine.findNextRecipe(fixture.menu()) == originalRecipes.get(0),
+                machine.getId() + ": restoring recipes did not restore the original selection");
+        return 2;
     }
 
     private void auditRandomBoxMachine(

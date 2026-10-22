@@ -29,6 +29,7 @@ import static io.Yomicer.magicExpansion.utils.ColorGradient.getGradientName;
 public class ResourceRandomOneMachine extends AbstractElectricResourceMachine {
 
     private static final String PENDING_OUTPUT_KEY = "random_one_pending_output";
+    private static final Random RANDOM = new Random();
 
     private static final int[] BACKGROUND_SLOTS = new int[] { 0, 4, 8, 9, 13, 17 };
     private static final int[] OUTPUT_BORDER_SLOTS = new int[] { 10, 11, 12, 14, 15, 16};
@@ -96,7 +97,7 @@ public class ResourceRandomOneMachine extends AbstractElectricResourceMachine {
             SlimefunBlockData data = StorageCacheUtils.getBlock(b.getLocation());
             if (data == null) throw new IllegalStateException("Machine block data is unavailable");
             ItemStack selected = validOutputs.size() == 1 ? validOutputs.get(0)
-                    : validOutputs.get(new Random().nextInt(validOutputs.size()));
+                    : validOutputs.get(RANDOM.nextInt(validOutputs.size()));
             PendingMachineOutput.Store pending = pendingStore(data);
             PendingMachineOutput.stage(pending, selected);
             getMachineProcessor().endOperation(b);
@@ -135,6 +136,9 @@ public class ResourceRandomOneMachine extends AbstractElectricResourceMachine {
         }
 
         if (maxedSlots == getOutputSlots().length) { return null; }
+
+        // A missing recipe must leave the generator idle, not fail every tick.
+        if (recipes == null || recipes.isEmpty()) { return null; }
 
         MachineRecipe recipe = recipes.get(0);
 

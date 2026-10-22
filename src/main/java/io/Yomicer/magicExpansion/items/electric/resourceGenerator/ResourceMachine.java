@@ -67,6 +67,9 @@ public class ResourceMachine extends AbstractElectricResourceMachine {
 
         if (maxedSlots == getOutputSlots().length) { return null; }
 
+        // A missing recipe must leave the generator idle, not fail every tick.
+        if (recipes == null || recipes.isEmpty()) { return null; }
+
         MachineRecipe recipe = recipes.get(0);
 
         return recipe;
