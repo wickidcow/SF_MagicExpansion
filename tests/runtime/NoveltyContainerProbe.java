@@ -12,6 +12,7 @@ import io.Yomicer.magicExpansion.items.skyBlock.SingleCubeOre;
 import io.Yomicer.magicExpansion.items.skyBlock.SingleCubeOrigin;
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItem;
 import io.github.thebusybiscuit.slimefun4.implementation.Slimefun;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -26,6 +27,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.block.Chest;
 import org.bukkit.block.data.Ageable;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
@@ -51,6 +53,8 @@ public final class NoveltyContainerProbe extends JavaPlugin {
                         + "page_corruption=fail_closed\n"
                         + "page_break=exact_once\n"
                         + "single_cube_identity=preserved\n"
+                        + "single_cube_tile_transitions=exact\n"
+                        + "single_cube_same_type_tile=preserved\n"
                         + "magic_crop=seed_and_3_to_9_fruits\n");
             } catch (Throwable error) {
                 getLogger().log(Level.SEVERE, "NOVELTY_CONTAINER_FATAL", error);
@@ -162,15 +166,71 @@ public final class NoveltyContainerProbe extends JavaPlugin {
         removeNearbyDrops(location);
     }
 
-    private void auditOrigin(SingleCubeOrigin origin, Location location) {
+    private void auditOrigin(SingleCubeOrigin origin, Location location) throws Exception {
+        Method replace = SingleCubeOrigin.class.getDeclaredMethod(
+                "replaceGeneratedBlock", Block.class, Material.class);
+        replace.setAccessible(true);
+        Block block = location.getBlock();
+
+        Material[][] transitions = {
+            { Material.PINK_BED, Material.SCULK_SHRIEKER },
+            { Material.CHEST, Material.SCULK_SHRIEKER },
+            { Material.SCULK_SHRIEKER, Material.PINK_BED },
+            { Material.STONE, Material.SCULK_SHRIEKER }
+        };
+        for (Material[] transition : transitions) {
+            // Isolate each source so any replacement failure belongs to the production path.
+            block.setType(Material.AIR, false);
+            block.setType(transition[0], false);
+            replaceOriginBlock(replace, origin, block, transition[1]);
+            check(block.getType() == transition[1],
+                    "Origin One Block did not install " + transition[1] + " after replacing " + transition[0]);
+        }
+
+        block.setType(Material.AIR, false);
+        block.setType(Material.CHEST, false);
+        NamespacedKey stateKey = new NamespacedKey(this, "one_block_tile_probe");
+        Chest chest = (Chest) block.getState();
+        chest.getPersistentDataContainer().set(stateKey, PersistentDataType.STRING, "retained");
+        check(chest.update(false, false), "Could not save same-type One Block chest fixture");
+        ItemStack retained = tagged(Material.DIAMOND, 7, "one-block-same-type");
+        chest.getBlockInventory().setItem(0, retained.clone());
+        try {
+            replaceOriginBlock(replace, origin, block, Material.CHEST);
+            check(block.getType() == Material.CHEST, "Same-type One Block replacement changed its material");
+            Chest after = (Chest) block.getState();
+            check("retained".equals(after.getPersistentDataContainer().get(stateKey, PersistentDataType.STRING)),
+                    "Same-type One Block replacement reset its tile data");
+            check(sameExact(retained, after.getBlockInventory().getItem(0)),
+                    "Same-type One Block replacement changed its exact stored item");
+        } finally {
+            if (block.getState() instanceof Chest remaining) {
+                remaining.getBlockInventory().setItem(0, null);
+            }
+        }
+
         for (int i = 0; i < 512; i++) {
             Material material = origin.getRandomValidBlock();
             check(!origin.isInvalidBlock(material),
                     "Origin One Block generated invalid material " + material);
-            location.getBlock().setType(material, false);
-            check(StorageCacheUtils.getSlimefunItem(location) == origin,
-                    "Origin One Block lost Slimefun identity after material swap to " + material);
+            // Normal physics may transform a selected block, such as a sponge
+            // absorbing water. The location must still retain its One Block identity.
+            replaceOriginBlock(replace, origin, block, material);
         }
+    }
+
+    private void replaceOriginBlock(Method replace, SingleCubeOrigin origin, Block block, Material destination)
+            throws ReflectiveOperationException {
+        Material source = block.getType();
+        try {
+            replace.invoke(origin, block, destination);
+        } catch (InvocationTargetException error) {
+            throw new IllegalStateException(
+                    "Origin One Block replacement failed: " + source + " -> " + destination,
+                    error.getCause());
+        }
+        check(StorageCacheUtils.getSlimefunItem(block.getLocation()) == origin,
+                "Origin One Block lost Slimefun identity after " + source + " -> " + destination);
     }
 
     private void auditOre(SingleCubeOre ore, Location location) {
