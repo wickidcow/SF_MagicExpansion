@@ -59,6 +59,10 @@ public class ResourceRandomOneMachine extends AbstractElectricResourceMachine {
 
     @Override
     public void tick(BlockMenu menu, Block b) {
+        if (!isMenuLayoutValid(menu)) {
+            // Pending output remains in block data until a correctly sized menu is loaded.
+            return;
+        }
         SlimefunBlockData data = StorageCacheUtils.getBlock(b.getLocation());
         if (data == null) return;
         PendingMachineOutput.Store pending = pendingStore(data);
