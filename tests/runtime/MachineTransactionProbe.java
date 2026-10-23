@@ -779,7 +779,8 @@ public final class MachineTransactionProbe extends JavaPlugin {
                         item.getId() + ": output slot " + i + " is " + outputs[i]
                                 + " instead of " + (i + 18));
             }
-            check(menu.getItemInSlot(53) == null,
+            ItemStack initialLastOutput = menu.getItemInSlot(53);
+            check(initialLastOutput == null || initialLastOutput.getType().isAir(),
                     item.getId() + ": the last output slot was unexpectedly occupied on creation");
         }
         check(item.getBlockTicker() != null, item.getId() + ": machine has no block ticker");
