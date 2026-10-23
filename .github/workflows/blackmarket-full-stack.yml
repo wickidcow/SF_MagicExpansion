@@ -3,7 +3,7 @@ on:
   push:
     branches: ['fix/blackmarket-offer-items-*']
   pull_request:
-    paths: ['src/**', 'pom.xml', 'tests/runtime/**', '.github/workflows/blackmarket-full-stack.yml']
+    paths: ['src/**', 'pom.xml', 'tests/runtime/**', 'scripts/verify_blackmarket_fullstack_workflow.py', '.github/workflows/blackmarket-full-stack.yml']
 permissions:
   contents: read
 concurrency:
@@ -26,6 +26,8 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
           persist-credentials: false
+      - name: Verify published baseline and inline Python contracts
+        run: python3 scripts/verify_blackmarket_fullstack_workflow.py
       - uses: actions/checkout@v6
         with:
           repository: wickidcow/Slimefun-Legacy
