@@ -7,6 +7,7 @@ on:
       - 'pom.xml'
       - 'tests/runtime/ItemCatalogProbe.java'
       - 'tests/runtime/MachineTransactionProbe.java'
+      - 'scripts/verify_native_miner_menu_probe.py'
       - 'tests/runtime/GeneratorBehaviorProbe.java'
       - 'tests/runtime/PowerRelayProbe.java'
       - 'tests/runtime/StackedVivariumProbe.java'
@@ -49,6 +50,8 @@ jobs:
           path: legacy-validation
           persist-credentials: false
 
+      - name: Verify fresh six-row Mining Robot menu audit is wired
+        run: python3 scripts/verify_native_miner_menu_probe.py
       - uses: actions/setup-java@v5
         with:
           distribution: temurin
