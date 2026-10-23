@@ -11,8 +11,8 @@ permissions:
   contents: write
 
 env:
-  VERSION: "1.1.17"
-  OUTPUT_NAME: "SF_MagicExpansion1.1.17.jar"
+  VERSION: "1.1.18"
+  OUTPUT_NAME: "SF_MagicExpansion1.1.18.jar"
 
 concurrency:
   group: magicexpansion-${{ github.workflow }}-${{ github.ref }}
@@ -50,6 +50,8 @@ jobs:
             echo "RykenSlimefunCustomizer must be loadbefore, not softdepend"
             exit 1
           fi
+      - name: Verify six-row mining robot menu contracts
+        run: python3 scripts/verify_mining_robot_menu.py
       - name: Verify Paper/Purpur 1.21.11 compilation
         run: mvn --batch-mode --no-transfer-progress -DskipTests clean package
       - name: Verify Paper/Purpur 26.2 compilation

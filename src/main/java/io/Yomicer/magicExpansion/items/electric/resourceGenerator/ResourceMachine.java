@@ -100,6 +100,8 @@ public class ResourceMachine extends AbstractElectricResourceMachine {
 
 	@Override
 	protected void setupMenu(BlockMenuPreset preset) {
+        // Output slots 18-53 require a full six-row menu even before the first saved-inventory load.
+        preset.setSize(54);
 	    preset.drawBackground(new CustomItemStack(Material.PINK_STAINED_GLASS_PANE," "), BACKGROUND_SLOTS);
         preset.drawBackground(new CustomItemStack(Material.LIGHT_BLUE_STAINED_GLASS_PANE," "), INPUT_BORDER_SLOTS);
         preset.drawBackground(new CustomItemStack(Material.LIME_STAINED_GLASS_PANE," "), OUTPUT_BORDER_SLOTS);

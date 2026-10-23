@@ -59,11 +59,37 @@ public abstract class AbstractMachine extends AbstractTickingContainer implement
     }
 
     /**
+     * Refuse inventories which are too small for the machine's configured physical slots.
+     * This also protects already-loaded legacy menus until they are recreated on restart.
+     */
+    protected boolean isMenuLayoutValid(BlockMenu menu) {
+        int size = menu.toInventory().getSize();
+        return slotsWithinMenu(size, getProgressSlot())
+                && slotsWithinMenu(size, getInputSlots())
+                && slotsWithinMenu(size, getOutputSlots());
+    }
+
+    static boolean slotsWithinMenu(int size, int... slots) {
+        if (size <= 0) {
+            return false;
+        }
+        for (int slot : slots) {
+            if (slot < 0 || slot >= size) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
      * Checks the physical output reservation before a completed operation is charged.
      * Configured-output machines use null placeholders and manage their own pending batch.
      * Overrides must retain any result they cannot insert immediately.
      */
     protected boolean canCompleteOutputs(BlockMenu menu, ItemStack[] outputs) {
+        if (!isMenuLayoutValid(menu)) {
+            return false;
+        }
         ItemStack[] physicalResults = java.util.Arrays.stream(outputs)
                 .filter(item -> item != null && !item.getType().isAir())
                 .toArray(ItemStack[]::new);
@@ -74,14 +100,28 @@ public abstract class AbstractMachine extends AbstractTickingContainer implement
     protected void onBreak(BlockBreakEvent e, BlockMenu menu, Location l) {
         super.onBreak(e, menu, l);
 
-        menu.dropItems(l, getInputSlots());
-        menu.dropItems(l, getOutputSlots());
+        // An older undersized menu must not throw while its block is being removed.
+        int size = menu.toInventory().getSize();
+        for (int slot : getInputSlots()) {
+            if (slotsWithinMenu(size, slot)) {
+                menu.dropItems(l, slot);
+            }
+        }
+        for (int slot : getOutputSlots()) {
+            if (slotsWithinMenu(size, slot)) {
+                menu.dropItems(l, slot);
+            }
+        }
 
         processor.endOperation(e.getBlock());
     }
 
     @Override
     protected void tick(BlockMenu menu, Block b) {
+        if (!isMenuLayoutValid(menu)) {
+            // Preserve operation, stored outputs, and energy instead of throwing each tick.
+            return;
+        }
         CraftingOperation currentOp = processor.getOperation(b);
 
         if (currentOp != null) {
