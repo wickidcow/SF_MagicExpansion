@@ -22,7 +22,8 @@ for guard in (
     "item instanceof ResourceMachine || item instanceof ResourceRandomOneMachine",
     "outputs.length == 36",
     "outputs[i] == i + 18",
-    "menu.getItemInSlot(53) == null",
+    "ItemStack initialLastOutput = menu.getItemInSlot(53)",
+    "initialLastOutput == null || initialLastOutput.getType().isAir()",
 ):
     assert guard in method, f"Missing six-row/output-slot assertion: {guard}"
 
