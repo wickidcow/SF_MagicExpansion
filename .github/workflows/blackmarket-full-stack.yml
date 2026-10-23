@@ -1,4 +1,4 @@
-name: Black Market published-core full-stack gate
+name: Black Market published-core full-stack gate (4.1.77 / r150 release baseline)
 on:
   push:
     branches: ['fix/blackmarket-offer-items-*']
@@ -29,7 +29,7 @@ jobs:
       - uses: actions/checkout@v6
         with:
           repository: wickidcow/Slimefun-Legacy
-          ref: 9075ea852095b28543aaa1456bc2576778cb4c4d
+          ref: a8b62908e6fb8fd949f585faa7de30e863c6deaa
           path: legacy-validation
           persist-credentials: false
       - uses: actions/setup-java@v5
@@ -51,18 +51,30 @@ jobs:
       - name: Preserve the published core and all 44 unrelated addon JARs
         run: |
           set -euo pipefail
-          curl -fL --retry 3 'https://github.com/wickidcow/Slimefun-Legacy/releases/download/v4.1.76/Slimefun-Legacy4.1.76.jar' -o audit/Slimefun-Legacy4.1.76.jar
-          echo 'be58eef8965eeb31fb930e6cfa204f74f221f95bf649976eb17802886c859916  audit/Slimefun-Legacy4.1.76.jar' | sha256sum -c -
-          curl -fL --retry 3 'https://github.com/wickidcow/Slimefun-Legacy/releases/download/v4.1.76/SF_Addons_1.21.11-26.3.zip' -o audit/published-r145.zip
-          echo '4585b8a082b9d9510585b3d85f91f2508181cb9cf9060e2f5fa5089b4742269b  audit/published-r145.zip' | sha256sum -c -
+          curl -fL --retry 3 'https://github.com/wickidcow/Slimefun-Legacy/releases/download/v4.1.77/Slimefun-Legacy4.1.77.jar' -o audit/Slimefun-Legacy4.1.77.jar
+          echo 'dc44e130ff1279133992797ab09d518fc55a30d8e2eb0a0f831727064219d044  audit/Slimefun-Legacy4.1.77.jar' | sha256sum -c -
+          curl -fL --retry 3 'https://github.com/wickidcow/Slimefun-Legacy/releases/download/v4.1.77/SF_Addons_1.21.11-26.3.zip' -o audit/published-r150.zip
+          echo 'f4aa46b87563ede5c6f80eab7e03fc61d836e1e6bd13fd6636c189672026b9f2  audit/published-r150.zip' | sha256sum -c -
           python3 - <<'PY'
           import hashlib, json, re, zipfile
           from pathlib import Path
           digest = lambda data: hashlib.sha256(data).hexdigest()
-          original = zipfile.ZipFile('audit/published-r145.zip')
+          original = zipfile.ZipFile('audit/published-r150.zip')
           data = {name: original.read(name) for name in original.namelist()}
           manifest = json.loads(data['SF_ADDON_MANIFEST.json'])
-          assert manifest['bundle_revision'] == 145 and len(manifest['addons']) == 45
+          assert manifest['bundle_revision'] == 150 and len(manifest['addons']) == 45
+          assert manifest.get('bundle') == 'SF_Addons_1.21.11-26.3.zip'
+          assert len({r['repository'] for r in manifest['addons']}) == 45
+          assert len({r['jar'] for r in manifest['addons']}) == 45
+          assert set(n for n in data if n.endswith('.jar')) == {r['jar'] for r in manifest['addons']}
+          assert all(digest(data[r['jar']]) == r['sha256'] for r in manifest['addons'])
+          assert sorted(data['SHA256SUMS.txt'].decode().splitlines()) == sorted(
+              f"{r['sha256']}  {r['jar']}" for r in manifest['addons'])
+          baseline = [r for r in manifest['addons'] if r['repository'] == 'wickidcow/SF_MagicExpansion']
+          assert len(baseline) == 1
+          assert baseline[0]['jar'] == 'SF_MagicExpansion1.1.18.jar'
+          assert baseline[0]['version'] == '1.1.18'
+          assert baseline[0]['commit'] == '7c2c1a927176ebd0aaab4481dcc21a51320f7f10'
           candidate = list(Path('target').glob('SF_MagicExpansion*.jar'))
           assert len(candidate) == 1
           candidate = candidate[0]
@@ -70,7 +82,119 @@ jobs:
           with zipfile.ZipFile(candidate) as jar:
               descriptor = jar.read('plugin.yml').decode()
               version = re.search(r'''(?m)^version:\s*['"]?([^'"\s]+)''', descriptor).group(1)
-              assert version == '1.1.17' and candidate.name == f'SF_MagicExpansion{version}.jar'
+              assert re.fullmatch(r'[0-9]+(?:\.[0-9]+)+', version) is not None
+              assert tuple(map(int, version.split('.'))) >= (1, 1, 18)
+              assert candidate.name == f'SF_MagicExpansion{version}.jar'
+              assert re.search(r'(?m)^name:\s*magicexpansion\s*
+              assert not any(n.startswith(('audit/', 'org/junit/', 'org/mockbukkit/')) for n in jar.namelist())
+          replaced = 0
+          for addon in manifest['addons']:
+              assert digest(data[addon['jar']]) == addon['sha256']
+              if addon['repository'] == 'wickidcow/SF_MagicExpansion':
+                  del data[addon['jar']]
+                  addon.update(jar=candidate.name, source_jar=candidate.name, version=version,
+                               sha256=digest(jar_bytes), commit=Path('audit/source-commit.txt').read_text().strip())
+                  replaced += 1
+          assert replaced == 1
+          data[candidate.name] = jar_bytes
+          manifest['bundle_revision'] = 151
+          manifest['targeted_refresh'] = {'repository': 'wickidcow/SF_MagicExpansion',
+              'previous_bundle_revision': 150,
+              'previous_bundle_sha256': digest(Path('audit/published-r150.zip').read_bytes()),
+              'release_tag': 'v4.1.77'}
+          data['SF_ADDON_MANIFEST.json'] = (json.dumps(manifest, indent=2) + '\n').encode()
+          data['SHA256SUMS.txt'] = ''.join(f'{digest(data[n])}  {n}\n' for n in sorted(data) if n.endswith('.jar')).encode()
+          data['COMPATIBILITY.txt'] = (
+              'Test-only MagicExpansion candidate against published v4.1.77 / r150.\n'
+              'Minecraft 1.21.11 through 26.3; Java 21 bytecode.\n'
+              f'MagicExpansion baseline: 1.1.18; candidate: {version}.\n'
+              'All 44 other addon JARs are byte-identical to the published r150 archive.\n'
+              'Preserve configs, player offers, cycle markers and purchase receipts.\n'
+              'Stop and back up before replacing an existing JAR; never use /reload.\n'
+              'This is an isolated CI candidate (revision 151), not a published addon bundle.\n').encode()
+          with zipfile.ZipFile('audit/candidate-addons.zip', 'w', zipfile.ZIP_DEFLATED) as out:
+              for n in sorted(data):
+                  info = zipfile.ZipInfo(n, (2026, 10, 15, 0, 0, 0))
+                  info.compress_type = zipfile.ZIP_DEFLATED
+                  out.writestr(info, data[n])
+          with zipfile.ZipFile('audit/candidate-addons.zip') as out:
+              unchanged = [n for n in original.namelist() if n.endswith('.jar') and 'MagicExpansion' not in n]
+              assert len(unchanged) == 44 and all(out.read(n) == original.read(n) for n in unchanged)
+              assert len([n for n in out.namelist() if n.endswith('.jar')]) == 45
+          Path('audit/bundle-proof.json').write_text(json.dumps({'unchanged_addons': 44, 'source': manifest['addons'],
+              'candidate_bundle_sha256': digest(Path('audit/candidate-addons.zip').read_bytes()),
+              'candidate_jar_sha256': digest(jar_bytes), 'candidate_version': version,
+              'bundle_revision': 151, 'publication': 'NOT_PUBLISHED'}, indent=2))
+          script = Path('legacy-validation/scripts/full_stack_runtime_smoke.sh')
+          text = script.read_text()
+          needle = 'motd=Slimefun Legacy full-stack runtime smoke\n'
+          assert text.count(needle) == 1
+          script.write_text(text.replace(needle, needle + 'server-ip=127.0.0.1\nserver-port=0\n'))
+          PY
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: ${{ matrix.java }}
+      - name: Require all 45 addons across two full-stack boots
+        env:
+          SERVER_SOFTWARE: ${{ matrix.software }}
+          SERVER_MINECRAFT_VERSION: ${{ matrix.minecraft }}
+          SLIMEFUN_SMOKE_VERSION: '4.1.77'
+          PURPUR_SMOKE_BUILD: '2646'
+          SERVER_DOWNLOAD_USER_AGENT: MagicExpansion-Full-Stack-Player-Flow/1.0
+        run: |
+          set -euo pipefail
+          bash legacy-validation/scripts/full_stack_runtime_smoke.sh audit/Slimefun-Legacy4.1.77.jar audit/candidate-addons.zip audit/full-stack > audit/full-stack-runner.log 2>&1 || { tail -n 100 audit/full-stack-runner.log; exit 1; }
+          test "$(wc -l < audit/full-stack/expected-addons.txt)" = 45
+          test ! -s audit/full-stack/dependency-gated-addons.txt
+          cat audit/full-stack/smoke-result.txt
+      - name: Exercise purchases and a further full-stack restart
+        run: |
+          set -euo pipefail
+          cp audit/BlackMarketPlayerFlowProbe.jar audit/full-stack/plugins/
+          cd audit/full-stack
+          sha256sum server.jar plugins/*.jar > flow-input-sha256.txt
+          for PHASE in buy restart; do
+            sha256sum -c flow-input-sha256.txt
+            timeout --kill-after=20s 420s java -Xms768M -Xmx3G -Dblackmarket.offer.audit=true -Dblackmarket.flow.phase="$PHASE" -jar server.jar --nogui > "flow-${PHASE}.console.log" 2>&1
+            test ! -e "flow-${PHASE}-fatal.txt" || { cat "flow-${PHASE}-fatal.txt"; tail -n 100 "flow-${PHASE}.console.log"; exit 1; }
+            grep -Fxq PLAYER_FLOW_PASSED "flow-${PHASE}-result.txt"
+            cat "flow-${PHASE}-result.txt"
+          done
+          test "$(grep '^pid=' flow-buy-result.txt)" != "$(grep '^pid=' flow-restart-result.txt)"
+          python3 - <<'PY'
+          import re
+          from pathlib import Path
+          for phase in ('buy', 'restart'):
+              text = Path(f'flow-{phase}.console.log').read_text()
+              errors = [line for line in text.splitlines() if re.search(r'\bERROR\]', line)]
+              expected = 'Black Market trades locked for 2191f3af-0c91-3490-9d4e-66e1e790266b'
+              if phase == 'buy':
+                  assert len(errors) == 1 and expected in errors[0] and 'Black Market state changed outside this session:' in errors[0], errors
+              else:
+                  assert not errors, errors
+              assert 'The server has stopped responding' not in text, 'Watchdog output is not a passing runtime test'
+              assert 'Invalid or unreadable Black Market item' not in text
+              assert not re.search(r'(ClassCastException|NoSuchMethodError|NoClassDefFoundError)', text)
+          print('Both player-flow logs passed the strict error/watchdog audit')
+          PY
+      - name: Preserve candidate and full-stack evidence without publishing
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: blackmarket-full-stack-${{ matrix.lane }}
+          path: |
+            audit/*.log
+            audit/*.json
+            audit/*.txt
+            audit/candidate-addons.zip
+            target/SF_MagicExpansion*.jar
+            audit/full-stack/*.log
+            audit/full-stack/*.txt
+            audit/full-stack/plugins/BlackMarketPlayerFlowProbe/*.yml
+            target/surefire-reports/TEST-*.xml
+          if-no-files-found: error
+, descriptor)
               assert not any(n.startswith(('audit/', 'org/junit/', 'org/mockbukkit/')) for n in jar.namelist())
           replaced = 0
           for addon in manifest['addons']:
@@ -84,15 +208,15 @@ jobs:
           data[candidate.name] = jar_bytes
           manifest['bundle_revision'] = 146
           manifest['targeted_refresh'] = {'repository': 'wickidcow/SF_MagicExpansion',
-              'previous_bundle_revision': 145,
-              'previous_bundle_sha256': digest(Path('audit/published-r145.zip').read_bytes()),
-              'release_tag': 'v4.1.76'}
+              'previous_bundle_revision': 150,
+              'previous_bundle_sha256': digest(Path('audit/published-r150.zip').read_bytes()),
+              'release_tag': 'v4.1.77'}
           data['SF_ADDON_MANIFEST.json'] = (json.dumps(manifest, indent=2) + '\n').encode()
           data['SHA256SUMS.txt'] = ''.join(f'{digest(data[n])}  {n}\n' for n in sorted(data) if n.endswith('.jar')).encode()
-          data['COMPATIBILITY.txt'] = ('Test-only MagicExpansion candidate for revision 146 on published r145\n'
+          data['COMPATIBILITY.txt'] = ('Test-only MagicExpansion candidate for revision 146 on published r150\n'
               'Minecraft 1.21.11 through 26.3; Java 21 bytecode.\n'
-              'Only MagicExpansion changed from r145: 1.1.16 -> 1.1.17.\n'
-              'All 44 other addon JARs are byte-identical to r145.\n'
+              'Only MagicExpansion changed from r150: 1.1.16 -> 1.1.17.\n'
+              'All 44 other addon JARs are byte-identical to r150.\n'
               'MagicExpansion: integrated shop receipts, catalog, machine and item corrections.\n'
               'Preserve all configs, cycle markers, player offers and purchase receipts.\n'
               'Stop and back up before replacing the older JAR; start normally, never /reload.\n'
@@ -110,7 +234,7 @@ jobs:
           Path('audit/bundle-proof.json').write_text(json.dumps({'unchanged_addons': 44, 'source': manifest['addons'],
               'candidate_bundle_sha256': digest(Path('audit/candidate-addons.zip').read_bytes()),
               'candidate_jar_sha256': digest(jar_bytes), 'candidate_version': version,
-              'bundle_revision': 146, 'publication': 'NOT_PUBLISHED'}, indent=2))
+              'bundle_revision': 151, 'publication': 'NOT_PUBLISHED'}, indent=2))
           script = Path('legacy-validation/scripts/full_stack_runtime_smoke.sh')
           text = script.read_text()
           needle = 'motd=Slimefun Legacy full-stack runtime smoke\n'
@@ -125,12 +249,12 @@ jobs:
         env:
           SERVER_SOFTWARE: ${{ matrix.software }}
           SERVER_MINECRAFT_VERSION: ${{ matrix.minecraft }}
-          SLIMEFUN_SMOKE_VERSION: '4.1.76'
+          SLIMEFUN_SMOKE_VERSION: '4.1.77'
           PURPUR_SMOKE_BUILD: '2646'
           SERVER_DOWNLOAD_USER_AGENT: MagicExpansion-Full-Stack-Player-Flow/1.0
         run: |
           set -euo pipefail
-          bash legacy-validation/scripts/full_stack_runtime_smoke.sh audit/Slimefun-Legacy4.1.76.jar audit/candidate-addons.zip audit/full-stack > audit/full-stack-runner.log 2>&1 || { tail -n 100 audit/full-stack-runner.log; exit 1; }
+          bash legacy-validation/scripts/full_stack_runtime_smoke.sh audit/Slimefun-Legacy4.1.77.jar audit/candidate-addons.zip audit/full-stack > audit/full-stack-runner.log 2>&1 || { tail -n 100 audit/full-stack-runner.log; exit 1; }
           test "$(wc -l < audit/full-stack/expected-addons.txt)" = 45
           test ! -s audit/full-stack/dependency-gated-addons.txt
           cat audit/full-stack/smoke-result.txt
