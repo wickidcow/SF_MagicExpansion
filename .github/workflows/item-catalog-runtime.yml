@@ -7,6 +7,7 @@ on:
       - 'pom.xml'
       - 'tests/runtime/ItemCatalogProbe.java'
       - 'tests/runtime/MachineTransactionProbe.java'
+      - 'scripts/verify_native_miner_menu_probe.py'
       - 'tests/runtime/GeneratorBehaviorProbe.java'
       - 'tests/runtime/PowerRelayProbe.java'
       - 'tests/runtime/StackedVivariumProbe.java'
@@ -45,10 +46,12 @@ jobs:
       - uses: actions/checkout@v6
         with:
           repository: wickidcow/Slimefun-Legacy
-          ref: 9075ea852095b28543aaa1456bc2576778cb4c4d
+          ref: a8b62908e6fb8fd949f585faa7de30e863c6deaa
           path: legacy-validation
           persist-credentials: false
 
+      - name: Verify fresh six-row Mining Robot menu audit is wired
+        run: python3 scripts/verify_native_miner_menu_probe.py
       - uses: actions/setup-java@v5
         with:
           distribution: temurin
@@ -90,9 +93,9 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p audit/release
-          gh api repos/wickidcow/Slimefun-Legacy/releases/tags/v4.1.76 > audit/release.json
-          gh release download v4.1.76 --repo wickidcow/Slimefun-Legacy \
-            --pattern 'Slimefun-Legacy4.1.76.jar' \
+          gh api repos/wickidcow/Slimefun-Legacy/releases/tags/v4.1.77 > audit/release.json
+          gh release download v4.1.77 --repo wickidcow/Slimefun-Legacy \
+            --pattern 'Slimefun-Legacy4.1.77.jar' \
             --pattern 'SF_Addons_1.21.11-26.3.zip' \
             --dir audit/release
           python3 - <<'PY'
@@ -101,10 +104,17 @@ jobs:
 
           release=json.loads(Path('audit/release.json').read_text())
           assets={a['name']:a for a in release['assets']}
-          for name in ('Slimefun-Legacy4.1.76.jar','SF_Addons_1.21.11-26.3.zip'):
+          # Pin the actual released 4.1.77 core and r150 bundle, not just
+          # the mutable release asset names. A subsequent upload is not our fixture.
+          identities={
+              'Slimefun-Legacy4.1.77.jar':'dc44e130ff1279133992797ab09d518fc55a30d8e2eb0a0f831727064219d044',
+              'SF_Addons_1.21.11-26.3.zip':'f4aa46b87563ede5c6f80eab7e03fc61d836e1e6bd13fd6636c189672026b9f2',
+          }
+          for name, expected in identities.items():
               path=Path('audit/release')/name
               assert path.is_file() and path.stat().st_size>0
               digest='sha256:'+hashlib.sha256(path.read_bytes()).hexdigest()
+              assert digest=='sha256:'+expected, (name,digest,expected)
               assert assets[name].get('digest')==digest, (name,digest,assets[name].get('digest'))
 
           candidate=list(Path('target').glob('SF_MagicExpansion*.jar'))
@@ -121,9 +131,20 @@ jobs:
           with zipfile.ZipFile(original_path) as original:
               members={n:original.read(n) for n in original.namelist()}
               manifest=json.loads(members['SF_ADDON_MANIFEST.json'])
+              assert type(manifest.get('bundle_revision')) is int and manifest['bundle_revision']==150
               assert len(manifest['addons'])==45
+              assert len({r['repository'] for r in manifest['addons']})==45
+              assert len({r['jar'] for r in manifest['addons']})==45
+              assert {n for n in members if n.endswith('.jar')}=={r['jar'] for r in manifest['addons']}
+              assert all(hashlib.sha256(members[r['jar']]).hexdigest()==r['sha256']
+                         for r in manifest['addons'])
+              expected_sums=sorted(f"{r['sha256']}  {r['jar']}" for r in manifest['addons'])
+              assert sorted(members['SHA256SUMS.txt'].decode().splitlines())==expected_sums
               rows=[r for r in manifest['addons'] if r['repository']=='wickidcow/SF_MagicExpansion']
               assert len(rows)==1
+              assert rows[0]['jar']=='SF_MagicExpansion1.1.18.jar'
+              assert rows[0]['version']=='1.1.18'
+              assert rows[0]['commit']=='7c2c1a927176ebd0aaab4481dcc21a51320f7f10'
               old_jar=rows[0]['jar']
               old_other={n:members[n] for n in members if n.endswith('.jar') and n!=old_jar}
               assert len(old_other)==44
@@ -161,7 +182,7 @@ jobs:
               assert candidate.name in names
               assert all(out.read(n)==blob for n,blob in old_other.items())
           PY
-          cp audit/release/Slimefun-Legacy4.1.76.jar audit/Slimefun-Legacy4.1.76.jar
+          cp audit/release/Slimefun-Legacy4.1.77.jar audit/Slimefun-Legacy4.1.77.jar
           python3 - <<'PY'
           from pathlib import Path
           p=Path('legacy-validation/scripts/full_stack_runtime_smoke.sh')
@@ -180,13 +201,13 @@ jobs:
         env:
           SERVER_SOFTWARE: ${{ matrix.software }}
           SERVER_MINECRAFT_VERSION: ${{ matrix.minecraft }}
-          SLIMEFUN_SMOKE_VERSION: '4.1.76'
+          SLIMEFUN_SMOKE_VERSION: '4.1.77'
           PURPUR_SMOKE_BUILD: '2646'
           SERVER_DOWNLOAD_USER_AGENT: MagicExpansion-Item-Catalog/1.0
         run: |
           set -euo pipefail
           bash legacy-validation/scripts/full_stack_runtime_smoke.sh \
-            audit/Slimefun-Legacy4.1.76.jar \
+            audit/Slimefun-Legacy4.1.77.jar \
             audit/item-audit-bundle.zip \
             audit/full-stack > audit/runtime-smoke.log 2>&1 || { tail -n 160 audit/runtime-smoke.log; exit 1; }
           grep -Fq 'runtime smoke: PASS' audit/full-stack/smoke-result.txt

@@ -113,6 +113,7 @@ public final class MachineTransactionProbe extends JavaPlugin {
         int resourceDefinitions = 0;
         int resourceTransactions = 0;
         int resourceRecipeGuardChecks = 0;
+        int resourceMenuLayoutChecks = 0;
         int specialUntimedTransactions = 0;
         int locationIndex = 0;
 
@@ -280,6 +281,11 @@ public final class MachineTransactionProbe extends JavaPlugin {
                     clearSlots(fixture.menu(), outputSlots(machine));
                     refill(machine, fixture);
                     if (machine instanceof ResourceMachine || machine instanceof ResourceRandomOneMachine) {
+                        // createFixture has already checked the fresh 54-slot menu before
+                        // a player, Cargo, or the first machine tick can resize it.
+                        resourceMenuLayoutChecks++;
+                        passed.add(machine.getId()
+                                + ": initial resource menu has all 54 slots and outputs 18-53");
                         resourceRecipeGuardChecks += auditUnavailableResourceRecipes(machine, fixture, passed);
                     }
                     tick(machine, fixture, false); // start operation
@@ -324,6 +330,10 @@ public final class MachineTransactionProbe extends JavaPlugin {
             }
         }
 
+        if (resourceMenuLayoutChecks == 0) {
+            failures.add("No initial six-row resource-generator menu layout was verified");
+        }
+
         try {
             auditOriginMaterialPending(++locationIndex, passed, failures);
         } catch (Throwable error) {
@@ -341,6 +351,7 @@ public final class MachineTransactionProbe extends JavaPlugin {
         result.append("resource_definitions=").append(resourceDefinitions).append('\n');
         result.append("resource_transactions=").append(resourceTransactions).append('\n');
         result.append("resource_recipe_guard_checks=").append(resourceRecipeGuardChecks).append('\n');
+        result.append("initial_six_row_resource_menu_checks=").append(resourceMenuLayoutChecks).append('\n');
         result.append("special_untimed_transactions=").append(specialUntimedTransactions).append('\n');
         for (String item : passed) result.append("pass=").append(item).append('\n');
         for (String warning : warnings) result.append("warning=").append(warning).append('\n');
@@ -753,6 +764,25 @@ public final class MachineTransactionProbe extends JavaPlugin {
         BlockMenu menu = data.getBlockMenu();
         check(data.isDataLoaded(), item.getId() + ": Slimefun block data is not loaded");
         check(menu != null, item.getId() + ": machine menu did not initialize");
+        if (item instanceof ResourceMachine || item instanceof ResourceRandomOneMachine) {
+            // Regression for Diamond Mining Robot first-open GUI (originally an
+            // inferred two-row inventory). Verify the native BlockMenu directly
+            // after first placement, before any tick or inventory open/reload.
+            check(menu.toInventory().getSize() == 54,
+                    item.getId() + ": first-created resource menu must contain 54 slots; found "
+                            + menu.toInventory().getSize());
+            int[] outputs = outputSlots(item);
+            check(outputs.length == 36,
+                    item.getId() + ": resource menu should expose exactly 36 physical output slots");
+            for (int i = 0; i < outputs.length; i++) {
+                check(outputs[i] == i + 18,
+                        item.getId() + ": output slot " + i + " is " + outputs[i]
+                                + " instead of " + (i + 18));
+            }
+            ItemStack initialLastOutput = menu.getItemInSlot(53);
+            check(initialLastOutput == null || initialLastOutput.getType().isAir(),
+                    item.getId() + ": the last output slot was unexpectedly occupied on creation");
+        }
         check(item.getBlockTicker() != null, item.getId() + ": machine has no block ticker");
         Slimefun.getTickerTask().pauseMachineTicker(location);
         created.add(location);
