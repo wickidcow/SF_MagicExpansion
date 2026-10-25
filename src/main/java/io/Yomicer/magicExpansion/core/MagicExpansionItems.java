@@ -1137,6 +1137,21 @@ public class MagicExpansionItems {
 
 
 
+    // Restore upstream Water Cloud informational IDs without changing rod recipes.
+    public static final SlimefunItemStack FISHING_GUIDE_BETWEEN_WATER_CLOUD =
+            new SlimefunItemStack(idDecorator("FISHING_GUIDE_BETWEEN_WATER_CLOUD"),
+                    Material.PAPER,
+                    "§bWater Cloud — Quick Reference",
+                    "§7Four rod families and twenty fishing lures.",
+                    "§7Choose a rod and matching bait to fish between water and cloud.",
+                    "§7Read the full guide book for tips and progression.");
+    public static final SlimefunItemStack FISHING_BOOK_BETWEEN_WATER_CLOUD =
+            new SlimefunItemStack(idDecorator("FISHING_BOOK_BETWEEN_WATER_CLOUD"),
+                    doGlow(Material.KNOWLEDGE_BOOK),
+                    "§bWater Cloud Fishing — Field Guide",
+                    "§7Right-click to read the rod and lure instructions.",
+                    "§7Compatible with the Slimefun Legacy fishing progression.");
+
     public static final SlimefunItemStack REED_TASSEL = createDefaultItem("REED_TASSEL",Material.SUGAR_CANE);
     public static final SlimefunItemStack FISH_BREED_POOL = createDefaultItemGlow("FISH_BREED_POOL",Material.CAULDRON);
 
