@@ -1,6 +1,5 @@
 package io.Yomicer.magicExpansion.items.misc.fish;
 
-import io.Yomicer.magicExpansion.MagicExpansion;
 import io.Yomicer.magicExpansion.utils.ColorGradient;
 import io.github.thebusybiscuit.slimefun4.libraries.dough.items.CustomItemStack;
 import org.bukkit.Material;
@@ -27,12 +26,12 @@ import java.util.concurrent.ThreadLocalRandom;
 public class FishAttributeGenerator {
 
     // 二代鱼专用 PDC key（与织梦者 FishKeys 隔离，避免数据串扰）
-    public static final NamespacedKey GEN2_TYPE = new NamespacedKey(MagicExpansion.getInstance(), "gen2_type");
-    public static final NamespacedKey GEN2_ELEMENTS = new NamespacedKey(MagicExpansion.getInstance(), "gen2_elements");
-    public static final NamespacedKey GEN2_QUALITY = new NamespacedKey(MagicExpansion.getInstance(), "gen2_quality");
+    public static final NamespacedKey GEN2_TYPE = java.util.Objects.requireNonNull(NamespacedKey.fromString("magicexpansion:gen2_type"));
+    public static final NamespacedKey GEN2_ELEMENTS = java.util.Objects.requireNonNull(NamespacedKey.fromString("magicexpansion:gen2_elements"));
+    public static final NamespacedKey GEN2_QUALITY = java.util.Objects.requireNonNull(NamespacedKey.fromString("magicexpansion:gen2_quality"));
     // 第一层补全: 个体基因型(加速种/合成种) 与 亲本追溯(父母鱼种ID, 逗号分隔)
-    public static final NamespacedKey GEN2_TRAIT = new NamespacedKey(MagicExpansion.getInstance(), "gen2_trait");
-    public static final NamespacedKey GEN2_PARENTS = new NamespacedKey(MagicExpansion.getInstance(), "gen2_parents");
+    public static final NamespacedKey GEN2_TRAIT = java.util.Objects.requireNonNull(NamespacedKey.fromString("magicexpansion:gen2_trait"));
+    public static final NamespacedKey GEN2_PARENTS = java.util.Objects.requireNonNull(NamespacedKey.fromString("magicexpansion:gen2_parents"));
 
     /** 鱼竿稀有度系数 → 五维纯度指数(越大越贴近主元素)与数值手感 */
     private static final double[] PURITY_EXP = {1.5, 2.0, 2.5, 3.0, 3.6}; // 青竹/芦花/寒江雪/细雨·斜风/太公
