@@ -8,6 +8,7 @@ import io.Yomicer.magicExpansion.items.misc.WeightedItem;
 import io.Yomicer.magicExpansion.items.misc.moreLure.MoreLure;
 import io.Yomicer.magicExpansion.items.tools.FishingRodWaterCloud;
 import io.Yomicer.magicExpansion.utils.ColorGradient;
+import io.Yomicer.magicExpansion.utils.WaterCloudRodProficiency;
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItem;
 import io.github.thebusybiscuit.slimefun4.utils.SlimefunUtils;
 import io.Yomicer.magicExpansion.utils.compat.ItemStackHelper;
@@ -39,11 +40,26 @@ public class PlayerFishingWaterCloudListener {
 
     // Water Cloud lure list; the active lure determines special-catch behavior.
     private static final List<MoreLure> SHUIYUNJIAN_LURES = List.of(
-            new MoreLure(MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_CUIXIA, "CuiXia"),   // 淬霞
-            new MoreLure(MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_WEICHEN, "WeiChen"), // 微尘
-            new MoreLure(MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_RONGHUO, "RongHuo"), // 熔火
-            new MoreLure(MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_YUEJIN, "YueJin"),   // 跃金
-            new MoreLure(MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_XINGHE, "XingHe")    // 星核
+            new MoreLure(MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_CUIXIA, "CuiXia"),
+            new MoreLure(MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_WEICHEN, "WeiChen"),
+            new MoreLure(MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_RONGHUO, "RongHuo"),
+            new MoreLure(MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_YUEJIN, "YueJin"),
+            new MoreLure(MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_XINGHE, "XingHe"),
+            new MoreLure(MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_REED_JIANJIA, "JianJia"),
+            new MoreLure(MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_REED_LUXUE, "LuXue"),
+            new MoreLure(MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_REED_WEILU, "WeiLu"),
+            new MoreLure(MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_REED_BAILU, "BaiLu"),
+            new MoreLure(MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_REED_LUYA, "LuYa"),
+            new MoreLure(MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_HANJIANG_NINGSHUANG, "NingShuang"),
+            new MoreLure(MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_HANJIANG_LUOXU, "LuoXu"),
+            new MoreLure(MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_HANJIANG_BINGPO, "BingPo"),
+            new MoreLure(MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_HANJIANG_CHUJI, "ChuJi"),
+            new MoreLure(MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_HANJIANG_CHUILUN, "ChuiLun"),
+            new MoreLure(MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_XIYU_FENGSI, "FengSi"),
+            new MoreLure(MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_XIYU_YANYU, "YanYu"),
+            new MoreLure(MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_XIYU_LIANBAI, "LianBai"),
+            new MoreLure(MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_XIYU_XIAOFENG, "XiaoFeng"),
+            new MoreLure(MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_XIYU_XIEYING, "XieYing")
     );
 
     // Water Cloud normal-catch messages.
@@ -141,7 +157,25 @@ public class PlayerFishingWaterCloudListener {
 
         // 8. Route tagged catches to the special event; otherwise use normal handling.
         ItemStack specialCatch = getSpecialCatchForLure(activeLure);
-        if (specialCatch != null && SlimefunUtils.isItemSimilar(drop, specialCatch, true)) {
+        boolean special = specialCatch != null && SlimefunUtils.isItemSimilar(drop, specialCatch, true);
+
+        // 9. Give only the eligible advanced Water Cloud rods their original item-bound
+        //    progression. The starter Cyan Bamboo rod and vanilla catches remain unchanged.
+        if (WaterCloudRodProficiency.supportsRodId(fishingRod.getId())) {
+            int oldLevel = WaterCloudRodProficiency.getLevel(rod);
+            int gained = special ? WaterCloudRodProficiency.XP_SPECIAL
+                    : WaterCloudRodProficiency.XP_COMMON;
+            WaterCloudRodProficiency.Progress progress = WaterCloudRodProficiency.award(rod, gained);
+            player.getInventory().setItemInMainHand(rod);
+            player.sendActionBar("§bWater Cloud Proficiency: §f"
+                    + WaterCloudRodProficiency.getLevelName(progress.level()) + " §a+" + gained);
+            if (progress.level() > oldLevel) {
+                player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1.0f, 1.0f);
+                player.sendMessage("§b✦ " + WaterCloudRodProficiency.getLevelMessage(progress.level()));
+            }
+        }
+
+        if (special) {
             triggerSpecialEvent(player, drop);
         } else {
             handleNormalCatch(player, drop);
