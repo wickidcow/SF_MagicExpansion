@@ -5,8 +5,11 @@ import io.Yomicer.magicExpansion.items.misc.fish.WaterCloudCatchMaterializer;
 import io.Yomicer.magicExpansion.items.misc.Lure;
 import io.Yomicer.magicExpansion.items.misc.WeightedItem;
 import io.Yomicer.magicExpansion.items.misc.moreLure.MoreLure;
+import io.Yomicer.magicExpansion.items.misc.baitbag.BaitBagMenu;
 import io.Yomicer.magicExpansion.items.tools.FishingRodWaterCloud;
 import io.Yomicer.magicExpansion.utils.ColorGradient;
+import io.Yomicer.magicExpansion.utils.WaterCloudRodProficiency;
+import io.Yomicer.magicExpansion.utils.fishing.WaterCloudBaitPayment;
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItem;
 import io.github.thebusybiscuit.slimefun4.utils.SlimefunUtils;
 import io.Yomicer.magicExpansion.utils.compat.ItemStackHelper;
@@ -38,11 +41,26 @@ public class PlayerFishingWaterCloudListener {
 
     // Water Cloud lure list; the active lure determines special-catch behavior.
     private static final List<MoreLure> SHUIYUNJIAN_LURES = List.of(
-            new MoreLure(MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_CUIXIA, "CuiXia"),   // 淬霞
-            new MoreLure(MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_WEICHEN, "WeiChen"), // 微尘
-            new MoreLure(MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_RONGHUO, "RongHuo"), // 熔火
-            new MoreLure(MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_YUEJIN, "YueJin"),   // 跃金
-            new MoreLure(MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_XINGHE, "XingHe")    // 星核
+            new MoreLure(MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_CUIXIA, "CuiXia"),
+            new MoreLure(MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_WEICHEN, "WeiChen"),
+            new MoreLure(MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_RONGHUO, "RongHuo"),
+            new MoreLure(MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_YUEJIN, "YueJin"),
+            new MoreLure(MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_XINGHE, "XingHe"),
+            new MoreLure(MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_REED_JIANJIA, "JianJia"),
+            new MoreLure(MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_REED_LUXUE, "LuXue"),
+            new MoreLure(MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_REED_WEILU, "WeiLu"),
+            new MoreLure(MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_REED_BAILU, "BaiLu"),
+            new MoreLure(MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_REED_LUYA, "LuYa"),
+            new MoreLure(MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_HANJIANG_NINGSHUANG, "NingShuang"),
+            new MoreLure(MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_HANJIANG_LUOXU, "LuoXu"),
+            new MoreLure(MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_HANJIANG_BINGPO, "BingPo"),
+            new MoreLure(MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_HANJIANG_CHUJI, "ChuJi"),
+            new MoreLure(MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_HANJIANG_CHUILUN, "ChuiLun"),
+            new MoreLure(MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_XIYU_FENGSI, "FengSi"),
+            new MoreLure(MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_XIYU_YANYU, "YanYu"),
+            new MoreLure(MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_XIYU_LIANBAI, "LianBai"),
+            new MoreLure(MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_XIYU_XIAOFENG, "XiaoFeng"),
+            new MoreLure(MagicExpansionItems.FISH_LURE_BETWEEN_WATER_CLOUD_XIYU_XIEYING, "XieYing")
     );
 
     // Water Cloud normal-catch messages.
@@ -116,31 +134,61 @@ public class PlayerFishingWaterCloudListener {
         // Release 11: Water Cloud catches require the hook to be in water.
         if (!isHookInWater(e.getHook().getLocation())) return;
 
-        // 2. Resolve the active lure: offhand first, then inventory.
-        Lure activeLure = getActiveLure(player, fishingRod);
+        // 2. A configured bait bag takes priority. Probe first without consuming:
+        //    the selected key must determine the loot pool and exactly one debit.
+        Set<String> supportedKeys = fishingRod.getLootTable().keySet();
+        String bagKey = BaitBagMenu.peekFromBag(player, supportedKeys);
+        Lure activeLure = bagKey == null ? getActiveLure(player, fishingRod)
+                : SHUIYUNJIAN_LURES.stream()
+                        .filter(lure -> bagKey.equals(lure.getKey()))
+                        .findFirst().orElse(null);
 
-        // 3. No lure: preserve vanilla fishing behavior.
-        if (activeLure == null) return;
+        // 3. No supported lure: preserve vanilla fishing behavior.
+        if (activeLure == null || !(e.getCaught() instanceof Item caught)) return;
 
-        // 4. Roll the existing weighted loot pool.
+        // 4. Choose an output first, without mutating loot pools or inventories.
         ItemStack drop = getCaughtDrop(player, fishingRod, activeLure);
         if (drop == null) return;
 
-        // 5. Remove the vanilla catch entity and spawn the selected reward.
-        Entity caught = e.getCaught();
-        if (caught instanceof Item item) {
-            item.remove();
+        // 5. Spend exactly one actual lure BEFORE removing the vanilla catch.
+        //    If the bag was removed after the read-only probe, try the same
+        //    inventory lure. If neither can be paid, leave the vanilla catch.
+        WaterCloudBaitPayment.Source payment = WaterCloudBaitPayment.charge(
+                bagKey != null,
+                () -> BaitBagMenu.consumeFromBagByKey(player, bagKey),
+                () -> consumeLure(player, activeLure));
+        if (payment == WaterCloudBaitPayment.Source.NONE) return;
+        if (payment == WaterCloudBaitPayment.Source.BAG) {
+            String phrase = SHUIYUNJIAN_CONSUME_PHRASES.get(new Random().nextInt(SHUIYUNJIAN_CONSUME_PHRASES.size()));
+            player.sendMessage(ColorGradient.getRandomGradientName(phrase)
+                    + " §r" + ItemStackHelper.getDisplayName(activeLure.getItem()));
         }
 
-        // 6. Consume the lure and show the Water Cloud message.
-        consumeLure(player, activeLure);
-
-        // 7. Spawn the reward at the hook location.
+        // 6. Commit the reward only after the bait debit succeeded.
+        caught.remove();
         spawnDrop(player, e.getHook().getLocation(), drop);
 
         // 8. Route tagged catches to the special event; otherwise use normal handling.
         ItemStack specialCatch = getSpecialCatchForLure(activeLure);
-        if (specialCatch != null && SlimefunUtils.isItemSimilar(drop, specialCatch, true)) {
+        boolean special = specialCatch != null && SlimefunUtils.isItemSimilar(drop, specialCatch, true);
+
+        // 9. Give only the eligible advanced Water Cloud rods their original item-bound
+        //    progression. The starter Cyan Bamboo rod and vanilla catches remain unchanged.
+        if (WaterCloudRodProficiency.supportsRodId(fishingRod.getId())) {
+            int oldLevel = WaterCloudRodProficiency.getLevel(rod);
+            int gained = special ? WaterCloudRodProficiency.XP_SPECIAL
+                    : WaterCloudRodProficiency.XP_COMMON;
+            WaterCloudRodProficiency.Progress progress = WaterCloudRodProficiency.award(rod, gained);
+            player.getInventory().setItemInMainHand(rod);
+            player.sendActionBar("§bWater Cloud Proficiency: §f"
+                    + WaterCloudRodProficiency.getLevelName(progress.level()) + " §a+" + gained);
+            if (progress.level() > oldLevel) {
+                player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1.0f, 1.0f);
+                player.sendMessage("§b✦ " + WaterCloudRodProficiency.getLevelMessage(progress.level()));
+            }
+        }
+
+        if (special) {
             triggerSpecialEvent(player, drop);
         } else {
             handleNormalCatch(player, drop);
@@ -176,8 +224,9 @@ public class PlayerFishingWaterCloudListener {
     private ItemStack getCaughtDrop(Player player, FishingRodWaterCloud fishingRod, Lure activeLure) {
         List<WeightedItem> pool = fishingRod.getLootPoolForLure(activeLure);
         ItemStack selected = getRandomItemFromWeightedPool(pool != null ? pool : getDefaultLootPool());
-        // The weighted pool stores Gen2 template seeds. Materialize attributes only
-        // after selecting the payout, never when constructing recipes or previews.
+        // Integration of PR #32: Generation 2 seeds must receive individual
+        // elemental values, quality and breeding traits on successful payout.
+        // This runs only after weighted selection and before the checked bait debit.
         return WaterCloudCatchMaterializer.materialize(selected, (int) fishingRod.getWeightBoost());
     }
 
@@ -229,7 +278,7 @@ public class PlayerFishingWaterCloudListener {
     /**
      * Consume the lure and show the Water Cloud message.
      */
-    private void consumeLure(Player player, Lure lure) {
+    private boolean consumeLure(Player player, Lure lure) {
         PlayerInventory inv = player.getInventory();
         ItemStack requiredItem = lure.getItem();
 
@@ -238,6 +287,7 @@ public class PlayerFishingWaterCloudListener {
             if (item != null && SlimefunUtils.isItemSimilar(item, requiredItem, true)) {
                 if (item.getAmount() > 1) {
                     item.setAmount(item.getAmount() - 1);
+                    inv.setItem(i, item);
                     String prefix = SHUIYUNJIAN_CONSUME_PHRASES.get(new Random().nextInt(SHUIYUNJIAN_CONSUME_PHRASES.size()));
                     player.sendMessage(ColorGradient.getRandomGradientName(prefix) + " §r" + ItemStackHelper.getDisplayName(item) + ColorGradient.getRandomGradientName("!"));
                 } else {
@@ -246,9 +296,10 @@ public class PlayerFishingWaterCloudListener {
                     player.sendMessage(ItemStackHelper.getDisplayName(item) + ColorGradient.getRandomGradientName(suffix));
                 }
                 player.updateInventory();
-                break;
+                return true;
             }
         }
+        return false;
     }
 
     /**

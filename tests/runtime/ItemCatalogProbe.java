@@ -2,6 +2,7 @@ package audit;
 
 import io.Yomicer.magicExpansion.MagicExpansion;
 import io.Yomicer.magicExpansion.core.MagicExpansionItems;
+import io.Yomicer.magicExpansion.utils.WaterCloudRodProficiency;
 import io.Yomicer.magicExpansion.items.misc.fish.FishAttributeGenerator;
 import io.Yomicer.magicExpansion.items.misc.fish.Gen2Fish;
 import io.Yomicer.magicExpansion.items.misc.fish.WaterCloudCatchMaterializer;
@@ -76,6 +77,7 @@ public final class ItemCatalogProbe extends JavaPlugin {
         MagicExpansion plugin = MagicExpansion.getInstance();
         require(plugin != null && plugin.isEnabled(), "MagicExpansion is not enabled");
         auditGen2FishPayoutMetadata();
+        auditWaterCloudRodProficiency();
 
         List<String> failures = new ArrayList<>();
         Map<String, String> declared = new TreeMap<>();
@@ -406,6 +408,47 @@ public final class ItemCatalogProbe extends JavaPlugin {
         require(WaterCloudCatchMaterializer.isRawSeed(seed),
                 "Original Gen2 loot-table seed was modified");
         getLogger().info("GEN2_FISH_PAYOUT_PASS");
+    }
+
+    private void auditWaterCloudRodProficiency() {
+        // The runtime registry may use the normalized Slimefun item ID; never
+        // assume that the Java field name is the complete persisted identity.
+        String rodId = MagicExpansionItems.FISHING_ROD_BETWEEN_WATER_CLOUD_REED.getItemId();
+        SlimefunItem registered = SlimefunItem.getById(rodId);
+        require(registered != null, "Registered Reedflower Water Cloud rod missing");
+        ItemStack rod = registered.getItem().clone();
+        require(WaterCloudRodProficiency.supportsRodId(registered.getId()),
+                "Proficiency not enabled for Reedflower rod");
+
+        var before = rod.getItemMeta().getPersistentDataContainer();
+        String savedIdentity = before.get(new org.bukkit.NamespacedKey("slimefun", "id"),
+                org.bukkit.persistence.PersistentDataType.STRING);
+        var previous = WaterCloudRodProficiency.read(rod);
+        require(previous.level() == 1 && previous.xp() == 0,
+                "Unlevelled rod does not start at level one");
+
+        var progressed = WaterCloudRodProficiency.award(rod, 300);
+        require(progressed.level() == 2 && progressed.xp() == 0,
+                "Upstream Water Cloud threshold was not respected");
+        require(SlimefunItem.getByItem(rod) == registered,
+                "Proficiency mutation changed the rod's Slimefun identity");
+        require(java.util.Objects.equals(savedIdentity,
+                rod.getItemMeta().getPersistentDataContainer().get(
+                        new org.bukkit.NamespacedKey("slimefun", "id"),
+                        org.bukkit.persistence.PersistentDataType.STRING)),
+                "Proficiency mutation overwrote the Slimefun ID PDC");
+        require(rod.getItemMeta().getPersistentDataContainer().get(
+                WaterCloudRodProficiency.LV_KEY,
+                org.bukkit.persistence.PersistentDataType.INTEGER) == 2,
+                "Upstream Water Cloud level PDC not persisted");
+        require(rod.getItemMeta().getPersistentDataContainer().get(
+                WaterCloudRodProficiency.XP_KEY,
+                org.bukkit.persistence.PersistentDataType.INTEGER) == 0,
+                "Upstream Water Cloud XP PDC not persisted");
+        require(!WaterCloudRodProficiency.supportsRodId(
+                "FISHING_ROD_BETWEEN_WATER_CLOUD_CYAN_BAMBOO"),
+                "Starter Cyan Bamboo rod must not receive upstream proficiency");
+        getLogger().info("WATER_CLOUD_PROFICIENCY_PASS");
     }
 
     private void requestShutdown() {
