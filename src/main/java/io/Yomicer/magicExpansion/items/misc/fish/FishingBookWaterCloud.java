@@ -33,10 +33,10 @@ public final class FishingBookWaterCloud extends SimpleSlimefunItem<ItemUseHandl
 
             player.sendMessage("§b§l✦ Water Cloud Fishing §7— §fField Guide");
             player.sendMessage("§7Hold your rod in your main hand and use a matching lure.");
-            player.sendMessage("§bCyan Bamboo: §fTempered Sunset, Dust, Flame, Gold, Star Core");
-            player.sendMessage("§bReedflower: §fJianjia, Reed Snow, Reed Dew, White Dew, Reed Sprout");
-            player.sendMessage("§bSnowy River: §fFrostfall, Falling Floss, Ice Soul, Clearing, Line");
-            player.sendMessage("§bFine Rain: §fWind Thread, Misty Rain, White Ripples, Morning Wind, Shadow");
+            player.sendMessage("§bCyan Bamboo: §fTempered Sunset, Motes, Molten Flame, Leaping Gold, Star Core");
+            player.sendMessage("§bReedflower: §fReedbank Lure, Reed Snow, Reed Dew, White Dew, Reed Sprout");
+            player.sendMessage("§bSnowy River: §fFrostfall, Falling Flakes, Ice Soul, First Clearing, Lone Line");
+            player.sendMessage("§bFine Rain: §fWind Thread, Mist Rain, White Ripple, Dawn Wind, Slanting Shadow");
             player.sendMessage("§7The bait bag can hold and prioritize your fishing lures.");
             player.sendMessage("§7Advanced rods can gain proficiency and catch Generation 2 fish.");
             player.sendMessage("§7See the Slimefun guide for exact recipes and rod upgrades.");
