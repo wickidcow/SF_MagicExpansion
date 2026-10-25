@@ -26,6 +26,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -45,6 +46,16 @@ public class ItemNameTag extends SimpleSlimefunItem<ItemUseHandler> implements L
         super(itemGroup, item, recipeType, recipe);
         Bukkit.getPluginManager().registerEvents(this, MagicExpansion.getInstance());
         addItemHandler((EntityInteractHandler) this::onEntityInteract);
+    }
+
+    /**
+     * Rename prompts are transient and must not survive a player reconnect.
+     * The existing timeout callback uses remove(uuid, session), so removing
+     * the entry here cannot cancel another player's or a newer session.
+     */
+    @EventHandler
+    public void onPlayerQuit(PlayerQuitEvent event) {
+        renameSessions.remove(event.getPlayer().getUniqueId());
     }
 
     @Override
