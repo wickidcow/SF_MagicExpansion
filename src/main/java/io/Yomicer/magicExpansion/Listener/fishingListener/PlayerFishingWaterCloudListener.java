@@ -1,8 +1,7 @@
 package io.Yomicer.magicExpansion.Listener.fishingListener;
 
 import io.Yomicer.magicExpansion.core.MagicExpansionItems;
-import io.Yomicer.magicExpansion.items.misc.fish.FishAttributeGenerator;
-import io.Yomicer.magicExpansion.items.misc.fish.Gen2Fish;
+import io.Yomicer.magicExpansion.items.misc.fish.WaterCloudCatchMaterializer;
 import io.Yomicer.magicExpansion.items.misc.Lure;
 import io.Yomicer.magicExpansion.items.misc.WeightedItem;
 import io.Yomicer.magicExpansion.items.misc.moreLure.MoreLure;
@@ -176,7 +175,10 @@ public class PlayerFishingWaterCloudListener {
      */
     private ItemStack getCaughtDrop(Player player, FishingRodWaterCloud fishingRod, Lure activeLure) {
         List<WeightedItem> pool = fishingRod.getLootPoolForLure(activeLure);
-        return getRandomItemFromWeightedPool(pool != null ? pool : getDefaultLootPool());
+        ItemStack selected = getRandomItemFromWeightedPool(pool != null ? pool : getDefaultLootPool());
+        // The weighted pool stores Gen2 template seeds. Materialize attributes only
+        // after selecting the payout, never when constructing recipes or previews.
+        return WaterCloudCatchMaterializer.materialize(selected, (int) fishingRod.getWeightBoost());
     }
 
     private ItemStack getRandomItemFromWeightedPool(List<WeightedItem> pool) {
