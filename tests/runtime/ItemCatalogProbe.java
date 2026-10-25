@@ -2,6 +2,8 @@ package audit;
 
 import io.Yomicer.magicExpansion.MagicExpansion;
 import io.Yomicer.magicExpansion.core.MagicExpansionItems;
+import io.Yomicer.magicExpansion.MagicExpansionItemSetup;
+import io.Yomicer.magicExpansion.items.misc.fish.FishingBookWaterCloud;
 import io.Yomicer.magicExpansion.items.abstracts.AbstractElectricRecipeMachine;
 import io.Yomicer.magicExpansion.items.abstracts.AbstractElectricResourceMachine;
 import io.Yomicer.magicExpansion.items.electric.recipeMachine.RandomBoxMachine;
@@ -70,6 +72,7 @@ public final class ItemCatalogProbe extends JavaPlugin {
     private void audit() throws Exception {
         MagicExpansion plugin = MagicExpansion.getInstance();
         require(plugin != null && plugin.isEnabled(), "MagicExpansion is not enabled");
+        auditWaterCloudGuideItems();
 
         List<String> failures = new ArrayList<>();
         Map<String, String> declared = new TreeMap<>();
@@ -368,6 +371,32 @@ public final class ItemCatalogProbe extends JavaPlugin {
                 + " failures=" + failures.size());
 
         requestShutdown();
+    }
+
+    private void auditWaterCloudGuideItems() {
+        String infoId = MagicExpansionItems.FISHING_GUIDE_BETWEEN_WATER_CLOUD.getItemId();
+        String bookId = MagicExpansionItems.FISHING_BOOK_BETWEEN_WATER_CLOUD.getItemId();
+        require("MAGIC_EXPANSION_FISHING_GUIDE_BETWEEN_WATER_CLOUD".equals(infoId),
+                "Water Cloud info item changed its upstream registered ID");
+        require("MAGIC_EXPANSION_FISHING_BOOK_BETWEEN_WATER_CLOUD".equals(bookId),
+                "Water Cloud book changed its upstream registered ID");
+
+        SlimefunItem info = SlimefunItem.getById(infoId);
+        SlimefunItem book = SlimefunItem.getById(bookId);
+        require(info != null && book != null,
+                "Upstream Water Cloud guide IDs were not both registered");
+        require(info.getItemGroup() == MagicExpansionItemSetup.magicexpansionfishing
+                        && book.getItemGroup() == MagicExpansionItemSetup.magicexpansionfishing,
+                "Water Cloud guides are not in the original fishing subgroup");
+        require(SlimefunItem.getByItem(info.getItem()) == info,
+                "Water Cloud info item no longer resolves from its ItemStack");
+        require(SlimefunItem.getByItem(book.getItem()) == book,
+                "Water Cloud book no longer resolves from its ItemStack");
+        require(book instanceof FishingBookWaterCloud,
+                "Water Cloud book does not provide the English manual handler");
+        require(((FishingBookWaterCloud) book).getItemHandler() != null,
+                "Water Cloud book has no right-click handler");
+        getLogger().info("WATER_CLOUD_GUIDES_PASS");
     }
 
     private void requestShutdown() {
