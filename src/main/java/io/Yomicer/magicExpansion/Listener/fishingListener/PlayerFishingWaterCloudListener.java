@@ -10,6 +10,7 @@ import io.Yomicer.magicExpansion.items.misc.baitbag.BaitBagMenu;
 import io.Yomicer.magicExpansion.items.tools.FishingRodWaterCloud;
 import io.Yomicer.magicExpansion.utils.ColorGradient;
 import io.Yomicer.magicExpansion.utils.WaterCloudRodProficiency;
+import io.Yomicer.magicExpansion.utils.fishing.WaterCloudBaitPayment;
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItem;
 import io.github.thebusybiscuit.slimefun4.utils.SlimefunUtils;
 import io.Yomicer.magicExpansion.utils.compat.ItemStackHelper;
@@ -153,15 +154,16 @@ public class PlayerFishingWaterCloudListener {
         // 5. Spend exactly one actual lure BEFORE removing the vanilla catch.
         //    If the bag was removed after the read-only probe, try the same
         //    inventory lure. If neither can be paid, leave the vanilla catch.
-        boolean debited = bagKey != null && BaitBagMenu.consumeFromBagByKey(player, bagKey);
-        if (!debited) {
-            debited = consumeLure(player, activeLure);
-        } else {
+        WaterCloudBaitPayment.Source payment = WaterCloudBaitPayment.charge(
+                bagKey != null,
+                () -> BaitBagMenu.consumeFromBagByKey(player, bagKey),
+                () -> consumeLure(player, activeLure));
+        if (payment == WaterCloudBaitPayment.Source.NONE) return;
+        if (payment == WaterCloudBaitPayment.Source.BAG) {
             String phrase = SHUIYUNJIAN_CONSUME_PHRASES.get(new Random().nextInt(SHUIYUNJIAN_CONSUME_PHRASES.size()));
             player.sendMessage(ColorGradient.getRandomGradientName(phrase)
                     + " §r" + ItemStackHelper.getDisplayName(activeLure.getItem()));
         }
-        if (!debited) return;
 
         // 6. Commit the reward only after the bait debit succeeded.
         caught.remove();
