@@ -6,6 +6,7 @@ import io.Yomicer.magicExpansion.items.misc.fish.Gen2Fish;
 import io.Yomicer.magicExpansion.items.misc.Lure;
 import io.Yomicer.magicExpansion.items.misc.WeightedItem;
 import io.Yomicer.magicExpansion.items.misc.moreLure.MoreLure;
+import io.Yomicer.magicExpansion.items.misc.baitbag.BaitBagMenu;
 import io.Yomicer.magicExpansion.items.tools.FishingRodWaterCloud;
 import io.Yomicer.magicExpansion.utils.ColorGradient;
 import io.Yomicer.magicExpansion.utils.WaterCloudRodProficiency;
@@ -133,26 +134,37 @@ public class PlayerFishingWaterCloudListener {
         // Release 11: Water Cloud catches require the hook to be in water.
         if (!isHookInWater(e.getHook().getLocation())) return;
 
-        // 2. Resolve the active lure: offhand first, then inventory.
-        Lure activeLure = getActiveLure(player, fishingRod);
+        // 2. A configured bait bag takes priority. Probe first without consuming:
+        //    the selected key must determine the loot pool and exactly one debit.
+        Set<String> supportedKeys = fishingRod.getLootTable().keySet();
+        String bagKey = BaitBagMenu.peekFromBag(player, supportedKeys);
+        Lure activeLure = bagKey == null ? getActiveLure(player, fishingRod)
+                : SHUIYUNJIAN_LURES.stream()
+                        .filter(lure -> bagKey.equals(lure.getKey()))
+                        .findFirst().orElse(null);
 
-        // 3. No lure: preserve vanilla fishing behavior.
-        if (activeLure == null) return;
+        // 3. No supported lure: preserve vanilla fishing behavior.
+        if (activeLure == null || !(e.getCaught() instanceof Item caught)) return;
 
-        // 4. Roll the existing weighted loot pool.
+        // 4. Choose an output first, without mutating loot pools or inventories.
         ItemStack drop = getCaughtDrop(player, fishingRod, activeLure);
         if (drop == null) return;
 
-        // 5. Remove the vanilla catch entity and spawn the selected reward.
-        Entity caught = e.getCaught();
-        if (caught instanceof Item item) {
-            item.remove();
+        // 5. Spend exactly one actual lure BEFORE removing the vanilla catch.
+        //    If the bag was removed after the read-only probe, try the same
+        //    inventory lure. If neither can be paid, leave the vanilla catch.
+        boolean debited = bagKey != null && BaitBagMenu.consumeFromBagByKey(player, bagKey);
+        if (!debited) {
+            debited = consumeLure(player, activeLure);
+        } else {
+            String phrase = SHUIYUNJIAN_CONSUME_PHRASES.get(new Random().nextInt(SHUIYUNJIAN_CONSUME_PHRASES.size()));
+            player.sendMessage(ColorGradient.getRandomGradientName(phrase)
+                    + " §r" + ItemStackHelper.getDisplayName(activeLure.getItem()));
         }
+        if (!debited) return;
 
-        // 6. Consume the lure and show the Water Cloud message.
-        consumeLure(player, activeLure);
-
-        // 7. Spawn the reward at the hook location.
+        // 6. Commit the reward only after the bait debit succeeded.
+        caught.remove();
         spawnDrop(player, e.getHook().getLocation(), drop);
 
         // 8. Route tagged catches to the special event; otherwise use normal handling.
@@ -261,7 +273,7 @@ public class PlayerFishingWaterCloudListener {
     /**
      * Consume the lure and show the Water Cloud message.
      */
-    private void consumeLure(Player player, Lure lure) {
+    private boolean consumeLure(Player player, Lure lure) {
         PlayerInventory inv = player.getInventory();
         ItemStack requiredItem = lure.getItem();
 
@@ -270,6 +282,7 @@ public class PlayerFishingWaterCloudListener {
             if (item != null && SlimefunUtils.isItemSimilar(item, requiredItem, true)) {
                 if (item.getAmount() > 1) {
                     item.setAmount(item.getAmount() - 1);
+                    inv.setItem(i, item);
                     String prefix = SHUIYUNJIAN_CONSUME_PHRASES.get(new Random().nextInt(SHUIYUNJIAN_CONSUME_PHRASES.size()));
                     player.sendMessage(ColorGradient.getRandomGradientName(prefix) + " §r" + ItemStackHelper.getDisplayName(item) + ColorGradient.getRandomGradientName("!"));
                 } else {
@@ -278,9 +291,10 @@ public class PlayerFishingWaterCloudListener {
                     player.sendMessage(ItemStackHelper.getDisplayName(item) + ColorGradient.getRandomGradientName(suffix));
                 }
                 player.updateInventory();
-                break;
+                return true;
             }
         }
+        return false;
     }
 
     /**
