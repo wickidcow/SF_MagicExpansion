@@ -26,6 +26,20 @@ lures (20 in total) during the legacy catch flow.
 - XP thresholds to reach levels 2–8: 300, 600, 1200, 2200, 3200,
   5200, 7200. XP is capped and discarded at level 8.
 
+## Bait-bag safety
+
+A configured bait bag is checked first without changing its stored count.
+If a supported lure is present, that same lure determines the payout, and
+`consumeFromBagByKey` removes exactly one. If the bag disappears before
+payment, the handler attempts to debit the *same* lure from inventory. With
+no payable lure, the original vanilla catch is left in place; there is
+no Slimefun reward or proficiency XP. This also fixes a pre-existing
+free-reward path where the old listener did not confirm that bait was
+actually consumed.
+
+The original inventory/offhand fallback remains available for players
+without a bait bag.
+
 ## Safety and scope
 
 The existing `FishingCompatibility` gate still controls whether
