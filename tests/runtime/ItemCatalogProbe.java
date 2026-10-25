@@ -3,6 +3,9 @@ package audit;
 import io.Yomicer.magicExpansion.MagicExpansion;
 import io.Yomicer.magicExpansion.core.MagicExpansionItems;
 import io.Yomicer.magicExpansion.utils.WaterCloudRodProficiency;
+import io.Yomicer.magicExpansion.items.misc.fish.FishAttributeGenerator;
+import io.Yomicer.magicExpansion.items.misc.fish.Gen2Fish;
+import io.Yomicer.magicExpansion.items.misc.fish.WaterCloudCatchMaterializer;
 import io.Yomicer.magicExpansion.items.abstracts.AbstractElectricRecipeMachine;
 import io.Yomicer.magicExpansion.items.abstracts.AbstractElectricResourceMachine;
 import io.Yomicer.magicExpansion.items.electric.recipeMachine.RandomBoxMachine;
@@ -29,6 +32,8 @@ import java.util.TreeSet;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 
 /**
@@ -71,6 +76,7 @@ public final class ItemCatalogProbe extends JavaPlugin {
     private void audit() throws Exception {
         MagicExpansion plugin = MagicExpansion.getInstance();
         require(plugin != null && plugin.isEnabled(), "MagicExpansion is not enabled");
+        auditGen2FishPayoutMetadata();
         auditWaterCloudRodProficiency();
 
         List<String> failures = new ArrayList<>();
@@ -373,9 +379,37 @@ public final class ItemCatalogProbe extends JavaPlugin {
     }
 
     /**
-     * Assert item identity and original PDC format on a real Slimefun server,
-     * not just in MockBukkit. No player catches or inventory mutations occur.
+     * Real-server assertion for the portable Gen2 catch path: the loot-table
+     * seed must become a populated individual fish on every supported runtime.
      */
+    private void auditGen2FishPayoutMetadata() {
+        ItemStack seed = new ItemStack(Gen2Fish.YUNYIN.getMaterial());
+        ItemMeta meta = seed.getItemMeta();
+        require(meta != null, "Gen2 seed has no ItemMeta");
+        meta.getPersistentDataContainer().set(FishAttributeGenerator.GEN2_TYPE,
+                PersistentDataType.STRING, Gen2Fish.YUNYIN.getId());
+        seed.setItemMeta(meta);
+
+        require(WaterCloudCatchMaterializer.isRawSeed(seed), "Gen2 seed not recognized");
+        ItemStack caught = WaterCloudCatchMaterializer.materialize(seed, 2);
+        require(caught != seed, "Gen2 seed was not materialized");
+        require(Gen2Fish.YUNYIN == FishAttributeGenerator.getType(caught),
+                "Gen2 payout lost its fish type");
+        require(FishAttributeGenerator.getElements(caught) != null,
+                "Gen2 payout has no elemental attributes");
+        require(FishAttributeGenerator.getTrait(caught) == Gen2Fish.YUNYIN.getDefaultTrait(),
+                "Gen2 payout lost its fish trait");
+        require(FishAttributeGenerator.getQuality(caught) >= 0.7,
+                "Gen2 payout has invalid quality");
+        require(!WaterCloudCatchMaterializer.isRawSeed(caught),
+                "Gen2 payout is still an unprocessed seed");
+        require(WaterCloudCatchMaterializer.materialize(caught, 2) == caught,
+                "Completed Gen2 fish was rerolled");
+        require(WaterCloudCatchMaterializer.isRawSeed(seed),
+                "Original Gen2 loot-table seed was modified");
+        getLogger().info("GEN2_FISH_PAYOUT_PASS");
+    }
+
     private void auditWaterCloudRodProficiency() {
         // The runtime registry may use the normalized Slimefun item ID; never
         // assume that the Java field name is the complete persisted identity.
