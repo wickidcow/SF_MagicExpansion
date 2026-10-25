@@ -15,6 +15,7 @@ import io.Yomicer.magicExpansion.items.misc.FishWeightEnhancer;
 import io.Yomicer.magicExpansion.items.misc.fish.CommonFish;
 import io.Yomicer.magicExpansion.items.misc.fish.CommonFishHidden;
 import io.Yomicer.magicExpansion.items.misc.fish.FishingBook;
+import io.Yomicer.magicExpansion.items.misc.fish.FishingBookWaterCloud;
 import io.Yomicer.magicExpansion.items.misc.fish.Gen2Fish;
 import io.Yomicer.magicExpansion.items.misc.fish.PowerEel;
 import io.Yomicer.magicExpansion.items.misc.magicAlter.MagicWand;
@@ -1911,6 +1912,14 @@ public final class MagicExpansionItemSetup {
                 null, null, null,
                 null, null, null
         }).register(plugin);
+        // Upstream Water Cloud guide IDs, restored without changing existing recipes.
+        new UnplaceableBlock(magicexpansionfishing,
+                FISHING_GUIDE_BETWEEN_WATER_CLOUD, RecipeType.NULL, new ItemStack[9])
+                .register(plugin);
+        new FishingBookWaterCloud(magicexpansionfishing,
+                FISHING_BOOK_BETWEEN_WATER_CLOUD, RecipeType.NULL, new ItemStack[9])
+                .register(plugin);
+
         //鱼类说明
         new UnplaceableBlock(magicexpansionfishing, FISH_CATEGORY_INFO, RecipeType.NULL, new ItemStack[] {
                 null, null, null,
