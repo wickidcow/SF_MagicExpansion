@@ -377,7 +377,9 @@ public final class ItemCatalogProbe extends JavaPlugin {
      * not just in MockBukkit. No player catches or inventory mutations occur.
      */
     private void auditWaterCloudRodProficiency() {
-        String rodId = "FISHING_ROD_BETWEEN_WATER_CLOUD_REED";
+        // The runtime registry may use the normalized Slimefun item ID; never
+        // assume that the Java field name is the complete persisted identity.
+        String rodId = MagicExpansionItems.FISHING_ROD_BETWEEN_WATER_CLOUD_REED.getItemId();
         SlimefunItem registered = SlimefunItem.getById(rodId);
         require(registered != null, "Registered Reedflower Water Cloud rod missing");
         ItemStack rod = registered.getItem().clone();
