@@ -4,6 +4,10 @@ import io.Yomicer.magicExpansion.MagicExpansion;
 import io.Yomicer.magicExpansion.core.MagicExpansionItems;
 import io.Yomicer.magicExpansion.MagicExpansionItemSetup;
 import io.Yomicer.magicExpansion.items.misc.fish.FishingBookWaterCloud;
+import io.Yomicer.magicExpansion.utils.WaterCloudRodProficiency;
+import io.Yomicer.magicExpansion.items.misc.fish.FishAttributeGenerator;
+import io.Yomicer.magicExpansion.items.misc.fish.Gen2Fish;
+import io.Yomicer.magicExpansion.items.misc.fish.WaterCloudCatchMaterializer;
 import io.Yomicer.magicExpansion.items.abstracts.AbstractElectricRecipeMachine;
 import io.Yomicer.magicExpansion.items.abstracts.AbstractElectricResourceMachine;
 import io.Yomicer.magicExpansion.items.electric.recipeMachine.RandomBoxMachine;
@@ -30,6 +34,8 @@ import java.util.TreeSet;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 
 /**
@@ -72,6 +78,8 @@ public final class ItemCatalogProbe extends JavaPlugin {
     private void audit() throws Exception {
         MagicExpansion plugin = MagicExpansion.getInstance();
         require(plugin != null && plugin.isEnabled(), "MagicExpansion is not enabled");
+        auditGen2FishPayoutMetadata();
+        auditWaterCloudRodProficiency();
         auditWaterCloudGuideItems();
 
         List<String> failures = new ArrayList<>();
@@ -371,6 +379,79 @@ public final class ItemCatalogProbe extends JavaPlugin {
                 + " failures=" + failures.size());
 
         requestShutdown();
+    }
+
+    /**
+     * Real-server assertion for the portable Gen2 catch path: the loot-table
+     * seed must become a populated individual fish on every supported runtime.
+     */
+    private void auditGen2FishPayoutMetadata() {
+        ItemStack seed = new ItemStack(Gen2Fish.YUNYIN.getMaterial());
+        ItemMeta meta = seed.getItemMeta();
+        require(meta != null, "Gen2 seed has no ItemMeta");
+        meta.getPersistentDataContainer().set(FishAttributeGenerator.GEN2_TYPE,
+                PersistentDataType.STRING, Gen2Fish.YUNYIN.getId());
+        seed.setItemMeta(meta);
+
+        require(WaterCloudCatchMaterializer.isRawSeed(seed), "Gen2 seed not recognized");
+        ItemStack caught = WaterCloudCatchMaterializer.materialize(seed, 2);
+        require(caught != seed, "Gen2 seed was not materialized");
+        require(Gen2Fish.YUNYIN == FishAttributeGenerator.getType(caught),
+                "Gen2 payout lost its fish type");
+        require(FishAttributeGenerator.getElements(caught) != null,
+                "Gen2 payout has no elemental attributes");
+        require(FishAttributeGenerator.getTrait(caught) == Gen2Fish.YUNYIN.getDefaultTrait(),
+                "Gen2 payout lost its fish trait");
+        require(FishAttributeGenerator.getQuality(caught) >= 0.7,
+                "Gen2 payout has invalid quality");
+        require(!WaterCloudCatchMaterializer.isRawSeed(caught),
+                "Gen2 payout is still an unprocessed seed");
+        require(WaterCloudCatchMaterializer.materialize(caught, 2) == caught,
+                "Completed Gen2 fish was rerolled");
+        require(WaterCloudCatchMaterializer.isRawSeed(seed),
+                "Original Gen2 loot-table seed was modified");
+        getLogger().info("GEN2_FISH_PAYOUT_PASS");
+    }
+
+    private void auditWaterCloudRodProficiency() {
+        // The runtime registry may use the normalized Slimefun item ID; never
+        // assume that the Java field name is the complete persisted identity.
+        String rodId = MagicExpansionItems.FISHING_ROD_BETWEEN_WATER_CLOUD_REED.getItemId();
+        SlimefunItem registered = SlimefunItem.getById(rodId);
+        require(registered != null, "Registered Reedflower Water Cloud rod missing");
+        ItemStack rod = registered.getItem().clone();
+        require(WaterCloudRodProficiency.supportsRodId(registered.getId()),
+                "Proficiency not enabled for Reedflower rod");
+
+        var before = rod.getItemMeta().getPersistentDataContainer();
+        String savedIdentity = before.get(new org.bukkit.NamespacedKey("slimefun", "id"),
+                org.bukkit.persistence.PersistentDataType.STRING);
+        var previous = WaterCloudRodProficiency.read(rod);
+        require(previous.level() == 1 && previous.xp() == 0,
+                "Unlevelled rod does not start at level one");
+
+        var progressed = WaterCloudRodProficiency.award(rod, 300);
+        require(progressed.level() == 2 && progressed.xp() == 0,
+                "Upstream Water Cloud threshold was not respected");
+        require(SlimefunItem.getByItem(rod) == registered,
+                "Proficiency mutation changed the rod's Slimefun identity");
+        require(java.util.Objects.equals(savedIdentity,
+                rod.getItemMeta().getPersistentDataContainer().get(
+                        new org.bukkit.NamespacedKey("slimefun", "id"),
+                        org.bukkit.persistence.PersistentDataType.STRING)),
+                "Proficiency mutation overwrote the Slimefun ID PDC");
+        require(rod.getItemMeta().getPersistentDataContainer().get(
+                WaterCloudRodProficiency.LV_KEY,
+                org.bukkit.persistence.PersistentDataType.INTEGER) == 2,
+                "Upstream Water Cloud level PDC not persisted");
+        require(rod.getItemMeta().getPersistentDataContainer().get(
+                WaterCloudRodProficiency.XP_KEY,
+                org.bukkit.persistence.PersistentDataType.INTEGER) == 0,
+                "Upstream Water Cloud XP PDC not persisted");
+        require(!WaterCloudRodProficiency.supportsRodId(
+                "FISHING_ROD_BETWEEN_WATER_CLOUD_CYAN_BAMBOO"),
+                "Starter Cyan Bamboo rod must not receive upstream proficiency");
+        getLogger().info("WATER_CLOUD_PROFICIENCY_PASS");
     }
 
     private void auditWaterCloudGuideItems() {
