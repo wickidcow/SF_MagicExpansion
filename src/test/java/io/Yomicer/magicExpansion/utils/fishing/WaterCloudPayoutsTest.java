@@ -43,14 +43,16 @@ class WaterCloudPayoutsTest {
         assertEquals(Material.COD_BUCKET, payouts.get(0).getType());
         assertEquals(Material.COD_BUCKET, payouts.get(1).getType());
         assertNotSame(payouts.get(0), payouts.get(1));
-        assertSame(fish, fish);
+        assertEquals(1, fish.getAmount(), "Doubling cannot modify the source fish");
     }
 
     @Test
     void regularAndInvalidPayoutsAreSafe() {
         ItemStack reward = new ItemStack(Material.COD, 2);
-        assertEquals(1, WaterCloudPayouts.copies(reward, false).size());
-        assertNull(null);
+        var regular = WaterCloudPayouts.copies(reward, false);
+        assertEquals(1, regular.size());
+        assertNotSame(reward, regular.get(0));
+        assertEquals(2, regular.get(0).getAmount());
         assertTrue(WaterCloudPayouts.copies(null, true).isEmpty());
         assertTrue(WaterCloudPayouts.copies(new ItemStack(Material.AIR), true).isEmpty());
     }
