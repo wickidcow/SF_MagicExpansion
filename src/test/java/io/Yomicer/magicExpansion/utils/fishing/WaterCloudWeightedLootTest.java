@@ -7,8 +7,21 @@ import java.util.List;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterEach;
+import org.mockbukkit.mockbukkit.MockBukkit;
 
 class WaterCloudWeightedLootTest {
+
+    @BeforeEach
+    void setup() {
+        MockBukkit.mock();
+    }
+
+    @AfterEach
+    void cleanup() {
+        MockBukkit.unmock();
+    }
 
     @Test
     void emptyAndNonPositivePoolsLeaveVanillaCatchUntouched() {
