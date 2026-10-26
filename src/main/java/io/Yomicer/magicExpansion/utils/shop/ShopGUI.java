@@ -14,6 +14,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
@@ -25,12 +26,12 @@ import java.util.*;
 public class ShopGUI implements Listener {
 
     private static final Map<UUID, UUID> pendingShopNameCreation = new java.util.concurrent.ConcurrentHashMap<>();
-    private static final Map<UUID, Integer> playerMainPage = new HashMap<>();
-    private static final Map<UUID, Integer> adminMainPage = new HashMap<>();
-    private static final Map<UUID, Map<String, Integer>> shopTradesPage = new HashMap<>();
-    private static final Map<UUID, Map<String, Integer>> adminTradesPage = new HashMap<>();
+    private static final Map<UUID, Integer> playerMainPage = new java.util.concurrent.ConcurrentHashMap<>();
+    private static final Map<UUID, Integer> adminMainPage = new java.util.concurrent.ConcurrentHashMap<>();
+    private static final Map<UUID, Map<String, Integer>> shopTradesPage = new java.util.concurrent.ConcurrentHashMap<>();
+    private static final Map<UUID, Map<String, Integer>> adminTradesPage = new java.util.concurrent.ConcurrentHashMap<>();
 
-    private static final Map<UUID, Integer> probPage = new HashMap<>();
+    private static final Map<UUID, Integer> probPage = new java.util.concurrent.ConcurrentHashMap<>();
 
     private static final Map<UUID, ShopEditData> currentEditingData = new HashMap<>();
     private static final Set<UUID> safeClose = new HashSet<>();
@@ -58,6 +59,29 @@ public class ShopGUI implements Listener {
             28, 29, 30, 31, 32, 33, 34,
             37, 38, 39, 40, 41, 42, 43
     };
+
+    /**
+     * Remove only ephemeral browsing pages and pending chat prompts.
+     *
+     * <p>DO NOT drop currentEditingData or safeClose here: the inventory-close
+     * handler still needs both to return unsaved editor items correctly on
+     * disconnect. Also, BlackMarketManager's purchase receipts are persisted
+     * independently and must never be cleared on player quit.</p>
+     */
+    public static void cleanupTransientPlayerState(UUID playerId) {
+        pendingShopNameCreation.remove(playerId);
+        pendingEditData.remove(playerId);
+        playerMainPage.remove(playerId);
+        adminMainPage.remove(playerId);
+        shopTradesPage.remove(playerId);
+        adminTradesPage.remove(playerId);
+        probPage.remove(playerId);
+    }
+
+    @EventHandler
+    public void onPlayerQuit(PlayerQuitEvent event) {
+        cleanupTransientPlayerState(event.getPlayer().getUniqueId());
+    }
 
     private static ItemStack createBorder() {
         return createInfoItem(Material.BLACK_STAINED_GLASS_PANE, " ", null);

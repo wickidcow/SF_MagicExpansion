@@ -6,16 +6,29 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 
-import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.Map;
 import java.util.UUID;
 
 public class Events implements Listener {
 
-    public static final Map<UUID, Boolean> selectMode = new HashMap<>();
-    public static final Map<UUID, Location> point1 = new HashMap<>();
-    public static final Map<UUID, Location> point2 = new HashMap<>();
+    public static final Map<UUID, Boolean> selectMode = new ConcurrentHashMap<>();
+    public static final Map<UUID, Location> point1 = new ConcurrentHashMap<>();
+    public static final Map<UUID, Location> point2 = new ConcurrentHashMap<>();
+
+    /** Reset only the player's temporary world-selection markers on logout. */
+    public static void cleanup(UUID uuid) {
+        selectMode.remove(uuid);
+        point1.remove(uuid);
+        point2.remove(uuid);
+    }
+
+    @EventHandler
+    public void onPlayerQuit(PlayerQuitEvent event) {
+        cleanup(event.getPlayer().getUniqueId());
+    }
 
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent event) {
