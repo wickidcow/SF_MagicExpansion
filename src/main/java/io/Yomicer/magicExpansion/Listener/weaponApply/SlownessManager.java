@@ -113,7 +113,7 @@ public final class SlownessManager {
         }
     }
 
-    private static void removeExistingModifier(AttributeInstance speed, NamespacedKey key) {
+    static void removeExistingModifier(AttributeInstance speed, NamespacedKey key) {
         // Snapshot: avoid mutating a live collection while iterating.
         for (AttributeModifier modifier : java.util.List.copyOf(speed.getModifiers())) {
             if (key.equals(modifier.getKey())) {
