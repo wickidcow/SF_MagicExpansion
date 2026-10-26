@@ -1,5 +1,6 @@
 package io.Yomicer.magicExpansion.Listener.fishingListener;
 
+import io.Yomicer.magicExpansion.MagicExpansion;
 import io.Yomicer.magicExpansion.core.MagicExpansionItems;
 import io.Yomicer.magicExpansion.items.misc.fish.WaterCloudCatchMaterializer;
 import io.Yomicer.magicExpansion.items.misc.Lure;
@@ -11,6 +12,7 @@ import io.Yomicer.magicExpansion.utils.ColorGradient;
 import io.Yomicer.magicExpansion.utils.WaterCloudRodProficiency;
 import io.Yomicer.magicExpansion.utils.fishing.WaterCloudBaitPayment;
 import io.Yomicer.magicExpansion.utils.fishing.WaterCloudWeightedLoot;
+import io.Yomicer.magicExpansion.utils.fishing.WaterCloudClassicJunkReduction;
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItem;
 import io.github.thebusybiscuit.slimefun4.utils.SlimefunUtils;
 import io.Yomicer.magicExpansion.utils.compat.ItemStackHelper;
@@ -224,7 +226,19 @@ public class PlayerFishingWaterCloudListener {
      */
     private ItemStack getCaughtDrop(Player player, FishingRodWaterCloud fishingRod, Lure activeLure) {
         List<WeightedItem> pool = fishingRod.getLootPoolForLure(activeLure);
-        ItemStack selected = WaterCloudWeightedLoot.selectRandom(pool != null ? pool : getDefaultLootPool());
+        if (pool == null) {
+            pool = getDefaultLootPool();
+        }
+        // The classic junk reduction is opt-in and applies ONLY to three
+        // advanced Water Cloud rods after the fishing coexistence gate.
+        if (MagicExpansion.getInstance().getConfig().getBoolean(
+                    WaterCloudClassicJunkReduction.ENABLED_PATH, false)
+                && WaterCloudRodProficiency.supportsRodId(fishingRod.getId())) {
+            int level = WaterCloudRodProficiency.getLevel(
+                    player.getInventory().getItemInMainHand());
+            pool = WaterCloudClassicJunkReduction.adjust(pool, level);
+        }
+        ItemStack selected = WaterCloudWeightedLoot.selectRandom(pool);
         // Integration of PR #32: Generation 2 seeds must receive individual
         // elemental values, quality and breeding traits on successful payout.
         // This runs only after weighted selection and before the checked bait debit.
