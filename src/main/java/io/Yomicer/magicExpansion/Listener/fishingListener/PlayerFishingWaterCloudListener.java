@@ -13,6 +13,8 @@ import io.Yomicer.magicExpansion.utils.WaterCloudRodProficiency;
 import io.Yomicer.magicExpansion.utils.fishing.WaterCloudBaitPayment;
 import io.Yomicer.magicExpansion.utils.fishing.WaterCloudWeightedLoot;
 import io.Yomicer.magicExpansion.utils.fishing.WaterCloudClassicJunkReduction;
+import io.Yomicer.magicExpansion.utils.fishing.WaterCloudPayouts;
+import io.Yomicer.magicExpansion.utils.WaterCloudRodEffects;
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItem;
 import io.github.thebusybiscuit.slimefun4.utils.SlimefunUtils;
 import io.Yomicer.magicExpansion.utils.compat.ItemStackHelper;
@@ -35,6 +37,7 @@ import org.bukkit.util.Vector;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Dedicated fishing listener for the Water Cloud rod series
@@ -153,11 +156,33 @@ public class PlayerFishingWaterCloudListener {
         ItemStack drop = getCaughtDrop(player, fishingRod, activeLure);
         if (drop == null) return;
 
-        // 5. Spend exactly one actual lure BEFORE removing the vanilla catch.
-        //    If the bag was removed after the read-only probe, try the same
-        //    inventory lure. If neither can be paid, leave the vanilla catch.
-        WaterCloudBaitPayment.Source payment = WaterCloudBaitPayment.charge(
-                bagKey != null,
+        // 5. The optional classic bonuses are OFF unless explicitly enabled.
+        //    Roll them before charging, and prepare exactly the correct number
+        //    of independent payout stacks, including 1-stack-limit fish buckets.
+        boolean advancedRod = WaterCloudRodProficiency.supportsRodId(fishingRod.getId());
+        int rodLevel = advancedRod ? WaterCloudRodProficiency.getLevel(rod) : 1;
+        boolean preserveRolled = advancedRod && MagicExpansion.getInstance().getConfig()
+                .getBoolean("Fish.WaterCloud.classic-lure-preservation-enabled", false)
+                && ThreadLocalRandom.current().nextDouble()
+                        < WaterCloudRodEffects.getOldLurePreserveChance(rodLevel);
+        boolean doubled = advancedRod && MagicExpansion.getInstance().getConfig()
+                .getBoolean("Fish.WaterCloud.classic-double-catch-enabled", false)
+                && ThreadLocalRandom.current().nextDouble()
+                        < WaterCloudRodEffects.getOldDoubleCatchChance(rodLevel);
+        List<ItemStack> payouts = WaterCloudPayouts.copies(drop, doubled);
+        if (payouts.isEmpty()) return;
+
+        // 6. Exact paid-bait transaction or verified preservation. A successful
+        //    chance roll without the original selected lure is never a free catch.
+        WaterCloudBaitPayment.Source payment = WaterCloudBaitPayment.chargeOrPreserve(
+                preserveRolled, bagKey != null,
+                () -> bagKey != null && activeLure.getKey().equals(
+                        BaitBagMenu.peekFromBag(player, Set.of(activeLure.getKey()))),
+                () -> activeLure.hasLure(player) || (
+                        player.getInventory().getItemInOffHand() != null
+                        && SlimefunUtils.isItemSimilar(
+                                player.getInventory().getItemInOffHand(),
+                                activeLure.getItem(), true)),
                 () -> BaitBagMenu.consumeFromBagByKey(player, bagKey),
                 () -> consumeLure(player, activeLure));
         if (payment == WaterCloudBaitPayment.Source.NONE) return;
@@ -165,11 +190,19 @@ public class PlayerFishingWaterCloudListener {
             String phrase = SHUIYUNJIAN_CONSUME_PHRASES.get(new Random().nextInt(SHUIYUNJIAN_CONSUME_PHRASES.size()));
             player.sendMessage(ColorGradient.getRandomGradientName(phrase)
                     + " §r" + ItemStackHelper.getDisplayName(activeLure.getItem()));
+        } else if (payment == WaterCloudBaitPayment.Source.PRESERVED) {
+            player.sendMessage("§b✦ Water Cloud proficiency preserved your lure.");
         }
 
-        // 6. Commit the reward only after the bait debit succeeded.
+        // 7. Commit the reward once payment or preservation is confirmed.
+        //    Never cap a 40-item catch to 64 when a double catch awards 80.
         caught.remove();
-        spawnDrop(player, e.getHook().getLocation(), drop);
+        for (ItemStack payout : payouts) {
+            spawnDrop(player, e.getHook().getLocation(), payout);
+        }
+        if (doubled) {
+            player.sendMessage("§b✦ Water Cloud proficiency doubled your catch.");
+        }
 
         // 8. Route tagged catches to the special event; otherwise use normal handling.
         ItemStack specialCatch = getSpecialCatchForLure(activeLure);

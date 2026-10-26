@@ -68,6 +68,13 @@ Fish:
     # only (cobblestone, flint, gravel, sand, string and bone). Preserve all
     # Slimefun items and special fish. OFF for existing and new installations.
     classic-junk-reduction-enabled: false
+    # Upstream classic level 4–8 bonus: retain the selected lure on some
+    # successful catches. Never award a preserved catch if that lure is gone.
+    # OFF by default; no behavior changes unless explicitly enabled.
+    classic-lure-preservation-enabled: false
+    # Upstream classic level 3–8 bonus: pay a second FULL catch stack.
+    # OFF by default. Uses two separate entities to avoid losing overflow.
+    classic-double-catch-enabled: false
   FishingRod:
     FISHING_ROD_FINAL_STICK:
       Enable:
