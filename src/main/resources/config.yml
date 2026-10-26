@@ -64,6 +64,10 @@ Fish:
     # AUTO and COMPATIBILITY still yield completely to other fishing plugins.
     # Changes only future casts; all lures, payouts, recipes and XP are unchanged.
     classic-hook-speed-enabled: false
+    # Optional classic proficiency reward: lower the six vanilla junk weights
+    # only (cobblestone, flint, gravel, sand, string and bone). Preserve all
+    # Slimefun items and special fish. OFF for existing and new installations.
+    classic-junk-reduction-enabled: false
   FishingRod:
     FISHING_ROD_FINAL_STICK:
       Enable:
