@@ -1,124 +1,125 @@
 package io.Yomicer.magicExpansion.Listener.weaponApply;
 
 import io.Yomicer.magicExpansion.MagicExpansion;
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import org.bukkit.NamespacedKey;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.entity.LivingEntity;
-import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.Collection;
-import java.util.Map;
-import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
+/**
+ * Owns only MagicExpansion's temporary movement-speed modifier.
+ *
+ * <p>Never remove arbitrary modifiers created by vanilla gameplay, Slimefun,
+ * equipment, ValhallaMMO, or other plugins. Entity-owned delayed scheduling
+ * avoids Bukkit global scheduling across Folia region threads.
+ */
+public final class SlownessManager {
 
-public class SlownessManager {
+    private static final Map<UUID, NamespacedKey> ACTIVE = new ConcurrentHashMap<>();
 
-    // 用于存储减速修饰符 ID
-    private static final Map<UUID, NamespacedKey> playerSlownessModifierIds = new ConcurrentHashMap<>();
+    private SlownessManager() {
+    }
 
     /**
-     * 施加减速效果
+     * Apply the original slowness multiplier and replace this addon's
+     * previous modifier, without touching any other plugin's effects.
      *
-     * @param livingTarget 目标生物
-     * @param slownessLevel 减速等级(0 ~ 1)
-     * @param durationTicks 持续时间(单位:tick,20 ticks = 1 秒)
+     * <p>Preserves the existing 3x tick-duration behavior until balance is
+     * reviewed separately. Must be called from the entity's owning context.
      */
-    public static void applySlowness(LivingEntity livingTarget, double slownessLevel, int durationTicks) {
-        AttributeInstance movementSpeed = livingTarget.getAttribute(Attribute.MOVEMENT_SPEED);
-        if (movementSpeed == null) return;
-
-        // 先移除所有已有的修饰符
-        removeAllModifiers(movementSpeed);
-        UUID playerId = livingTarget.getUniqueId();
-        NamespacedKey modifierId = playerSlownessModifierIds.get(playerId);
-
-        // 如果已经存在减速修饰符,则先移除
-        if (modifierId != null) {
-            removeExistingModifier(movementSpeed, modifierId);
+    public static void applySlowness(LivingEntity target, double slownessLevel, int durationTicks) {
+        if (target == null) {
+            return;
+        }
+        AttributeInstance speed = target.getAttribute(Attribute.MOVEMENT_SPEED);
+        if (speed == null) {
+            return;
         }
 
-        // 计算减速比例
-        double baseSpeed = movementSpeed.getBaseValue();
-        double reducedSpeed = baseSpeed * (1 - slownessLevel*0.0099); // 减速比例
+        UUID entityId = target.getUniqueId();
+        NamespacedKey oldKey = ACTIVE.remove(entityId);
+        if (oldKey != null) {
+            removeExistingModifier(speed, oldKey);
+        }
 
-        // 生成新的修饰符 ID
-        modifierId = new NamespacedKey(
-                MagicExpansion.getInstance(),
-                "slowness_" + UUID.randomUUID()
-        );
-        playerSlownessModifierIds.put(playerId, modifierId);
+        double modifier = modifierAmount(speed.getBaseValue(), slownessLevel);
+        if (durationTicks <= 0 || modifier >= 0.0D) {
+            return;
+        }
 
-        // 创建减速修饰符
-        AttributeModifier modifier = new AttributeModifier(
-                modifierId,
-                reducedSpeed - baseSpeed, // 减速值
-                AttributeModifier.Operation.ADD_NUMBER
-        );
+        MagicExpansion plugin = MagicExpansion.getInstance();
+        NamespacedKey newKey = new NamespacedKey(plugin, "slowness_" + UUID.randomUUID());
+        AttributeModifier applied = new AttributeModifier(newKey, modifier,
+                AttributeModifier.Operation.ADD_NUMBER);
 
-        // 添加减速修饰符
-        movementSpeed.addModifier(modifier);
+        speed.addModifier(applied);
+        ACTIVE.put(entityId, newKey);
 
-        // 调试信息
-//        Debug.logInfo("Slowness applied to " + livingTarget.getName());
+        long delay = Math.max(1L, (long) durationTicks * 3L);
+        try {
+            // Each expiry is bound to the same moving entity/region.
+            var scheduled = target.getScheduler().runDelayed(plugin, task -> {
+                if (ACTIVE.remove(entityId, newKey)) {
+                    AttributeInstance current = target.getAttribute(Attribute.MOVEMENT_SPEED);
+                    if (current != null) {
+                        removeExistingModifier(current, newKey);
+                    }
+                }
+            }, () -> ACTIVE.remove(entityId, newKey), delay);
 
-        // 延迟移除减速效果
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                removeSlowness(livingTarget);
+            if (scheduled == null) {
+                // Entity retired before the task could be accepted.
+                // Do not leave our modifier permanently installed.
+                removeSlowness(target);
             }
-        }.runTaskLater(MagicExpansion.getInstance(), durationTicks*3);
-    }
-
-    /**
-     * 移除减速效果
-     *
-     * @param livingTarget 目标生物
-     */
-    public static void removeSlowness(LivingEntity livingTarget) {
-        AttributeInstance movementSpeed = livingTarget.getAttribute(Attribute.MOVEMENT_SPEED);
-        if (movementSpeed == null) return;
-
-        UUID playerId = livingTarget.getUniqueId();
-        NamespacedKey modifierId = playerSlownessModifierIds.get(playerId);
-
-        if (modifierId != null) {
-            removeExistingModifier(movementSpeed, modifierId);
-            playerSlownessModifierIds.remove(playerId);
-
-            // 调试信息
-//            Debug.logInfo("Slowness removed from " + livingTarget.getName());
+        } catch (IllegalStateException failure) {
+            removeSlowness(target);
+            plugin.getLogger().warning("Could not schedule slowness expiry for "
+                    + entityId + ": " + failure.getMessage());
         }
     }
 
     /**
-     * 移除指定的修饰符
-     *
-     * @param movementSpeed 属性实例
-     * @param modifierId    需要移除的修饰符 ID
+     * Preserve the original magnitude: -baseSpeed * clampedLevel * 0.0099.
+     * Non-finite inputs fail closed instead of adding a corrupt modifier.
      */
-    private static void removeExistingModifier(AttributeInstance movementSpeed, NamespacedKey modifierId) {
-        Collection<AttributeModifier> modifiers = movementSpeed.getModifiers();
-        for (AttributeModifier modifier : modifiers) {
-            if (modifier.getKey().equals(modifierId)) {
-                movementSpeed.removeModifier(modifier);
-                break;
+    public static double modifierAmount(double baseSpeed, double slownessLevel) {
+        if (!Double.isFinite(baseSpeed) || baseSpeed <= 0.0D
+                || !Double.isFinite(slownessLevel) || slownessLevel <= 0.0D) {
+            return 0.0D;
+        }
+        double level = Math.min(1.0D, slownessLevel);
+        return -baseSpeed * level * 0.0099D;
+    }
+
+    /** Remove only the modifier whose key this addon currently owns. */
+    public static void removeSlowness(LivingEntity target) {
+        if (target == null) {
+            return;
+        }
+
+        NamespacedKey key = ACTIVE.remove(target.getUniqueId());
+        if (key == null) {
+            return;
+        }
+
+        AttributeInstance speed = target.getAttribute(Attribute.MOVEMENT_SPEED);
+        if (speed != null) {
+            removeExistingModifier(speed, key);
+        }
+    }
+
+    private static void removeExistingModifier(AttributeInstance speed, NamespacedKey key) {
+        // Snapshot: avoid mutating a live collection while iterating.
+        for (AttributeModifier modifier : java.util.List.copyOf(speed.getModifiers())) {
+            if (key.equals(modifier.getKey())) {
+                speed.removeModifier(modifier);
+                return;
             }
         }
     }
-
-    /**
-     * 移除目标属性实例上的所有修饰符
-     *
-     * @param attributeInstance 属性实例
-     */
-    private static void removeAllModifiers(AttributeInstance attributeInstance) {
-        Collection<AttributeModifier> modifiers = attributeInstance.getModifiers();
-        for (AttributeModifier modifier : modifiers) {
-            attributeInstance.removeModifier(modifier);
-        }
-    }
-
 }
