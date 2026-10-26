@@ -49,4 +49,41 @@ class WaterCloudBaitPaymentTest {
         assertEquals(WaterCloudBaitPayment.Source.NONE,
                 WaterCloudBaitPayment.charge(false, () -> true, () -> false));
     }
+    @Test
+    void preservationNeverDeductsBaitAndRequiresTheSelectedLure() {
+        AtomicInteger debits = new AtomicInteger();
+        var source = WaterCloudBaitPayment.chargeOrPreserve(
+                true, true, () -> true, () -> false,
+                () -> { debits.incrementAndGet(); return true; },
+                () -> { debits.incrementAndGet(); return true; });
+        assertEquals(WaterCloudBaitPayment.Source.PRESERVED, source);
+        assertEquals(0, debits.get(), "Preserved bait must never be debited");
+
+        assertEquals(WaterCloudBaitPayment.Source.PRESERVED,
+                WaterCloudBaitPayment.chargeOrPreserve(
+                        true, true, () -> false, () -> true,
+                        () -> { throw new AssertionError("No bag debit expected"); },
+                        () -> { throw new AssertionError("No inventory debit expected"); }));
+
+        assertEquals(WaterCloudBaitPayment.Source.NONE,
+                WaterCloudBaitPayment.chargeOrPreserve(
+                        true, true, () -> false, () -> false,
+                        () -> { throw new AssertionError("No bag debit expected"); },
+                        () -> { throw new AssertionError("No inventory debit expected"); }));
+    }
+
+    @Test
+    void failedPreservationRollUsesTheOriginalExactDebit() {
+        AtomicInteger bagDebits = new AtomicInteger();
+        AtomicInteger invDebits = new AtomicInteger();
+        var source = WaterCloudBaitPayment.chargeOrPreserve(false, true,
+                () -> { throw new AssertionError("Do not probe availability for a normal debit"); },
+                () -> { throw new AssertionError("Do not probe availability for a normal debit"); },
+                () -> { bagDebits.incrementAndGet(); return false; },
+                () -> { invDebits.incrementAndGet(); return true; });
+        assertEquals(WaterCloudBaitPayment.Source.INVENTORY, source);
+        assertEquals(1, bagDebits.get());
+        assertEquals(1, invDebits.get());
+    }
+
 }
