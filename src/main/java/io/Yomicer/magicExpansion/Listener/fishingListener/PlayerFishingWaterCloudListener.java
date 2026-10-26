@@ -178,8 +178,11 @@ public class PlayerFishingWaterCloudListener {
                 preserveRolled, bagKey != null,
                 () -> bagKey != null && activeLure.getKey().equals(
                         BaitBagMenu.peekFromBag(player, Set.of(activeLure.getKey()))),
-                () -> activeLure.hasLure(player) || SlimefunUtils.isItemSimilar(
-                        player.getInventory().getItemInOffHand(), activeLure.getItem(), true),
+                () -> activeLure.hasLure(player) || (
+                        player.getInventory().getItemInOffHand() != null
+                        && SlimefunUtils.isItemSimilar(
+                                player.getInventory().getItemInOffHand(),
+                                activeLure.getItem(), true)),
                 () -> BaitBagMenu.consumeFromBagByKey(player, bagKey),
                 () -> consumeLure(player, activeLure));
         if (payment == WaterCloudBaitPayment.Source.NONE) return;
