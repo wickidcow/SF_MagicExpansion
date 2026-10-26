@@ -10,6 +10,7 @@ import io.Yomicer.magicExpansion.items.tools.FishingRodWaterCloud;
 import io.Yomicer.magicExpansion.utils.ColorGradient;
 import io.Yomicer.magicExpansion.utils.WaterCloudRodProficiency;
 import io.Yomicer.magicExpansion.utils.fishing.WaterCloudBaitPayment;
+import io.Yomicer.magicExpansion.utils.fishing.WaterCloudWeightedLoot;
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItem;
 import io.github.thebusybiscuit.slimefun4.utils.SlimefunUtils;
 import io.Yomicer.magicExpansion.utils.compat.ItemStackHelper;
@@ -223,18 +224,11 @@ public class PlayerFishingWaterCloudListener {
      */
     private ItemStack getCaughtDrop(Player player, FishingRodWaterCloud fishingRod, Lure activeLure) {
         List<WeightedItem> pool = fishingRod.getLootPoolForLure(activeLure);
-        ItemStack selected = getRandomItemFromWeightedPool(pool != null ? pool : getDefaultLootPool());
+        ItemStack selected = WaterCloudWeightedLoot.selectRandom(pool != null ? pool : getDefaultLootPool());
         // Integration of PR #32: Generation 2 seeds must receive individual
         // elemental values, quality and breeding traits on successful payout.
         // This runs only after weighted selection and before the checked bait debit.
         return WaterCloudCatchMaterializer.materialize(selected, (int) fishingRod.getWeightBoost());
-    }
-
-    private ItemStack getRandomItemFromWeightedPool(List<WeightedItem> pool) {
-        int total = pool.stream().mapToInt(WeightedItem::getWeight).sum();
-        int r = new Random().nextInt(total), current = 0;
-        for (WeightedItem w : pool) if ((current += w.getWeight()) > r) return w.getItem().clone();
-        return pool.get(0).getItem().clone();
     }
 
     private List<WeightedItem> getDefaultLootPool() {
