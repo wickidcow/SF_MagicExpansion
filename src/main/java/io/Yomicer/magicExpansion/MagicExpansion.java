@@ -12,6 +12,7 @@ import io.Yomicer.magicExpansion.Listener.fishingListener.GuidePoolButtonListene
 import io.Yomicer.magicExpansion.Listener.fishingListener.FishingCompatibility;
 import io.Yomicer.magicExpansion.Listener.fishingListener.PlayerFishingListener;
 import io.Yomicer.magicExpansion.Listener.fishingListener.PlayerFishingWaterCloudListener;
+import io.Yomicer.magicExpansion.Listener.fishingListener.WaterCloudClassicHookSpeed;
 import io.Yomicer.magicExpansion.Listener.magicItemEffectManager.ArrowHitLocationListener;
 import io.Yomicer.magicExpansion.Listener.magicItemEffectManager.ItemEffectAttackListener;
 import io.Yomicer.magicExpansion.Listener.magicItemEffectManager.ItemEffectKillListener;
@@ -121,6 +122,7 @@ public class MagicExpansion extends JavaPlugin implements SlimefunAddon {
         getServer().getPluginManager().registerEvents(new BasicBossDropListener(), this);
         fishingCompatibility = new FishingCompatibility(this,
                 new PlayerFishingListener()::onFish, new PlayerFishingWaterCloudListener()::onFish);
+        fishingCompatibility.setCastHandler(new WaterCloudClassicHookSpeed(this)::onCast);
         getServer().getPluginManager().registerEvents(fishingCompatibility, this);
         getServer().getPluginManager().registerEvents(new GuidePoolButtonListener(), this);
         getServer().getPluginManager().registerEvents(new GuideVirtualGroupClickListener(), this);

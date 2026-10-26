@@ -57,6 +57,13 @@ Fish:
     # EvenMoreFish, CustomFishing and UltimateFishing. Only enabled plugins count.
     # Add other exact plugin names here (from /plugins, not the JAR filename).
     additional-plugins: []
+  WaterCloud:
+    # Experimental upstream classic fishing bonus. OFF until operators opt in.
+    # When enabled, advanced Water Cloud rods shorten the maximum time until
+    # a fish bites by 60 ticks every two rod levels (up to 240 ticks at level 8).
+    # AUTO and COMPATIBILITY still yield completely to other fishing plugins.
+    # Changes only future casts; all lures, payouts, recipes and XP are unchanged.
+    classic-hook-speed-enabled: false
   FishingRod:
     FISHING_ROD_FINAL_STICK:
       Enable:

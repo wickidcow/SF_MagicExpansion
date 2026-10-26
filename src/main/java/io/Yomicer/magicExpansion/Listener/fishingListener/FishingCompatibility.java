@@ -28,6 +28,7 @@ public final class FishingCompatibility implements Listener {
 
     private final JavaPlugin owner;
     private final List<Consumer<PlayerFishEvent>> catchHandlers;
+    private Consumer<PlayerFishEvent> castHandler;
     private Set<String> pluginNames = KNOWN_PLUGINS;
     private Mode mode = Mode.AUTO;
     private volatile State state = new State(false, List.of());
@@ -39,6 +40,14 @@ public final class FishingCompatibility implements Listener {
         this.owner = owner;
         this.catchHandlers = List.of(catchHandlers);
         reload();
+    }
+
+    /**
+     * Optional cast-time hook. Default is absent to preserve all existing
+     * constructor callers and fishing-coexistence behavior.
+     */
+    public void setCastHandler(Consumer<PlayerFishEvent> handler) {
+        castHandler = handler;
     }
 
     /** Reads only the fishing compatibility settings; callers may reload config.yml first. */
@@ -109,8 +118,19 @@ public final class FishingCompatibility implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onFish(PlayerFishEvent event) {
-        if (!handlesCatches() || event.isCancelled()
-                || event.getState() != PlayerFishEvent.State.CAUGHT_FISH
+        if (!handlesCatches() || event.isCancelled()) {
+            return;
+        }
+        if (event.getState() == PlayerFishEvent.State.FISHING) {
+            // Cast handling must go through the same compatibility gate as
+            // catches so other fishing plugins retain ownership in AUTO mode.
+            Consumer<PlayerFishEvent> listener = castHandler;
+            if (listener != null) {
+                listener.accept(event);
+            }
+            return;
+        }
+        if (event.getState() != PlayerFishEvent.State.CAUGHT_FISH
                 || !(event.getCaught() instanceof Item caught)
                 || caught.isDead()) {
             return;

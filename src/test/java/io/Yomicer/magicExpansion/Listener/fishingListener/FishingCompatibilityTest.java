@@ -255,6 +255,59 @@ class FishingCompatibilityTest {
         assertEquals(0, waterCloudCatches.get());
     }
 
+    @Test
+    void fishingCastHandlerIsOnlyDispatchedWhenMagicOwnsFishing() {
+        AtomicInteger casts = new AtomicInteger();
+        start();
+        compatibility.setCastHandler(e -> casts.incrementAndGet());
+        PlayerFishEvent sample = catchEvent();
+        PlayerFishEvent cast = new PlayerFishEvent(sample.getPlayer(), null, sample.getHook(),
+                EquipmentSlot.HAND, PlayerFishEvent.State.FISHING);
+
+        compatibility.onFish(cast);
+        assertEquals(1, casts.get());
+        assertEquals(0, regularCatches.get());
+        assertEquals(0, waterCloudCatches.get());
+
+        MockBukkit.createMockPlugin("BetterFish");
+        assertFalse(compatibility.handlesCatches());
+        compatibility.onFish(cast);
+        assertEquals(1, casts.get(), "AUTO must not alter another plugin's hooks");
+
+        owner.getConfig().set("Fish.Compatibility.mode", "COMPATIBILITY");
+        compatibility.reload();
+        compatibility.onFish(cast);
+        assertEquals(1, casts.get(), "COMPATIBILITY must never change hooks");
+
+        owner.getConfig().set("Fish.Compatibility.mode", "FULL");
+        compatibility.reload();
+        compatibility.onFish(cast);
+        assertEquals(2, casts.get(), "FULL intentionally enables this plugin");
+    }
+
+    @Test
+    void cancelledCastsAndNonCastEventsNeverReachHookHandler() {
+        AtomicInteger casts = new AtomicInteger();
+        start();
+        compatibility.setCastHandler(e -> casts.incrementAndGet());
+        PlayerFishEvent sample = catchEvent();
+
+        PlayerFishEvent cancelled = new PlayerFishEvent(sample.getPlayer(), null, sample.getHook(),
+                EquipmentSlot.HAND, PlayerFishEvent.State.FISHING);
+        cancelled.setCancelled(true);
+        compatibility.onFish(cancelled);
+        assertEquals(0, casts.get());
+
+        compatibility.onFish(new PlayerFishEvent(sample.getPlayer(), sample.getCaught(), sample.getHook(),
+                EquipmentSlot.HAND, PlayerFishEvent.State.CAUGHT_ENTITY));
+        assertEquals(0, casts.get());
+
+        compatibility.onFish(sample);
+        assertEquals(0, casts.get(), "Ordinary catches must never invoke cast bonuses");
+        assertEquals(1, regularCatches.get());
+        assertEquals(1, waterCloudCatches.get());
+    }
+
     private PlayerFishEvent catchEvent() {
         PlayerMock player = server.addPlayer();
         Item fish = player.getWorld().dropItem(player.getLocation(),
