@@ -42,8 +42,8 @@ class WaterCloudHookMathTest {
         assertEquals(0.10, WaterCloudHookMath.reelCatchChance(WaterCloudHookMath.Stage.FULL_BITE, 0), 0.00001);
         assertEquals(0.55, WaterCloudHookMath.reelCatchChance(WaterCloudHookMath.Stage.FULL_BITE, 50), 0.00001);
         assertEquals(1.0, WaterCloudHookMath.reelCatchChance(WaterCloudHookMath.Stage.FULL_BITE, 100), 0.00001);
-        assertEquals(1.0, WaterCloudHookMath.reelCatchChance(WaterCloudHookMath.Stage.FULL_BITE, Double.POSITIVE_INFINITY), 0.00001,
-                "Non-finite charge should not award a valid 100% catch");
+        assertEquals(0.10, WaterCloudHookMath.reelCatchChance(WaterCloudHookMath.Stage.FULL_BITE, Double.POSITIVE_INFINITY), 0.00001,
+                "Non-finite charge must not turn into a free 100% catch");
     }
 
     @Test
