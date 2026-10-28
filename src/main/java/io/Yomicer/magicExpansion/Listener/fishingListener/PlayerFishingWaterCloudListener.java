@@ -14,6 +14,7 @@ import io.Yomicer.magicExpansion.utils.fishing.WaterCloudBaitPayment;
 import io.Yomicer.magicExpansion.utils.fishing.WaterCloudWeightedLoot;
 import io.Yomicer.magicExpansion.utils.fishing.WaterCloudClassicJunkReduction;
 import io.Yomicer.magicExpansion.utils.fishing.WaterCloudPayouts;
+import io.Yomicer.magicExpansion.utils.fishing.WaterCloudPayoutVelocity;
 import io.Yomicer.magicExpansion.utils.WaterCloudRodEffects;
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItem;
 import io.github.thebusybiscuit.slimefun4.utils.SlimefunUtils;
@@ -32,7 +33,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.persistence.PersistentDataType;
-import org.bukkit.util.Vector;
 
 import java.util.List;
 import java.util.Random;
@@ -308,11 +308,10 @@ public class PlayerFishingWaterCloudListener {
         if (drop == null) return;
         Item rewardItem = player.getWorld().dropItem(hookLocation, drop);
         rewardItem.setPickupDelay(0);
-        Vector direction = player.getLocation().add(0, 2, 0).toVector()
-                .subtract(hookLocation.toVector())
-                .normalize()
-                .multiply(2.5);
-        rewardItem.setVelocity(direction);
+        // The rod can catch at the angler's elevated position. Avoid a
+        // zero-vector normalization after charging bait and replacing loot.
+        rewardItem.setVelocity(WaterCloudPayoutVelocity.towardsAngler(
+                player.getLocation(), hookLocation));
         rewardItem.setGlowing(true);
     }
 

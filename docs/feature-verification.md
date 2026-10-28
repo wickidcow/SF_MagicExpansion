@@ -28,6 +28,7 @@ Already covered by permanent tests or real-server probes:
 - Portable Shop persistence/editor safety and stale/external write refusal.
 - Black Market item serialization, receipt/session/restart safeguards and player-flow purchase behavior.
 - Both fishing rod families, compatibility mode, cancellation, lure and XP preservation.
+- Water Cloud catch velocity calculation: finite zero-distance fallback and unchanged standard throw trajectory; JUnit-only, not a claim of client-side catch/region acceptance.
 - Star Shards Sword cancellation/re-entry guard and Astral Shield projectile reflection.
 - Slimefun Tick Monitor automatic sample coordination and stale/missing result handling.
 - English language-resource audit.
