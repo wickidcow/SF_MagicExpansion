@@ -16,3 +16,25 @@ The isolated `WaterCloudHookMath` class implements the upstream three bite stage
 6. **Safety and acceptance.** Add event-level mock and real server Paper/Purpur tests plus Folia multiple-region tests before touching released behavior. The current numeric tests do not certify gameplay.
 
 No new release/ZIP publication is authorized by this phase. Published MagicExpansion 1.1.19, Slimefun Legacy 4.1.78 and all IDs/storage and Bedrock/Geyser assets remain unchanged.
+
+
+## Phase 2: per-player session identity (prepared, not activated)
+
+The new `WaterCloudHookSessions` registry holds only immutable UUIDs, start times and
+cast-generation tokens, never Bukkit players, hook entities or worlds. `start`
+replaces an older cast and returns its handle for region-owned cleanup;
+`claimForReel` consumes the exact player/hook/generation at most once, rejecting
+stale callbacks and sessions at or beyond 600 seconds. `cancel`, `cancelPlayer`,
+`expire` and idempotent `shutdown` handle recasts, quit, hook invalidation and
+disable without deleting a newer session. Eight JUnit tests cover simultaneous
+reels, re-used hook IDs, timeout, separate players and shutdown. Cross-thread
+coordination consists of short in-memory identity operations only.
+
+The future event adapter must own all hook, player, XP-bar and inventory changes
+on their proper Paper/Folia entity or region scheduler, **outside** these locks.
+One successful session claim is not by itself authorization to pay: require an
+uncancelled event, fishing compatibility ownership, water, allowed drops and
+the existing checked bait transaction. On replacement or shutdown, schedule
+any XP restoration on the owner's region; this registry never restores XP itself.
+No listener or configuration setting uses this class yet. Normal fishing, item
+IDs, stored data and all published releases remain unchanged.
