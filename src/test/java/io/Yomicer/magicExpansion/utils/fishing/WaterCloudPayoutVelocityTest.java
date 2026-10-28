@@ -45,6 +45,34 @@ class WaterCloudPayoutVelocityTest {
     }
 
     @Test
+    void extremeButFiniteLocationsNeverOverflowTheItemVelocity() {
+        Vector velocity = WaterCloudPayoutVelocity.towardsAngler(
+                new Location(null, Double.MAX_VALUE, 64, 0),
+                new Location(null, -Double.MAX_VALUE, 63, 0));
+        assertEquals(new Vector(0.0, 0.25, 0.0), velocity);
+        assertTrue(Double.isFinite(velocity.getX()));
+        assertTrue(Double.isFinite(velocity.getY()));
+        assertTrue(Double.isFinite(velocity.getZ()));
+    }
+
+    @Test
+    void verticalHookRetainsDownwardOrUpwardNormalThrow() {
+        Vector downward = WaterCloudPayoutVelocity.towardsAngler(
+                new Location(null, 0, 64, 0),
+                new Location(null, 0, 68, 0));
+        assertEquals(0.0, downward.getX(), 1.0E-12);
+        assertEquals(-2.5, downward.getY(), 1.0E-12);
+        assertEquals(0.0, downward.getZ(), 1.0E-12);
+
+        Vector upward = WaterCloudPayoutVelocity.towardsAngler(
+                new Location(null, 0, 64, 0),
+                new Location(null, 0, 61, 0));
+        assertEquals(0.0, upward.getX(), 1.0E-12);
+        assertEquals(2.5, upward.getY(), 1.0E-12);
+        assertEquals(0.0, upward.getZ(), 1.0E-12);
+    }
+
+    @Test
     void calculationDoesNotMutateInputLocationsAndRejectsNull() {
         Location angler = new Location(null, 10, 64, 10);
         Location hook = new Location(null, -3, 62, 7);
