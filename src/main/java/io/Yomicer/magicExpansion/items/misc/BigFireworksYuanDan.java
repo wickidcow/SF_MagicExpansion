@@ -8,6 +8,10 @@ import io.github.thebusybiscuit.slimefun4.api.recipes.RecipeType;
 import io.github.thebusybiscuit.slimefun4.core.attributes.NotPlaceable;
 import io.github.thebusybiscuit.slimefun4.core.handlers.ItemUseHandler;
 import io.github.thebusybiscuit.slimefun4.implementation.items.SimpleSlimefunItem;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import net.kyori.adventure.title.Title;
+import java.time.Duration;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
@@ -117,18 +121,27 @@ public class BigFireworksYuanDan extends SimpleSlimefunItem<ItemUseHandler> impl
                 // 创建超级爆炸效果
                 createSuperExplosionEffect(targetLoc, world, player);
 
-                // 发送屏幕标题
+                // Preserve the original audience, RGB gradient and 10/60/20-tick title timing.
+                Title explosion = explosionTitle();
                 for (Player p : world.getPlayers()) {
                     if (p.getLocation().distance(targetLoc) < 200) {
-                        p.sendTitle(
-                                ColorGradient.getGradientName("Explosion Particles"),
-                                ColorGradient.getGradientName("Explosion Particles"),
-                                10, 60, 20
-                        );
+                        p.showTitle(explosion);
                     }
                 }
             }
         }.runTaskLater(MagicExpansion.getInstance(), delayTicks);
+    }
+
+
+    /** Keep historical section-hex gradient styling and title timings without legacy Player#sendTitle. */
+    static Title explosionTitle() {
+        Component gradient = LegacyComponentSerializer.legacySection()
+                .deserialize(ColorGradient.getGradientName("Explosion Particles"));
+        // Adventure durations are milliseconds; one standard Minecraft tick is 50 ms.
+        return Title.title(gradient, gradient, Title.Times.times(
+                Duration.ofMillis(10 * 50L),
+                Duration.ofMillis(60 * 50L),
+                Duration.ofMillis(20 * 50L)));
     }
 
     private void createTrail(Location start, Location end, World world) {
