@@ -12,12 +12,25 @@ import java.nio.charset.StandardCharsets;
 import java.util.logging.Logger;
 import org.bukkit.plugin.Plugin;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterEach;
+import org.mockbukkit.mockbukkit.MockBukkit;
 
 /**
  * Bundled config UTF-8 must retain its exact text, even when an old Guava
  * charset alias is no longer available. No persistent files are touched.
  */
 class ConfigLoaderUtf8Test {
+
+    @BeforeEach
+    void prepareServerLogger() {
+        MockBukkit.mock();
+    }
+
+    @AfterEach
+    void cleanUpServer() {
+        MockBukkit.unmock();
+    }
 
     @Test
     void bundledUnicodeYamlPreservesItsTextAndClosesTheResource() {
