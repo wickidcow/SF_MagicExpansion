@@ -1,6 +1,5 @@
 package io.Yomicer.magicExpansion;
 
-import com.google.common.base.Charsets;
 import io.github.thebusybiscuit.slimefun4.libraries.dough.config.Config;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -11,6 +10,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.file.Files;
+import java.nio.charset.StandardCharsets;
 
 public final class ConfigLoader {
 
@@ -85,7 +85,7 @@ public final class ConfigLoader {
             if (resource == null) {
                 throw new IOException("Bundled resource " + name + ".yml was not found");
             }
-            config.load(new InputStreamReader(resource, Charsets.UTF_8));
+            config.load(new InputStreamReader(resource, StandardCharsets.UTF_8));
             return new Config(null, config);
         } catch (Exception e) {
             plugin.getLogger().severe("Could not load bundled " + name + ".yml: " + e.getMessage());
