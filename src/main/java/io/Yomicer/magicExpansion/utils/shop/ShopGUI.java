@@ -5,6 +5,8 @@ import io.Yomicer.magicExpansion.MagicExpansion;
 import io.Yomicer.magicExpansion.utils.compat.ItemStackHelper;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -928,6 +930,12 @@ public class ShopGUI implements Listener {
         Bukkit.getScheduler().runTask(MagicExpansion.getInstance(), () -> applyChatInput(player, creation, editing, message));
     }
 
+    /** Legacy section-colored display remains byte-for-byte comparable; only the chat
+     * delivery API changes. Never use this for saved inventory names or shop IDs. */
+    static Component statusMessage(NamedTextColor color, String message) {
+        return Component.text(message, color);
+    }
+
     private void applyChatInput(Player player, UUID creation, ShopEditData editing, String message) {
         UUID uuid = player.getUniqueId();
         if (!player.isOnline()) return;
@@ -935,31 +943,31 @@ public class ShopGUI implements Listener {
             if (!creation.equals(pendingShopNameCreation.get(uuid))) return;
             if (message.equalsIgnoreCase("cancel")) {
                 pendingShopNameCreation.remove(uuid, creation);
-                player.sendMessage(ChatColor.YELLOW + "Shop creation cancelled.");
+                player.sendMessage(statusMessage(NamedTextColor.YELLOW, "Shop creation cancelled."));
             } else if (ShopManager.tryCreateShop(message)) {
                 pendingShopNameCreation.remove(uuid, creation);
-                player.sendMessage(ChatColor.GREEN + "Shop " + message + " created successfully!");
+                player.sendMessage(statusMessage(NamedTextColor.GREEN, "Shop " + message + " created successfully!"));
                 openAdminMainMenu(player);
             } else {
-                player.sendMessage(ChatColor.RED + "Shop creation refused: the name is invalid, already used, or its file is protected. Check the console, choose another name, or type 'cancel'.");
+                player.sendMessage(statusMessage(NamedTextColor.RED, "Shop creation refused: the name is invalid, already used, or its file is protected. Check the console, choose another name, or type 'cancel'."));
             }
             return;
         }
         if (editing == null || !pendingEditData.remove(uuid, editing)) return;
         if (message.equalsIgnoreCase("cancel")) {
-            player.sendMessage(ChatColor.YELLOW + "Limit setting cancelled.");
+            player.sendMessage(statusMessage(NamedTextColor.YELLOW, "Limit setting cancelled."));
         } else {
             try {
                 int amount = Math.max(0, Integer.parseInt(message));
                 if (editing.editing.equals("global")) {
                     editing.globalLimit = amount;
-                    player.sendMessage(ChatColor.GREEN + "Server-wide purchase limit set to: " + (amount == 0 ? "Unlimited" : amount));
+                    player.sendMessage(statusMessage(NamedTextColor.GREEN, "Server-wide purchase limit set to: " + (amount == 0 ? "Unlimited" : amount)));
                 } else if (editing.editing.equals("personal")) {
                     editing.personalLimit = amount;
-                    player.sendMessage(ChatColor.GREEN + "Per-player purchase limit set to: " + (amount == 0 ? "Unlimited" : amount));
+                    player.sendMessage(statusMessage(NamedTextColor.GREEN, "Per-player purchase limit set to: " + (amount == 0 ? "Unlimited" : amount)));
                 }
             } catch (NumberFormatException ex) {
-                player.sendMessage(ChatColor.RED + "Invalid input; enter a number!");
+                player.sendMessage(statusMessage(NamedTextColor.RED, "Invalid input; enter a number!"));
             }
         }
         openTradeEditor(player, editing.shopName, editing);
@@ -967,7 +975,7 @@ public class ShopGUI implements Listener {
 
     private boolean saveShopForEditor(Player player, ShopManager.Shop shop) {
         if (ShopManager.trySaveShop(shop)) return true;
-        player.sendMessage(ChatColor.RED + "Shop save failed; the original file was retained. Check the console and repair/reload before retrying.");
+        player.sendMessage(statusMessage(NamedTextColor.RED, "Shop save failed; the original file was retained. Check the console and repair/reload before retrying."));
         return false;
     }
 
