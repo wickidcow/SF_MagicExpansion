@@ -7,7 +7,8 @@ import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import io.Yomicer.magicExpansion.Listener.worldListener.Events;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -28,6 +29,23 @@ import java.util.Set;
 
 public class MapUtils {
     private static final Gson gson = new Gson();
+    private static final LegacyComponentSerializer LEGACY_MESSAGES = LegacyComponentSerializer.legacySection();
+
+    /**
+     * Preserve historical section-sign colors at the player-message boundary.
+     * An embedded legacy code in a dynamic failure message must retain its meaning.
+     */
+    static Component coloredFeedback(char code, String message) {
+        return LEGACY_MESSAGES.deserialize("\u00a7" + code + message);
+    }
+
+    private static void sendError(Player player, String message) {
+        player.sendMessage(coloredFeedback('c', message));
+    }
+
+    private static void sendSuccess(Player player, String message) {
+        player.sendMessage(coloredFeedback('a', message));
+    }
 
     public static void exportMap(Player player) {
         Location p1 = Events.point1.get(player.getUniqueId());
@@ -38,7 +56,7 @@ public class MapUtils {
             return;
         }
         if (p1.getWorld() != p2.getWorld()) {
-            player.sendMessage(ChatColor.RED + "Both selection points must be in the same world.");
+            sendError(player, "Both selection points must be in the same world.");
             return;
         }
 
@@ -59,13 +77,13 @@ public class MapUtils {
         File file = new File(MagicExpansion.getInstance().getDataFolder(), "maps/" + fileName + ".json");
 
         if (!file.exists()) {
-            player.sendMessage(ChatColor.RED + "File not found!");
+            sendError(player, "File not found!");
             return;
         }
 
         Block targetBlock = getTargetBlock(player);
         if (targetBlock == null) {
-            player.sendMessage(ChatColor.RED + "You need to look at a block!");
+            sendError(player, "You need to look at a block!");
             return;
         }
 
@@ -75,22 +93,22 @@ public class MapUtils {
             Type listType = new TypeToken<List<BlockData>>() {}.getType();
             List<BlockData> blocks = gson.fromJson(reader, listType);
             if (blocks == null || blocks.isEmpty()) {
-                player.sendMessage(ChatColor.RED + "The map file is empty or invalid.");
+                sendError(player, "The map file is empty or invalid.");
                 return;
             }
 
             if (pasteBlocks(player, pasteLocation, blocks)) {
-                player.sendMessage(ChatColor.GREEN + "Map pasted successfully above the target block!");
+                sendSuccess(player, "Map pasted successfully above the target block!");
             }
         } catch (IOException | RuntimeException failure) {
-            player.sendMessage(ChatColor.RED + "Failed to paste map: " + failure.getMessage());
+            sendError(player, "Failed to paste map: " + failure.getMessage());
         }
     }
 
     public static boolean pasteBlocks(
             Player player, Location pasteLocation, List<BlockData> blocks) {
         if (blocks == null || blocks.isEmpty()) {
-            player.sendMessage(ChatColor.RED + "There are no blocks to paste.");
+            sendError(player, "There are no blocks to paste.");
             return false;
         }
 
@@ -104,10 +122,9 @@ public class MapUtils {
             return true;
         }
         if (outcome.rollbackFailures() == 0) {
-            player.sendMessage(ChatColor.RED
-                    + "Map paste failed and all attempted block changes were rolled back.");
+            sendError(player, "Map paste failed and all attempted block changes were rolled back.");
         } else {
-            player.sendMessage(ChatColor.RED + "Map paste failed; "
+            sendError(player, "Map paste failed; "
                     + outcome.rollbackFailures()
                     + " block(s) could not be restored. Ask an administrator to inspect the area.");
         }
@@ -117,7 +134,7 @@ public class MapUtils {
     private static List<BlockPasteSupport.Target> preparePasteTargets(
             Player player, Location pasteLocation, List<BlockData> blocks) {
         if (pasteLocation.getWorld() == null) {
-            player.sendMessage(ChatColor.RED + "The target world is unavailable.");
+            sendError(player, "The target world is unavailable.");
             return null;
         }
 
@@ -126,7 +143,7 @@ public class MapUtils {
 
         for (BlockData blockData : blocks) {
             if (blockData == null || blockData.blockState == null || blockData.blockState.isEmpty()) {
-                player.sendMessage(ChatColor.RED + "The map file contains an invalid block entry.");
+                sendError(player, "The map file contains an invalid block entry.");
                 return null;
             }
 
@@ -136,29 +153,28 @@ public class MapUtils {
 
             if (y < pasteLocation.getWorld().getMinHeight()
                     || y >= pasteLocation.getWorld().getMaxHeight()) {
-                player.sendMessage(ChatColor.RED + "Part of the map would be outside the world height limit.");
+                sendError(player, "Part of the map would be outside the world height limit.");
                 return null;
             }
 
             String key = x + ":" + y + ":" + z;
             if (!seen.add(key)) {
-                player.sendMessage(ChatColor.RED + "The map file contains duplicate block coordinates.");
+                sendError(player, "The map file contains duplicate block coordinates.");
                 return null;
             }
 
             if (!pasteLocation.getWorld().isChunkLoaded(x >> 4, z >> 4)) {
-                player.sendMessage(ChatColor.RED + "Load the entire destination area before pasting.");
+                sendError(player, "Load the entire destination area before pasting.");
                 return null;
             }
 
             Location location = new Location(pasteLocation.getWorld(), x, y, z);
             if (!ItemPermissionUtils.hasPermissionPoint(player, location)) {
-                player.sendMessage(ChatColor.RED + "Part of the destination is protected.");
+                sendError(player, "Part of the destination is protected.");
                 return null;
             }
             if (StorageCacheUtils.getSlimefunItem(location) != null) {
-                player.sendMessage(ChatColor.RED
-                        + "The destination contains a Slimefun block. Move or remove it normally first.");
+                sendError(player, "The destination contains a Slimefun block. Move or remove it normally first.");
                 return null;
             }
 
@@ -166,7 +182,7 @@ public class MapUtils {
             try {
                 desired = Bukkit.createBlockData(blockData.blockState);
             } catch (RuntimeException invalidState) {
-                player.sendMessage(ChatColor.RED + "The map contains invalid block-state data.");
+                sendError(player, "The map contains invalid block-state data.");
                 return null;
             }
 
@@ -175,8 +191,7 @@ public class MapUtils {
             // Replacing a block entity may eject contents before a later failure.
             // A snapshot cannot safely undo those external drops as well as the block.
             if (original instanceof TileState) {
-                player.sendMessage(ChatColor.RED
-                        + "The destination contains a block entity. Move or remove it normally first.");
+                sendError(player, "The destination contains a block entity. Move or remove it normally first.");
                 return null;
             }
             targets.add(new BlockPasteSupport.Target(block, original, desired));
