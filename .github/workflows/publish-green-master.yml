@@ -70,7 +70,7 @@ jobs:
           python3 - "$RUNNER_TEMP/jobs.json" <<'PY'
           import json, sys
           jobs = json.load(open(sys.argv[1], encoding='utf-8'))['jobs']
-          matches = [job for job in jobs if job['name'] == 'build-fastmachines']
+          matches = [job for job in jobs if job['name'] == 'build']
           if len(matches) != 1 or matches[0]['conclusion'] != 'success':
               raise SystemExit('Build job not uniquely successful in the tested run')
           PY
