@@ -26,7 +26,7 @@ def verify_jar(path: Path, version: str, expected_sha256: str) -> None:
     if actual_sha256 != expected_sha256:
         raise ValueError("Canonical raw JAR SHA-256 mismatch")
 
-    main = "net/guizhanss/fastmachines/MagicExpansion.class"
+    main = "io/Yomicer/magicExpansion/MagicExpansion.class"
     with zipfile.ZipFile(path) as archive:
         names = set(archive.namelist())
         if archive.testzip() is not None:
@@ -36,7 +36,7 @@ def verify_jar(path: Path, version: str, expected_sha256: str) -> None:
         plugin = archive.read("plugin.yml").decode("utf-8")
         if re.search(r"(?m)^name:\s*['\"]?magicexpansion['\"]?\s*$", plugin) is None:
             raise ValueError("Plugin name changed unexpectedly")
-        if re.search(r"(?m)^main:\s*['\"]?net\.guizhanss\.fastmachines\.MagicExpansion['\"]?\s*$", plugin) is None:
+        if re.search(r"(?m)^main:\s*['\"]?io\.Yomicer\.magicExpansion\.MagicExpansion['\"]?\s*$", plugin) is None:
             raise ValueError("MagicExpansion entrypoint changed unexpectedly")
         if re.search(r"(?m)^version:\s*['\"]?" + re.escape(version) + r"['\"]?\s*$", plugin) is None:
             raise ValueError("Plugin version does not match release")
