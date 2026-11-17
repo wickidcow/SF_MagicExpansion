@@ -32,6 +32,7 @@ def check_release_workflow(source: str) -> None:
         '"$LIVE_SHA" != "$TESTED_SHA"',
         '"$(git rev-parse HEAD)" != "$TESTED_SHA"',
         "jobs?per_page=100",
+        "job['name'] == 'build'",
         "matches[0]['conclusion'] != 'success'",
         "artifacts?per_page=100",
         "item.get('workflow_run', {}).get('head_sha') == sys.argv[3]",
@@ -68,6 +69,21 @@ class ReleasePolicyTest(unittest.TestCase):
 
     def test_current_workflow_source(self):
         check_release_workflow(self.workflow)
+
+    def test_actual_build_job_name_must_match_builder_workflow(self):
+        builder = BUILDER.read_text(encoding="utf-8")
+        # The stable build workflow has jobs.build, not the FastMachines
+        # job name. Do not treat a successful entire run as sufficient if
+        # the expected canonical JAR-producing job cannot be identified.
+        self.assertIn("\n  build:\n", builder)
+        self.assertIn("job['name'] == 'build'", self.workflow)
+        self.assertNotIn("build-fastmachines", self.workflow)
+
+    def test_build_job_name_mismatch_is_rejected(self):
+        with self.assertRaises(ValueError):
+            check_release_workflow(self.workflow.replace(
+                "job['name'] == 'build'",
+                "job['name'] == 'build-fastmachines'", 1))
 
     def test_green_master_is_required(self):
         with self.assertRaises(ValueError):
